@@ -7,26 +7,27 @@ package dev.cdm.s3;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import dev.cdm.core.io.RandomAccessFile;
+import dev.cdm.core.io.ReadableRemoteFile;
+import dev.cdm.core.io.RemoteRandomAccessFile;
+import dev.cdm.core.spi.RandomAccessFileProvider;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
-import dev.cdm.spi.RandomAccessFileProvider;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
-import dev.cdm.io.RandomAccessFile;
-import dev.cdm.io.ReadableRemoteFile;
-import dev.cdm.io.RemoteRandomAccessFile;
 
 /**
  * Manage random access file level access to objects stored on AWS S3 compatible Object Stores.
  *
- * Extensions to {@link dev.cdm.io.RandomAccessFile} and {@link dev.cdm.io.RemoteRandomAccessFile} for
+ * Extensions to {@link RandomAccessFile} and {@link RemoteRandomAccessFile} for
  * objects stored on AWS S3 compatible Object Stores.
  *
  * @author James McClain, based on work by John Caron and Donald Denbof

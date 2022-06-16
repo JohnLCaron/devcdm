@@ -9,7 +9,7 @@ plugins {
 
 group = "dev.cdm"
 version = "1.0-SNAPSHOT"
-description = "dev.cdm.core"
+description = "The CDM (next generation) core module."
 
 repositories {
     mavenCentral()
@@ -19,7 +19,9 @@ dependencies {
     api(project(":array"))
 
     implementation(libs.guava)
+    implementation(libs.jdom2)
     implementation(libs.jsr305)
+    implementation(libs.re2j)
     implementation(libs.slf4j)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
