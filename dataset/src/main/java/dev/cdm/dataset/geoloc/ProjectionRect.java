@@ -7,8 +7,8 @@ package dev.cdm.dataset.geoloc;
 import com.google.common.math.DoubleMath;
 import dev.cdm.array.NumericCompare;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.StringTokenizer;
 
 /**

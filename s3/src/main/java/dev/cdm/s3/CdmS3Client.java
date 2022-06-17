@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
@@ -46,7 +45,7 @@ public class CdmS3Client {
         entry.getValue().close();
       }
     }).build(new CacheLoader<CdmS3Uri, S3Client>() {
-      public S3Client load(@Nonnull CdmS3Uri key) {
+      public S3Client load(CdmS3Uri key) {
         return createS3Client(key);
       }
     });

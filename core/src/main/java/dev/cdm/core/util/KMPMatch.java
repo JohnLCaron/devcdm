@@ -4,7 +4,7 @@
  */
 package dev.cdm.core.util;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Knuth-Morris-Pratt Algorithm for Pattern Matching.

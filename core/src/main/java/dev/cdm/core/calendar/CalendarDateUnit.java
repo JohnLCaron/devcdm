@@ -9,8 +9,8 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

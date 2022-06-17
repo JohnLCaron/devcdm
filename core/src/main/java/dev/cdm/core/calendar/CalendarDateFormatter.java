@@ -4,7 +4,6 @@
  */
 package dev.cdm.core.calendar;
 
-import javax.annotation.concurrent.ThreadSafe;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -15,7 +14,6 @@ import java.util.Date;
 /**
  * Static routines for date formatting.
  */
-@ThreadSafe
 public class CalendarDateFormatter {
   private static final DateTimeFormatter isof = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC);
 

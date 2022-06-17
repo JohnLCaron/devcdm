@@ -12,8 +12,8 @@ import dev.cdm.core.util.Indent;
 import dev.cdm.array.StructureData;
 import dev.cdm.core.iosp.IOServiceProvider;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Formatter;

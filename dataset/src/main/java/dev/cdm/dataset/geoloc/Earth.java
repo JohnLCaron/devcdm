@@ -4,7 +4,7 @@
  */
 package dev.cdm.dataset.geoloc;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /** Defines the shape of the earth ellipsoid. */
 @Immutable

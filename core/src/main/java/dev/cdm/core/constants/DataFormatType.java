@@ -4,7 +4,7 @@
  */
 package dev.cdm.core.constants;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public enum DataFormatType {
   BUFR(null), //

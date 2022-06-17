@@ -27,7 +27,7 @@ import dev.cdm.dataset.geoloc.projection.LambertConformal;
 import dev.cdm.dataset.geoloc.projection.Stereographic;
 import dev.cdm.dataset.geoloc.projection.TransverseMercator;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;

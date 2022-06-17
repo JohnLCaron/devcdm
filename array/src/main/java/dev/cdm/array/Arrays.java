@@ -6,9 +6,9 @@ package dev.cdm.array;
 
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {

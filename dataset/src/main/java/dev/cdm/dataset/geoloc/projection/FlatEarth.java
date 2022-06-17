@@ -7,7 +7,7 @@ package dev.cdm.dataset.geoloc.projection;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * FlatEarth Projection

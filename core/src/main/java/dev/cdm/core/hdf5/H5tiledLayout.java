@@ -10,7 +10,7 @@ import dev.cdm.array.Section;
 import dev.cdm.core.iosp.Layout;
 import dev.cdm.core.iosp.LayoutTiled;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 
 /**

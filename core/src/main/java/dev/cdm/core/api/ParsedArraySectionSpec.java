@@ -10,7 +10,7 @@ import dev.cdm.array.Range;
 import dev.cdm.array.Section;
 import dev.cdm.core.util.EscapeStrings;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**

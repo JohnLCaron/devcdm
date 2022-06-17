@@ -14,8 +14,7 @@ import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -220,7 +219,6 @@ public class CoordSystemFactory {
    * @return the builder to be used
    * @throws IOException on io error
    */
-  @Nonnull
   public static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder<?> ds, CancelTask cancelTask)
       throws IOException {
 

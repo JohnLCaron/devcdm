@@ -14,8 +14,8 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.dataset.api.NetcdfDataset;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;

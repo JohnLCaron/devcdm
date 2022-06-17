@@ -8,8 +8,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;

@@ -4,7 +4,7 @@
  */
 package dev.cdm.core.hdf4;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /** HDF4 Tags */
 @Immutable

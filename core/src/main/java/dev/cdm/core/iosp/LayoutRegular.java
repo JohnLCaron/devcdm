@@ -8,8 +8,8 @@ import com.google.common.base.Preconditions;
 import dev.cdm.array.InvalidRangeException;
 import dev.cdm.array.Section;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 
 /**
  * Indexer into data that has a "regular" layout, like netcdf-3 and hdf5 compact and contiguous storage.

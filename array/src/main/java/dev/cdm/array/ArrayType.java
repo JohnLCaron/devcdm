@@ -4,7 +4,7 @@
  */
 package dev.cdm.array;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.math.BigInteger;
 
 /** Type-safe enumeration of Array data types. */

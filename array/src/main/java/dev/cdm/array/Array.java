@@ -6,7 +6,7 @@ package dev.cdm.array;
 
 import com.google.common.base.Objects;
 
-import javax.annotation.concurrent.Immutable;
+;
 import java.util.Iterator;
 
 /** Superclass for implementations of multidimensional arrays. */

@@ -6,7 +6,7 @@ package dev.cdm.core.calendar;
 
 import com.google.common.base.Preconditions;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.Date;
 import java.util.Objects;
 

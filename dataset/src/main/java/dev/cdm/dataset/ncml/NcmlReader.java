@@ -40,7 +40,7 @@ import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.util.IO;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;

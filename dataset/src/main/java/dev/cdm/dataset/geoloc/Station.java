@@ -4,8 +4,8 @@
  */
 package dev.cdm.dataset.geoloc;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 
 /** A named location on the earth. */
 @Immutable

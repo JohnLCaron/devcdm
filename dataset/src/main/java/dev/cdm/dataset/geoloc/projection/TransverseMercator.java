@@ -11,7 +11,7 @@ import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 import dev.cdm.core.util.SpecialMathFunction;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Transverse Mercator projection, spherical earth.

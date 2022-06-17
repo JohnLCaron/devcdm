@@ -10,7 +10,7 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Lambert Conformal Projection, one or two standard parallels, spherical earth.

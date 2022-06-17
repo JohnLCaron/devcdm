@@ -10,10 +10,10 @@ import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.ArrayVlen;
 import dev.cdm.array.Arrays;
+import dev.cdm.array.Immutable;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Formatter;
 import java.util.List;
 

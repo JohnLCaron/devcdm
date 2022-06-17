@@ -6,8 +6,8 @@
 package dev.cdm.dataset.conv;
 
 import com.google.common.collect.ImmutableList;
-import com.google.re2j.Matcher;
-import com.google.re2j.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
@@ -38,7 +38,7 @@ import dev.cdm.dataset.geoloc.projection.Stereographic;
 import dev.cdm.core.util.StringUtil2;
 import dev.cdm.dataset.transform.vertical.WrfEta;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;

@@ -20,7 +20,7 @@ dependencies {
     api(project(":core"))
 
     implementation(libs.guava)
-    implementation(libs.jsr305)
+    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
 
     api(platform(libs.awsSdkBom))

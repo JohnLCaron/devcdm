@@ -21,8 +21,7 @@ dependencies {
 
     implementation(libs.guava)
     implementation(libs.jdom2)
-    implementation(libs.jsr305)
-    implementation(libs.re2j)
+    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")

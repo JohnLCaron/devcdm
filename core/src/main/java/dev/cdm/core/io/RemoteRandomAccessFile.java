@@ -10,7 +10,6 @@ import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
@@ -70,7 +69,7 @@ public abstract class RemoteRandomAccessFile extends RandomAccessFile implements
       cb.recordStats();
     }
     return cb.build(new CacheLoader<Long, byte[]>() {
-      public byte[] load(@Nonnull Long key) throws IOException {
+      public byte[] load(Long key) throws IOException {
         return readRemoteCacheSizedChunk(key);
       }
     });

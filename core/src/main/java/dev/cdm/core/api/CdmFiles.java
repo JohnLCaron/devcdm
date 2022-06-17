@@ -18,7 +18,7 @@ import dev.cdm.core.util.StringLocker;
 import dev.cdm.core.util.StringUtil2;
 import dev.cdm.core.util.URLnaming;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

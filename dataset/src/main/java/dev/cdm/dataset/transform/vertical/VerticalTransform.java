@@ -10,7 +10,7 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.NetcdfDataset;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;

@@ -9,8 +9,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -22,7 +21,6 @@ import java.util.List;
  * A collection of members contained in StructureData.
  * Nested Structures may be stored on or off the heap.
  */
-@Immutable
 public final class StructureMembers implements Iterable<StructureMembers.Member> {
 
   /** Get the StructureMembers' name. */

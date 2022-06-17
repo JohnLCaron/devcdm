@@ -13,7 +13,7 @@ import dev.cdm.dataset.geoloc.Projection;
 import dev.cdm.dataset.geoloc.ProjectionPoint;
 import dev.cdm.dataset.geoloc.projection.AbstractProjection;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Polyconic Projection.

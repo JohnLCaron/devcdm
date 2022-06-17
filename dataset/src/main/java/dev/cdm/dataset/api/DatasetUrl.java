@@ -10,8 +10,8 @@ import dev.cdm.core.http.HttpService;
 import dev.cdm.core.util.EscapeStrings;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;

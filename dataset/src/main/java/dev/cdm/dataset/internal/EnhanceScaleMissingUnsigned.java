@@ -16,9 +16,8 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.dataset.api.NetcdfDataset;
 import dev.cdm.dataset.api.NetcdfDataset.Enhance;
-import dev.cdm.core.netcdf3.NetcdfFormatUtils;
+import dev.cdm.core.iosp.IospUtils;
 
-import javax.annotation.Nonnull;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.Set;
@@ -279,7 +278,7 @@ public class EnhanceScaleMissingUnsigned {
     } else {
       // No _FillValue attribute found. Instead, use NetCDF default fill value.
       if (unsignedConversionType.isNumeric()) {
-        Number fill = NetcdfFormatUtils.getFillValueDefault(unsignedConversionType);
+        Number fill = IospUtils.getFillValueDefault(unsignedConversionType);
         if (fill != null) {
           fillValue = applyScaleOffset(fill);
           hasFillValue = true;
@@ -528,7 +527,6 @@ public class EnhanceScaleMissingUnsigned {
     return scaledOffsetType;
   }
 
-  @Nonnull
   public ArrayType getUnsignedConversionType() {
     return unsignedConversionType;
   }

@@ -7,7 +7,7 @@ package dev.cdm.dataset.geoloc;
 import com.google.common.base.Splitter;
 import dev.cdm.core.util.Format;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Formatter;
 import java.util.List;
 
