@@ -13,7 +13,7 @@ import dev.cdm.core.api.Structure;
 import dev.cdm.core.api.Variable;
 import dev.cdm.dataset.internal.SequenceArrayEnhancer;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.Iterator;
 import java.util.List;
 

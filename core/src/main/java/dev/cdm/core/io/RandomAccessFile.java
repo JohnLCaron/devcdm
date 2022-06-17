@@ -6,7 +6,6 @@ package dev.cdm.core.io;
 
 import dev.cdm.core.util.KMPMatch;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -49,7 +48,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Russ Rew
  * @author john caron
  */
-@NotThreadSafe
 public class RandomAccessFile implements DataInput, DataOutput, Closeable {
 
   public static final int BIG_ENDIAN = 0;

@@ -11,8 +11,8 @@ import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.internal.EnhanceScaleMissingUnsigned;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;

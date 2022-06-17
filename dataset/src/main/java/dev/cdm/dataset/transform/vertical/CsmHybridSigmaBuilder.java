@@ -8,7 +8,7 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.NetcdfDataset;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;

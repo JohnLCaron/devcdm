@@ -10,7 +10,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.array.Section;
 import dev.cdm.core.util.CancelTask;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 
 /**

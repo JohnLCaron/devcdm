@@ -6,8 +6,8 @@ package dev.cdm.core.api;
 
 import com.google.common.collect.ImmutableList;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Iterator;

@@ -19,7 +19,7 @@ import dev.cdm.dataset.api.CoordinateAxis1D;
 import dev.cdm.dataset.api.NetcdfDataset;
 import dev.cdm.dataset.api.VariableDS;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;

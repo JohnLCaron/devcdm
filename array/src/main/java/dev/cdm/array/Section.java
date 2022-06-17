@@ -6,8 +6,8 @@ package dev.cdm.array;
 
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

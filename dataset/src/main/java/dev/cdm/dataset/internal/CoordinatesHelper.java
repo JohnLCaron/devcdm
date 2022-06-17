@@ -16,7 +16,7 @@ import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

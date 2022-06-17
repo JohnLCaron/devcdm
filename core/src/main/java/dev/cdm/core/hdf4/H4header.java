@@ -19,7 +19,7 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.cdm.core.util.Format;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;

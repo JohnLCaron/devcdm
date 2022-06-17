@@ -6,7 +6,7 @@ package dev.cdm.core.constants;
 
 import dev.cdm.core.api.CdmFile;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Constants used in CF Conventions.

@@ -9,8 +9,8 @@ import com.google.common.collect.ImmutableMap;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.util.Indent;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

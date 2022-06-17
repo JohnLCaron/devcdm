@@ -6,10 +6,10 @@ package dev.cdm.core.calendar;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.re2j.Matcher;
-import com.google.re2j.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Optional;

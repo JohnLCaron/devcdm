@@ -18,7 +18,7 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.core.netcdf3.NetcdfFormatUtils;
+import dev.cdm.core.iosp.IospUtils;
 import dev.cdm.core.util.SimpleUnit;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
@@ -31,7 +31,7 @@ import dev.cdm.dataset.geoloc.projection.LambertConformal;
 import dev.cdm.dataset.geoloc.projection.Stereographic;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -603,7 +603,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     VariableDS.Builder<?> refVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("reftime").get();
 
     double refValue = refVar.orgVar.readScalarDouble();
-    if (refValue == NetcdfFormatUtils.NC_FILL_DOUBLE) { // why?
+    if (refValue == IospUtils.NC_FILL_DOUBLE) { // why?
       return null;
     }
 

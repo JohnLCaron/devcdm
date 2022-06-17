@@ -4,7 +4,7 @@ package dev.cdm.dataset.transform.horiz;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.geoloc.Projection;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /** A Builder of Projection CoordinateTransform. */
 public interface ProjectionBuilder {

@@ -12,7 +12,7 @@ import dev.cdm.array.Range;
 import dev.cdm.array.Section;
 import dev.cdm.core.util.CancelTask;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

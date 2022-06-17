@@ -14,8 +14,8 @@ import dev.cdm.dataset.geoloc.Projection;
 import dev.cdm.dataset.geoloc.projection.LatLonProjection;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;

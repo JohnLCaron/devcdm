@@ -9,7 +9,7 @@ import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.

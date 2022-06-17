@@ -6,7 +6,7 @@ package dev.cdm.core.hdf5;
 
 import dev.cdm.array.ArrayType;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.ByteOrder;
 
 class Hdf5Type {

@@ -4,7 +4,7 @@ import dev.cdm.core.api.CdmFile;
 import dev.cdm.dataset.api.NetcdfDataset;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /** A Service Provider of CoordSystemBuilder. */
 public interface CoordSystemBuilderProvider {

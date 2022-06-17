@@ -17,7 +17,7 @@ import dev.cdm.core.iosp.LayoutRegular;
 import dev.cdm.core.iosp.LayoutRegularSegmented;
 import dev.cdm.core.util.CancelTask;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;

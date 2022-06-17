@@ -22,7 +22,7 @@ import dev.cdm.core.netcdf3.NetcdfFormatUtils;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.io.RandomAccessFile;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

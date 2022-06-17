@@ -39,7 +39,7 @@ import dev.cdm.dataset.geoloc.Projection;
 import dev.cdm.dataset.geoloc.ProjectionPoint;
 import dev.cdm.dataset.geoloc.projection.AbstractProjection;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Transverse Mercator Projection algorithm is taken from the USGS PROJ package.

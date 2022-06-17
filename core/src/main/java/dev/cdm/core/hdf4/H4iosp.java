@@ -23,7 +23,7 @@ import dev.cdm.core.io.RandomAccessFile;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.util.IO;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -12,7 +12,7 @@ import dev.cdm.dataset.internal.DatasetEnhancer;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.core.util.CancelTask;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ServiceLoader;

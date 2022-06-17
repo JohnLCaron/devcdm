@@ -18,7 +18,7 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants.FeatureType;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.core.hdf4.HdfEos;
+import dev.cdm.core.iosp.IospUtils;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
 import dev.cdm.dataset.api.NetcdfDataset;
@@ -74,10 +74,10 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
 
     private boolean checkGroup(Group g) {
-      Variable crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
+      Variable crs = g.findVariableLocal(IospUtils.HDFEOS_CRS);
       Group dataG = g.findGroupLocal(DATA_GROUP);
       if (crs != null && dataG != null) {
-        String att = crs.findAttributeString(HdfEos.HDFEOS_CRS_Projection, null);
+        String att = crs.findAttributeString(IospUtils.HDFEOS_CRS_Projection, null);
         if (att == null) {
           return false;
         }
@@ -179,7 +179,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
   }
 
   private void augmentGroup(Group.Builder g) {
-    Optional<Variable.Builder<?>> crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
+    Optional<Variable.Builder<?>> crs = g.findVariableLocal(IospUtils.HDFEOS_CRS);
     if (crs.isPresent()) {
       augmentGroupWithProjectionInfo(g);
     }
@@ -205,13 +205,13 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     Dimension dimX = dimXopt.get();
     Dimension dimY = dimYopt.get();
 
-    g.findVariableLocal(HdfEos.HDFEOS_CRS).ifPresent(crs -> {
-      String projAtt = crs.getAttributeContainer().findAttributeString(HdfEos.HDFEOS_CRS_Projection, "");
+    g.findVariableLocal(IospUtils.HDFEOS_CRS).ifPresent(crs -> {
+      String projAtt = crs.getAttributeContainer().findAttributeString(IospUtils.HDFEOS_CRS_Projection, "");
       if (projAtt == null) {
         return;
       }
-      Attribute upperLeft = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_UpperLeft);
-      Attribute lowerRight = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_LowerRight);
+      Attribute upperLeft = crs.getAttributeContainer().findAttribute(IospUtils.HDFEOS_CRS_UpperLeft);
+      Attribute lowerRight = crs.getAttributeContainer().findAttribute(IospUtils.HDFEOS_CRS_LowerRight);
       if (upperLeft == null || lowerRight == null) {
         return;
       }
@@ -227,8 +227,8 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
       ProjectionCTV ct;
       if (projAtt.equals("GCTP_SNSOID")) {
         hasProjection = true;
-        Attribute projParams = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_ProjParams);
-        Preconditions.checkNotNull(projParams, "Cant find attribute " + HdfEos.HDFEOS_CRS_ProjParams);
+        Attribute projParams = crs.getAttributeContainer().findAttribute(IospUtils.HDFEOS_CRS_ProjParams);
+        Preconditions.checkNotNull(projParams, "Cant find attribute " + IospUtils.HDFEOS_CRS_ProjParams);
         ct = makeSinusoidalProjection(CRS, projParams);
         VariableDS.Builder<?> crss = makeCoordinateTransformVariable(ct);
         crss.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));

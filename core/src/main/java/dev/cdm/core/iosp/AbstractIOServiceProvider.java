@@ -10,7 +10,7 @@ import dev.cdm.core.api.Sequence;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.cdm.core.util.Format;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;

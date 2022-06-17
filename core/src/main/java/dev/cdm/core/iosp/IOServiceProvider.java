@@ -11,7 +11,7 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.io.RandomAccessFile;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;

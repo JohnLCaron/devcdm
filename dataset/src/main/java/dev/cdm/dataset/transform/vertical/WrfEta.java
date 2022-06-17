@@ -15,8 +15,8 @@ import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.NetcdfDataset;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;

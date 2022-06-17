@@ -8,8 +8,8 @@ import com.google.common.base.Preconditions;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.geoloc.Projection;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.Objects;
 
 /**

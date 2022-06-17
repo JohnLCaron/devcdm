@@ -13,8 +13,8 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.conv.CF1Convention;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 
 /**
  * A Variable that specifies one of the coordinates of a CoordinateSystem,

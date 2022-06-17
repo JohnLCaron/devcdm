@@ -16,7 +16,7 @@ import dev.cdm.dataset.geoloc.ProjectionPoint;
 import dev.cdm.dataset.geoloc.ProjectionRect;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Superclass for our implementations of geoloc.Projection.

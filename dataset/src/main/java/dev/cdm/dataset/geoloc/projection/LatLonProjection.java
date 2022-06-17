@@ -7,8 +7,8 @@ package dev.cdm.dataset.geoloc.projection;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 
 /**
  * This is the "fake" identity projection where world coord = latlon coord.

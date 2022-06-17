@@ -34,7 +34,7 @@ import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 import dev.cdm.dataset.geoloc.projection.AbstractProjection;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.Objects;
 
 /**
