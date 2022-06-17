@@ -19,7 +19,7 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.core.iosp.IospUtils;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;

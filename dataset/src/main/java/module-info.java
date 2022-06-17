@@ -4,6 +4,7 @@ module dev.cdm.dataset {
   requires com.google.common;
   requires org.jdom2;
   requires org.slf4j;
+  requires tech.units.indriya;
   requires static org.jetbrains.annotations;
 
   exports dev.cdm.dataset.api;

@@ -16,6 +16,8 @@ re2j = "1.6"
 slf4j = "1.7.36"
 tomcatAnnotationsApi = "6.0.53"
 truth = "1.1.3"
+uomImpl = "2.1.3"
+javaxInject = "1"
 
 ###################
 # plugin versions #
@@ -73,11 +75,15 @@ protobufJava = { group = "com.google.protobuf", name = "protobuf-java" }
 # cdm-core, bufr, grib, cdm-test (test), uicdm
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 
-# udunits (test), cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm, gcdm, docs
+# cdm-core, bufr, grib, netcdf4, cdm-s3, cdm-test (test), uibase, uicdm, gcdm, docs
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
 # gcdm
 slf4jJdk14 = { group = "org.slf4j", name = "slf4j-jdk14", version.ref = "slf4j" }
+
+# units of measurement
+uomImpl = { group = "tech.units", name = "indriya", version.ref = "uomImpl" }
+javaxInject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 
 # gcdm
 tomcatAnnotationsApi = { group = "org.apache.tomcat", name = "annotations-api", version.ref = "tomcatAnnotationsApi" }
