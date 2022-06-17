@@ -48,9 +48,9 @@ tasks.getByName<Test>("test") {
 tasks.jar {
     manifest {
         attributes(mapOf(
-            "Main-Class" to "dev.cdm.s3.main",
-            "Implementation-Title" to "CDM (next generation) s3 library",
+            "Main-Class" to "dev.cdm.aws.main",
+            "Implementation-Title" to "CDM (next generation) AWS S3 library",
             "Implementation-Version" to project.version))
     }
-    archiveBaseName.set("cdmng-s3")
+    archiveBaseName.set("cdmng-aws")
 }

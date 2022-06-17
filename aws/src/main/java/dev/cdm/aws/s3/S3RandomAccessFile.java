@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.s3;
+package dev.cdm.aws.s3;
 
 import static com.google.common.base.Preconditions.checkState;
 
