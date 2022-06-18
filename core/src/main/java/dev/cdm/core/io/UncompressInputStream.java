@@ -5,19 +5,15 @@
 package dev.cdm.core.io;
 
 import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 
 /**
  * This class decompresses an input stream containing data compressed with
  * the unix "compress" utility (LZC, a LZW variant). This code is based
  * heavily on the <var>unlzw.c</var> code in <var>gzip-1.2.4</var> (written
  * by Peter Jannesen) and the original compress code.
- *
  *
  * <p>
  * This version has been modified from the original 0.3-3 version by the
@@ -31,7 +27,8 @@ import java.io.InputStream;
  * @author Ronald Tschalar
  * @author Unidata Program Center
  */
-public class UncompressInputStream extends FilterInputStream {
+class UncompressInputStream extends FilterInputStream {
+  private static final boolean debug = false;
 
   // string table stuff
   private static final int TBL_CLEAR = 0x100;
@@ -60,16 +57,14 @@ public class UncompressInputStream extends FilterInputStream {
   private boolean eof;
   private static final int EXTRA = 64;
 
-
   /**
    * @param is the input stream to decompress
    * @throws IOException if the header is malformed
    */
-  public UncompressInputStream(InputStream is) throws IOException {
+  UncompressInputStream(InputStream is) throws IOException {
     super(is);
     parse_header();
   }
-
 
   private final byte[] one = new byte[1];
 
@@ -88,10 +83,7 @@ public class UncompressInputStream extends FilterInputStream {
       return -1;
     int start = off;
 
-    /*
-     * Using local copies of various variables speeds things up by as
-     * much as 30% !
-     */
+    // Using local copies of various variables speeds things up by as much as 30% !
     int[] l_tab_prefix = tab_prefix;
     byte[] l_tab_suffix = tab_suffix;
     byte[] l_stack = stack;
@@ -108,7 +100,6 @@ public class UncompressInputStream extends FilterInputStream {
 
 
     // empty stack if stuff still left
-
     int s_size = l_stack.length - l_stackp;
     if (s_size > 0) {
       int num = Math.min(s_size, len);
@@ -123,12 +114,11 @@ public class UncompressInputStream extends FilterInputStream {
       return off - start;
     }
 
-
     // loop, filling local buffer until enough data has been decompressed
-
     main_loop: do {
-      if (end < EXTRA)
+      if (end < EXTRA) {
         fill();
+      }
 
       int bit_in = (got > 0) ? (end - end % l_n_bits) << 3 : (end << 3) - (l_n_bits - 1);
 
@@ -149,7 +139,6 @@ public class UncompressInputStream extends FilterInputStream {
         }
 
         // check for code-width expansion
-
         if (l_free_ent > l_maxcode) {
           int n_bytes = l_n_bits << 3;
           l_bit_pos = (l_bit_pos - 1) + n_bytes - (l_bit_pos - 1 + n_bytes) % n_bytes;
@@ -165,9 +154,7 @@ public class UncompressInputStream extends FilterInputStream {
           continue main_loop;
         }
 
-
         // read next code
-
         int pos = l_bit_pos >> 3;
         int code = (((l_data[pos] & 0xFF) | ((l_data[pos + 1] & 0xFF) << 8)
             | ((l_data[pos + 2] & 0xFF) << 16)) >> (l_bit_pos & 0x7)) & l_bitmask;
@@ -175,7 +162,6 @@ public class UncompressInputStream extends FilterInputStream {
 
 
         // handle first iteration
-
         if (l_oldcode == -1) {
           if (code >= 256)
             throw new IOException("corrupt input: " + code + " > 255");
@@ -185,9 +171,7 @@ public class UncompressInputStream extends FilterInputStream {
           continue;
         }
 
-
         // handle CLEAR code
-
         if (code == TBL_CLEAR && block_mode) {
           System.arraycopy(zeros, 0, l_tab_prefix, 0, zeros.length);
           l_free_ent = TBL_FIRST - 1;
@@ -207,13 +191,11 @@ public class UncompressInputStream extends FilterInputStream {
 
 
         // setup
-
         int incode = code;
         l_stackp = l_stack.length;
 
 
         // Handle KwK case
-
         if (code >= l_free_ent) {
           if (code > l_free_ent)
             throw new IOException("corrupt input: code=" + code + ", free_ent=" + l_free_ent);
@@ -224,7 +206,6 @@ public class UncompressInputStream extends FilterInputStream {
 
 
         // Generate output characters in reverse order
-
         while (code >= 256) {
           l_stack[--l_stackp] = l_tab_suffix[code];
           code = l_tab_prefix[code];
@@ -235,7 +216,6 @@ public class UncompressInputStream extends FilterInputStream {
 
 
         // And put them out in forward order
-
         s_size = l_stack.length - l_stackp;
         int num = Math.min(s_size, len);
         System.arraycopy(l_stack, l_stackp, buf, off, num);
@@ -245,7 +225,6 @@ public class UncompressInputStream extends FilterInputStream {
 
 
         // generate new entry in table
-
         if (l_free_ent < l_maxmaxcode) {
           l_tab_prefix[l_free_ent] = l_oldcode;
           l_tab_suffix[l_free_ent] = l_finchar;
@@ -254,12 +233,10 @@ public class UncompressInputStream extends FilterInputStream {
 
 
         // Remember previous code
-
         l_oldcode = incode;
 
 
         // if output buffer full, then return
-
         if (len == 0) {
           n_bits = l_n_bits;
           maxcode = l_maxcode;
@@ -290,7 +267,6 @@ public class UncompressInputStream extends FilterInputStream {
     return off - start;
   }
 
-
   // Moves the unread data in the buffer to the beginning and resets the pointers.
   // @return 0
   private int resetbuf(int bit_pos) {
@@ -303,32 +279,31 @@ public class UncompressInputStream extends FilterInputStream {
 
   private void fill() throws IOException {
     got = in.read(data, end, data.length - 1 - end);
-    if (got > 0)
+    if (got > 0) {
       end += got;
+    }
   }
-
 
   @Override
   public long skip(long num) throws IOException {
     byte[] tmp = new byte[(int) num];
     int got = read(tmp, 0, (int) num);
 
-    if (got > 0)
+    if (got > 0) {
       return got;
-    else
+    } else {
       return 0L;
+    }
   }
-
 
   @Override
   public int available() throws IOException {
-    if (eof)
+    if (eof) {
       return 0;
-
+    }
     int avail = in.available();
     return (avail == 0) ? 1 : avail;
   }
-
 
   private static final int LZW_MAGIC = 0x1f9d;
   private static final int MAX_BITS = 16;
@@ -406,31 +381,5 @@ public class UncompressInputStream extends FilterInputStream {
   public boolean markSupported() {
     return false;
   }
-
-  public static void uncompress(String fileInName, FileOutputStream out) throws IOException {
-    long start = System.currentTimeMillis();
-    int total = 0;
-
-    try (InputStream in = new UncompressInputStream(new FileInputStream(fileInName))) {
-      byte[] buffer = new byte[100000];
-      while (true) {
-        int bytesRead = in.read(buffer);
-        if (bytesRead == -1)
-          break;
-        out.write(buffer, 0, bytesRead);
-        total += bytesRead;
-      }
-    }
-
-    if (debugTiming) {
-      long end = System.currentTimeMillis();
-      System.err.println("Decompressed " + total + " bytes");
-      System.err.println("Time: " + (end - start) / 1000. + " seconds");
-    }
-  }
-
-
-  private static final boolean debug = false, debugTiming = false;
-
 }
 

@@ -148,18 +148,18 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   }
 
   @Override
-  public String getFileTypeId() {
+  public String getCdmFileTypeId() {
     return DataFormatType.NETCDF.getDescription();
   }
 
   @Override
-  public String getFileTypeDescription() {
+  public String getCdmFileTypeDescription() {
     return "NetCDF-3/CDM";
   }
 
   @Override
-  public String getFileTypeVersion() {
-    return "1";
+  public String getCdmFileTypeVersion() {
+    return header.useLongOffset ? "2" : "1"; // classic vs 64-bit Offset Format Variant
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

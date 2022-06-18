@@ -74,7 +74,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   @Override
   public CdmFile getCdmFile() {
     // TODO can group really be null? Variable says no.
-    return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
+    return getParentGroup() == null ? null : getParentGroup().getCdmFile();
   }
 
   /** true if Variable has missing data values */
@@ -486,7 +486,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
       setOriginalArrayType(orgVar.getArrayType());
       setOriginalName(orgVar.getShortName());
 
-      this.orgFileTypeId = orgVar.getFileTypeId();
+      this.orgFileTypeId = orgVar.getCdmFileTypeId();
       return self();
     }
 

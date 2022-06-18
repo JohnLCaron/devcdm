@@ -13,11 +13,11 @@ public enum DataFormatType {
   GINI(null), //
   GRIB1("GRIB-1"), //
   GRIB2("GRIB-2"), //
-  HDF4(null), //
-  HDF5(null), //
+  HDF4("HDF4"), //
+  HDF5("HDF5"), //
   MCIDAS_AREA("McIDAS-AREA"), //
   NCML("NcML"), //
-  NETCDF("NetCDF-3"), //
+  NETCDF("NetCDF"), //
   NETCDF4("NetCDF-4"), //
   NEXRAD2(null), //
   NIDS(null), //

@@ -4,8 +4,8 @@
  */
 package dev.cdm.array;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
@@ -24,7 +24,7 @@ public class TestSection {
   int m2 = 3;
   int mlen = (m2 - m1 + 1);
 
-  @Before
+  @BeforeEach
   public void setUp() throws InvalidRangeException {
     int[] shape = new int[] {m, n, p};
     double[] data = new double[m * n * p];

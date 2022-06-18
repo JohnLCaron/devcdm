@@ -33,7 +33,6 @@ public class ProjectionFactory {
     registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA, LambertCylindricalEqualArea.class);
     registerTransform(CF.LATITUDE_LONGITUDE, LatLon.class);
     // optional - needs visad.jar
-    registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder");
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);

@@ -124,6 +124,7 @@ public class H5header implements HdfHeaderIF {
   byte sizeOffsets, sizeLengths;
   int sizeHeapId;
   boolean isOffsetLong, isLengthLong;
+  byte superblockVersion;
 
   /*
    * Cant always tell if written with netcdf library. if all dimensions have coordinate variables, eg:
@@ -197,14 +198,14 @@ public class H5header implements HdfHeaderIF {
       memTracker.add("header", 0, superblockStart);
 
     // superblock version
-    byte versionSB = raf.readByte();
+    this.superblockVersion = raf.readByte();
 
-    if (versionSB < 2) {
-      readSuperBlock1(superblockStart, versionSB);
-    } else if (versionSB == 2) {
+    if (superblockVersion < 2) {
+      readSuperBlock1(superblockStart, superblockVersion);
+    } else if (superblockVersion == 2) {
       readSuperBlock2(superblockStart);
     } else {
-      throw new IOException("Unknown superblock version= " + versionSB);
+      throw new IOException("Unknown superblock version= " + superblockVersion);
     }
 
     // now look for symbolic links TODO this doesnt work
@@ -2127,6 +2128,10 @@ public class H5header implements HdfHeaderIF {
 
   public byte getSizeOffsets() {
     return sizeOffsets;
+  }
+
+  public byte superblockVersion() {
+    return this.superblockVersion;
   }
 
   boolean isNetcdf4() {

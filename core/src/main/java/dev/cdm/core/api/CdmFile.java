@@ -44,12 +44,12 @@ import java.util.StringTokenizer;
  * </pre>
  * 
  * More conveniently, a {@code CdmFile} object may be created using one of the static methods
- * in {@code NetcdfFiles}:
+ * in {@code CdmFiles}:
  * 
  * <pre>
  * CdmFile ncfile = null;
  * try {
- *   ncfile = NetcdfFiles.open(fileName);
+ *   ncfile = CdmFiles.open(fileName);
  *   // do stuff
  * } finally {
  *   if (ncfile != null) {
@@ -61,7 +61,7 @@ import java.util.StringTokenizer;
  * Or better yet, use try-with-resources:
  * 
  * <pre>
- * try (CdmFile ncfile = NetcdfFiles.open(fileName)) {
+ * try (CdmFile ncfile = CdmFiles.open(fileName)) {
  *   // do stuff
  * }
  * </pre>
@@ -119,7 +119,7 @@ public class CdmFile implements Closeable {
    * An embedded "/" is interpreted as group/group or group/variable.
    * An embedded "@" is interpreted as variable@attribute.
    * A name without an "@" is interpreted as an attribute in the root group.
-   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname)).
+   * If the name actually has a ".", you must escape it (call CdmFiles.makeValidPathName(varname)).
    * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "attName", "@attName", "var@attname", "struct.member.@attName",
@@ -260,7 +260,7 @@ public class CdmFile implements Closeable {
    * structures. An embedded
    * "." is interpreted as structure.member. An embedded "/" is interpreted as group/variable. If the name actually has
    * a ".", you must
-   * escape it (call NetcdfFiles.makeValidPathName(varname)) Any other chars may also be escaped, as they are removed
+   * escape it (call CdmFiles.makeValidPathName(varname)) Any other chars may also be escaped, as they are removed
    * before testing.
    *
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
@@ -339,9 +339,9 @@ public class CdmFile implements Closeable {
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   @Nullable
-  public String getFileTypeId() {
+  public String getCdmFileTypeId() {
     if (iosp != null) {
-      return iosp.getFileTypeId();
+      return iosp.getCdmFileTypeId();
     }
     return null;
   }
@@ -352,9 +352,9 @@ public class CdmFile implements Closeable {
    * @return description of the file type
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  public String getFileTypeDescription() {
+  public String getCdmFileTypeDescription() {
     if (iosp != null) {
-      return iosp.getFileTypeDescription();
+      return iosp.getCdmFileTypeDescription();
     }
     return "N/A";
   }
@@ -365,9 +365,9 @@ public class CdmFile implements Closeable {
    * @return version of the file type
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  public String getFileTypeVersion() {
+  public String getCdmFileTypeVersion() {
     if (iosp != null) {
-      return iosp.getFileTypeVersion();
+      return iosp.getCdmFileTypeVersion();
     }
     return "N/A";
   }
@@ -575,9 +575,9 @@ public class CdmFile implements Closeable {
     f.format("CdmFile location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());
     f.format("  id= %s%n", getId());
-    f.format("  fileType= %s%n", getFileTypeId());
-    f.format("  fileDesc= %s%n", getFileTypeDescription());
-    f.format("  fileVersion= %s%n", getFileTypeVersion());
+    f.format("  fileType= %s%n", getCdmFileTypeId());
+    f.format("  fileDesc= %s%n", getCdmFileTypeDescription());
+    f.format("  fileVersion= %s%n", getCdmFileTypeVersion());
 
     f.format("  class= %s%n", getClass().getName());
     if (iosp == null) {

@@ -4,8 +4,8 @@
  */
 package dev.cdm.array;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.StreamSupport;
 
@@ -17,7 +17,7 @@ public class TestArray {
 
   private Array<Double> array;
 
-  @Before
+  @BeforeEach
   public void setup() {
     int[] shape = new int[] {1, 2, 3};
     double[] data = new double[] {1, 2, 3, 4, 5, 6};

@@ -46,7 +46,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(CdmFile ncfile) {
-      if (ncfile.getFileTypeId() == null || !ncfile.getFileTypeId().equals("HDF5-EOS")) {
+      if (ncfile.getCdmFileTypeId() == null || !ncfile.getCdmFileTypeId().equals("HDF-EOS2")) {
         return false;
       }
 

@@ -17,6 +17,15 @@ import java.util.Objects;
 /** A mutable collection of Attributes. */
 public class AttributeContainerMutable implements AttributeContainer {
 
+  /** Create from String name, String value pairs. */
+  public static AttributeContainerMutable of(String... namevals) {
+    AttributeContainerMutable result = new AttributeContainerMutable(null);
+    for (int i=0; i < namevals.length-1; i+=2) {
+      result.addAttribute(namevals[i], namevals[i+1]);
+    }
+    return result;
+  }
+
   /** Create mutable from immutable container. */
   public static AttributeContainerMutable copyFrom(@Nullable AttributeContainer from) {
     return from == null ? new AttributeContainerMutable(null) : new AttributeContainerMutable(from.getName(), from);

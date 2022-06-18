@@ -6,7 +6,7 @@ package dev.cdm.array;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 

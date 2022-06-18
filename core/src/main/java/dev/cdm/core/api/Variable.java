@@ -171,8 +171,8 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   @Nullable
-  public String getFileTypeId() {
-    return ncfile == null ? null : ncfile.getFileTypeId();
+  public String getCdmFileTypeId() {
+    return ncfile == null ? null : ncfile.getCdmFileTypeId();
   }
 
   /** Get the full name of this Variable. see {@link CdmFiles#makeFullName(Variable)} */

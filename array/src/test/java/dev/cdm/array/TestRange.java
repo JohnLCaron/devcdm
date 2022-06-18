@@ -5,14 +5,14 @@
 package dev.cdm.array;
 
 import com.google.common.collect.Iterables;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
-/** Test {@link ucar.array.Range} */
+/** Test {@link dev.cdm.array.Range} */
 public class TestRange {
   Random random = new Random(System.currentTimeMillis());
 

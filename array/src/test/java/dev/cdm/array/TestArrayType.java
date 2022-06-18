@@ -5,7 +5,7 @@
 package dev.cdm.array;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -14,7 +14,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.Assert.assertThrows;
 
-/** Test {@link ucar.array.ArrayType} */
+/** Test {@link dev.cdm.array.ArrayType} */
 public class TestArrayType {
 
   @Test

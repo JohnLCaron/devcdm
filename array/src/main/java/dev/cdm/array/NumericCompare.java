@@ -150,7 +150,7 @@ public class NumericCompare {
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d bytes, %d are different%n", len, ndiff);
+      f.format("NumericCompare.compare %d bytes, %d are different%n", len, ndiff);
     return ndiff == 0 && (raw1.length == raw2.length);
   }
 
@@ -175,7 +175,7 @@ public class NumericCompare {
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d floats, %d are different%n", len, ndiff);
+      f.format("NumericCompare.compare %d floats, %d are different%n", len, ndiff);
     return ok;
   }
 
@@ -186,7 +186,7 @@ public class NumericCompare {
 
     boolean ok = true;
     if (raw1.length != raw2.length) {
-      f.format("Misc.compare: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+      f.format("NumericCompare.compare: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
       ok = false;
     }
     int len = Math.min(raw1.length, raw2.length);
@@ -199,8 +199,9 @@ public class NumericCompare {
         ok = false;
       }
     }
-    if (ndiff > 0)
-      f.format("Misc.compare %d ints, %d are different%n", len, ndiff);
+    if (ndiff > 0) {
+      f.format("NumericCompare.compare %d ints, %d are different%n", len, ndiff);
+    }
     return ok;
   }
 

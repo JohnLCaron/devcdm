@@ -35,13 +35,10 @@ public class N3header {
   public static boolean debugHeaderSize; // see CdmFile.setDebugFlags
 
   public static boolean isValidFile(RandomAccessFile raf) throws IOException {
-    switch (NetcdfFileFormat.findNetcdfFormatType(raf)) {
-      case NETCDF3:
-      case NETCDF3_64BIT_OFFSET:
-        return true;
-      default:
-        return false;
-    }
+    return switch (NetcdfFileFormat.findNetcdfFormatType(raf)) {
+      case NETCDF3, NETCDF3_64BIT_OFFSET -> true;
+      default -> false;
+    };
   }
 
   // variable info for reading/writing

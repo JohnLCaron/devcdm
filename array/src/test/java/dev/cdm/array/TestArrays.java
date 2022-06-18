@@ -4,8 +4,8 @@
  */
 package dev.cdm.array;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
@@ -18,7 +18,7 @@ public class TestArrays {
 
   private Array<Double> array;
 
-  @Before
+  @BeforeEach
   public void setup() {
     int[] shape = new int[] {1, 2, 3};
     double[] data = new double[] {1, 2, 3, 4, 5, 6};
@@ -355,7 +355,7 @@ public class TestArrays {
     MinMax minmax = Arrays.getMinMaxSkipMissingData(narray, null);
     assertThat(minmax.min()).isEqualTo(1.0);
     assertThat(minmax.max()).isEqualTo(6.0);
-    assertThat(minmax.toString()).isEqualTo("MinMax{min=1.0, max=6.0}");
+    assertThat(minmax.toString()).isEqualTo("MinMax[min=1.0, max=6.0]");
 
     MinMax minmax2 = Arrays.getMinMaxSkipMissingData(narray, new IsMissingEvaluator() {
       public boolean hasMissing() {

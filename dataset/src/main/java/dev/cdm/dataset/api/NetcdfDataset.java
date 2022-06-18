@@ -272,8 +272,8 @@ public class NetcdfDataset extends CdmFile {
     f.format("NetcdfDataset location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());
     f.format("  id= %s%n", getId());
-    f.format("  fileType= %s%n", getFileTypeId());
-    f.format("  fileDesc= %s%n", getFileTypeDescription());
+    f.format("  fileType= %s%n", getCdmFileTypeId());
+    f.format("  fileDesc= %s%n", getCdmFileTypeDescription());
 
     f.format("  class= %s%n", getClass().getName());
 
@@ -287,10 +287,10 @@ public class NetcdfDataset extends CdmFile {
 
   @Override
   @Nullable
-  public String getFileTypeId() {
+  public String getCdmFileTypeId() {
     String inner = null;
     if (orgFile != null) {
-      inner = orgFile.getFileTypeId();
+      inner = orgFile.getCdmFileTypeId();
     }
     if (this.fileTypeId == null) {
       return inner;
@@ -302,9 +302,9 @@ public class NetcdfDataset extends CdmFile {
   }
 
   @Override
-  public String getFileTypeDescription() {
+  public String getCdmFileTypeDescription() {
     if (orgFile != null)
-      return orgFile.getFileTypeDescription();
+      return orgFile.getCdmFileTypeDescription();
     return "N/A";
   }
 
