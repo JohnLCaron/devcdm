@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.s3;
+package dev.cdm.aws.s3;
 
 import java.net.URI;
 import java.net.URISyntaxException;

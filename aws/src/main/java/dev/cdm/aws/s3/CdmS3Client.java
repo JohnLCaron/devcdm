@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.s3;
+package dev.cdm.aws.s3;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

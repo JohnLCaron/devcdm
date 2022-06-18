@@ -4,6 +4,6 @@
  */
 
 /**
- * Make an object on S3 look like a RandomAccessFile.
+ * Make an object on AWS S3 look like a RandomAccessFile.
  */
-package dev.cdm.s3;
+package dev.cdm.aws.s3;
