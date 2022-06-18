@@ -28,6 +28,36 @@ import java.util.TreeMap;
 public class H5objects {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5objects.class);
 
+  public enum FilterType {
+    none(0), deflate(1), shuffle(2), fletcher32(3), szip(4), nbit(5), scaleoffset(6), zstandard(32015), unknown(
+        Integer.MAX_VALUE);
+
+    public final int id;
+
+    FilterType(int id) {
+      this.id = id;
+    }
+
+    public static FilterType fromId(int id) {
+      for (FilterType type : FilterType.values()) {
+        if (type.id == id) {
+          return type;
+        }
+      }
+      return unknown;
+    }
+
+    public static String nameFromId(int id) {
+      for (FilterType type : FilterType.values()) {
+        if (type.id == id) {
+          return type.name();
+        }
+      }
+      return "UnknownFilter" + id;
+    }
+  }
+
+
   // debugging
   private static boolean debugEnum;
   private static boolean debug1, debugDetail, debugPos, debugHeap;
@@ -1704,25 +1734,26 @@ public class H5objects {
     }
   }
 
-  private static final String[] filterName = {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
-
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
     short flags;
     String name;
     short nValues;
     int[] data;
+    FilterType filterType;
 
     Filter(byte version) throws IOException {
       this.id = raf.readShort();
-      short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort(); // if the filter id < 256 then this field is
-      // not stored
+      this.filterType = filterType.fromId(this.id);
+
+      short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort();
       this.flags = raf.readShort();
       nValues = raf.readShort();
-      if (version == 1)
+      if (version == 1) {
         this.name = (nameSize > 0) ? readString8(raf) : getFilterName(id); // null terminated, pad to 8 bytes
-      else
+      } else {
         this.name = (nameSize > 0) ? readStringFixedLength(nameSize) : getFilterName(id); // non-null terminated
+      }
 
       data = new int[nValues];
       for (int i = 0; i < nValues; i++)
@@ -1736,7 +1767,7 @@ public class H5objects {
     }
 
     String getFilterName(int id) {
-      return (id < filterName.length) ? filterName[id] : "StandardFilter " + id;
+      return FilterType.nameFromId(id);
     }
 
     public String toString() {
@@ -2179,12 +2210,12 @@ public class H5objects {
     GroupBTree(String owner, long address) throws IOException {
       this.owner = owner;
 
-      List<Entry> entryList = new ArrayList<>();
+      List<GroupBTree.Entry> entryList = new ArrayList<>();
       readAllEntries(address, entryList);
 
       // now convert the entries to SymbolTableEntry
-      for (Entry e : entryList) {
-        GroupNode node = new GroupNode(e.address);
+      for (GroupBTree.Entry e : entryList) {
+        GroupBTree.GroupNode node = new GroupBTree.GroupNode(e.address);
         sentries.addAll(node.getSymbols());
       }
     }
@@ -2194,7 +2225,7 @@ public class H5objects {
     }
 
     // recursively read all entries, place them in order in list
-    void readAllEntries(long address, List<Entry> entryList) throws IOException {
+    void readAllEntries(long address, List<GroupBTree.Entry> entryList) throws IOException {
       raf.seek(header.getFileOffset(address));
       if (debugGroupBtree) {
         log.debug("\n--> GroupBTree read tree at position={}", raf.getFilePointer());
@@ -2226,15 +2257,15 @@ public class H5objects {
       }
 
       // read all entries in this Btree "Node"
-      List<Entry> myEntries = new ArrayList<>();
+      List<GroupBTree.Entry> myEntries = new ArrayList<>();
       for (int i = 0; i < nentries; i++) {
-        myEntries.add(new Entry());
+        myEntries.add(new GroupBTree.Entry());
       }
 
       if (level == 0)
         entryList.addAll(myEntries);
       else {
-        for (Entry entry : myEntries) {
+        for (GroupBTree.Entry entry : myEntries) {
           if (debugDataBtree) {
             log.debug("  nonzero node entry at =" + entry.address);
           }
@@ -2582,7 +2613,7 @@ public class H5objects {
   class GlobalHeap {
     private final byte version;
     private final int sizeBytes;
-    private final Map<Short, HeapObject> hos = new HashMap<>();
+    private final Map<Short, GlobalHeap.HeapObject> hos = new HashMap<>();
 
     GlobalHeap(long address) throws IOException {
       long filePos = header.getFileOffset(address);
@@ -2611,7 +2642,7 @@ public class H5objects {
       int countBytes = 0;
       while (true) {
         long startPos = raf.getFilePointer();
-        HeapObject o = new HeapObject();
+        GlobalHeap.HeapObject o = new GlobalHeap.HeapObject();
         o.id = raf.readShort();
         if (o.id == 0)
           break; // ?? look
@@ -2650,7 +2681,7 @@ public class H5objects {
         memTracker.addByLen("GlobalHeap", address, sizeBytes);
     }
 
-    HeapObject getHeapObject(short id) {
+    GlobalHeap.HeapObject getHeapObject(short id) {
       return hos.get(id);
     }
 

@@ -89,7 +89,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public String getFileTypeVersion() {
+  public String getCdmFileTypeVersion() {
     return "N/A";
   }
 

@@ -4,20 +4,18 @@
  */
 package dev.cdm.core.constants;
 
-import dev.cdm.core.api.CdmFile;
-
+import dev.cdm.core.api.AttributeContainer;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Constants used in CF Conventions.
- *
+ * <p>
  * Updated for CF 1.8
  *
  * @author caron
  * @author wchen@usgs.gov
  */
 public class CF {
-
   // general attribute names
   public static final String ACTUAL_RANGE = "actual_range";
   public static final String ANCILLARY_VARIABLES = "ancillary_variables";
@@ -125,7 +123,7 @@ public class CF {
   public static final String LONGITUDE_OF_PRIME_MERIDIAN = "longitude_of_prime_meridian";
   public static final String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
   public static final String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude"; // rotated grid synonym for
-                                                                                      // GRID_NORTH_POLE_LONGITUDE
+  // GRID_NORTH_POLE_LONGITUDE
   public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height"; // geostationary
   public static final String SCALE_FACTOR_AT_CENTRAL_MERIDIAN = "scale_factor_at_central_meridian";
   public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
@@ -139,7 +137,7 @@ public class CF {
   public static final String atmosphere_ln_pressure_coordinate = "atmosphere_ln_pressure_coordinate";
   public static final String atmosphere_sigma_coordinate = "atmosphere_sigma_coordinate";
   public static final String atmosphere_hybrid_sigma_pressure_coordinate =
-      "atmosphere_hybrid_sigma_pressure_coordinate";
+          "atmosphere_hybrid_sigma_pressure_coordinate";
   public static final String atmosphere_hybrid_height_coordinate = "atmosphere_hybrid_height_coordinate";
   public static final String atmosphere_sleve_coordinate = "atmosphere_sleve_coordinate";
   public static final String ocean_sigma_coordinate = "ocean_sigma_coordinate";
@@ -157,10 +155,10 @@ public class CF {
   public static final String LONGITUDE = "longitude";
   public static final String TIME = "time"; // valid; time, obs time
   public static final String TIME_REFERENCE = "forecast_reference_time"; // the "data time", the time of the analysis
-                                                                         // from which the forecast was made.
+  // from which the forecast was made.
   public static final String TIME_OFFSET = "forecast_period"; // Forecast period is the time interval between the
-                                                              // forecast reference time and the validity time. A period
-                                                              // is an interval of time,
+  // forecast reference time and the validity time. A period
+  // is an interval of time,
 
   public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
   public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
@@ -196,9 +194,50 @@ public class CF {
   public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
   ///////////////////////////////////////////////////////////////////////
 
-  /** Map from CF feature type names to CDM FeatureType enums. */
+  /**
+   * Map from CF feature type names to CDM FeatureType enums.
+   */
   public enum FeatureType {
     point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile, line, polygon,;
+
+
+    @Nullable
+    public static FeatureType convert(dev.cdm.core.constants.FeatureType ft) {
+      switch (ft) {
+        case POINT:
+          return CF.FeatureType.point;
+        case STATION:
+          return CF.FeatureType.timeSeries;
+        case PROFILE:
+          return CF.FeatureType.profile;
+        case TRAJECTORY:
+          return CF.FeatureType.trajectory;
+        case STATION_PROFILE:
+          return CF.FeatureType.timeSeriesProfile;
+        case TRAJECTORY_PROFILE:
+          return CF.FeatureType.trajectoryProfile;
+      }
+      return null;
+    }
+
+    @Nullable
+    public static dev.cdm.core.constants.FeatureType convert(FeatureType cff) {
+      switch (cff) {
+        case point:
+          return dev.cdm.core.constants.FeatureType.POINT;
+        case timeSeries:
+          return dev.cdm.core.constants.FeatureType.STATION;
+        case profile:
+          return dev.cdm.core.constants.FeatureType.PROFILE;
+        case trajectory:
+          return dev.cdm.core.constants.FeatureType.TRAJECTORY;
+        case timeSeriesProfile:
+          return dev.cdm.core.constants.FeatureType.STATION_PROFILE;
+        case trajectoryProfile:
+          return dev.cdm.core.constants.FeatureType.TRAJECTORY_PROFILE;
+      }
+      return null;
+    }
 
     @Nullable
     public static FeatureType getFeatureType(String s) {
@@ -232,30 +271,30 @@ public class CF {
     }
 
     @Nullable
-    public static FeatureType getFeatureTypeFromGlobalAttribute(CdmFile ds) {
-      String ftypeS = ds.getRootGroup().findAttributeString(CF.FEATURE_TYPE, null);
+    public static FeatureType getFromAttributes(AttributeContainer atts) {
+      String ftypeS = atts.findAttributeString(CF.FEATURE_TYPE, null);
       if (ftypeS == null)
-        ftypeS = ds.getRootGroup().findAttributeString(CF.featureTypeAtt2, null);
+        ftypeS = atts.findAttributeString(CF.featureTypeAtt2, null);
       if (ftypeS == null)
-        ftypeS = ds.getRootGroup().findAttributeString(CF.featureTypeAtt3, null);
+        ftypeS = atts.findAttributeString(CF.featureTypeAtt3, null);
 
       if (ftypeS == null)
         return null;
 
-      return FeatureType.getFeatureType(ftypeS);
+      return getFeatureType(ftypeS);
     }
-
   }
 
   /**
    * Enumeration of CF cell methods.
-   * see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-cell-methods"
+   * see "<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-cell-methods">...</a>"
    */
   public enum CellMethods {
     point, sum, maximum, median, mid_range, minimum, mean, mode, standard_deviation, variance
   }
 
   // class not interface, per Bloch edition 2 item 19
-  private CF() {} // disable instantiation
+  private CF() {
+  } // disable instantiation
 
 }

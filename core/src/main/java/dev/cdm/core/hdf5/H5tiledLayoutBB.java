@@ -189,6 +189,7 @@ public class H5tiledLayoutBB implements LayoutBB {
       }
     }
 
+    @Override
     public int[] getOffset() {
       int[] offset = delegate.offset;
       if (offset.length > nChunkDims) { // may have to eliminate last offset
@@ -198,7 +199,8 @@ public class H5tiledLayoutBB implements LayoutBB {
       return offset;
     }
 
-    public ByteBuffer getByteBuffer() throws IOException {
+    @Override
+    public ByteBuffer getByteBuffer(int expectedLengthBytes) throws IOException {
       try {
         // read the data
         byte[] data = new byte[delegate.size];
@@ -213,18 +215,23 @@ public class H5tiledLayoutBB implements LayoutBB {
               System.out.println("skip for chunk " + delegate);
             continue;
           }
-          if (f.id == 1) {
-            data = inflate(data);
-          } else if (f.id == 2) {
-            data = shuffle(data, f.data[0]);
-          } else if (f.id == 3) {
-            data = checkfletcher32(data);
-            /*
-             * } else if (f.id == 307) {
-             * data = unbzip2(data);
-             */
-          } else
-            throw new RuntimeException("Unknown filter type=" + f.id);
+          switch (f.filterType) {
+            case deflate:
+              data = inflate(data);
+              break;
+            case shuffle:
+              data = shuffle(data, f.data[0]);
+              break;
+            case fletcher32:
+              data = checkfletcher32(data);
+              break;
+            case zstandard:
+              ByteBuffer result = zstandard(data, expectedLengthBytes);
+              result.order(byteOrder);
+              return result;
+            default:
+              throw new RuntimeException("Unknown filter type=" + H5objects.FilterType.nameFromId(f.id));
+          }
         }
 
         ByteBuffer result = ByteBuffer.wrap(data);
@@ -236,6 +243,18 @@ public class H5tiledLayoutBB implements LayoutBB {
         oom.initCause(e); // OutOfMemoryError lacks a constructor with a cause parameter.
         throw oom;
       }
+    }
+
+    /**
+     * decompress using Zstandard
+     *
+     * @param compressed compressed data
+     * @return uncompressed data
+     */
+    private ByteBuffer zstandard(byte[] compressed, int expectedLengthBytes) {
+      // cant port the port from https://github.com/airlift/aircompressor Martin Traverso
+      // because it uses Unsafe
+      throw new UnsupportedOperationException("Cant support ztd");
     }
 
     /**

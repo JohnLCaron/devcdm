@@ -23,7 +23,7 @@ import java.util.Iterator;
  * An implementation must have a no-argument constructor.
  *
  * The CdmFile class manages all registered IOServiceProvider classes.
- * When NetcdfFiles.open() is called:
+ * When CdmFiles.open() is called:
  * <ol>
  * <li>the file is opened as a ucar.unidata.io.RandomAccessFile;</li>
  * <li>the file is handed to the isValidFile() method of each registered
@@ -117,9 +117,9 @@ public interface IOServiceProvider extends Closeable {
    * Get a unique id for this file type.
    * 
    * @return registered id of the file type
-   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://docs.unidata.ucar.edu/netcdf-java/8.0/developer/file_types.html"
    */
-  String getFileTypeId();
+  String getCdmFileTypeId();
 
   /**
    * Get the version of this file type.
@@ -127,7 +127,7 @@ public interface IOServiceProvider extends Closeable {
    * @return version of the file type
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  String getFileTypeVersion();
+  String getCdmFileTypeVersion();
 
   /**
    * Get a human-readable description for this file type.
@@ -135,6 +135,6 @@ public interface IOServiceProvider extends Closeable {
    * @return description of the file type
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  String getFileTypeDescription();
+  String getCdmFileTypeDescription();
 
 }

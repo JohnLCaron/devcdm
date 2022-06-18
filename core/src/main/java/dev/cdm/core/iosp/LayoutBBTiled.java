@@ -104,8 +104,9 @@ public class LayoutBBTiled implements LayoutBB {
           System.out.println(
               " found intersecting dataSection: " + dataSection + " intersect= " + dataSection.intersect(want));
 
+        int expectedLengthBytes = (int) dataSection.computeSize() * elemSize;
         index = new IndexChunkerTiled(dataSection, want); // new indexer into this chunk
-        next = new Chunk(dataChunk.getByteBuffer()); // this does the uncompression
+        next = new Chunk(dataChunk.getByteBuffer(expectedLengthBytes)); // this does the uncompression
 
       } catch (InvalidRangeException | IOException e) {
         throw new IllegalStateException(e);
@@ -146,7 +147,7 @@ public class LayoutBBTiled implements LayoutBB {
   public interface DataChunk {
     int[] getOffset();
 
-    ByteBuffer getByteBuffer() throws IOException;
+    ByteBuffer getByteBuffer(int expectedLengthBytes) throws IOException;
   }
 
   /**

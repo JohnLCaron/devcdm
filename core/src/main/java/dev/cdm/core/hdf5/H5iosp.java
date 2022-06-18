@@ -85,9 +85,9 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public String getFileTypeId() {
+  public String getCdmFileTypeId() {
     if (isEos) {
-      return "HDF5-EOS";
+      return "HDF-EOS5";
     }
     if (header.isNetcdf4()) {
       return DataFormatType.NETCDF4.getDescription();
@@ -96,7 +96,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public String getFileTypeDescription() {
+  public String getCdmFileTypeDescription() {
     return "Hierarchical Data Format 5";
   }
 
@@ -105,9 +105,10 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public String getFileTypeVersion() {
+  public String getCdmFileTypeVersion() {
     // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
-    return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
+    String result = ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, null);
+    return result == null ? String.format("superblock version %d", header.superblockVersion()) : result;
   }
 
   @Override

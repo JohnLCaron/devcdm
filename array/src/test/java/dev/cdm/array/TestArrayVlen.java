@@ -6,7 +6,7 @@ package dev.cdm.array;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

@@ -27,6 +27,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testImplementation(libs.logbackClassic)
 }
 
 tasks.getByName<Test>("test") {
@@ -40,4 +41,8 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("cdmng-array")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

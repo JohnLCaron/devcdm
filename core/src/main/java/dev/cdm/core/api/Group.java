@@ -251,7 +251,7 @@ public class Group {
 
   /**
    * Get the full name of this Group.
-   * Certain characters are backslash escaped (see NetcdfFiles.makeFullName(Group))
+   * Certain characters are backslash escaped (see CdmFiles.makeFullName(Group))
    *
    * @return full name with backslash escapes
    */
@@ -265,7 +265,7 @@ public class Group {
   }
 
   /** Get the CdmFile that owns this Group. */
-  public CdmFile getNetcdfFile() {
+  public CdmFile getCdmFile() {
     return ncfile;
   }
 
@@ -800,7 +800,7 @@ public class Group {
      * It may possibly be nested in multiple groups and/or structures.
      * An embedded "." is interpreted as structure.member.
      * An embedded "/" is interpreted as group/variable.
-     * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
+     * If the name actually has a ".", you must escape it (call CdmFiles.makeValidPathName(varname))
      * Any other chars may also be escaped, as they are removed before testing.
      *
      * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".

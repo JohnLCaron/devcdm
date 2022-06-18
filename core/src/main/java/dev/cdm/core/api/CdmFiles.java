@@ -19,6 +19,7 @@ import dev.cdm.core.util.StringUtil2;
 import dev.cdm.core.util.URLnaming;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,16 +58,16 @@ public class CdmFiles {
     // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
     // making open() slow. So we load the core ones here to make sure they are tried first.
     try {
-      registerIOProvider("dev.cdm.internal.iosp.hdf5.H5iosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class H5iosp", e);
-    }
-    try {
-      registerIOProvider("dev.cdm.internal.iosp.hdf4.H4iosp");
+      registerIOProvider(dev.cdm.core.netcdf3.N3iosp.class);
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class H4iosp", e);
+    }
+    try {
+      registerIOProvider(dev.cdm.core.hdf5.H5iosp.class);
+    } catch (Throwable e) {
+      if (loadWarnings)
+        log.info("Cant load class H5iosp", e);
     }
 
     // if a user explicitly registers an IOSP or RandomAccessFile implementation via
@@ -78,7 +79,8 @@ public class CdmFiles {
     userLoadsFirst = true;
   }
 
-  private CdmFiles() {}
+  private CdmFiles() {
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,7 +93,7 @@ public class CdmFiles {
    * @throws ClassNotFoundException if class not found.
    */
   public static void registerIOProvider(String className) throws NoSuchMethodException, InvocationTargetException,
-      InstantiationException, IllegalAccessException, ClassNotFoundException {
+          InstantiationException, IllegalAccessException, ClassNotFoundException {
     Class<?> ioClass = CdmFile.class.getClassLoader().loadClass(className);
     registerIOProvider(ioClass);
   }
@@ -102,7 +104,7 @@ public class CdmFiles {
    * @param iospClass Class that implements IOServiceProvider.
    */
   public static void registerIOProvider(Class<?> iospClass)
-      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+          throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     registerIOProvider(iospClass, false);
   }
 
@@ -110,10 +112,10 @@ public class CdmFiles {
    * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
    *
    * @param iospClass Class that implements IOServiceProvider.
-   * @param last true=>insert at the end of the list; otherwise front
+   * @param last      true=>insert at the end of the list; otherwise front
    */
   private static void registerIOProvider(Class<?> iospClass, boolean last)
-      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+          throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.getDeclaredConstructor().newInstance(); // fail fast
     if (userLoadsFirst && !last) {
@@ -139,7 +141,7 @@ public class CdmFiles {
   /**
    * Open an existing file (read only), with option of cancelling.
    *
-   * @param location location of the file.
+   * @param location   location of the file.
    * @param cancelTask allow task to be cancelled; may be null.
    * @return CdmFile object, or null if cant find IOServiceProver
    * @throws IOException if error
@@ -152,14 +154,14 @@ public class CdmFiles {
    * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for
    * efficiency.
    *
-   * @param location location of file.
+   * @param location    location of file.
    * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
-   * @param cancelTask allow task to be cancelled; may be null.
+   * @param cancelTask  allow task to be cancelled; may be null.
    * @return CdmFile object, or null if cant find IOServiceProver
    * @throws IOException if error
    */
   public static CdmFile open(String location, int buffer_size, CancelTask cancelTask)
-      throws IOException {
+          throws IOException {
     return open(location, buffer_size, cancelTask, null);
   }
 
@@ -167,23 +169,22 @@ public class CdmFiles {
    * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for
    * efficiency, with an optional special object for the iosp.
    *
-   * @param location location of file. This may be a
-   *        <ol>
-   *        <li>local netcdf-3 filename (with a file: prefix or no prefix)
-   *        <li>remote netcdf-3 filename (with an http: prefix)
-   *        <li>local netcdf-4 filename (with a file: prefix or no prefix)
-   *        <li>local hdf-5 filename (with a file: prefix or no prefix)
-   *        <li>local iosp filename (with a file: prefix or no prefix)
-   *        </ol>
-   *        If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file
-   *        without the suffix,
-   *        then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally
-   *        it prefers to
-   *        place the uncompressed file in the same directory as the original file. If it does not have write permission
-   *        on that directory, it will use the directory defined by dev.cdm.util.DiskCache class.
-   *
+   * @param location    location of file. This may be a
+   *                    <ol>
+   *                    <li>local netcdf-3 filename (with a file: prefix or no prefix)
+   *                    <li>remote netcdf-3 filename (with an http: prefix)
+   *                    <li>local netcdf-4 filename (with a file: prefix or no prefix)
+   *                    <li>local hdf-5 filename (with a file: prefix or no prefix)
+   *                    <li>local iosp filename (with a file: prefix or no prefix)
+   *                    </ol>
+   *                    If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file
+   *                    without the suffix,
+   *                    then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally
+   *                    it prefers to
+   *                    place the uncompressed file in the same directory as the original file. If it does not have write permission
+   *                    on that directory, it will use the directory defined by dev.cdm.util.DiskCache class.
    * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
-   * @param cancelTask allow task to be cancelled; may be null.
+   * @param cancelTask  allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return CdmFile object, or null if cant find IOServiceProver
    * @throws IOException if error
@@ -204,16 +205,16 @@ public class CdmFiles {
   /**
    * Open an existing file (read only), specifying which IOSP is to be used.
    *
-   * @param location location of file
+   * @param location      location of file
    * @param iospClassName fully qualified class name of the IOSP class to handle this file
-   * @param bufferSize RandomAccessFile buffer size, if &le; 0, use default size
-   * @param cancelTask allow task to be cancelled; may be null.
-   * @param iospMessage special iosp tweaking (sent before open is called), may be null
+   * @param bufferSize    RandomAccessFile buffer size, if &le; 0, use default size
+   * @param cancelTask    allow task to be cancelled; may be null.
+   * @param iospMessage   special iosp tweaking (sent before open is called), may be null
    * @return CdmFile object, or null if cant find IOServiceProver
    */
   public static CdmFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask,
                              Object iospMessage) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-      InstantiationException, IllegalAccessException, IOException {
+          InstantiationException, IllegalAccessException, IOException {
 
     Class<?> iospClass = CdmFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.getDeclaredConstructor().newInstance(); // fail fast
@@ -243,7 +244,7 @@ public class CdmFiles {
 
   /**
    * Find out if the location can be opened, but dont actually open it.
-   *
+   * <p>
    * In order for a location to be openable by netCDF-java, we must have 1) a proper
    * {@link RandomAccessFile} implementation, and 2) a proper {@link IOServiceProvider}
    * implementation.
@@ -427,14 +428,14 @@ public class CdmFiles {
   /**
    * Open an in-memory netcdf file, with a specific iosp.
    *
-   * @param name name of the dataset. Typically use the filename or URI.
-   * @param data in-memory netcdf file
+   * @param name          name of the dataset. Typically use the filename or URI.
+   * @param data          in-memory netcdf file
    * @param iospClassName fully qualified class name of the IOSP class to handle this file
    * @return CdmFile object, or null if cant find IOServiceProver
    */
   public static CdmFile openInMemory(String name, byte[] data, String iospClassName)
-      throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException,
-      InvocationTargetException {
+          throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException,
+          InvocationTargetException {
 
     InMemoryRandomAccessFile raf = new InMemoryRandomAccessFile(name, data);
     Class<?> iospClass = CdmFile.class.getClassLoader().loadClass(iospClassName);
@@ -446,9 +447,9 @@ public class CdmFiles {
   /**
    * Open a RandomAccessFile as a CdmFile, if possible.
    *
-   * @param raf The open raf; is closed by this method onlu on IOException.
-   * @param location human readable location of this dataset.
-   * @param cancelTask used to monitor user cancellation; may be null.
+   * @param raf         The open raf; is closed by this method onlu on IOException.
+   * @param location    human readable location of this dataset.
+   * @param cancelTask  used to monitor user cancellation; may be null.
    * @param iospMessage send this message to iosp; may be null.
    * @return CdmFile or throw an Exception.
    */
@@ -503,21 +504,17 @@ public class CdmFiles {
       }
     }
 
-    //if (N3header.isValidFile(raf)) {
-    //  return new N3iosp();
-   // } else {
-      // look for dynamically loaded IOSPs
-      for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
-        if (loadedSpi.isValidFile(raf)) {
-          Class<?> c = loadedSpi.getClass();
-          try {
-            return (IOServiceProvider) c.getDeclaredConstructor().newInstance();
-          } catch (Exception e) {
-            throw new IOException("IOServiceProvider ServiceLoader failed for " + c.getName(), e);
-          }
+    // look for dynamically loaded IOSPs
+    for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
+      if (loadedSpi.isValidFile(raf)) {
+        Class<?> c = loadedSpi.getClass();
+        try {
+          return (IOServiceProvider) c.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+          throw new IOException("IOServiceProvider ServiceLoader failed for " + c.getName(), e);
         }
       }
-    // }
+    }
     return null;
   }
 
@@ -641,7 +638,9 @@ public class CdmFiles {
     return EscapeStrings.backslashUnescape(vname);
   }
 
-  /** Create a Groups's full name with appropriate backslash escaping. */
+  /**
+   * Create a Groups's full name with appropriate backslash escaping.
+   */
   public static String makeFullName(Group g) {
     Group parent = g.getParentGroup();
     String groupName = EscapeStrings.backslashEscape(g.getShortName(), reservedFullName);
@@ -679,7 +678,7 @@ public class CdmFiles {
    * Given a Variable, create its full name with
    * appropriate backslash escaping of the specified characters.
    *
-   * @param node the cdm node
+   * @param node          the cdm node
    * @param reservedChars the set of characters to escape
    * @return full name
    */
@@ -721,7 +720,7 @@ public class CdmFiles {
    * Create a synthetic full name from a group plus a string
    *
    * @param parent parent group
-   * @param name synthetic name string
+   * @param name   synthetic name string
    * @return synthetic name
    */
   protected static String makeFullNameWithString(Group parent, String name) {

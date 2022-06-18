@@ -5,7 +5,7 @@
 package dev.cdm.array;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.cdm.array.StructureMembers.Member;
 import dev.cdm.array.StructureMembers.MemberBuilder;
 

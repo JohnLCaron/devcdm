@@ -46,20 +46,20 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public String getFileTypeId() {
+  public String getCdmFileTypeId() {
     if (header != null && header.isEos()) {
-      return "HDF4-EOS";
+      return "HDF-EOS2";
     }
     return DataFormatType.HDF4.getDescription();
   }
 
   @Override
-  public String getFileTypeVersion() {
+  public String getCdmFileTypeVersion() {
     return header.version;
   }
 
   @Override
-  public String getFileTypeDescription() {
+  public String getCdmFileTypeDescription() {
     return "Hierarchical Data Format, version 4";
   }
 
@@ -219,7 +219,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   private InputStream getCompressedInputStream(H4header.Vinfo vinfo) throws IOException {
-    // probably could construct an input stream from a channel from a raf for now, just read it in.
+    // probably could construct an input stream from a channel from a raf; for now just read it into memory.
     byte[] buffer = new byte[vinfo.length];
     raf.seek(vinfo.start);
     raf.readFully(buffer);
@@ -351,11 +351,13 @@ public class H4iosp extends AbstractIOServiceProvider {
       this.compress = compress;
     }
 
+    @Override
     public int[] getOffset() {
       return offset;
     }
 
-    public ByteBuffer getByteBuffer() throws IOException {
+    @Override
+    public ByteBuffer getByteBuffer(int expectedSizeBytes) throws IOException {
       if (bb == null) {
         // read compressed data in
         H4header.TagData cdata = compress.getDataTag();

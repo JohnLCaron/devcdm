@@ -4,20 +4,20 @@
  */
 package dev.cdm.array;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link ucar.array.Section.Builder} */
+/** Test {@link dev.cdm.array.Section.Builder} */
 public class TestSectionBuilder {
 
   Section.Builder sb;
 
-  @Before
+  @BeforeEach
   public void setupSectionBuilder() {
     sb = Section.builder();
     // add three ranges
