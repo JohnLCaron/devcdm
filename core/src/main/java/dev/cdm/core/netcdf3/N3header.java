@@ -12,6 +12,7 @@ import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Structure;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.io.RandomAccessFile;
+import dev.cdm.core.write.NetcdfFileFormat;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

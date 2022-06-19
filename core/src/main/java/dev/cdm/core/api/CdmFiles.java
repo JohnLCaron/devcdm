@@ -12,7 +12,7 @@ import dev.cdm.core.iosp.IOServiceProvider;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.util.DiskCache;
 import dev.cdm.core.util.EscapeStrings;
-import dev.cdm.core.spi.RandomAccessFileProvider;
+import dev.cdm.core.io.RandomAccessFileProvider;
 import dev.cdm.core.util.IO;
 import dev.cdm.core.util.StringLocker;
 import dev.cdm.core.util.StringUtil2;

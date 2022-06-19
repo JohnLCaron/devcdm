@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkState;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.cdm.core.io.ReadableRemoteFile;
 import dev.cdm.core.io.RemoteRandomAccessFile;
-import dev.cdm.core.spi.RandomAccessFileProvider;
+import dev.cdm.core.io.RandomAccessFileProvider;
 
 import java.io.Closeable;
 import java.io.IOException;

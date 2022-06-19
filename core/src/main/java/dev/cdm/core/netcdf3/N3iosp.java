@@ -17,6 +17,7 @@ import dev.cdm.core.iosp.LayoutRegular;
 import dev.cdm.core.iosp.LayoutRegularSegmented;
 import dev.cdm.core.util.CancelTask;
 
+import dev.cdm.core.write.NetcdfFileFormat;
 import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
