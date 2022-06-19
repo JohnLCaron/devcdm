@@ -48,7 +48,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new NUWGConvention(datasetBuilder);
     }
   }
@@ -58,7 +58,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   private Grib1 grib;
   private static final boolean dumpNav = false;
 
-  NUWGConvention(NetcdfDataset.Builder<?> datasetBuilder) {
+  NUWGConvention(CdmDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }

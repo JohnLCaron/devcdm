@@ -15,7 +15,7 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
@@ -41,7 +41,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
 
   private static final boolean debugProj = false;
 
-  private AWIPSSatConvention(NetcdfDataset.Builder<?> datasetBuilder) {
+  private AWIPSSatConvention(CdmDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -62,7 +62,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new AWIPSSatConvention(datasetBuilder);
     }
   }

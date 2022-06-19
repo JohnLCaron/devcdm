@@ -7,7 +7,7 @@ package dev.cdm.dataset.internal;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
-import dev.cdm.dataset.api.NetcdfDataset.Enhance;
+import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.api.VariableDS;
 
 import java.util.Set;

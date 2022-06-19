@@ -9,7 +9,7 @@ package dev.cdm.dataset.geoloc;
  * two lat-lon positions on the Earth's surface. Reference ellipsoid is the WGS-84 by default.
  *
  * You may use a default Earth (EarthEllipsoid.WGS84) or you may define your own using
- * a ucar.unidata.geoloc.Earth object.
+ * a dev.cdm.dataset.geoloc.Earth object.
  */
 public record Bearing(double azimuth, double backazimuth, double distance) {
   private static final Earth defaultEarth = EarthEllipsoid.WGS84;

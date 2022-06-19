@@ -9,7 +9,7 @@ import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Variable;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
@@ -36,12 +36,12 @@ public class CEDRICRadarConvention extends CF1Convention {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new CEDRICRadarConvention(datasetBuilder);
     }
   }
 
-  CEDRICRadarConvention(NetcdfDataset.Builder<?> datasetBuilder) {
+  CEDRICRadarConvention(CdmDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }

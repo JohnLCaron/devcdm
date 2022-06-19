@@ -15,39 +15,6 @@ import java.util.List;
 
 /** Static String utilities. Replace with standard java library when possible. */
 public class StringUtil2 {
-  /**
-   * Replace any char not alphanumeric or in allowChars by replaceChar.
-   *
-   * @param x operate on this string
-   * @param allowChars these are ok.
-   * @param replaceChar thar char to replace
-   * @return resulting string.
-   */
-  public static String allow(String x, String allowChars, char replaceChar) {
-    boolean ok = true;
-    for (int pos = 0; pos < x.length(); pos++) {
-      char c = x.charAt(pos);
-      if (!(Character.isLetterOrDigit(c) || (0 <= allowChars.indexOf(c)))) {
-        ok = false;
-        break;
-      }
-    }
-    if (ok)
-      return x;
-
-    // gotta do it
-    StringBuilder sb = new StringBuilder(x);
-    for (int pos = 0; pos < sb.length(); pos++) {
-      char c = sb.charAt(pos);
-      if (Character.isLetterOrDigit(c) || (0 <= allowChars.indexOf(c))) {
-        continue;
-      }
-
-      sb.setCharAt(pos, replaceChar);
-    }
-
-    return sb.toString();
-  }
 
   public static String classShortName(Class<?> classz) {
     return Iterables.getLast(Splitter.on('.').trimResults().omitEmptyStrings().split(classz.getName()));
@@ -142,24 +109,6 @@ public class StringUtil2 {
   }
 
   /**
-   * Count number of chars that match in two strings, starting from front.
-   *
-   * @param s1 compare this string
-   * @param s2 compare this string
-   * @return number of matching chars, starting from first char
-   */
-  public static int match(String s1, String s2) {
-    int i = 0;
-    while ((i < s1.length()) && (i < s2.length())) {
-      if (s1.charAt(i) != s2.charAt(i)) {
-        break;
-      }
-      i++;
-    }
-    return i;
-  }
-
-  /**
    * Pad the given string with padString on the right up to the given length.
    *
    * @param s String to pad
@@ -240,25 +189,6 @@ public class StringUtil2 {
       return s.substring(0, s.length() - suffix.length());
 
     return s;
-  }
-
-
-  /**
-   * Remove any whitespace (ie., Character.isWhitespace) from the input string.
-   *
-   * @param inputString The string to remove the whitespace.
-   * @return The whitespaceless result.
-   */
-  public static String removeWhitespace(String inputString) {
-    StringBuilder sb = new StringBuilder();
-    char[] chars = inputString.toCharArray();
-    for (char c : chars) {
-      if (Character.isWhitespace(c)) {
-        continue;
-      }
-      sb.append(c);
-    }
-    return sb.toString();
   }
 
   /**
@@ -367,39 +297,6 @@ public class StringUtil2 {
     }
     returnValue.append(string);
     return returnValue.toString();
-  }
-
-
-  /**
-   * Replace all occurrences of orgReplace with orgChar; inverse of replace().
-   *
-   * @param x operate on this string
-   * @param orgReplace get rid of these
-   * @param orgChar replace with these
-   * @return resulting string
-   */
-  public static String unreplace(String x, String[] orgReplace, char[] orgChar) {
-    // common case no replacement
-    boolean ok = true;
-    for (String anOrgReplace : orgReplace) {
-      int pos = x.indexOf(anOrgReplace);
-      ok = (pos < 0);
-      if (!ok)
-        break;
-    }
-    if (ok)
-      return x;
-
-    // gotta do it
-    StringBuilder result = new StringBuilder(x);
-    for (int i = 0; i < orgReplace.length; i++) {
-      int pos = result.indexOf(orgReplace[i]);
-      if (pos >= 0) {
-        unreplace(result, orgReplace[i], orgChar[i]);
-      }
-    }
-
-    return result.toString();
   }
 
   /**
@@ -552,21 +449,6 @@ public class StringUtil2 {
         sb.replace(i, i + 1, in);
         i += in.length() - 1;
       }
-    }
-  }
-
-  /**
-   * Replace any String "out" in sb with char "in".
-   *
-   * @param sb StringBuilder to replace
-   * @param out repalce this String
-   * @param in with this char
-   */
-  public static void unreplace(StringBuilder sb, String out, char in) {
-    int pos;
-    while (0 <= (pos = sb.indexOf(out))) {
-      sb.setCharAt(pos, in);
-      sb.delete(pos + 1, pos + out.length());
     }
   }
 

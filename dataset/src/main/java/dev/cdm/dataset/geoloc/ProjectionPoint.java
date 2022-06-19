@@ -9,6 +9,14 @@ import dev.cdm.array.NumericCompare;
 /** Points on the Projective geometry plane. */
 public record ProjectionPoint(double x, double y) {
 
+  public double getX() {
+    return x;
+  }
+
+  public double getY() {
+    return y;
+  }
+
   /** Create a ProjectionPoint. */
   public static ProjectionPoint create(double x, double y) {
     return new ProjectionPoint(x, y);

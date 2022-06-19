@@ -10,7 +10,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import dev.cdm.array.Immutable;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class ExistingFieldVerticalTransform extends AbstractVerticalTransform {
   public static final String transform_name = "explicit_field";
   public static final String existingDataField = "existingDataField";
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, AttributeContainer params, Formatter errlog) {
 
     String existingField = params.findAttributeString(existingDataField, null);
     if (existingField == null) {
@@ -48,8 +48,8 @@ public class ExistingFieldVerticalTransform extends AbstractVerticalTransform {
   private final String existingField;
   private final int rank;
 
-  private ExistingFieldVerticalTransform(NetcdfDataset ds, String ctvName, String units, String existingField,
-      int rank) {
+  private ExistingFieldVerticalTransform(CdmDataset ds, String ctvName, String units, String existingField,
+                                         int rank) {
     super(ds, CF.ocean_sigma_coordinate, ctvName, units);
 
     this.existingField = existingField;
@@ -66,7 +66,7 @@ public class ExistingFieldVerticalTransform extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
                                               Formatter errlog) {
       return ExistingFieldVerticalTransform.create(ds, params, errlog);
     }

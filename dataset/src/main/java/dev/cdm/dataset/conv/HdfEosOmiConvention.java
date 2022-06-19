@@ -17,7 +17,7 @@ import dev.cdm.core.constants.FeatureType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
 import dev.cdm.core.util.CancelTask;
@@ -32,7 +32,7 @@ import java.util.Optional;
 public class HdfEosOmiConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "HDF5-EOS-OMI";
 
-  private HdfEosOmiConvention(NetcdfDataset.Builder<?> datasetBuilder) {
+  private HdfEosOmiConvention(CdmDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -91,7 +91,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new HdfEosOmiConvention(datasetBuilder);
     }
   }

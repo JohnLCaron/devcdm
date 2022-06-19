@@ -12,7 +12,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import dev.cdm.array.Immutable;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import java.util.Optional;
 @Immutable
 public class AtmosSigma extends AbstractVerticalTransform {
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, AttributeContainer params, Formatter errlog) {
     String formula_terms = getFormula(params, errlog);
     if (null == formula_terms) {
       return Optional.empty();
@@ -91,7 +91,7 @@ public class AtmosSigma extends AbstractVerticalTransform {
   private final Array<Number> sigmaData;
   private final double ptop;
 
-  private AtmosSigma(NetcdfDataset ds, String ctvName, String units, String sigma, String ps, String ptop, int psRank)
+  private AtmosSigma(CdmDataset ds, String ctvName, String units, String sigma, String ps, String ptop, int psRank)
       throws IOException {
     super(ds, CF.atmosphere_sigma_coordinate, ctvName, units);
 
@@ -132,8 +132,8 @@ public class AtmosSigma extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
-        Formatter errlog) {
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
+                                              Formatter errlog) {
       return AtmosSigma.create(ds, params, errlog);
     }
   }

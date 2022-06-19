@@ -3,8 +3,8 @@ package dev.cdm.dataset.internal;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Variable;
-import dev.cdm.dataset.api.NetcdfDataset;
-import dev.cdm.dataset.api.NetcdfDataset.Enhance;
+import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.api.SequenceDS;
 import dev.cdm.dataset.api.StructureDS;
 import dev.cdm.dataset.api.VariableDS;
@@ -30,11 +30,11 @@ public class DatasetEnhancer {
     return false;
   }
 
-  private final NetcdfDataset.Builder<?> dsBuilder;
+  private final CdmDataset.Builder<?> dsBuilder;
   private final Set<Enhance> wantEnhance;
   private final CancelTask cancelTask;
 
-  public DatasetEnhancer(NetcdfDataset.Builder<?> ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
+  public DatasetEnhancer(CdmDataset.Builder<?> ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
     this.dsBuilder = ds;
     this.wantEnhance = wantEnhance == null ? EnumSet.noneOf(Enhance.class) : wantEnhance;
     this.cancelTask = cancelTask;
@@ -52,7 +52,7 @@ public class DatasetEnhancer {
    * Possible remove all direct access to Variable.enhance
    */
 
-  public NetcdfDataset.Builder<?> enhance() throws IOException {
+  public CdmDataset.Builder<?> enhance() throws IOException {
     // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
     CoordSystemBuilder coordSysBuilder = null;
     if (wantEnhance.contains(Enhance.CoordSystems) && !dsBuilder.getEnhanceMode().contains(Enhance.CoordSystems)) {

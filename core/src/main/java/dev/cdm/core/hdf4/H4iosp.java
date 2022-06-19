@@ -5,6 +5,7 @@
 package dev.cdm.core.hdf4;
 
 import com.google.common.base.Preconditions;
+import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Structure;
 import dev.cdm.core.api.Variable;
@@ -396,14 +397,13 @@ public class H4iosp extends AbstractIOServiceProvider {
 
       return bb;
     }
-
   }
 
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
       setValueCharset((Charset) message);
     }
-    if (message.toString().equals("header")) {
+    if (message.toString().equals(CdmFile.IOSP_MESSAGE_GET_HEADER)) {
       return getHeader();
     }
     return super.sendIospMessage(message);

@@ -83,9 +83,10 @@ import java.util.StringTokenizer;
 public class CdmFile implements Closeable {
 
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
-  public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
+  public static final String IOSP_MESSAGE_GET_HEADER = "header";
   public static final String IOSP_MESSAGE_GET_IOSP = "IOSP";
-  public static final String IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT = "NetcdfFileFormat";
+  public static final String IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT = "CdmFileFormat";
+  public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
 
   static boolean debugSPI, debugCompress;
   static boolean debugStructureIterator;

@@ -122,6 +122,9 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
       this.useRecordStructure = true;
       return Boolean.TRUE;
     }
+    if (message.toString().equals(CdmFile.IOSP_MESSAGE_GET_HEADER)) {
+      return header;
+    }
     if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
       return header.useLongOffset ? NetcdfFileFormat.NETCDF3_64BIT_OFFSET : NetcdfFileFormat.NETCDF3;
     }

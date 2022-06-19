@@ -1,7 +1,7 @@
 package dev.cdm.dataset.spi;
 
 import dev.cdm.core.api.CdmFile;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
 
 import org.jetbrains.annotations.Nullable;
@@ -15,5 +15,5 @@ public interface CoordSystemBuilderProvider {
     return false; // if false, must have correct convention name.
   }
 
-  CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder);
+  CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder);
 }

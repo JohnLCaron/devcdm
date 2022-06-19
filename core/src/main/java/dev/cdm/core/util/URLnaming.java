@@ -17,7 +17,7 @@ public class URLnaming {
       if (refURI.isAbsolute())
         return location;
     } catch (Exception e) {
-      // return "file:" + location;
+      // fall through
     }
     return "file:" + location;
   }

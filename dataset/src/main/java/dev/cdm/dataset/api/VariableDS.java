@@ -13,7 +13,7 @@ import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.dataset.api.NetcdfDataset.Enhance;
+import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.internal.DataEnhancer;
 import dev.cdm.dataset.internal.EnhanceScaleMissingUnsigned;
@@ -53,7 +53,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
         "VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
     Builder<?> builder = VariableDS.builder().copyFrom(orgVar);
     if (enhance) {
-      builder.setEnhanceMode(NetcdfDataset.getDefaultEnhanceMode());
+      builder.setEnhanceMode(CdmDataset.getDefaultEnhanceMode());
     }
     // Add this so that old VariableDS units agrees with new VariableDS units.
     String units = orgVar.getUnitsString();
@@ -403,9 +403,9 @@ public class VariableDS extends Variable implements VariableEnhanced {
     private String units;
     private String desc;
 
-    private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
-    private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
-    private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
+    private boolean invalidDataIsMissing = CdmDataset.invalidDataIsMissing;
+    private boolean fillValueIsMissing = CdmDataset.fillValueIsMissing;
+    private boolean missingDataIsMissing = CdmDataset.missingDataIsMissing;
 
     private boolean built;
 

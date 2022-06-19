@@ -14,8 +14,8 @@ import dev.cdm.array.NumericCompare;
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.dataset.api.NetcdfDataset;
-import dev.cdm.dataset.api.NetcdfDataset.Enhance;
+import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.core.iosp.IospUtils;
 
 import java.lang.invoke.MethodHandles;
@@ -169,8 +169,8 @@ public class EnhanceScaleMissingUnsigned {
    * @param forVar the Variable to decorate.
    */
   public EnhanceScaleMissingUnsigned(Variable forVar, Set<Enhance> enhancements) {
-    this(forVar, enhancements, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
-        NetcdfDataset.missingDataIsMissing);
+    this(forVar, enhancements, CdmDataset.fillValueIsMissing, CdmDataset.invalidDataIsMissing,
+        CdmDataset.missingDataIsMissing);
   }
 
   /**

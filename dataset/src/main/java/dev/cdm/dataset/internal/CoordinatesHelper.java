@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class CoordinatesHelper {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
 
-  public static List<CoordinateAxis> makeAxes(NetcdfDataset ncd) {
+  public static List<CoordinateAxis> makeAxes(CdmDataset ncd) {
     List<CoordinateAxis> axes = new ArrayList<>();
     addAxes(ncd.getRootGroup(), axes);
     return ImmutableList.copyOf(axes);

@@ -11,7 +11,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public class OceanS extends AbstractVerticalTransform {
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, AttributeContainer params, Formatter errlog) {
     String formula_terms = getFormula(params, errlog);
     if (null == formula_terms) {
       return Optional.empty();
@@ -92,8 +92,8 @@ public class OceanS extends AbstractVerticalTransform {
   private final Array<Number> sArray;
   private final Array<Number> depthArray;
 
-  private OceanS(NetcdfDataset ds, String ctvName, String units, String etaVar, String sVar, String depthVar,
-      String aVar, String bVar, String depthCVar) throws IOException {
+  private OceanS(CdmDataset ds, String ctvName, String units, String etaVar, String sVar, String depthVar,
+                 String aVar, String bVar, String depthCVar) throws IOException {
     super(ds, CF.ocean_s_coordinate, ctvName, units);
 
     this.etaVar = etaVar;
@@ -217,7 +217,7 @@ public class OceanS extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
                                               Formatter errlog) {
       return OceanS.create(ds, params, errlog);
     }

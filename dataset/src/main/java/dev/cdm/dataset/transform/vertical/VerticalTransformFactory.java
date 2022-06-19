@@ -8,7 +8,7 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class VerticalTransformFactory {
    * @param errlog pass back error information.
    * @return VerticalTransform, or empty if failure.
    */
-  public static Optional<VerticalTransform> makeVerticalTransform(String transform_name, NetcdfDataset ds,
+  public static Optional<VerticalTransform> makeVerticalTransform(String transform_name, CdmDataset ds,
       CoordinateSystem csys, AttributeContainer ctv, Formatter errlog) {
 
     // do we have a transform registered for this ?
