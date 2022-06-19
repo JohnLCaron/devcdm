@@ -41,7 +41,7 @@ public class TestOpenInMemoryResourceLeak {
 
   /** Test for leak using CdmFile.openInMemory(URI) */
   @Test
-  public void inputStreamNetcdfFileLeak() throws IOException {
+  public void inputStreamCdmFileLeak() throws IOException {
     /*
      * Read the file into a CdmFile. try-with-resources ensures that the CdmFile's close()
      * method is called, so all resources with it are released.
@@ -63,7 +63,7 @@ public class TestOpenInMemoryResourceLeak {
 
   /** Test for leak using CdmFiles.openInMemory(URI) */
   @Test
-  public void inputStreamNetcdfFilesLeak() throws IOException {
+  public void inputStreamCdmFilesLeak() throws IOException {
     try (CdmFile ncfile = CdmFiles.openInMemory(tempFile.toUri())) {
       // prove it's opened
       assertThat(ncfile.getCdmFileTypeId()).isEqualTo("NetCDF");

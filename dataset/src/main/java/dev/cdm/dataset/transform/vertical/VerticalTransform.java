@@ -8,7 +8,7 @@ import dev.cdm.array.Array;
 import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
@@ -58,8 +58,8 @@ public interface VerticalTransform {
    * available on Grids built on NetcdfDataset. GRIB does not have these.
    */
   interface Builder {
-    Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
-        Formatter errlog);
+    Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
+                                       Formatter errlog);
   }
 }
 

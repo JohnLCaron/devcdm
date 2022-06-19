@@ -17,7 +17,7 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.core.util.SimpleUnit;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
@@ -42,7 +42,7 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   protected ProjectionCTV projCT;
 
-  private DefaultConventions(NetcdfDataset.Builder<?> datasetBuilder) {
+  private DefaultConventions(CdmDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = "Default";
   }
@@ -357,7 +357,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new DefaultConventions(datasetBuilder);
     }
   }

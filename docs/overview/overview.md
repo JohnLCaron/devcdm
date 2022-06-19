@@ -161,7 +161,7 @@ NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis 
     
 Note that in this example, there is no CoordinateSystem object, so the same list has to be added to each Variable, and any CoordinateTransform specifications also have to be added to each Variable. However, the common case is that all the Variables in a dataset use the same Coordinate System.
 
-The <b>_ucar.nc2.dataset_</b> layer reads various Conventions and extracts the Coordinate Systems using the CoordSysBuilder framework. We often use a set of internal attributes called the [Underscore Coordinate](coord_attr_conv.html) attributes as a way to standardize the Coordinate Systems information. Although these may work when working with Unidata software, we do not recommend them as a substitute for conventions such as CF.
+The <b>_dev.cdm.dataset_</b> layer reads various Conventions and extracts the Coordinate Systems using the CoordSysBuilder framework. We often use a set of internal attributes called the [Underscore Coordinate](coord_attr_conv.html) attributes as a way to standardize the Coordinate Systems information. Although these may work when working with Unidata software, we do not recommend them as a substitute for conventions such as CF.
 
 ## Scientific Feature Types
 

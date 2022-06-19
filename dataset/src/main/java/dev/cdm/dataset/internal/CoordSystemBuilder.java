@@ -64,7 +64,7 @@ public class CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new CoordSystemBuilder(datasetBuilder);
     }
   }
@@ -149,7 +149,7 @@ public class CoordSystemBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected final NetcdfDataset.Builder<?> datasetBuilder;
+  protected final CdmDataset.Builder<?> datasetBuilder;
   protected final Group.Builder rootGroup;
   protected final CoordinatesHelper.Builder coords;
 
@@ -166,7 +166,7 @@ public class CoordSystemBuilder {
   protected boolean debug;
 
   // Used when using NcML to provide convention attributes.
-  protected CoordSystemBuilder(NetcdfDataset.Builder<?> datasetBuilder) {
+  protected CoordSystemBuilder(CdmDataset.Builder<?> datasetBuilder) {
     this.datasetBuilder = datasetBuilder;
     this.rootGroup = datasetBuilder.rootGroup;
     this.coords = datasetBuilder.coords;
@@ -510,7 +510,7 @@ public class CoordSystemBuilder {
   private void makeCoordinateSystemsMaximal() {
 
     boolean requireCompleteCoordSys =
-        !datasetBuilder.getEnhanceMode().contains(NetcdfDataset.Enhance.IncompleteCoordSystems);
+        !datasetBuilder.getEnhanceMode().contains(CdmDataset.Enhance.IncompleteCoordSystems);
 
     for (VarProcess vp : varList) {
       if (vp.hasCoordinateSystem() || !vp.isData() || vp.vb.getDimensions().isEmpty()) {

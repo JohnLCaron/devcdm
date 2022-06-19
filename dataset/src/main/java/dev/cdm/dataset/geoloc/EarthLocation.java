@@ -48,12 +48,12 @@ public class EarthLocation {
   }
 
   /** The latitude in decimal degrees north. */
-  public double getLatitude() {
+  public double latitude() {
     return latitude;
   }
 
   /** The longitude in decimal degrees east. */
-  public double getLongitude() {
+  public double longitude() {
     return longitude;
   }
 
@@ -70,12 +70,12 @@ public class EarthLocation {
 
   /** Get the lat/lon as a LatLonPoint. */
   public LatLonPoint getLatLon() {
-    return LatLonPoint.create(getLatitude(), getLongitude());
+    return LatLonPoint.create(latitude(), longitude());
   }
 
   /** Are either lat or lon missing? */
   public boolean isMissing() {
-    return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
+    return Double.isNaN(latitude()) || Double.isNaN(longitude());
   }
 
   @Override

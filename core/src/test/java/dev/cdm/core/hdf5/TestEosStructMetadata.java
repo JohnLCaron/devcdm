@@ -26,7 +26,7 @@ public class TestEosStructMetadata {
     // INFORMATION/StructMetadata.0>
     // to file <structmetadata_eos.h5> and object </HDFEOS INFORMATION/StructMetadata.0>
     // h5copy: Creating parent groups
-    String testFile = "src/test/data/hdf5eos/structmetadata_eos.h5";
+    String testFile = "src/test/data/hdfeos5/structmetadata_eos.h5";
     try (CdmFile ncf = CdmFiles.open(testFile)) {
       Variable testVar = ncf.findVariable("HDFEOS_INFORMATION/StructMetadata\\.0");
       Array<?> data = testVar.readArray();

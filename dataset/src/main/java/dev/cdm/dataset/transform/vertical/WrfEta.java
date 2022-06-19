@@ -13,7 +13,7 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import org.jetbrains.annotations.Nullable;
 import dev.cdm.array.Immutable;
@@ -41,8 +41,8 @@ public class WrfEta extends AbstractVerticalTransform {
   private static final String BaseGeopotentialVariable = "PHB";
   private static final String PerturbationGeopotentialVariable = "PH";
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
-      Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
+                                                   Formatter errlog) {
 
     boolean isXStag = isStaggered(csys, AxisType.GeoX, AxisType.Lon, 1);
     boolean isYStag = isStaggered(csys, AxisType.GeoY, AxisType.Lat, 0);
@@ -101,8 +101,8 @@ public class WrfEta extends AbstractVerticalTransform {
   private final String baseVar;
   private final boolean isXStag, isYStag, isZStag;
 
-  private WrfEta(NetcdfDataset ds, String ctvName, String units, String pertVar, String baseVar, boolean isXStag,
-      boolean isYStag, boolean isZStag) {
+  private WrfEta(CdmDataset ds, String ctvName, String units, String pertVar, String baseVar, boolean isXStag,
+                 boolean isYStag, boolean isZStag) {
     super(ds, WRF_ETA_COORDINATE, ctvName, units);
 
     this.pertVar = pertVar;
@@ -232,8 +232,8 @@ public class WrfEta extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
-        Formatter errlog) {
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
+                                              Formatter errlog) {
       return WrfEta.create(ds, csys, params, errlog);
     }
   }

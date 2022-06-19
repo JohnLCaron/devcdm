@@ -11,7 +11,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.array.Section;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.api.Variable;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.core.util.StringUtil2;
 
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ import java.util.List;
 @Immutable
 abstract class AbstractVerticalTransform implements VerticalTransform {
 
-  static Array<Number> readArray(NetcdfDataset ncd, String varName) throws IOException {
+  static Array<Number> readArray(CdmDataset ncd, String varName) throws IOException {
     Variable v = ncd.findVariable(varName);
     if (v == null) {
       throw new IllegalArgumentException(varName);
@@ -33,7 +33,7 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return (Array<Number>) v.readArray();
   }
 
-  static double readScalarDouble(NetcdfDataset ncd, String varName) throws IOException {
+  static double readScalarDouble(CdmDataset ncd, String varName) throws IOException {
     Variable v = ncd.findVariable(varName);
     if (v == null) {
       throw new IllegalArgumentException(varName);
@@ -42,7 +42,7 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return data.getScalar().doubleValue();
   }
 
-  static String getUnits(NetcdfDataset ncd, String varName) {
+  static String getUnits(CdmDataset ncd, String varName) {
     Variable v = ncd.findVariable(varName);
     if (v == null) {
       throw new IllegalArgumentException(varName);
@@ -50,7 +50,7 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return v.getUnitsString();
   }
 
-  static int getRank(NetcdfDataset ncd, String varName) {
+  static int getRank(CdmDataset ncd, String varName) {
     Variable v = ncd.findVariable(varName);
     if (v == null) {
       throw new IllegalArgumentException(varName);
@@ -58,7 +58,7 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return v.getRank();
   }
 
-  static Array<Number> readArray(NetcdfDataset ncd, String varName, int timeIdx)
+  static Array<Number> readArray(CdmDataset ncd, String varName, int timeIdx)
       throws IOException, InvalidRangeException {
     Variable v = ncd.findVariable(varName);
     if (v == null) {
@@ -77,12 +77,12 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
 
   //////////////////////////////////////////////////////////
 
-  protected final NetcdfDataset ds;
+  protected final CdmDataset ds;
   protected final String name;
   protected final String ctvName;
   protected final String units;
 
-  AbstractVerticalTransform(NetcdfDataset ds, String name, String ctvName, String units) {
+  AbstractVerticalTransform(CdmDataset ds, String name, String ctvName, String units) {
     this.ds = ds;
     this.name = name;
     this.ctvName = ctvName;

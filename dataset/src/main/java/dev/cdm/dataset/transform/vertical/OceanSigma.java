@@ -12,7 +12,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import dev.cdm.array.Immutable;
 import java.io.IOException;
@@ -44,7 +44,7 @@ import java.util.Optional;
 @Immutable
 public class OceanSigma extends AbstractVerticalTransform {
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, AttributeContainer params, Formatter errlog) {
     String formula_terms = getFormula(params, errlog);
     if (null == formula_terms) {
       return Optional.empty();
@@ -92,7 +92,7 @@ public class OceanSigma extends AbstractVerticalTransform {
   private final String depthVar;
   private final Array<Number> sigmaData;
 
-  private OceanSigma(NetcdfDataset ds, String ctvName, String units, String sigmaVar, String etaVar, String depthVar)
+  private OceanSigma(CdmDataset ds, String ctvName, String units, String sigmaVar, String etaVar, String depthVar)
       throws IOException {
     super(ds, CF.ocean_sigma_coordinate, ctvName, units);
 
@@ -138,8 +138,8 @@ public class OceanSigma extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
-        Formatter errlog) {
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
+                                              Formatter errlog) {
       return OceanSigma.create(ds, params, errlog);
     }
   }

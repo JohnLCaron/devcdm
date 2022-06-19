@@ -12,7 +12,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import dev.cdm.array.Immutable;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import java.util.Optional;
 @Immutable
 public class AtmosHybridSigmaPressure extends AbstractVerticalTransform {
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, AttributeContainer params, Formatter errlog) {
     String formula_terms = getFormula(params, errlog);
     if (null == formula_terms) {
       return Optional.empty();
@@ -113,8 +113,8 @@ public class AtmosHybridSigmaPressure extends AbstractVerticalTransform {
   private final Array<Number> bData;
   private final double p0;
 
-  AtmosHybridSigmaPressure(NetcdfDataset ds, String ctvName, String units, String apName, String bName, String psName,
-      String p0Name, int psRank) throws IOException {
+  AtmosHybridSigmaPressure(CdmDataset ds, String ctvName, String units, String apName, String bName, String psName,
+                           String p0Name, int psRank) throws IOException {
     super(ds, CF.atmosphere_hybrid_sigma_pressure_coordinate, ctvName, units);
 
     this.apName = apName;
@@ -157,7 +157,7 @@ public class AtmosHybridSigmaPressure extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
                                               Formatter errlog) {
       return AtmosHybridSigmaPressure.create(ds, params, errlog);
     }

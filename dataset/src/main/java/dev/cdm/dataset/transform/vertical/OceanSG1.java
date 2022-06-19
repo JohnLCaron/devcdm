@@ -11,7 +11,7 @@ import dev.cdm.array.InvalidRangeException;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import dev.cdm.array.Immutable;
 import java.io.IOException;
@@ -49,7 +49,7 @@ import java.util.Optional;
 @Immutable
 public class OceanSG1 extends AbstractVerticalTransform {
 
-  public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
+  public static Optional<VerticalTransform> create(CdmDataset ds, AttributeContainer params, Formatter errlog) {
     String formula_terms = getFormula(params, errlog);
     if (null == formula_terms) {
       return Optional.empty();
@@ -110,8 +110,8 @@ public class OceanSG1 extends AbstractVerticalTransform {
   private final Array<Number> sArray;
   private final Array<Number> cArray;
 
-  private OceanSG1(NetcdfDataset ds, String ctvName, String units, String sName, String cName, String etaName,
-      String depthName, String depthCName, int etaRank) throws IOException {
+  private OceanSG1(CdmDataset ds, String ctvName, String units, String sName, String cName, String etaName,
+                   String depthName, String depthCName, int etaRank) throws IOException {
     super(ds, CF.ocean_s_coordinate_g1, ctvName, units);
 
     this.sName = sName;
@@ -171,8 +171,8 @@ public class OceanSG1 extends AbstractVerticalTransform {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Builder implements VerticalTransform.Builder {
-    public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
-        Formatter errlog) {
+    public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
+                                              Formatter errlog) {
       return OceanSG1.create(ds, params, errlog);
     }
   }

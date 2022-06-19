@@ -15,15 +15,10 @@ import dev.cdm.array.Immutable;
  */
 @Immutable
 public class KMPMatch {
-
   private final byte[] match;
   private final int[] failure;
 
-  /**
-   * Constructor
-   * 
-   * @param match search for this byte pattern
-   */
+  /** @param match search for this byte pattern */
   public KMPMatch(byte[] match) {
     this.match = match;
     failure = computeFailure(match);
@@ -43,19 +38,20 @@ public class KMPMatch {
    */
   public int indexOf(byte[] data, int start, int max) {
     int j = 0;
-    if (data.length == 0)
+    if (data.length == 0) {
       return -1;
+    }
 
     for (int i = start; i < start + max; i++) {
-      while (j > 0 && match[j] != data[i])
+      while (j > 0 && match[j] != data[i]) {
         j = failure[j - 1];
-
-      if (match[j] == data[i])
+      }
+      if (match[j] == data[i]) {
         j++;
-
-      if (j == match.length)
+      }
+      if (j == match.length) {
         return i - match.length + 1;
-
+      }
     }
     return -1;
   }
@@ -65,15 +61,14 @@ public class KMPMatch {
 
     int j = 0;
     for (int i = 1; i < match.length; i++) {
-      while (j > 0 && match[j] != match[i])
+      while (j > 0 && match[j] != match[i]) {
         j = result[j - 1];
-
-      if (match[j] == match[i])
+      }
+      if (match[j] == match[i]) {
         j++;
-
+      }
       result[i] = j;
     }
-
     return result;
   }
 }

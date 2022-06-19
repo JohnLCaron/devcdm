@@ -5,10 +5,8 @@
 package dev.cdm.core.write;
 
 import com.google.common.base.Charsets;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.rules.TemporaryFolder;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;

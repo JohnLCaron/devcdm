@@ -7,4 +7,5 @@ module dev.cdm.dataset {
   requires org.jetbrains.annotations;
 
   exports dev.cdm.dataset.api;
+  exports dev.cdm.dataset.geoloc;
 }

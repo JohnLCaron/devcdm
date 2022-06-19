@@ -16,7 +16,7 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   private static final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
 
-  public static CoordinateAxis1DTime factory(@Nullable NetcdfDataset ncd, VariableDS org, Formatter errMessages)
+  public static CoordinateAxis1DTime factory(@Nullable CdmDataset ncd, VariableDS org, Formatter errMessages)
       throws IOException {
     if (org instanceof CoordinateAxis1DTime) {
       return (CoordinateAxis1DTime) org;
@@ -57,8 +57,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param dims list of dimensions
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
-  private static CoordinateAxis1DTime fromStringVarDS(@Nullable NetcdfDataset ncd, VariableDS org,
-      List<Dimension> dims) {
+  private static CoordinateAxis1DTime fromStringVarDS(@Nullable CdmDataset ncd, VariableDS org,
+                                                      List<Dimension> dims) {
     Builder<?> builder =
         CoordinateAxis1DTime.builder().setName(org.getShortName()).setArrayType(ArrayType.STRING)
             .setUnits(org.getUnitsString()).setDesc(org.getDescription()).setDimensions(dims);
@@ -79,7 +79,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param org the underlying Variable
    * @throws IOException on read error
    */
-  private static CoordinateAxis1DTime fromVarDS(@Nullable NetcdfDataset ncd, VariableDS org, Formatter errMessages)
+  private static CoordinateAxis1DTime fromVarDS(@Nullable CdmDataset ncd, VariableDS org, Formatter errMessages)
       throws IOException {
     Builder<?> builder = CoordinateAxis1DTime.builder().setName(org.getShortName())
         .setArrayType(org.getArrayType()).setUnits(org.getUnitsString()).setDesc(org.getDescription());

@@ -6,7 +6,7 @@ package dev.cdm.dataset.transform.vertical;
 
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.api.CoordinateSystem;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 
 import dev.cdm.array.Immutable;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static dev.cdm.dataset.transform.vertical.AbstractVerticalTransform.getUn
 public class CsmHybridSigmaBuilder implements AbstractVerticalTransform.Builder {
   public static final String transform_name = "csm_hybrid_sigma_pressure";
 
-  public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
+  public Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,
                                             Formatter errlog) {
 
     String aName = params.findAttributeString("A_var", null);

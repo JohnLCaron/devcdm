@@ -5,7 +5,7 @@
 package dev.cdm.dataset.ncml;
 
 import dev.cdm.core.api.CdmFiles;
-import dev.cdm.dataset.api.NetcdfDataset;
+import dev.cdm.dataset.api.CdmDataset;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
@@ -28,8 +28,8 @@ import dev.cdm.core.api.Structure;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.dataset.api.DatasetUrl;
-import dev.cdm.dataset.api.NetcdfDataset.Enhance;
-import dev.cdm.dataset.api.NetcdfDatasets;
+import dev.cdm.dataset.api.CdmDataset.Enhance;
+import dev.cdm.dataset.api.CdmDatasets;
 import dev.cdm.dataset.api.SequenceDS;
 import dev.cdm.dataset.api.StructureDS;
 import dev.cdm.dataset.api.VariableDS;
@@ -59,13 +59,15 @@ import java.util.StringTokenizer;
 /**
  * Read NcML and create NetcdfDataset.Builder, using builders and immutable objects.
  * <p>
- * This is an internal class, users should usually call {@link NetcdfDatasets#openDataset(String)}
+ * This is an internal class, users should usually call {@link CdmDatasets#openDataset(String)}
  */
 public class NcmlReader {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlReader.class);
 
   public static final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
   public static final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
+  public static final String NJ22_NAMESPACE_HTTPS = "https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  public static final Namespace ncmlNSS = Namespace.getNamespace("ncml", NJ22_NAMESPACE_HTTPS);
 
   private static boolean debugURL, debugXML, showParsedXML;
   private static boolean debugOpen, debugConstruct, debugCmd;
@@ -81,37 +83,24 @@ public class NcmlReader {
       return null;
     }
 
-    switch (enhanceMode.toLowerCase()) {
-      case "all":
-        return NetcdfDataset.getEnhanceAll();
-      case "none":
-        return NetcdfDataset.getEnhanceNone();
-      case "convertenums":
-        return EnumSet.of(Enhance.ConvertEnums);
-      case "convertunsigned":
-        return EnumSet.of(Enhance.ConvertUnsigned);
-      case "applyscaleoffset":
-        return EnumSet.of(Enhance.ApplyScaleOffset);
-      case "convertmissing":
-        return EnumSet.of(Enhance.ConvertMissing);
-      case "coordsystems":
-        return EnumSet.of(Enhance.CoordSystems);
-      case "incompletecoordsystems":
-        return EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
+    return switch (enhanceMode.toLowerCase()) {
+      case "all" -> CdmDataset.getEnhanceAll();
+      case "none" -> CdmDataset.getEnhanceNone();
+      case "convertenums" -> EnumSet.of(Enhance.ConvertEnums);
+      case "convertunsigned" -> EnumSet.of(Enhance.ConvertUnsigned);
+      case "applyscaleoffset" -> EnumSet.of(Enhance.ApplyScaleOffset);
+      case "convertmissing" -> EnumSet.of(Enhance.ConvertMissing);
+      case "coordsystems" -> EnumSet.of(Enhance.CoordSystems);
+      case "incompletecoordsystems" -> EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
 
       // Legacy strings, retained for backwards compatibility:
-      case "true":
-        return NetcdfDataset.getEnhanceAll();
-      case "scalemissingdefer":
-        return NetcdfDataset.getEnhanceNone();
-      case "alldefer":
-        return EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
-      case "scalemissing":
-        return EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
+      case "true" -> CdmDataset.getEnhanceAll();
+      case "scalemissingdefer" -> CdmDataset.getEnhanceNone();
+      case "alldefer" -> EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
+      case "scalemissing" -> EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
       // Return null by default, since some valid strings actually return an empty set.
-      default:
-        return null;
-    }
+      default -> null;
+    };
   }
 
   /**
@@ -122,7 +111,7 @@ public class NcmlReader {
    * @param cancelTask allow user to cancel task; may be null
    * @throws IOException on read error
    */
-  public static void wrapNcml(NetcdfDataset.Builder<?> ncDataset, String ncmlLocation, CancelTask cancelTask)
+  public static void wrapNcml(CdmDataset.Builder<?> ncDataset, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
     org.jdom2.Document doc;
     try {
@@ -163,8 +152,8 @@ public class NcmlReader {
    * @param cancelTask allow user to cancel task; may be null
    * @throws IOException on read error
    */
-  public static void wrapNcmlResource(NetcdfDataset.Builder<?> ncDataset, String ncmlResourceLocation,
-      CancelTask cancelTask) throws IOException {
+  public static void wrapNcmlResource(CdmDataset.Builder<?> ncDataset, String ncmlResourceLocation,
+                                      CancelTask cancelTask) throws IOException {
     ClassLoader cl = ncDataset.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(ncmlResourceLocation)) {
       if (is == null) {
@@ -210,14 +199,13 @@ public class NcmlReader {
 
   /**
    * Use NCML to modify the referenced dataset, create a new dataset with the merged info.
-   * Used to wrap each dataset of an aggregation before its aggregated.
    *
    * @param ref referenced dataset
-   * @param ncmlElem parent element - usually the aggregation element of the ncml
+   * @param ncmlElem parent element
    * @return new dataset with the merged info
    */
-  static NetcdfDataset.Builder<?> mergeNcml(CdmFile ref, @Nullable Element ncmlElem) {
-    NetcdfDataset.Builder<?> targetDS = NetcdfDataset.builder().copyFrom(ref).setOrgFile(ref);
+  static CdmDataset.Builder<?> mergeNcml(CdmFile ref, @Nullable Element ncmlElem) {
+    CdmDataset.Builder<?> targetDS = CdmDataset.builder().copyFrom(ref).setOrgFile(ref);
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
       reader.readGroup(targetDS, null, null, ncmlElem);
@@ -229,7 +217,7 @@ public class NcmlReader {
 
   /**
    * Read NcML doc from a Reader, and construct a NetcdfDataset.Builder.
-   * This is an internal method, users should use {@link NetcdfDatasets#openNcmlDataset(Reader, String, CancelTask)}
+   * This is an internal method, users should use {@link CdmDatasets#openNcmlDataset(Reader, String, CancelTask)}
    *
    * @param r the Reader containing the NcML document
    * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
@@ -239,7 +227,7 @@ public class NcmlReader {
    * @return the resulting NetcdfDataset.Builder
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static NetcdfDataset.Builder<?> readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
+  public static CdmDataset.Builder<?> readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
     org.jdom2.Document doc;
     try {
@@ -279,8 +267,8 @@ public class NcmlReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static NetcdfDataset.Builder<?> readNcml(String ncmlLocation, String referencedDatasetUri,
-      CancelTask cancelTask) throws IOException {
+  public static CdmDataset.Builder<?> readNcml(String ncmlLocation, String referencedDatasetUri,
+                                               CancelTask cancelTask) throws IOException {
     URL url = new URL(ncmlLocation);
 
     if (debugURL) {
@@ -349,13 +337,13 @@ public class NcmlReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  NetcdfDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
-      @Nullable CancelTask cancelTask) throws IOException {
+  CdmDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
+                                 @Nullable CancelTask cancelTask) throws IOException {
 
     // get ncml namespace and set namespace variable
     this.ncNS = ncmlNS;
     if (netcdfElem.getNamespaceURI().startsWith("https")) {
-      this.ncNS = ncmlNS;
+      this.ncNS = ncmlNSS;
     }
 
     // augment URI.resolve(), by also dealing with base file: URIs
@@ -392,7 +380,7 @@ public class NcmlReader {
         }
       } else {
         DatasetUrl durl = DatasetUrl.findDatasetUrl(referencedDatasetUri);
-        this.refFile = NetcdfDatasets.openFile(durl, buffer_size, cancelTask, null);
+        this.refFile = CdmDatasets.openFile(durl, buffer_size, cancelTask, null);
       }
     }
 
@@ -400,7 +388,7 @@ public class NcmlReader {
     Element elemE = netcdfElem.getChild("explicit", ncNS);
     explicit = (elemE != null);
 
-    NetcdfDataset.Builder<?> builder = NetcdfDataset.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
+    CdmDataset.Builder<?> builder = CdmDataset.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
     if (this.refFile != null && !explicit) {
       // copy all the metadata from the original file.
       builder.copyFrom(this.refFile);
@@ -430,15 +418,15 @@ public class NcmlReader {
    * @param cancelTask allow user to cancel the task; may be null
    * @throws IOException on read error
    */
-  private void readNetcdf(String ncmlLocation, NetcdfDataset.Builder<?> builder, Element netcdfElem,
-      @Nullable CancelTask cancelTask) throws IOException {
+  private void readNetcdf(String ncmlLocation, CdmDataset.Builder<?> builder, Element netcdfElem,
+                          @Nullable CancelTask cancelTask) throws IOException {
     this.location = ncmlLocation; // log messages need this
 
     // detect incorrect namespace
     Namespace use = netcdfElem.getNamespace();
-    if (!use.equals(ncmlNS) && !use.equals(ncmlNS)) {
+    if (!use.equals(ncmlNS) && !use.equals(ncmlNSS)) {
       String message = String.format("Namespace specified in NcML must be either '%s' or '%s', but was '%s'.",
-          ncmlNS.getURI(), ncmlNS.getURI(), use.getURI());
+          ncmlNS.getURI(), ncmlNSS.getURI(), use.getURI());
       throw new IllegalArgumentException(message);
     }
 
@@ -456,7 +444,7 @@ public class NcmlReader {
     }
 
     // enhance means do scale/offset and/or add CoordSystems
-    Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
+    Set<CdmDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
       // cant just set enhance mode
       if (DatasetEnhancer.enhanceNeeded(mode, null)) {
@@ -474,8 +462,8 @@ public class NcmlReader {
    * @param refParent parent Group in referenced dataset, may be null
    * @param groupElem ncml group element
    */
-  private Group.Builder readGroup(NetcdfDataset.Builder<?> builder, @Nullable Group.Builder parent,
-      @Nullable Group refParent, Element groupElem) {
+  private Group.Builder readGroup(CdmDataset.Builder<?> builder, @Nullable Group.Builder parent,
+                                  @Nullable Group refParent, Element groupElem) {
     Group.Builder groupBuilder;
     Group refGroup = null;
 
@@ -725,10 +713,7 @@ public class NcmlReader {
 
       boolean isUnlimited = "true".equalsIgnoreCase(isUnlimitedS);
       boolean isVariableLength = "true".equalsIgnoreCase(isVariableLengthS);
-      boolean isShared = true;
-      if ("false".equalsIgnoreCase(isSharedS)) {
-        isShared = false;
-      }
+      boolean isShared = !"false".equalsIgnoreCase(isSharedS);
 
       int len;
       if (isVariableLength) {
@@ -936,24 +921,6 @@ public class NcmlReader {
     if (valueElem != null) {
       readValues(vb, dtype, varElem, valueElem);
     }
-    /*
-     * else {
-     * // see if we need to munge existing data. use case : aggregation
-     * if (v.hasCachedData()) {
-     * Array data;
-     * try {
-     * data = v.read();
-     * } catch (IOException e) {
-     * throw new IllegalStateException(e.getMessage());
-     * }
-     * if (data.getClass() != v.getArrayType().getPrimitiveClassType()) {
-     * Array newData = Array.factory(v.getArrayType(), v.getShape());
-     * MAMath.copy(newData, data);
-     * v.setCachedData(newData, false);
-     * }
-     * }
-     * }
-     */
 
     // look for logical views
     // processLogicalViews(v, refGroup, varElem);

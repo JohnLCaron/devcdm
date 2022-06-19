@@ -24,7 +24,7 @@ import dev.cdm.dataset.geoloc.LatLonPoint;
  *         <ol>
  *         <li>turn static methods into object methods, to make thread-safe
  *         <li>rename methods to follow upper/lower case conventions
- *         <li>add convenience methods for ucar.unidata.geoloc.Projection
+ *         <li>add convenience methods for dev.cdm.dataset.geoloc.Projection
  *         <li>longitude must be in range +=180.
  *         </ol>
  *         <p/>

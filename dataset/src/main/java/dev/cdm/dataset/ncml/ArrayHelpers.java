@@ -110,7 +110,7 @@ class ArrayHelpers {
         return Arrays.factory(dtype, shape, darray);
       }
     }
-    throw new IllegalArgumentException("Aggregations makeArray unsupported dataype " + dtype);
+    throw new IllegalArgumentException("ArrayHelpers makeArray unsupported dataype " + dtype);
   }
 
   /**
@@ -180,6 +180,6 @@ class ArrayHelpers {
         return Arrays.factory(wantType, org.getShape(), darray);
       }
     }
-    throw new IllegalArgumentException("Aggregations convert unsupported dataype " + wantType);
+    throw new IllegalArgumentException("ArrayHelpers convert unsupported dataype " + wantType);
   }
 }

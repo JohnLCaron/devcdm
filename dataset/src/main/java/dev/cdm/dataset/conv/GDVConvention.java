@@ -33,14 +33,14 @@ public class GDVConvention extends CSMConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
       return new GDVConvention(datasetBuilder);
     }
   }
 
   protected ProjectionCTV projCT;
 
-  GDVConvention(NetcdfDataset.Builder<?> datasetBuilder) {
+  GDVConvention(CdmDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
     checkForMeter = false;

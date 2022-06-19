@@ -4,11 +4,7 @@
  */
 package dev.cdm.core.util;
 
-/**
- * Special Math functions.
- * Recoded from online sources for licensing purposes.
- * caron 6/22/2012
- */
+/** Special Math functions. */
 public final class SpecialMathFunction {
   private static final double log2 = Math.log(2);
 
@@ -25,6 +21,13 @@ public final class SpecialMathFunction {
     return Math.log(x) / log2;
   }
 
+  /**
+   * Get the atanh of a number.
+   *
+   * @param x a double value
+   * @return The atanh of x
+   * @throws ArithmeticException if x not in [-1, 1]
+   */
   public static double atanh(double x) throws ArithmeticException {
     if ((x > 1.0) || (x < -1.0)) {
       throw new ArithmeticException("range exception");
