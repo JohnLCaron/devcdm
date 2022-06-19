@@ -17,7 +17,7 @@ import dev.cdm.core.iosp.IospArrayHelper;
 import dev.cdm.core.iosp.Layout;
 import dev.cdm.core.iosp.LayoutBB;
 import dev.cdm.core.iosp.LayoutRegular;
-import dev.cdm.core.netcdf3.NetcdfFileFormat;
+import dev.cdm.core.write.NetcdfFileFormat;
 import dev.cdm.core.netcdf3.NetcdfFormatUtils;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.core.io.RandomAccessFile;

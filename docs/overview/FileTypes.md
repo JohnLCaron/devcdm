@@ -8,7 +8,7 @@ permalink: file_types.html
 
 The NetCDF-Java/CDM library provides a uniform API to many different scientific file formats and remote access protocols.
 Generally, application programmers should respect the encapsulation of these formats.
-When information is needed about the underlying file type, `NetcdfFile.getCdmFileTypeId()`, `NetcdfFile.getFileTypeVersion()`, and `NetcdfFile.getFileTypeDescription()` methods can be called.
+When information is needed about the underlying file type, `CdmFile.getCdmFileTypeId()`, `CdmFile.getFileTypeVersion()`, and `CdmFile.getFileTypeDescription()` methods can be called.
 
 The **Id** must be unique and once registered, will never change, so that application code can test against it.
 **Version** information should have a standard form for each file type, but the form may differ between file types.

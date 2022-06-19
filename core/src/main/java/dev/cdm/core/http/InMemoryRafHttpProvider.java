@@ -8,7 +8,7 @@ package dev.cdm.core.http;
 import dev.cdm.core.util.IO;
 import dev.cdm.core.io.InMemoryRandomAccessFile;
 import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.spi.RandomAccessFileProvider;
+import dev.cdm.core.io.RandomAccessFileProvider;
 
 import java.io.IOException;
 import java.io.InputStream;

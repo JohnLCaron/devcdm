@@ -12,6 +12,6 @@ module dev.cdm.core {
   exports dev.cdm.core.http;
   exports dev.cdm.core.io;
   exports dev.cdm.core.iosp;
-  exports dev.cdm.core.spi;
   exports dev.cdm.core.util;
+  exports dev.cdm.core.write;
 }

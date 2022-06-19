@@ -38,7 +38,7 @@ import dev.cdm.core.hdf5.H5objects.MessageFillValueOld;
 import dev.cdm.core.hdf5.H5objects.MessageFilter;
 import dev.cdm.core.hdf5.H5objects.MessageType;
 import dev.cdm.core.hdf5.H5objects.StructureMember;
-import dev.cdm.core.netcdf3.NetcdfFileFormat;
+import dev.cdm.core.write.NetcdfFileFormat;
 import dev.cdm.core.netcdf3.NetcdfFormatUtils;
 
 import java.io.IOException;
