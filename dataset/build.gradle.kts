@@ -5,6 +5,7 @@
 plugins {
     id("java")
     id("java-library")
+    id("de.jjohannes.extra-java-module-info")
 }
 
 group = "dev.cdm"
@@ -45,4 +46,13 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("cdmng-dataset")
+}
+
+extraJavaModuleInfo {
+    module("javax.inject-1.jar", "javax.inject", "1") {
+        exports("javax.inject")
+    }
+    // apparently have to add automaticModules, even though these were working fine
+    automaticModule("com.google.guava", "guava")
+
 }
