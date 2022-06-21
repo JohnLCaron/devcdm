@@ -21,7 +21,7 @@ public class TestWRFTime {
 
   @Test
   public void testWrfTimeUnderscore() throws IOException {
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/WrfTimesStrUnderscore.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/WrfTimesStrUnderscore.nc";
     System.out.println(tstFile);
     try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
       // make sure this file went through the WrfConvention
@@ -36,7 +36,7 @@ public class TestWRFTime {
 
   @Test
   public void testWrfNoTimeVar() throws IOException {
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/WrfNoTimeVar.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/WrfNoTimeVar.nc";
     System.out.printf("Open %s%n", tstFile);
     Set<CdmDataset.Enhance> defaultEnhanceMode = CdmDataset.getDefaultEnhanceMode();
     EnumSet<CdmDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);

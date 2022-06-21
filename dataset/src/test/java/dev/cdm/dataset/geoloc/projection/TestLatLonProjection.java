@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.geoloc.projection;
 
+import dev.cdm.dataset.geoloc.LatLonProjection;
 import org.junit.jupiter.api.Test;
 import dev.cdm.dataset.geoloc.Earth;
 import dev.cdm.dataset.geoloc.EarthEllipsoid;
@@ -15,7 +16,7 @@ import dev.cdm.dataset.geoloc.ProjectionRect;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-/** Test {@link dev.cdm.dataset.geoloc.projection.LatLonProjection} */
+/** Test {@link LatLonProjection} */
 public class TestLatLonProjection {
 
   private static final LatLonProjection p = new LatLonProjection();
@@ -61,7 +62,7 @@ public class TestLatLonProjection {
     double xinc = 22.5;
     double yinc = 20.0;
     for (double lon = 0.0; lon < 380.0; lon += xinc) {
-      LatLonPoint ptL = LatLonPoint.create(-73.79, lon);
+      LatLonPoint ptL = new LatLonPoint(-73.79, lon);
       LatLonRect llbb = LatLonRect.builder(ptL, yinc, xinc).build();
 
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
@@ -75,7 +76,7 @@ public class TestLatLonProjection {
     double xinc = 22.5;
     double yinc = 20.0;
     for (double lon = 0.0; lon < 380.0; lon += xinc) {
-      LatLonPoint ptL = LatLonPoint.create(0, center + lon);
+      LatLonPoint ptL = new LatLonPoint(0, center + lon);
       LatLonRect llbb = LatLonRect.builder(ptL, yinc, xinc).build();
 
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
@@ -97,23 +98,23 @@ public class TestLatLonProjection {
 
   @Test
   public void testIntersection() {
-    LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
-    LatLonRect bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
+    LatLonRect bbox = LatLonRect.builder(new LatLonPoint(40.0, -100.0), 10.0, 20.0).build();
+    LatLonRect bbox2 = LatLonRect.builder(new LatLonPoint(-40.0, -180.0), 120.0, 300.0).build();
     assertThat(testIntersection(bbox, bbox2)).isNotNull();
 
-    bbox = LatLonRect.builder(LatLonPoint.create(-90.0, -100.0), 90.0, 300.0).build();
-    bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
+    bbox = LatLonRect.builder(new LatLonPoint(-90.0, -100.0), 90.0, 300.0).build();
+    bbox2 = LatLonRect.builder(new LatLonPoint(-40.0, -180.0), 120.0, 300.0).build();
     assertThat(testIntersection(bbox, bbox2)).isNotNull();
 
-    bbox2 = LatLonRect.builder(LatLonPoint.create(10, -180.0), 120.0, 300.0).build();
+    bbox2 = LatLonRect.builder(new LatLonPoint(10, -180.0), 120.0, 300.0).build();
     assertThat(testIntersection(bbox, bbox2)).isNull();
 
-    bbox = LatLonRect.builder(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0).build();
-    bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, 120.0), 120.0, 300.0).build();
+    bbox = LatLonRect.builder(new LatLonPoint(-90.0, -100.0), 90.0, 200.0).build();
+    bbox2 = LatLonRect.builder(new LatLonPoint(-40.0, 120.0), 120.0, 300.0).build();
     assertThat(testIntersection(bbox, bbox2)).isNotNull();
 
-    bbox = LatLonRect.builder(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0).build();
-    bbox2 = LatLonRect.builder(LatLonPoint.create(-40.0, -220.0), 120.0, 140.0).build();
+    bbox = LatLonRect.builder(new LatLonPoint(-90.0, -100.0), 90.0, 200.0).build();
+    bbox2 = LatLonRect.builder(new LatLonPoint(-40.0, -220.0), 120.0, 140.0).build();
     assertThat(testIntersection(bbox, bbox2)).isNotNull();
   }
 
@@ -126,48 +127,48 @@ public class TestLatLonProjection {
   public void testExtend() {
     LatLonRect bbox;
 
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, 30.0), LatLonPoint.create(-60.0, 120.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, -10.0), LatLonPoint.create(-60.0, 55.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, 30.0), new LatLonPoint(-60.0, 120.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, -10.0), new LatLonPoint(-60.0, 55.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(130.0);
     assertThat(bbox.crossDateline()).isFalse();
 
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, 177.0), LatLonPoint.create(-60.0, 200.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, -200.0), new LatLonPoint(-60.0, -100.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, 177.0), new LatLonPoint(-60.0, 200.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(100.0);
     assertThat(bbox.crossDateline()).isTrue();
 
     // ---------
     // --------------
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, -150.0), LatLonPoint.create(-60.0, 200.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, -200.0), new LatLonPoint(-60.0, -100.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, -150.0), new LatLonPoint(-60.0, 200.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(360.0);
     assertThat(bbox.crossDateline()).isFalse();
 
     // -------
     // ---------
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 135.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, -180.0), new LatLonPoint(-60.0, 135.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, 135.0), new LatLonPoint(-60.0, 180.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(360.0);
     assertThat(bbox.crossDateline()).isFalse();
 
     // ------
     // ------
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 160.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, -180.0), new LatLonPoint(-60.0, 0.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, 135.0), new LatLonPoint(-60.0, 160.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(225.0);
     assertThat(bbox.crossDateline()).isTrue();;
 
     // ---------
     // ------
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, -180.0), new LatLonPoint(-60.0, 0.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, 135.0), new LatLonPoint(-60.0, 180.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(225.0);
     assertThat(bbox.crossDateline()).isTrue();
 
     // ---------
     // ------
-    bbox = testExtend(LatLonRect.builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)),
-        LatLonRect.builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)).build());
+    bbox = testExtend(LatLonRect.builder(new LatLonPoint(-81.0, 135.0), new LatLonPoint(-60.0, 180.0)),
+        LatLonRect.builder(new LatLonPoint(-81.0, -180.0), new LatLonPoint(-60.0, 0.0)).build());
     assertThat(bbox.getWidth()).isWithin(0.01).of(225.0);
     assertThat(bbox.crossDateline()).isTrue();
   }

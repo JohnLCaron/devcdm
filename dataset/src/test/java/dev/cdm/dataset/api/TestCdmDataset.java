@@ -14,7 +14,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestCdmDataset {
   @Test
   public void testNcmlFileId() throws IOException {
-    String filename = TestCdmDatasets.cdmLocalNcmlDir + "modifyAtts.ncml";
+    String filename = TestCdmDatasets.datasetLocalNcmlDir + "modifyAtts.ncml";
     try (CdmDataset ds = CdmDatasets.openDataset(filename)) {
       assertThat(ds.getCdmFileTypeId()).isEqualTo("NcML/NetCDF");
     }
@@ -22,7 +22,7 @@ public class TestCdmDataset {
 
   @Test
   public void testN3FileId() throws IOException {
-    String filename = TestCdmDatasets.cdmLocalTestDataDir + "example1.nc";
+    String filename = TestCdmDatasets.coreLocalDir + "example1.nc";
     try (CdmDataset ds = CdmDatasets.openDataset(filename)) {
       assertThat(ds.getCdmFileTypeId()).isEqualTo("NetCDF");
       assertThat(ds.getCdmFileTypeDescription()).isEqualTo("NetCDF-3/CDM");

@@ -19,7 +19,7 @@ public class TestStructureArray2 {
   @Test
   public void testBB() throws Exception {
     // testWriteRecord is 1 dimensional (nc2 record dimension)
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWriteRecord.nc", -1, null,
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWriteRecord.nc", -1, null,
         CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
 
       Structure v = (Structure) ncfile.findVariable("record");

@@ -70,7 +70,7 @@ public class EarthLocation {
 
   /** Get the lat/lon as a LatLonPoint. */
   public LatLonPoint getLatLon() {
-    return LatLonPoint.create(latitude(), longitude());
+    return new LatLonPoint(latitude(), longitude());
   }
 
   /** Are either lat or lon missing? */

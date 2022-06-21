@@ -17,7 +17,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 /** Test NcmlNew enhancement */
 public class TestEnhance {
-  private static String dataDir = TestCdmDatasets.cdmLocalDir + "ncml/enhance/";
+  private static String dataDir = TestCdmDatasets.datasetLocalDir + "ncml/enhance/";
 
   @Test
   public void testStandaloneNoEnhance() throws IOException {

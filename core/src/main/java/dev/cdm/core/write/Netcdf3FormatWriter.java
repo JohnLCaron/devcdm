@@ -334,7 +334,7 @@ public class Netcdf3FormatWriter implements Closeable {
     long preallocateSize;
     boolean isExisting;
 
-    NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
+    public NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
     IOServiceProvider iosp; // existing only
     Group.Builder rootGroup = Group.builder().setName("");
 

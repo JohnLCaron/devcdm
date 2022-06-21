@@ -23,7 +23,7 @@ public class TestRotatedPole {
   /** Test that the unrotated centre lat/lon is the origin of the rotated projection. */
   @Test
   public void testLatLonToProj() {
-    LatLonPoint latlon = LatLonPoint.create(54, 254);
+    LatLonPoint latlon = new LatLonPoint(54, 254);
     ProjectionPoint result = proj.latLonToProj(latlon);
     assertWithMessage("Unexpected rotated longitude").that(result.getX()).isWithin(TOLERANCE).of(0);
     assertWithMessage("Unexpected rotated latitude").that(result.getY()).isWithin(TOLERANCE).of(0);

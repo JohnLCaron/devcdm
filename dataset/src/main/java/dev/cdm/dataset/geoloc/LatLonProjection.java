@@ -2,11 +2,11 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.cdm.dataset.geoloc.projection;
+package dev.cdm.dataset.geoloc;
 
 import dev.cdm.core.constants.CF;
-import dev.cdm.dataset.geoloc.*;
 
+import dev.cdm.dataset.geoloc.projection.AbstractProjection;
 import org.jetbrains.annotations.Nullable;
 import dev.cdm.array.Immutable;
 
@@ -84,7 +84,7 @@ public class LatLonProjection extends AbstractProjection {
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint world) {
-    return LatLonPoint.create(world.x(), world.y());
+    return new LatLonPoint(world.x(), world.y());
   }
 
   /** Get the center of the Longitude range. It is normalized to +/- 180. */
@@ -117,7 +117,7 @@ public class LatLonProjection extends AbstractProjection {
     double deltaLat = world.getHeight();
     double deltaLon = world.getWidth();
 
-    LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
+    LatLonPoint llpt = new LatLonPoint(startLat, startLon);
     return LatLonRect.builder(llpt, deltaLat, deltaLon).build();
   }
 
@@ -135,8 +135,8 @@ public class LatLonProjection extends AbstractProjection {
     // make bounding box out of those two corners
     ProjectionRect.Builder world = ProjectionRect.builder(w1.x(), w1.y(), w2.x(), w2.y());
 
-    LatLonPoint la = LatLonPoint.create(ur.latitude(), ll.longitude());
-    LatLonPoint lb = LatLonPoint.create(ll.latitude(), ur.longitude());
+    LatLonPoint la = new LatLonPoint(ur.latitude(), ll.longitude());
+    LatLonPoint lb = new LatLonPoint(ll.latitude(), ur.longitude());
 
     // now extend if needed to the other two corners
     world.add(latLonToProj(la, centerLon));

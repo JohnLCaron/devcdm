@@ -117,7 +117,7 @@ public class ADASConvention extends CoordSystemBuilder {
     double lat_check = rootGroup.getAttributeContainer().findAttributeDouble("CTRLAT", Double.NaN);
     double lon_check = rootGroup.getAttributeContainer().findAttributeDouble("CTRLON", Double.NaN);
 
-    LatLonPoint lpt0 = LatLonPoint.create(lat_check, lon_check);
+    LatLonPoint lpt0 = new LatLonPoint(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
 
     VariableDS.Builder<?> xstag = (VariableDS.Builder<?>) rootGroup.findVariableLocal("x_stag")

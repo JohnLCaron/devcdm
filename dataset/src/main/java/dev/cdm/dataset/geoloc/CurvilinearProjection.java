@@ -3,13 +3,10 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.dataset.geoloc.projection;
+package dev.cdm.dataset.geoloc;
 
 import dev.cdm.array.Array;
-import dev.cdm.dataset.geoloc.LatLonPoint;
-import dev.cdm.dataset.geoloc.LatLonPoints;
-import dev.cdm.dataset.geoloc.Projection;
-import dev.cdm.dataset.geoloc.ProjectionPoint;
+import dev.cdm.dataset.geoloc.projection.AbstractProjection;
 
 import java.util.Objects;
 
@@ -41,7 +38,7 @@ public class CurvilinearProjection extends AbstractProjection {
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint world) {
-    return LatLonPoint.create(world.y(), world.x());
+    return new LatLonPoint(world.y(), world.x());
   }
 
   @Override

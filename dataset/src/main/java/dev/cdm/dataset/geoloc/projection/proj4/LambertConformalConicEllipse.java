@@ -353,7 +353,7 @@ public class LambertConformalConicEllipse extends AbstractProjection {
       toLat = n > 0.0 ? MapMath.HALFPI : -MapMath.HALFPI;
     }
 
-    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon) + lon0deg);
+    return new LatLonPoint(Math.toDegrees(toLat), Math.toDegrees(toLon) + lon0deg);
   }
 
 }

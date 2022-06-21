@@ -60,6 +60,11 @@ public class RotatedPole extends AbstractProjection {
     addParameter(CF.GRID_NORTH_POLE_LONGITUDE, northPoleLon);
   }
 
+  @Override
+  public String projectionCoordUnits() {
+    return "rad"; // TODO ??
+  }
+
   private void buildRotationMatrices() {
     double betaRad;
     double gammaRad;
@@ -178,7 +183,7 @@ public class RotatedPole extends AbstractProjection {
 
     double lon = Math.atan2(p2[1], p2[0]) * DEG_PER_RAD;
     double lat = Math.asin(p2[2]) * DEG_PER_RAD;
-    return LatLonPoint.create(lat, lon);
+    return new LatLonPoint(lat, lon);
   }
 
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {

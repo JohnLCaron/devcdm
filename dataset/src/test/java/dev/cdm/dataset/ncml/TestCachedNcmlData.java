@@ -23,7 +23,7 @@ public class TestCachedNcmlData {
   @Test
   public void testCachedData() throws IOException {
 
-    try (CdmFile ncd = CdmDatasets.openFile(TestCdmDatasets.cdmLocalNcmlDir + "point/profileMultidim.ncml", null)) {
+    try (CdmFile ncd = CdmDatasets.openFile(TestCdmDatasets.datasetLocalNcmlDir + "point/profileMultidim.ncml", null)) {
       Variable v = ncd.findVariable("data");
       assertThat(v).isNotNull();
       Array<?> data = v.readArray();
@@ -34,7 +34,7 @@ public class TestCachedNcmlData {
   @Test
   @Ignore("doesnt work because CdmFileProvider cant pass in IospMessage")
   public void testCachedDataWithStructure() throws IOException {
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.cdmLocalNcmlDir + "point/profileMultidim.ncml");
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.datasetLocalNcmlDir + "point/profileMultidim.ncml");
 
     try (CdmFile ncd = CdmDatasets.openFile(durl, -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable s = ncd.findVariable("record");

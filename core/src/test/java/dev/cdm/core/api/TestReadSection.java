@@ -19,7 +19,7 @@ public class TestReadSection {
 
   @Test
   public void testReadVariableSection() throws Exception {
-    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       Variable temp = cdmfile.findVariable("temperature");
       assertThat(temp).isNotNull();
 
@@ -50,7 +50,7 @@ public class TestReadSection {
 
   @Test
   public void testReadVariableSection2() throws Exception {
-    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       Variable temp = cdmfile.findVariable("temperature");
       assertThat(temp).isNotNull();
 

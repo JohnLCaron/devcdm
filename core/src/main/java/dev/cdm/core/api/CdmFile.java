@@ -81,7 +81,6 @@ import java.util.StringTokenizer;
  */
 @Immutable
 public class CdmFile implements Closeable {
-
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   public static final String IOSP_MESSAGE_GET_HEADER = "header";
   public static final String IOSP_MESSAGE_GET_IOSP = "IOSP";
@@ -91,8 +90,6 @@ public class CdmFile implements Closeable {
   static boolean debugSPI, debugCompress;
   static boolean debugStructureIterator;
   private static boolean showRequest;
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Close all resources (files, sockets, etc) associated with this file. If the underlying file was acquired, it will
@@ -524,13 +521,13 @@ public class CdmFile implements Closeable {
   //////////////////////////////////////////////////////////////////////////////////////
 
   /** CDL representation of Netcdf header info, non strict */
+  // TODO can we use CDLwriter?
   @Override
   public String toString() {
     Formatter f = new Formatter();
     writeCDL(f, new Indent(2), false);
     return f.toString();
   }
-  
 
   void writeCDL(Formatter f, Indent indent, boolean strict) {
     toStringStart(f, indent, strict);
@@ -555,7 +552,6 @@ public class CdmFile implements Closeable {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-  // caching
 
   public long getLastModified() {
     if (iosp != null) {

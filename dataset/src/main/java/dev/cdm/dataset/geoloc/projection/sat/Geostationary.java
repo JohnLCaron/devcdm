@@ -33,10 +33,9 @@ import dev.cdm.array.Immutable;
  * 
  * Map coordinates:
  * The x (abscissa) and y (ordinate) rectangular coordinates are identified by the standard_name attribute value
- * projection_x_coordinate and projection_y_coordinate
- * respectively. In the case of this projection, the projection coordinates in this projection are directly related to
- * the scanning angle of the satellite instrument,
- * and their units are radians.
+ * projection_x_coordinate and projection_y_coordinate respectively.
+ * In the case of this projection, the projection coordinates in this projection are directly related to
+ * the scanning angle of the satellite instrument, and their units are radians.
  * 
  * Notes:
  * 
@@ -177,6 +176,11 @@ public class Geostationary extends AbstractProjection {
     return scaleGeoCoordinate && geoCoordinateScaleFactor > Double.MIN_VALUE;
   }
 
+  @Override
+  public String projectionCoordUnits() {
+    return "rad"; // TODO ??
+  }
+
   /**
    * copy constructor - avoid clone !!
    */
@@ -227,7 +231,7 @@ public class Geostationary extends AbstractProjection {
     }
 
     final double[] lonlat = navigation.satToEarth(x, y);
-    return LatLonPoint.create(lonlat[1], lonlat[0]);
+    return new LatLonPoint(lonlat[1], lonlat[0]);
   }
 
   @Override

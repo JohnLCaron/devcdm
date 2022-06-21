@@ -14,7 +14,7 @@ public class TestLongOffset {
 
   @Test
   public void testReadLongOffset() throws IOException {
-    try (CdmFile cdmFile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "longOffset.nc", -1, null,
+    try (CdmFile cdmFile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "longOffset.nc", -1, null,
         CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       assertThat(cdmFile.getCdmFileTypeVersion()).isEqualTo("2");
     }
@@ -22,7 +22,7 @@ public class TestLongOffset {
 
   @Test
   public void testReadLongOffsetV3mode() throws IOException {
-    try (CdmFile cdmFile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "longOffset.nc")) {
+    try (CdmFile cdmFile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "longOffset.nc")) {
     }
   }
 }

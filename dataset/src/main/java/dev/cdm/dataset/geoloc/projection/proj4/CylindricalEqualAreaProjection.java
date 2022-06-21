@@ -155,7 +155,7 @@ public class CylindricalEqualAreaProjection extends AbstractProjection {
       toLat = Math.toDegrees(MapMath.authlat(Math.asin(2. * y * scaleFactor / qp), apa));
       toLon = lon0 + Math.toDegrees(x / scaleFactor);
     }
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 
   @Override

@@ -10,6 +10,10 @@ package dev.cdm.dataset.geoloc;
  *
  * You may use a default Earth (EarthEllipsoid.WGS84) or you may define your own using
  * a dev.cdm.dataset.geoloc.Earth object.
+ *
+ * @param azimuth the azimuth, degrees, 0 = north, clockwise positive
+ * @param backazimuth the back azimuth, degrees, 0 = north, clockwise positive
+ * @param distance separation in kilometers
  */
 public record Bearing(double azimuth, double backazimuth, double distance) {
   private static final Earth defaultEarth = EarthEllipsoid.WGS84;
@@ -126,7 +130,7 @@ public record Bearing(double azimuth, double backazimuth, double distance) {
    */
   public static LatLonPoint findPoint(Earth e, double lat1, double lon1, double az, double dist) {
     if (dist == 0) {
-      return LatLonPoint.create(lat1, lon1);
+      return new LatLonPoint(lat1, lon1);
     }
 
     double A = e.getMajor(); // Earth radius
@@ -202,7 +206,7 @@ public record Bearing(double azimuth, double backazimuth, double distance) {
     C = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
     D = ((E * CY * C + CZ) * SY * C + Y) * SA;
     GLON2 = GLON1 + X - (1. - C) * D * F;
-    return LatLonPoint.create(GLAT2 * RADIANS_TO_DEGREES, GLON2 * RADIANS_TO_DEGREES);
+    return new LatLonPoint(GLAT2 * RADIANS_TO_DEGREES, GLON2 * RADIANS_TO_DEGREES);
   }
 
   /**
@@ -234,7 +238,7 @@ public record Bearing(double azimuth, double backazimuth, double distance) {
   public static Bearing calculateBearing(Earth e, double lat1, double lon1, double lat2, double lon2) {
 
     if ((lat1 == lat2) && (lon1 == lon2)) {
-      return Bearing.create(0, 0, 0);
+      return new Bearing(0, 0, 0);
     }
 
     double A = e.getMajor(); // Earth radius
@@ -334,19 +338,6 @@ public record Bearing(double azimuth, double backazimuth, double distance) {
 
     double backazimuth = BAZ * RADIANS_TO_DEGREES; // radians to degrees; already in 0 to 360 range
 
-    return Bearing.create(azimuth, backazimuth, distance);
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Create a Bearing object.
-   * 
-   * @param azimuth the azimuth, degrees, 0 = north, clockwise positive
-   * @param backazimuth the back azimuth, degrees, 0 = north, clockwise positive
-   * @param distance separation in kilometers
-   */
-  public static Bearing create(double azimuth, double backazimuth, double distance) {
     return new Bearing(azimuth, backazimuth, distance);
   }
 }

@@ -191,7 +191,7 @@ public class LatLonPoints {
     try {
       double lat = Double.parseDouble(ss.get(0));
       double lon = Double.parseDouble(ss.get(1));
-      return LatLonPoint.create(lat, lon);
+      return new LatLonPoint(lat, lon);
     } catch (Exception e) {
       return null;
     }

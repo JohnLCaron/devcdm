@@ -11,7 +11,7 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 import dev.cdm.dataset.geoloc.Projection;
-import dev.cdm.dataset.geoloc.projection.LatLonProjection;
+import dev.cdm.dataset.geoloc.LatLonProjection;
 import dev.cdm.core.util.StringUtil2;
 
 import org.jetbrains.annotations.Nullable;

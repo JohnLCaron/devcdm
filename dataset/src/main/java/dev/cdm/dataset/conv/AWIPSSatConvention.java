@@ -159,7 +159,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // we have to project in order to find the origin
     double lat0 = findAttributeDouble("lat00");
     double lon0 = findAttributeDouble("lon00");
-    ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(lat0, lon0));
+    ProjectionPoint start = proj.latLonToProj(new LatLonPoint(lat0, lon0));
     if (debugProj)
       parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.x();
@@ -168,7 +168,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // we will use the end to compute grid size
     double latN = findAttributeDouble("latNxNy");
     double lonN = findAttributeDouble("lonNxNy");
-    ProjectionPoint end = proj.latLonToProj(LatLonPoint.create(latN, lonN));
+    ProjectionPoint end = proj.latLonToProj(new LatLonPoint(latN, lonN));
     dx = (end.x() - startx) / nx;
     dy = (end.y() - starty) / ny;
 
@@ -201,14 +201,14 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // we have to project in order to find the start
     double lat0 = findAttributeDouble("lat00");
     double lon0 = findAttributeDouble("lon00");
-    ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(lat0, lon0));
+    ProjectionPoint start = proj.latLonToProj(new LatLonPoint(lat0, lon0));
     startx = start.x();
     starty = start.y();
 
     // we will use the end to compute grid size
     double latN = findAttributeDouble("latNxNy");
     double lonN = findAttributeDouble("lonNxNy");
-    ProjectionPoint end = proj.latLonToProj(LatLonPoint.create(latN, lonN));
+    ProjectionPoint end = proj.latLonToProj(new LatLonPoint(latN, lonN));
     dx = (end.x() - startx) / nx;
     dy = (end.y() - starty) / ny;
 

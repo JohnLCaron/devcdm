@@ -12,11 +12,11 @@ import dev.cdm.array.NumericCompare;
  * Latitude is always between -90 and +90 deg.
  */
 public record LatLonPoint(double latitude, double longitude) {
-  public static LatLonPoint INVALID = LatLonPoint.create(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+  public static LatLonPoint INVALID = new LatLonPoint(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-  /** Create a LatLonPoint. */
-  public static LatLonPoint create(double lat, double lon) {
-    return new LatLonPoint(LatLonPoints.latNormal(lat), LatLonPoints.lonNormal(lon));
+  public LatLonPoint {
+    latitude = LatLonPoints.latNormal(latitude);
+    longitude = LatLonPoints.lonNormal(longitude);
   }
 
   /**

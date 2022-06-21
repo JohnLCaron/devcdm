@@ -383,7 +383,7 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
     if (projectionLongitude != 0)
       toLon = MapMath.normalizeLongitude(toLon + projectionLongitude);
 
-    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon));
+    return new LatLonPoint(Math.toDegrees(toLat), Math.toDegrees(toLon));
   }
 
   @Override

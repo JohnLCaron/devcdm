@@ -133,8 +133,8 @@ public abstract class AbstractProjection implements Projection {
     // make bounding box out of those two corners
     ProjectionRect.Builder world = ProjectionRect.builder(w1.x(), w1.y(), w2.x(), w2.y());
 
-    LatLonPoint la = LatLonPoint.create(ur.latitude(), ll.longitude());
-    LatLonPoint lb = LatLonPoint.create(ll.latitude(), ur.longitude());
+    LatLonPoint la = new LatLonPoint(ur.latitude(), ll.longitude());
+    LatLonPoint lb = new LatLonPoint(ll.latitude(), ur.longitude());
 
     // now extend if needed to the other two corners
     world.add(latLonToProj(la));
@@ -171,14 +171,14 @@ public abstract class AbstractProjection implements Projection {
     LatLonRect llbb;
 
     if (includesNorthPole && !includesSouthPole) {
-      LatLonRect.Builder builder = LatLonRect.builder(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
+      LatLonRect.Builder builder = LatLonRect.builder(llpt, new LatLonPoint(90.0, 0.0)); // ??? lon=???
       builder.extend(lrpt);
       builder.extend(urpt);
       builder.extend(ulpt);
       llbb = builder.build();
 
     } else if (includesSouthPole && !includesNorthPole) {
-      LatLonRect.Builder builder = LatLonRect.builder(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
+      LatLonRect.Builder builder = LatLonRect.builder(llpt, new LatLonPoint(-90.0, -180.0)); // ??? lon=???
       builder.extend(lrpt);
       builder.extend(urpt);
       builder.extend(ulpt);
@@ -192,8 +192,8 @@ public abstract class AbstractProjection implements Projection {
       double lonMin = getMinOrMaxLon(llpt.longitude(), ulpt.longitude(), true);
       double lonMax = getMinOrMaxLon(lrpt.longitude(), urpt.longitude(), false);
 
-      LatLonPoint ll = LatLonPoint.create(latMin, lonMin);
-      LatLonPoint ur = LatLonPoint.create(latMax, lonMax);
+      LatLonPoint ll = new LatLonPoint(latMin, lonMin);
+      LatLonPoint ur = new LatLonPoint(latMax, lonMax);
 
       llbb = LatLonRect.builder(ll, ur).build();
     }

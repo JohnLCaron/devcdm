@@ -6,7 +6,6 @@
 package dev.cdm.dataset.conv;
 
 import dev.cdm.dataset.api.TestCdmDatasets;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.core.calendar.Calendar;
@@ -37,7 +36,7 @@ public class TestDefaultCalendars {
     String failMessage, found, expected;
     boolean testCond;
 
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/cfMissingCalendarAttr.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/cfMissingCalendarAttr.nc";
 
     // open the test file
     try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
@@ -97,7 +96,7 @@ public class TestDefaultCalendars {
     String failMessage, found, expected;
     boolean testCond;
 
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/coardsMissingCalendarAttr.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/coardsMissingCalendarAttr.nc";
 
     // open the test file
     try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {

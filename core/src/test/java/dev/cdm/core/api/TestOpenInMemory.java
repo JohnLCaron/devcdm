@@ -20,7 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestOpenInMemory {
 
   private CdmFile openInMemory(String filename) throws IOException {
-    String pathname = TestCdmFiles.cdmLocalNetcdf3Dir + filename;
+    String pathname = TestCdmFiles.coreLocalNetcdf3Dir + filename;
     System.out.println("**** OpenInMemory " + pathname);
 
     byte[] ba = IO.readFileToByteArray(pathname);

@@ -29,7 +29,7 @@ public class TestSimpleGeom {
   public void testLine() throws IOException {
     String failMessage, found, expected;
     boolean testCond;
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
 
     try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
       // make sure this dataset used the cfConvention
@@ -56,7 +56,7 @@ public class TestSimpleGeom {
     String failMessage, found, expected;
     boolean testCond;
 
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
     CdmDataset ncd = CdmDatasets.openDataset(tstFile);
@@ -82,7 +82,7 @@ public class TestSimpleGeom {
 
   @Test
   public void testCoordinateVariable() throws IOException {
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
     try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
@@ -95,7 +95,7 @@ public class TestSimpleGeom {
 
   @Test
   public void testVarLenDataVariable() throws IOException {
-    String tstFile = TestCdmDatasets.cdmLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
+    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
     try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {

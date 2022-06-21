@@ -19,7 +19,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testCdmFile() throws Exception {
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.cdmLocalTestDataDir + "testScaleRecord.nc");
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.coreLocalDir + "testScaleRecord.nc");
     try (CdmFile ncfile = CdmDatasets.openFile(durl, -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable v = ncfile.findVariable("testScale");
       assertThat(v).isNotNull();
@@ -65,7 +65,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDataset() throws Exception {
-    try (CdmDataset ncfile = CdmDatasets.openDataset(TestCdmDatasets.cdmLocalTestDataDir + "testScaleRecord.nc", true,
+    try (CdmDataset ncfile = CdmDatasets.openDataset(TestCdmDatasets.coreLocalDir + "testScaleRecord.nc", true,
         null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("Open %s%n", ncfile.getLocation());
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");
@@ -100,7 +100,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDatasetAttributes() throws Exception {
-    try (CdmDataset ncfile = CdmDatasets.openDataset(TestCdmDatasets.cdmLocalTestDataDir + "testScaleRecord.nc", true,
+    try (CdmDataset ncfile = CdmDatasets.openDataset(TestCdmDatasets.coreLocalDir + "testScaleRecord.nc", true,
         null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("Open %s%n", ncfile.getLocation());
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");

@@ -8,7 +8,7 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.Earth;
 import dev.cdm.dataset.geoloc.Projection;
-import dev.cdm.dataset.geoloc.projection.LatLonProjection;
+import dev.cdm.dataset.geoloc.LatLonProjection;
 
 /**
  * This grid mapping defines the canonical 2D geographical coordinate system based upon latitude and longitude

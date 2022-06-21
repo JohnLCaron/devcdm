@@ -29,7 +29,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestStandardVar {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final String filename = TestCdmDatasets.cdmLocalTestDataDir + "standardVar.nc";
+  private final String filename = TestCdmDatasets.coreLocalDir + "standardVar.nc";
 
   @Test
   public void testWriteStandardVar() throws Exception {

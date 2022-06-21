@@ -35,7 +35,7 @@ public class TestOpenInMemoryResourceLeak {
   @BeforeEach
   public void makeFileToBeDeleted() throws IOException {
     tempFile = Files.createTempFile("cdmTest_", ".nc");
-    Path ncfileToCopy = Paths.get(TestCdmFiles.cdmLocalNetcdf3Dir + "jan.nc");
+    Path ncfileToCopy = Paths.get(TestCdmFiles.coreLocalNetcdf3Dir + "jan.nc");
     Files.copy(ncfileToCopy, tempFile, StandardCopyOption.REPLACE_EXISTING);
   }
 

@@ -20,7 +20,7 @@ public class TestReadVariableData extends TestCase {
   }
 
   public void testNC3Read() throws Exception {
-    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       assertThat(null != cdmfile.findDimension("lat"));
       assertThat(null != cdmfile.findDimension("lon"));
 

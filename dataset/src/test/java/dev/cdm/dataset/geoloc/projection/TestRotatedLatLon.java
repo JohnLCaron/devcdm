@@ -26,7 +26,7 @@ public class TestRotatedLatLon {
   /** Test that the unrotated centre lat/lon is the origin of the rotated projection. */
   @Test
   public void testLatLonToProj() {
-    LatLonPoint latlon = LatLonPoint.create(54, 254);
+    LatLonPoint latlon = new LatLonPoint(54, 254);
     ProjectionPoint result = proj.latLonToProj(latlon);
     assertThat(result.getX()).isWithin(TOLERANCE).of(0);
     assertThat(result.getY()).isWithin(TOLERANCE).of(0);
