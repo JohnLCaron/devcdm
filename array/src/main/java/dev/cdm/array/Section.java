@@ -7,7 +7,7 @@ package dev.cdm.array;
 import com.google.common.base.Preconditions;
 
 import org.jetbrains.annotations.Nullable;
-;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

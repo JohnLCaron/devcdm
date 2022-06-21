@@ -21,7 +21,7 @@ public class TestStructureArray {
   @BeforeAll
   public static void setUp() throws Exception {
     // testStructures is 1 dimensional (nc2 record dimension)
-    ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testStructures.nc", -1, null,
+    ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testStructures.nc", -1, null,
         CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 

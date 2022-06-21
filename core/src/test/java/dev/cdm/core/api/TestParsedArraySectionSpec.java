@@ -15,7 +15,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestParsedArraySectionSpec {
   @Test
   public void testVariableSection() throws Exception {
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       Variable v = ncfile.findVariable("temperature");
       assertThat(v).isNotNull();
 
@@ -41,7 +41,7 @@ public class TestParsedArraySectionSpec {
 
   @Test
   public void testGroupAndMembers() throws Exception {
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf4Dir + "simple_nc4.nc4")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf4Dir + "simple_nc4.nc4")) {
       Variable v = ncfile.findVariable("grp1/data");
       assertThat(v).isNotNull();
 

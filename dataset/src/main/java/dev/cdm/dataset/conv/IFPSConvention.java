@@ -245,7 +245,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     for (int i = 0; i < x_dim.getLength(); i++) {
       double lat = latData.get(latlonIndex.set1(i)).doubleValue();
       double lon = lonData.get(latlonIndex).doubleValue();
-      LatLonPoint latlon = LatLonPoint.create(lat, lon);
+      LatLonPoint latlon = new LatLonPoint(lat, lon);
       ProjectionPoint pp = proj.latLonToProj(latlon);
       xData[i] = pp.x();
     }
@@ -254,7 +254,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     for (int i = 0; i < y_dim.getLength(); i++) {
       double lat = latData.get(latlonIndex.set0(i)).doubleValue();
       double lon = lonData.get(latlonIndex).doubleValue();
-      LatLonPoint latlon = LatLonPoint.create(lat, lon);
+      LatLonPoint latlon = new LatLonPoint(lat, lon);
       ProjectionPoint pp = proj.latLonToProj(latlon);
       yData[i] = pp.y();
     }

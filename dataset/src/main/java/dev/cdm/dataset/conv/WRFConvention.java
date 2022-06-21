@@ -293,7 +293,7 @@ public class WRFConvention extends CoordSystemBuilder {
       }
 
       if (proj != null) {
-        LatLonPoint lpt1 = LatLonPoint.create(centralLat, centralLon); // center of the grid
+        LatLonPoint lpt1 = new LatLonPoint(centralLat, centralLon); // center of the grid
         ProjectionPoint ppt1 = proj.latLonToProj(lpt1);
         centerX = ppt1.x();
         centerY = ppt1.y();

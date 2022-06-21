@@ -15,7 +15,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestReadSlice extends TestCase {
 
   public void testReadSlice1() throws Exception {
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       Variable temp = ncfile.findVariable("temperature");
       assertThat(temp).isNotNull();
       int[] shape = temp.getShape();
@@ -41,7 +41,7 @@ public class TestReadSlice extends TestCase {
   }
 
   public void testReadSlice2() throws Exception {
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       Variable temp = ncfile.findVariable("temperature");
       assertThat(temp).isNotNull();
       int[] shape = temp.getShape();
@@ -67,7 +67,7 @@ public class TestReadSlice extends TestCase {
   }
 
   public void testReadSliceCompose() throws Exception {
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWrite.nc")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWrite.nc")) {
       System.out.printf("Open %s%n", ncfile.getLocation());
 
       Variable temp = ncfile.findVariable("temperature");

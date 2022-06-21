@@ -28,7 +28,7 @@ public class TestSectionFillValue {
 
   @Test
   public void testExplicitFillValue() throws Exception {
-    String filename = TestCdmDatasets.cdmLocalTestDataDir + "standardVar.nc";
+    String filename = TestCdmDatasets.coreLocalDir + "standardVar.nc";
     try (CdmDataset ncfile = CdmDatasets.openDataset(filename)) {
       VariableDS v = (VariableDS) ncfile.findVariable("t3");
       assertThat(v).isNotNull();
@@ -52,7 +52,7 @@ public class TestSectionFillValue {
 
   @Test
   public void testImplicitFillValue() throws Exception {
-    String filename = TestCdmDatasets.cdmLocalTestDataDir + "testWriteFill.nc";
+    String filename = TestCdmDatasets.coreLocalDir + "testWriteFill.nc";
     List<String> varWithFill = Lists.newArrayList("temperature", "rtemperature");
     try (CdmFile ncfile = CdmDatasets.openFile(filename, null);
          CdmDataset ncd = CdmDatasets.openDataset(filename)) {

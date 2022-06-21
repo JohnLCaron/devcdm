@@ -230,7 +230,7 @@ public class Mercator extends AbstractProjection {
     double e = Math.exp(-fromY / A);
     double toLat = Math.toDegrees(Math.PI / 2 - 2 * Math.atan(e)); // Snyder p 44
 
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 
 }

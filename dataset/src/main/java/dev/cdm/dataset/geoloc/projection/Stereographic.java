@@ -380,7 +380,7 @@ public class Stereographic extends AbstractProjection {
     }
 
     toLon = Math.toDegrees(lam);
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 
 }

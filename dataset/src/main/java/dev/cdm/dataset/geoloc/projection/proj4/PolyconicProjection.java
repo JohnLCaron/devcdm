@@ -324,7 +324,7 @@ public class PolyconicProjection extends AbstractProjection {
       toLon = MapMath.normalizeLongitude(toLon + projectionLongitude);
     }
 
-    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon));
+    return new LatLonPoint(Math.toDegrees(toLat), Math.toDegrees(toLon));
   }
 
   @Override

@@ -244,7 +244,7 @@ public class TransverseMercator extends AbstractProjection {
     double d = (fromY - falseNorthing) / scale + lat0;
     toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
     toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 
 }

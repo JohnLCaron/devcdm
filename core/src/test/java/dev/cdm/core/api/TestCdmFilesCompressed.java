@@ -11,10 +11,10 @@ public class TestCdmFilesCompressed {
 
   @Test
   public void testCompressionZ() throws IOException {
-    File uncompressedFile = new File(TestCdmFiles.cdmLocalDir + "compress/testCompress.nc");
+    File uncompressedFile = new File(TestCdmFiles.coreLocalDir + "compress/testCompress.nc");
     uncompressedFile.delete();
 
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testCompress.nc.Z")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testCompress.nc.Z")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -24,7 +24,7 @@ public class TestCdmFilesCompressed {
     }
 
     // repeat, to read from cache
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testCompress.nc.Z")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testCompress.nc.Z")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -36,10 +36,10 @@ public class TestCdmFilesCompressed {
 
   @Test
   public void testCompressionZip() throws IOException {
-    File uncompressedFile = new File(TestCdmFiles.cdmLocalDir + "compress/testZip.nc");
+    File uncompressedFile = new File(TestCdmFiles.coreLocalDir + "compress/testZip.nc");
     uncompressedFile.delete();
 
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testZip.nc.zip")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testZip.nc.zip")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -49,7 +49,7 @@ public class TestCdmFilesCompressed {
     }
 
     // repeat, to read from cache
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testZip.nc.zip")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testZip.nc.zip")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -61,10 +61,10 @@ public class TestCdmFilesCompressed {
 
   @Test
   public void testCompressionGzip() throws IOException {
-    File uncompressedFile = new File(TestCdmFiles.cdmLocalDir + "compress/testGzip.nc");
+    File uncompressedFile = new File(TestCdmFiles.coreLocalDir + "compress/testGzip.nc");
     uncompressedFile.delete();
 
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testGzip.nc.gz")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testGzip.nc.gz")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -74,7 +74,7 @@ public class TestCdmFilesCompressed {
     }
 
     // repeat, to read from cache
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testGzip.nc.zip")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testGzip.nc.zip")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -86,10 +86,10 @@ public class TestCdmFilesCompressed {
 
   @Test
   public void testCompressionBzip() throws IOException {
-    File uncompressedFile = new File(TestCdmFiles.cdmLocalDir + "compress/testBzip.nc");
+    File uncompressedFile = new File(TestCdmFiles.coreLocalDir + "compress/testBzip.nc");
     uncompressedFile.delete();
 
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testBzip.nc.bz2")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testBzip.nc.bz2")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -99,7 +99,7 @@ public class TestCdmFilesCompressed {
     }
 
     // repeat, to read from cache
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalDir + "compress/testBzip.nc.bz2")) {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalDir + "compress/testBzip.nc.bz2")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 

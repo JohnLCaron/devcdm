@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static dev.cdm.array.NumericCompare.nearlyEquals;
 
 public class TestNcmlRead {
-  public static String topDir = TestCdmDatasets.cdmLocalNcmlDir;
+  public static String topDir = TestCdmDatasets.datasetLocalNcmlDir;
 
   public static Stream<Arguments> params() {
     return Stream.of(

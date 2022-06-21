@@ -18,9 +18,14 @@ public interface Projection {
   /** Is this the lat/lon Projection? */
   boolean isLatLon();
 
+  /** Projection coordinates unit */
+  default String projectionCoordUnits() {
+    return "km";
+  }
+
   /** Convert lat, lon to Projection point. */
   default ProjectionPoint latLonToProj(double lat, double lon) {
-    return latLonToProj(LatLonPoint.create(lat, lon));
+    return latLonToProj(new LatLonPoint(lat, lon));
   }
 
   /** Convert a LatLonPoint to projection coordinates. */

@@ -334,7 +334,7 @@ public class AlbersEqualArea extends AbstractProjection {
     toLat = Math.toDegrees(Math.asin((C - Math.pow((rho * n / earth_radius), 2)) / (2 * n)));
     toLon = Math.toDegrees(theta / n + lon0);
 
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 
 }

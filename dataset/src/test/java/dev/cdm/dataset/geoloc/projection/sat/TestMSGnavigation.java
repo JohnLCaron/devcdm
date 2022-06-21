@@ -44,7 +44,7 @@ public class TestMSGnavigation {
   }
 
   static private void doOne(Projection proj, double lat, double lon) {
-    LatLonPoint startL = LatLonPoint.create(lat, lon);
+    LatLonPoint startL = new LatLonPoint(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
     LatLonPoint endL = proj.projToLatLon(p);
 

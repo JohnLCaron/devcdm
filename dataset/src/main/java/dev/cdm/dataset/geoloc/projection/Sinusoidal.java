@@ -188,19 +188,19 @@ public class Sinusoidal extends AbstractProjection {
     } else if (Math.abs(toLon_r) > PI) {
       return INVALID; // Projection point is off the map.
     }
-    return LatLonPoint.create(Math.toDegrees(toLat_r), Math.toDegrees(toLon_r));
+    return new LatLonPoint(Math.toDegrees(toLat_r), Math.toDegrees(toLon_r));
   }
 
   @Override
   public LatLonRect projToLatLonBB(ProjectionRect projBB) {
     List<ProjectionPoint> pointsOfInterest = new LinkedList<>();
 
-    ProjectionPoint northPole = latLonToProj(LatLonPoint.create(90, 0));
+    ProjectionPoint northPole = latLonToProj(new LatLonPoint(90, 0));
     if (projBB.contains(northPole)) {
       pointsOfInterest.add(northPole);
     }
 
-    ProjectionPoint southPole = latLonToProj(LatLonPoint.create(-90, 0));
+    ProjectionPoint southPole = latLonToProj(new LatLonPoint(-90, 0));
     if (projBB.contains(southPole)) {
       pointsOfInterest.add(southPole);
     }

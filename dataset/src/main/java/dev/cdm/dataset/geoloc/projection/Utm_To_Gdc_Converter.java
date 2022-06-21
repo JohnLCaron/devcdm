@@ -208,7 +208,7 @@ class Utm_To_Gdc_Converter {
     double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
     double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
 
-    return LatLonPoint.create(latitude * DEGREES_PER_RADIAN, longitude * DEGREES_PER_RADIAN);
+    return new LatLonPoint(latitude * DEGREES_PER_RADIAN, longitude * DEGREES_PER_RADIAN);
   }
 
 }

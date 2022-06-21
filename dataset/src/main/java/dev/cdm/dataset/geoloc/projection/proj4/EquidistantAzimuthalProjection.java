@@ -269,7 +269,7 @@ public class EquidistantAzimuthalProjection extends AbstractProjection {
         c_rh = Math.PI;
 
       } else if (c_rh < MapMath.EPS10) {
-        return LatLonPoint.create(lat0, 0.0);
+        return new LatLonPoint(lat0, 0.0);
       }
       if (mode == OBLIQUE || mode == EQUATOR) {
         sinc = Math.sin(c_rh);
@@ -299,7 +299,7 @@ public class EquidistantAzimuthalProjection extends AbstractProjection {
       double c, Az, cosAz, A, B, D, E, F, psi, t;
 
       if ((c = MapMath.distance(x, y)) < MapMath.EPS10) {
-        return LatLonPoint.create(lat0, 0.0);
+        return new LatLonPoint(lat0, 0.0);
       }
 
       if (mode == OBLIQUE || mode == EQUATOR) {
@@ -325,7 +325,7 @@ public class EquidistantAzimuthalProjection extends AbstractProjection {
       }
     }
 
-    return LatLonPoint.create(toLat, toLon + lon0);
+    return new LatLonPoint(toLat, toLon + lon0);
   }
 
   @Override

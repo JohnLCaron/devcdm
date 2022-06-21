@@ -389,7 +389,7 @@ public class LambertConformal extends AbstractProjection {
       toLat = Math.toDegrees(2.0 * Math.atan(rn) - Math.PI / 2);
     }
 
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 
 }

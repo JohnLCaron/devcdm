@@ -238,7 +238,7 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
     }
     toLon = LatLonPoints.lonNormal(toLon);
 
-    return LatLonPoint.create(toLat, toLon);
+    return new LatLonPoint(toLat, toLon);
   }
 }
 

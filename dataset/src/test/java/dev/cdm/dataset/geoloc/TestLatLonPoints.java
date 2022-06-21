@@ -74,7 +74,7 @@ public class TestLatLonPoints {
 
   @Test
   public void testLatLonToString() {
-    assertThat(LatLonPoints.toString(LatLonPoint.create(89.501, 399.999), 3)).isEqualTo("89.5, 39.9");
+    assertThat(LatLonPoints.toString(new LatLonPoint(89.501, 399.999), 3)).isEqualTo("89.5, 39.9");
   }
 
   @Test

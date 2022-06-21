@@ -337,7 +337,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
       toLat = lpphi;
     }
 
-    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon) + lon0deg);
+    return new LatLonPoint(Math.toDegrees(toLat), Math.toDegrees(toLon) + lon0deg);
   }
 
   private static double phi1_(double qs, double Te, double Tone_es) {

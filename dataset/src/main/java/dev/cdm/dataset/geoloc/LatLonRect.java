@@ -27,7 +27,7 @@ public class LatLonRect {
 
   /** Create a LatLonRect that covers the whole world. */
   public LatLonRect() {
-    this(builder(LatLonPoint.create(-90, -180), 180, 360));
+    this(builder(new LatLonPoint(-90, -180), 180, 360));
   }
 
   /**
@@ -67,12 +67,12 @@ public class LatLonRect {
 
   /** Get the upper left corner of the bounding box. */
   public LatLonPoint getUpperLeftPoint() {
-    return LatLonPoint.create(upperRight.latitude(), lowerLeft.longitude());
+    return new LatLonPoint(upperRight.latitude(), lowerLeft.longitude());
   }
 
   /** Get the lower left corner of the bounding box. */
   public LatLonPoint getLowerRightPoint() {
-    return LatLonPoint.create(lowerLeft.latitude(), upperRight.longitude());
+    return new LatLonPoint(lowerLeft.latitude(), upperRight.longitude());
   }
 
   /** Get whether the bounding box crosses the +/- 180 seam */
@@ -243,7 +243,7 @@ public class LatLonRect {
     if (deltaLon < 0)
       return null;
 
-    return LatLonRect.builder(LatLonPoint.create(latMin, lonMin), deltaLat, deltaLon).build();
+    return LatLonRect.builder(new LatLonPoint(latMin, lonMin), deltaLat, deltaLon).build();
   }
 
   private boolean intersect(double min1, double max1, double min2, double max2) {
@@ -341,7 +341,7 @@ public class LatLonRect {
     if (Math.abs(width) < 1.0e-8) {
       width = 360.0; // assume its the whole thing
     }
-    return new Builder().init(LatLonPoint.create(lat0, lon0), lat1 - lat0, width);
+    return new Builder().init(new LatLonPoint(lat0, lon0), lat1 - lat0, width);
   }
 
   /**
@@ -360,7 +360,7 @@ public class LatLonRect {
     double deltaLat = Double.parseDouble(stoker.nextToken());
     double deltaLon = Double.parseDouble(stoker.nextToken());
 
-    return new Builder().init(LatLonPoint.create(lat, lon), deltaLat, deltaLon).build();
+    return new Builder().init(new LatLonPoint(lat, lon), deltaLat, deltaLon).build();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -381,8 +381,8 @@ public class LatLonRect {
   private final double width;
 
   private LatLonRect(Builder builder) {
-    this.lowerLeft = LatLonPoint.create(builder.llLat, builder.llLon);
-    this.upperRight = LatLonPoint.create(builder.urLat, builder.urLon);
+    this.lowerLeft = new LatLonPoint(builder.llLat, builder.llLon);
+    this.upperRight = new LatLonPoint(builder.urLat, builder.urLon);
     this.crossDateline = builder.crossDateline;
     this.allLongitude = builder.allLongitudes;
     this.width = builder.width;

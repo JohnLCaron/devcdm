@@ -12,13 +12,13 @@ import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link dev.cdm.core.api.CdmFiles} */
 public class TestCdmFiles {
-  public static final String cdmLocalDir = "src/test/data/";
-  public static final String cdmLocalNetcdf3Dir = "src/test/data/netcdf3/";
-  public static final String cdmLocalNetcdf4Dir = "src/test/data/netcdf4/";
+  public static final String coreLocalDir = "src/test/data/";
+  public static final String coreLocalNetcdf3Dir = "src/test/data/netcdf3/";
+  public static final String coreLocalNetcdf4Dir = "src/test/data/netcdf4/";
 
   @Test
   public void testOpenWithClassName() throws Exception {
-    try (CdmFile ncfile = CdmFiles.open(cdmLocalNetcdf3Dir + "longOffset.nc",
+    try (CdmFile ncfile = CdmFiles.open(coreLocalNetcdf3Dir + "longOffset.nc",
         "dev.cdm.core.netcdf3.N3iosp", -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("%s%n", ncfile);
     }
@@ -26,16 +26,16 @@ public class TestCdmFiles {
 
   @Test
   public void testOpenInMemory() throws IOException {
-    try (CdmFile ncfile = CdmFiles.openInMemory(cdmLocalNetcdf3Dir + "longOffset.nc")) {
+    try (CdmFile ncfile = CdmFiles.openInMemory(coreLocalNetcdf3Dir + "longOffset.nc")) {
       System.out.printf("%s%n", ncfile);
     }
   }
 
   @Test
   public void testCanOpen() {
-    assertThat(CdmFiles.canOpen(cdmLocalNetcdf3Dir + "longOffset.nc")).isTrue();
-    assertThat(CdmFiles.canOpen(cdmLocalNetcdf3Dir + "sunya.nc")).isFalse();
-    assertThat(CdmFiles.canOpen(cdmLocalNetcdf3Dir + "testUnsignedFillValueNew.dump")).isFalse();
+    assertThat(CdmFiles.canOpen(coreLocalNetcdf3Dir + "longOffset.nc")).isTrue();
+    assertThat(CdmFiles.canOpen(coreLocalNetcdf3Dir + "sunya.nc")).isFalse();
+    assertThat(CdmFiles.canOpen(coreLocalNetcdf3Dir + "testUnsignedFillValueNew.dump")).isFalse();
   }
 
   @Test

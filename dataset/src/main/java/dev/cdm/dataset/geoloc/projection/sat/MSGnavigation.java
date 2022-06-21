@@ -242,7 +242,7 @@ public class MSGnavigation extends AbstractProjection {
 
     /* produce error values */
     if (sa <= 0.0) {
-      return LatLonPoint.create(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+      return new LatLonPoint(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
     /* now calculate the rest of the formulas using equations on */
@@ -265,7 +265,7 @@ public class MSGnavigation extends AbstractProjection {
     double lati = Math.atan(const1 * s3 / sxy);
 
     /* convert from radians into degrees */
-    return LatLonPoint.create(Math.toDegrees(lati), Math.toDegrees(longi));
+    return new LatLonPoint(Math.toDegrees(lati), Math.toDegrees(longi));
   }
 
   private ProjectionPoint geocoord2pixcoord(double latitude, double longitude) {

@@ -172,7 +172,7 @@ public class RotatedLatLon extends AbstractProjection {
     lonlat[1] = ppt.y();
 
     double[] rlonlat = rotate(lonlat, -polerotate, -lonpole, -sinDlat);
-    return LatLonPoint.create(rlonlat[1], rlonlat[0]);
+    return new LatLonPoint(rlonlat[1], rlonlat[0]);
   }
 
   // Tor's transform algorithm renamed to rotate for clarity

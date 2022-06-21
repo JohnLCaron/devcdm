@@ -5,6 +5,7 @@
 package dev.cdm.core.util;
 
 /** Maintains indentation level for printing nested structures. */
+// TODO switch to array.Indent?
 public class Indent {
   private final int nspaces;
 

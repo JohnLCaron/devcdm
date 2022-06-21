@@ -19,7 +19,7 @@ public class TestReadRecord {
   @Test
   // Normal reading of Nc3 record variables
   public void testNC3ReadRecordVariables() throws Exception {
-    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWriteRecord.nc")) {
+    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWriteRecord.nc")) {
 
       /* Get the value of the global attribute named "title" */
       String title = cdmfile.getRootGroup().findAttributeString("title", "N/A");
@@ -100,7 +100,7 @@ public class TestReadRecord {
   @Test
   // Reading of Nc3 record variables, having been made into a structure
   public void testNC3ReadRecordsAsStructuture() throws IOException {
-    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWriteRecord.nc", -1, null,
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWriteRecord.nc", -1, null,
         CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable record = ncfile.findVariable("record");
       assertThat(record).isNotNull();
@@ -139,7 +139,7 @@ public class TestReadRecord {
   @Test
   public void testNC3ReadRecordStrided() throws Exception {
     // record variable
-    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.cdmLocalNetcdf3Dir + "testWriteRecord.nc", -1, null,
+    try (CdmFile cdmfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf3Dir + "testWriteRecord.nc", -1, null,
         CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable record = cdmfile.findVariable("record");
       assertThat(record).isNotNull();

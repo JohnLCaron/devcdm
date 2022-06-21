@@ -21,7 +21,7 @@ import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.projection.AlbersEqualArea;
 import dev.cdm.dataset.geoloc.projection.LambertAzimuthalEqualArea;
 import dev.cdm.dataset.geoloc.projection.LambertConformal;
-import dev.cdm.dataset.geoloc.projection.LatLonProjection;
+import dev.cdm.dataset.geoloc.LatLonProjection;
 import dev.cdm.dataset.geoloc.projection.Mercator;
 import dev.cdm.dataset.geoloc.projection.Stereographic;
 import dev.cdm.dataset.geoloc.projection.TransverseMercator;

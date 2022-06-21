@@ -8,20 +8,6 @@ import java.nio.ByteBuffer;
 import java.util.Formatter;
 
 public class PrintArray {
-  /**
-   * Print array as undifferentiated sequence of values.
-   *
-   * @param array any Array except StructureDataArray
-   */
-  public static String printArrayPlain(Array<?> array) {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    for (Object val : array) {
-      pw.print(val);
-      pw.print(' ');
-    }
-    return sw.toString();
-  }
 
   /** Print array to returned String. */
   public static String printArray(Array<?> ma) {
@@ -35,12 +21,12 @@ public class PrintArray {
     return out.toString();
   }
 
-  private static void printArray(Formatter out, Array<?> array, String name, Indent indent) {
+  public static void printArray(Formatter out, Array<?> array, String name, Indent indent) {
     printArray(out, array, name, null, indent);
     out.flush();
   }
 
-  private static void printArray(Formatter out, Array<?> array, String name, String units, Indent ilev) {
+  public static void printArray(Formatter out, Array<?> array, String name, String units, Indent ilev) {
 
     if (name != null) {
       out.format("%s%s = ", ilev, name);
@@ -89,7 +75,7 @@ public class PrintArray {
     out.flush();
   }
 
-  private static void printArray(Formatter out, Array<?> ma, Indent indent) {
+  public static void printArray(Formatter out, Array<?> ma, Indent indent) {
     int rank = ma.getRank();
 
     // scalar
@@ -152,6 +138,22 @@ public class PrintArray {
 
     out.format("%n%s}", indent);
   }
+
+  /**
+   * Print array as undifferentiated sequence of values.
+   *
+   * @param array any Array except StructureDataArray
+   */
+  public static String printArrayPlain(Array<?> array) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    for (Object val : array) {
+      pw.print(val);
+      pw.print(' ');
+    }
+    return sw.toString();
+  }
+
 
   private static void printCharArray(Formatter out, Array<Byte> ma, Indent indent) {
     int rank = ma.getRank();
@@ -289,56 +291,5 @@ public class PrintArray {
       printArray(out, sdataArray, m.getName(), m.getUnitsString(), indent);
     }
     indent.decr();
-  }
-
-  private static class Indent {
-    private final int nspaces;
-
-    private int level;
-    private final StringBuilder blanks = new StringBuilder();
-    private String indent = "";
-
-    /** Create an Indent with nspaces per level. */
-    public Indent(int nspaces) {
-      this.nspaces = nspaces;
-      makeBlanks(100);
-    }
-
-    /** Increment the indent level */
-    public Indent incr() {
-      level++;
-      setIndentLevel(level);
-      return this;
-    }
-
-    /** Decrement the indent level */
-    public Indent decr() {
-      level--;
-      setIndentLevel(level);
-      return this;
-    }
-
-    /** Get the indent level */
-    public int level() {
-      return level;
-    }
-
-    /** Return a String of nspaces * level blanks which is the indentation. */
-    public String toString() {
-      return indent;
-    }
-
-    /** Set the indent level */
-    public void setIndentLevel(int level) {
-      this.level = level;
-      if (level * nspaces >= blanks.length())
-        makeBlanks(100);
-      int end = Math.min(level * nspaces, blanks.length());
-      indent = blanks.substring(0, end);
-    }
-
-    private void makeBlanks(int len) {
-      blanks.append(" ".repeat(Math.max(0, len * nspaces)));
-    }
   }
 }
