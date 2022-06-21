@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/aws" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/dataset" />
+            <option value="$PROJECT_DIR$/gcdm" />
             <option value="$PROJECT_DIR$/grid" />
           </set>
         </option>
