@@ -1,0 +1,52 @@
+// Copyright (c) 2020-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+// See LICENSE for license information.
+
+syntax = "proto3";
+
+package dev.cdm.gcdm.protogen;
+
+import "gcdm.proto";
+import "gcdm_grid.proto";
+
+option java_package = "dev.cdm.gcdm.protogen";
+option java_outer_classname = "GcdmServerProto";
+
+service Gcdm {
+  rpc GetNetcdfHeader (HeaderRequest) returns (HeaderResponse) {}
+  rpc GetCdmData (DataRequest) returns (stream DataResponse) {}
+  rpc GetGridDataset (GridDatasetRequest) returns (GridDatasetResponse) {}
+  rpc GetGridData (GridDataRequest) returns (stream GridDataResponse) {}
+  rpc GetVerticalTransform (VerticalTransformRequest) returns (VerticalTransformResponse) {}
+}
+
+message HeaderRequest {
+  string location = 1;
+}
+
+message HeaderResponse {
+  Error error = 1;  // non-empty on error
+  uint32 version = 2; // response version
+  Header header = 3;
+}
+
+message DataRequest {
+  string location = 1;
+  string variable_spec = 2;
+}
+
+message DataResponse {
+  Error error = 1;    // non-empty on error
+  uint32 version = 2; // response version
+
+  string location = 3;
+  string variable_spec = 4;    // the requested variableSpec
+  string var_full_name = 5;    // Variable full name
+  Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
+
+  Data data = 7;
+}
+
+message Error {
+  string message = 1;
+  uint32 code = 2;
+}
