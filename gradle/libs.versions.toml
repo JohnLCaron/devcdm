@@ -16,7 +16,7 @@ re2j = "1.6"
 slf4j = "1.7.36"
 tomcatAnnotationsApi = "6.0.53"
 truth = "1.1.3"
-uomImpl = "2.1.3"
+uomImpl = "2.1.4-SNAPSHOT"
 javaxInject = "1"
 
 ###################

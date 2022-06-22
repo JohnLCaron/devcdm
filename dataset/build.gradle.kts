@@ -5,7 +5,6 @@
 plugins {
     id("java")
     id("java-library")
-    id("de.jjohannes.extra-java-module-info")
 }
 
 group = "dev.cdm"
@@ -14,18 +13,19 @@ description = "The CDM (next generation) coordinate system module."
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
     api(project(":array"))
     api(project(":core"))
 
+    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.guava)
     implementation(libs.jdom2)
-    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
     implementation(libs.uomImpl)
-    implementation(libs.javaxInject)
+    // implementation(files("libs/indriya-2.1.4-SNAPSHOT.jar"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
@@ -46,13 +46,4 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("cdmng-dataset")
-}
-
-extraJavaModuleInfo {
-    module("javax.inject-1.jar", "javax.inject", "1") {
-        exports("javax.inject")
-    }
-    // apparently have to add automaticModules, even though these were working fine
-    automaticModule("com.google.guava", "guava")
-
 }
