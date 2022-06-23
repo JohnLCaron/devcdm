@@ -147,7 +147,7 @@ message Grid {
   string name = 1; // short name, unique within dataset
   string unit = 2;
   string description = 3;
-  DataType array_type = 4;
+  ArrayType array_type = 4;
   repeated Attribute attributes = 5;
   string coordinate_system_name = 6;
 }

@@ -7,7 +7,9 @@ package dev.cdm.gcdm;
 import static com.google.common.truth.Truth.assertThat;
 
 import dev.cdm.core.api.CdmFile;
+import dev.cdm.core.util.CompareCdmFiles;
 import dev.cdm.dataset.api.CdmDatasets;
+import dev.cdm.dataset.util.CompareCdmDatasets;
 import org.junit.Test;
 
 import dev.cdm.gcdm.client.GcdmCdmFile;
@@ -20,7 +22,7 @@ public class TestGcdmCdmFileProblem {
 
   @Test
   public void testProblem() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/IntTimSciSamp.nc";
+    String localFilename = TestGcdmDatasets.coreLocalDir + "netcdf4/IntTimSciSamp.nc";
     Path path = Paths.get(localFilename);
     compareArrayToArray(path, "tim_records");
   }
@@ -54,84 +56,65 @@ public class TestGcdmCdmFileProblem {
    */
   @Test
   public void testRequestTooBig() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    String localFilename = TestGcdmDatasets.testDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Path path = Paths.get(localFilename);
     compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_1KM_RefSB");
   }
 
   @Test
   public void testRequestNotTooBig() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    String localFilename = TestGcdmDatasets.testDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Path path = Paths.get(localFilename);
     compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_500_Aggr1km_RefSB_Samples_Used");
   }
 
   @Test
   public void testHdf4() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    String localFilename = TestGcdmDatasets.testDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
     compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
   }
 
   @Test
   public void testCombineStructure() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf5/IASI/IASI.h5";
+    String localFilename = TestGcdmDatasets.testDir + "formats/hdf5/IASI.h5";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001");
     compareArrayToArray(path, "U-MARF/EPS/IASI_xxx_1C/DATA/MDR_1C_IASI_L1_ARRAY_000001");
   }
 
   @Test
   public void testGcdmVlenCast() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4";
+    String localFilename = TestGcdmDatasets.coreLocalDir + "netcdf4/tst_opaque_data.nc4";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path);
   }
 
   @Test
   public void testGcdmProblemNeeds() throws Exception {
     String localFilename =
-        TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
+        TestGcdmDatasets.testDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "T");
     compareArrayToArray(path, "O3");
   }
 
   @Test
   public void testDataTooLarge() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/UpperDeschutes_t4p10_swemelt.nc";
+    String localFilename = TestGcdmDatasets.testDir + "formats/netcdf4/UpperDeschutes_t4p10_swemelt.nc";
     Path path = Paths.get(localFilename);
     compareArrayToArray(path);
   }
 
   @Test
   public void testAttributeStruct() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc";
+    String localFilename = TestGcdmDatasets.coreLocalDir + "netcdf4/attributeStruct.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path, "observations");
   }
 
   @Test
   public void testEnumProblem() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/tst/tst_enums.nc";
+    String localFilename = TestGcdmDatasets.coreLocalDir + "netcdf4/tst_enums.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToArray(path);
-  }
-
-
-  // media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/bufr/userExamples/test1.bufr
-  // media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/bufr/userExamples/test1.bufr
-  // media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/netcdf4/multiDimscale.nc4
-
-  // char variables from BUFR are incorrect
-  @Test
-  public void testCharProblem() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/test1.bufr";
-    Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "obs");
     compareArrayToArray(path);
   }
 
@@ -141,73 +124,42 @@ public class TestGcdmCdmFileProblem {
   // Send one chunk u(0:0, 0:39, 0:90997) size=14559680 bytes
   @Test
   public void testChunkProblem() throws Exception {
-    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/multiDimscale.nc4";
+    String localFilename = TestGcdmDatasets.testDir + "formats/netcdf4/multiDimscale.nc4";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path, "u");
     compareArrayToArray(path);
   }
 
   @Test
-  public void testShowClassPath() throws Exception {
-    Misc.showClassPath();
-  }
-
-  @Test
   public void testOpaqueDataType() throws Exception {
-    String localFilename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
+    String localFilename = TestGcdmDatasets.coreLocalDir + "hdf5/test_atomic_types.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path);
   }
 
   @Test
   public void testGcdmProblem2() throws Exception {
-    String localFilename = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
+    String localFilename = TestGcdmDatasets.datasetLocalDir + "hru_soil_moist_vlen_3hru_5timestep.nc";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToArray(path);
   }
 
   ////////////////////////////////////////////////////////////////////////////
 
-  public void compareArrayToMa2(Path path) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
-    try (CdmFile ncfile = CdmDatasets.openFile(path.toString(), null);
-        GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
-
-      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
-      assertThat(ok).isTrue();
-    }
-  }
-
-  public void compareArrayToMa2(Path path, String varName) throws Exception {
-    // kludge for now. Also, need to auto start up CmdrServer
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
-    try (CdmFile ma2File = CdmDatasets.openFile(path.toString(), null);
-        GcdmCdmFile arrayFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
-
-      boolean ok = CompareArrayToArray.compareVariable(ma2File, arrayFile, varName, true);
-      assertThat(ok).isTrue();
-    }
-  }
-
   public void compareArrayToArray(Path path) throws Exception {
     String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (CdmFile ncfile = CdmDatasets.openFile(path.toString(), null);
          GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
-
-      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
+      boolean ok = new CompareCdmDatasets().compare(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }
-
 
   public void compareArrayToArray(Path path, String varName) throws Exception {
     String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (CdmFile ncfile = CdmDatasets.openFile(path.toString(), null);
         GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToArray.compareVariable(ncfile, gcdmFile, varName, true);
+      boolean ok = CompareCdmFiles.compareVariable(ncfile, gcdmFile, varName, true);
       assertThat(ok).isTrue();
     }
   }

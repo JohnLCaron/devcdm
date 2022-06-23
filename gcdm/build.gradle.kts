@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.protobufJava)
     implementation(libs.slf4j)
+    compileOnly(libs.tomcatAnnotationsApi)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")

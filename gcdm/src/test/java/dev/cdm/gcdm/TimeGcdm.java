@@ -15,10 +15,10 @@ import org.junit.Test;
 import dev.cdm.array.Array;
 import dev.cdm.gcdm.client.GcdmCdmFile;
 
-/** Time {@link GcdmCdmFile} takes ~ 3 minutes */
+/** Time {@link GcdmCdmFile} 759MB takes ~ 3 minutes */
 public class TimeGcdm {
   String localFilename =
-      TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
+          TestGcdmDatasets.testDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
 
   @Test
   public void readCmdrArray() throws IOException {

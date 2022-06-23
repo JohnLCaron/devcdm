@@ -44,7 +44,7 @@ public class GcdmGrid implements Grid {
 
   @Override
   public ArrayType getArrayType() {
-    return GcdmConverter.convertDataType(proto.getArrayType());
+    return GcdmConverter.convertArrayType(proto.getArrayType());
   }
 
   @Override

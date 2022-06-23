@@ -5,7 +5,7 @@
 package dev.cdm.dataset.internal;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.util.CompareArrayToArray;
+import dev.cdm.array.CompareArrayToArray;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;

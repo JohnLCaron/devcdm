@@ -5,9 +5,13 @@
 
 package dev.cdm.gcdm;
 
+import dev.cdm.core.calendar.CalendarDate;
+import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.FeatureType;
 import dev.cdm.dataset.geoloc.Projection;
+import dev.cdm.dataset.transform.horiz.ProjectionCTV;
+import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 import dev.cdm.gcdm.client.GcdmGrid;
 import dev.cdm.gcdm.client.GcdmGridDataset;
 import dev.cdm.gcdm.client.GcdmVerticalTransform;
@@ -15,7 +19,9 @@ import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.dataset.transform.vertical.VerticalTransform;
+import dev.cdm.gcdm.protogen.GcdmGridProto;
 import dev.cdm.grid.api.*;
+import dev.cdm.grid.internal.GridTimeCS;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -428,7 +434,7 @@ public class GcdmGridConverter {
     builder.setName(grid.getName());
     builder.setDescription(grid.getDescription());
     builder.setUnit(grid.getUnits());
-    builder.setArrayType(GcdmConverter.convertDataType(grid.getArrayType()));
+    builder.setArrayType(GcdmConverter.convertArrayType(grid.getArrayType()));
     builder.addAllAttributes(GcdmConverter.encodeAttributes(grid.attributes()));
     builder.setCoordinateSystemName(grid.getCoordinateSystem().getName());
     return builder.build();
@@ -447,8 +453,8 @@ public class GcdmGridConverter {
   // data fetching
   public static GcdmGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
     GcdmGridProto.GridReferencedArray.Builder builder = GcdmGridProto.GridReferencedArray.newBuilder();
-    builder.setGridName(geoArray.gridName());
-    builder.setMaterializedCoordinateSystem(encodeMaterializedCoordSys(geoArray.getMaterializedCoordinateSystem()));
+    builder.setGridName(geoArray.name());
+    builder.setMaterializedCoordinateSystem(encodeMaterializedCoordSys(geoArray.materializedCoordinateSystem()));
     builder.setData(GcdmConverter.encodeData(geoArray.arrayType(), geoArray.data()));
     return builder.build();
   }
@@ -458,7 +464,7 @@ public class GcdmGridConverter {
     MaterializedCoordinateSystem.Builder cs =
         decodeMaterializedCoordSys(proto.getMaterializedCoordinateSystem(), errlog);
     Array<Number> data = GcdmConverter.decodeData(proto.getData());
-    return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build());
+    return new GridReferencedArray(proto.getGridName(), data.getArrayType(), data, cs.build());
   }
 
   public static GcdmGridProto.MaterializedCoordinateSystem encodeMaterializedCoordSys(

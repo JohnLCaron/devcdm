@@ -4,8 +4,9 @@
  */
 package dev.cdm.gcdm;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import dev.cdm.gcdm.client.GcdmGridDataset;
@@ -13,44 +14,37 @@ import dev.cdm.gcdm.client.GcdmCdmFile;
 import dev.cdm.grid.api.*;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.List;
+import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GcdmCdmFile} */
+/**
+ * Test {@link GcdmCdmFile}
+ */
 @RunWith(Parameterized.class)
 public class TestGcdmGridDataset {
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>(500);
-    try {
-      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
+  public static Stream<Arguments> params() {
+    return Stream.of(
+            Arguments.of(TestGcdmDatasets.coreLocalDir + "permuteTest.nc"));
 
-      FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .gbx9 aggFmrc.xml cg.ncml");
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/ft/grid", ff, result, true);
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return result;
+    //FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .gbx9 aggFmrc.xml cg.ncml");
+    // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/ft/grid", ff, result, true);
   }
 
-  private final String filename;
-  private final String gcdmUrl;
+  @ParameterizedTest
+  @MethodSource("params")
+  public void doOne(String filename) throws Exception {
+    roundtrip(filename);
+  }
 
-  public TestGcdmGridDataset(String filename) throws IOException {
-    this.filename = filename.replace("\\", "/");
+  public static void roundtrip(String filename) throws Exception {
+
+    filename = filename.replace("\\", "/");
     File file = new File(filename);
     // kludge for now. Also, need to auto start up CmdrServer
-    this.gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
-  }
+    String gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
 
-  @Test
-  public void doOne() throws Exception {
     System.out.printf("TestGcdmCdmFile  %s%n", filename);
 
     Formatter info = new Formatter();

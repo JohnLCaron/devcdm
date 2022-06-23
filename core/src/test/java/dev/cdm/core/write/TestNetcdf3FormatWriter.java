@@ -11,6 +11,7 @@ import org.junit.jupiter.api.io.TempDir;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
+import dev.cdm.array.CompareArrayToArray;
 import dev.cdm.array.Index;
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Dimension;
@@ -18,7 +19,7 @@ import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.CdmFiles;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.core.util.CompareArrayToArray;
+import dev.cdm.core.util.CompareCdmFiles;
 
 import java.io.File;
 
