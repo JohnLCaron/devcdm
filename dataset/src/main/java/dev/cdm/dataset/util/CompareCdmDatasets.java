@@ -2,19 +2,17 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.cdm.dataset.testutil;
+package dev.cdm.dataset.util;
 
-import dev.cdm.array.Array;
-import dev.cdm.array.ArrayType;
-import dev.cdm.array.Arrays;
-import dev.cdm.array.CompareArrayToArray;
+import dev.cdm.array.*;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.dataset.api.*;
 import dev.cdm.core.iosp.IospUtils;
+import dev.cdm.core.util.CompareCdmFiles;
+import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.geoloc.Projection;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -25,8 +23,15 @@ import java.util.Objects;
  * Compare two CdmFile.
  * Doesnt fail (eg doesnt use assert), places results in Formatter.
  */
-public class CompareCdmFiles {
+public class CompareCdmDatasets {
   public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
+
+
+  public static boolean compareFiles(CdmFile org, CdmFile copy, Formatter f, boolean _compareData,
+                                     boolean _showCompare, boolean _showEach) {
+    CompareCdmDatasets tc = new CompareCdmDatasets(f, _showCompare, _showEach, _compareData);
+    return tc.compare(org, copy);
+  }
 
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision. Variable may be null.
@@ -154,25 +159,6 @@ public class CompareCdmFiles {
 
   }
 
-  public static boolean compareData(String name, Array<?> data1, Array<?> data2) {
-    return new CompareCdmFiles().compareData(name, data1, data2, false);
-  }
-
-  public static boolean compareData(String name, Array<?> data1, double[] data2) throws IOException {
-    Array<?> data2a = Arrays.factory(ArrayType.DOUBLE, new int[] {data2.length}, data2);
-    return compareData(name, data1, data2a);
-  }
-
-  public static boolean compareFiles(CdmFile org, CdmFile copy, Formatter f) {
-    return compareFiles(org, copy, f, false, false, false);
-  }
-
-  public static boolean compareFiles(CdmFile org, CdmFile copy, Formatter f, boolean _compareData,
-      boolean _showCompare, boolean _showEach) {
-    CompareCdmFiles tc = new CompareCdmFiles(f, _showCompare, _showEach, _compareData);
-    return tc.compare(org, copy);
-  }
-
   public static boolean compareLists(List org, List copy, Formatter f) {
     boolean ok1 = checkContains("first", org, copy, f);
     boolean ok2 = checkContains("second", copy, org, f);
@@ -200,15 +186,15 @@ public class CompareCdmFiles {
   private boolean showEach;
   private boolean compareData;
 
-  public CompareCdmFiles() {
+  public CompareCdmDatasets() {
     this(new Formatter(System.out));
   }
 
-  public CompareCdmFiles(Formatter f) {
+  public CompareCdmDatasets(Formatter f) {
     this(f, false, false, System.getProperty("allTests") != null);
   }
 
-  public CompareCdmFiles(Formatter f, boolean showCompare, boolean showEach, boolean compareData) {
+  public CompareCdmDatasets(Formatter f, boolean showCompare, boolean showEach, boolean compareData) {
     this.f = f;
     this.compareData = compareData;
     this.showCompare = showCompare;
@@ -382,7 +368,7 @@ public class CompareCdmFiles {
 
     // data !!
     if (compareData) {
-      ok &= dev.cdm.core.util.CompareCdmFiles.compareVariableData(f, org, copy, false);
+      ok &= CompareCdmFiles.compareVariableData(f, org, copy, false);
     }
 
     // coordinate systems
@@ -529,16 +515,6 @@ public class CompareCdmFiles {
     return filter.dimsAreEqual(d1, other);
   }
 
-  // values equal, not using Group
-  private boolean equalInValueOld(Dimension d1, Dimension other) {
-    if ((d1.getShortName() == null) && (other.getShortName() != null))
-      return false;
-    if ((d1.getShortName() != null) && !d1.getShortName().equals(other.getShortName()))
-      return false;
-    return (d1.getLength() == other.getLength()) && (d1.isUnlimited() == other.isUnlimited())
-        && (d1.isVariableLength() == other.isVariableLength()) && (d1.isShared() == other.isShared());
-  }
-
   private boolean checkGroupDimensions(Group group1, Group group2, String where, ObjFilter filter) {
     boolean ok = true;
     for (Dimension d1 : group1.getDimensions()) {
@@ -660,38 +636,6 @@ public class CompareCdmFiles {
       }
     }
     return ok;
-  }
-
-  private boolean compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne)
-      throws IOException {
-    // TODO prevent trying to read > 2 gb
-    try {
-      Array<?> data1 = var1.readArray();
-      Array<?> data2 = var2.readArray();
-      if (showCompare) {
-        f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(),
-            data1.getSize());
-      }
-      boolean ok = compareData(var1.getFullName(), data1, data2, justOne);
-      if (showCompare) {
-        f.format("   ok=%s%n", ok);
-      }
-      return ok;
-    } catch (RuntimeException e) {
-      if (e.getMessage() != null && e.getMessage().contains("Read request too large"))
-        return true;
-      throw e;
-    }
-  }
-
-  public boolean compareData(String name, double[] data1, double[] data2) {
-    Array<?> data1a = Arrays.factory(ArrayType.DOUBLE, new int[] {data1.length}, data1);
-    Array<?> data2a = Arrays.factory(ArrayType.DOUBLE, new int[] {data2.length}, data2);
-    return compareData(name, data1a, data2a, false);
-  }
-
-  public boolean compareData(String name, Array<?> data1, Array<?> data2, boolean justOne) {
-    return CompareArrayToArray.compareData(f, name, data1, data2, justOne, true);
   }
 
 }

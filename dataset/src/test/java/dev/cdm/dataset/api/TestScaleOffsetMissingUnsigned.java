@@ -4,11 +4,11 @@
  */
 package dev.cdm.dataset.api;
 
+import dev.cdm.array.CompareArrayToArray;
 import dev.cdm.array.NumericCompare;
 import dev.cdm.array.PrintArray;
 import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.internal.EnhanceScaleMissingUnsigned;
-import dev.cdm.dataset.testutil.CompareCdmFiles;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import dev.cdm.array.MinMax;
 import dev.cdm.array.Section;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.core.util.CompareArrayToArray;
+import dev.cdm.core.util.CompareCdmFiles;
 import dev.cdm.core.write.Netcdf3FormatWriter;
 
 import java.io.File;
@@ -83,7 +83,7 @@ public class TestScaleOffsetMissingUnsigned {
       Variable v = ncfileRead.findVariable("packed");
       assertThat(v).isNotNull();
       readPacked = (Array<Number>) v.readArray();
-      CompareCdmFiles.compareData("packed", packed, readPacked);
+      dev.cdm.dataset.testutil.CompareCdmFiles.compareData("packed", packed, readPacked);
     }
 
     Array<Number> readEnhanced;

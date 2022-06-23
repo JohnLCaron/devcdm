@@ -11,7 +11,6 @@ import dev.cdm.array.Arrays;
 import dev.cdm.dataset.transform.vertical.VerticalTransform;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 
 /**
  * Implementation of VerticalTransform that makes a gcmd to get the 3D array.

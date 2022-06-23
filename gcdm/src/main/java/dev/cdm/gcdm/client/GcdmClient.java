@@ -6,6 +6,7 @@
 package dev.cdm.gcdm.client;
 
 import com.google.common.base.Stopwatch;
+import dev.cdm.gcdm.protogen.GcdmProto;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -20,12 +21,11 @@ import dev.cdm.array.Arrays;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Section;
 import dev.cdm.gcdm.protogen.GcdmGrpc;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.DataRequest;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.DataResponse;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.Header;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.HeaderRequest;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.HeaderResponse;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.Variable;
+import dev.cdm.gcdm.protogen.GcdmServerProto.DataRequest;
+import dev.cdm.gcdm.protogen.GcdmServerProto.DataResponse;
+import dev.cdm.gcdm.protogen.GcdmProto.Header;
+import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderRequest;
+import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderResponse;
 import dev.cdm.gcdm.GcdmConverter;
 
 /** A simple client that makes a Netcdf request from GcdmServer. Used for testing. */
@@ -58,18 +58,18 @@ public class GcdmClient {
     return null;
   }
 
-  private Array<?> getData(String location, Variable v) {
-    ArrayType dataType = GcdmConverter.convertDataType(v.getDataType());
+  private Array<?> getData(String location, GcdmProto.Variable v) {
+    ArrayType dataType = GcdmConverter.convertArrayType(v.getArrayType());
     Section section = GcdmConverter.decodeSection(v);
-    System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
+    System.out.printf("Data request %s %s (%s)%n", v.getArrayType(), v.getShortName(), section);
     if (dataType != ArrayType.DOUBLE && dataType != ArrayType.FLOAT) {
       System.out.printf("***skip%n");
       return null;
     }
-    DataRequest request = DataRequest.newBuilder().setLocation(location).setVariableSpec(v.getName()).build();
+    DataRequest request = DataRequest.newBuilder().setLocation(location).setVariableSpec(v.getShortName()).build();
     Iterator<DataResponse> responses;
     try {
-      responses = blockingStub.withDeadlineAfter(30, TimeUnit.SECONDS).getNetcdfData(request);
+      responses = blockingStub.withDeadlineAfter(30, TimeUnit.SECONDS).getCdmData(request);
       List<Array<?>> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
@@ -110,7 +110,7 @@ public class GcdmClient {
       GcdmClient client = new GcdmClient(channel);
       Header header = client.getHeader(location);
       long total = 0;
-      for (Variable v : header.getRoot().getVarsList()) {
+      for (GcdmProto.Variable v : header.getRoot().getVarsList()) {
         Stopwatch s2 = Stopwatch.createStarted();
         Array<?> array = client.getData(location, v);
         s2.stop();

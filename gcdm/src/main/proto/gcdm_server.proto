@@ -45,8 +45,3 @@ message DataResponse {
 
   Data data = 7;
 }
-
-message Error {
-  string message = 1;
-  uint32 code = 2;
-}

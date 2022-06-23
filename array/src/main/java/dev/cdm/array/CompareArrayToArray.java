@@ -8,10 +8,7 @@ package dev.cdm.array;
 import java.util.Formatter;
 import java.util.Iterator;
 
-/**
- * Compare reading netcdf with Array. Open separate files to prevent them from colliding.
- * Also use to test round trip through cmdr.
- */
+/** Compare two arrays. */
 public class CompareArrayToArray {
 
   public static boolean compareData(String name, Array<?> org, Array<?> array) {

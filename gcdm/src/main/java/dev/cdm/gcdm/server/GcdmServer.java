@@ -6,6 +6,8 @@
 package dev.cdm.gcdm.server;
 
 import com.google.common.base.Stopwatch;
+import dev.cdm.core.write.ChunkingIndex;
+import dev.cdm.dataset.api.CdmDatasets;
 import dev.cdm.gcdm.GcdmConverter;
 import dev.cdm.gcdm.GcdmGridConverter;
 import io.grpc.Metadata;
@@ -25,27 +27,16 @@ import java.util.concurrent.TimeUnit;
 import dev.cdm.array.*;
 import dev.cdm.gcdm.protogen.GcdmGrpc.GcdmImplBase;
 import dev.cdm.gcdm.protogen.GcdmGridProto;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.DataRequest;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.DataResponse;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.Header;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.HeaderRequest;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.HeaderResponse;
+import dev.cdm.gcdm.protogen.GcdmProto;
+import dev.cdm.gcdm.protogen.GcdmServerProto.DataRequest;
+import dev.cdm.gcdm.protogen.GcdmServerProto.DataResponse;
+import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderRequest;
+import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderResponse;
 import dev.cdm.array.InvalidRangeException;
 import dev.cdm.array.Section;
-import ucar.nc2.CdmFile;
-import ucar.nc2.ParsedArraySectionSpec;
-import ucar.nc2.Sequence;
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.CdmDatasets;
+import dev.cdm.core.api.*;
 import dev.cdm.dataset.transform.vertical.VerticalTransform;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridDatasetFactory;
-import ucar.nc2.grid.GridReferencedArray;
-import ucar.nc2.grid.GridSubset;
-import ucar.nc2.util.Misc;
-import ucar.nc2.write.ChunkingIndex;
+import dev.cdm.grid.api.*;
 
 /**
  * Server that manages startup/shutdown of a gCDM Server.
@@ -99,7 +90,6 @@ public class GcdmServer {
 
   /** Main launches the server from the command line. */
   public static void main(String[] args) throws IOException, InterruptedException {
-    Misc.showClassPath();
     final GcdmServer server = new GcdmServer();
     server.start();
     server.blockUntilShutdown();
@@ -125,7 +115,7 @@ public class GcdmServer {
       System.out.printf("GcdmServer getHeader open %s%n", req.getLocation());
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (CdmFile ncfile = CdmDatasets.openFile(req.getLocation(), null)) {
-        Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
+        GcdmProto.Header.Builder header = GcdmProto.Header.newBuilder().setLocation(req.getLocation())
             .setRoot(GcdmConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
         response.setHeader(header);
         responseObserver.onNext(response.build());
@@ -134,12 +124,12 @@ public class GcdmServer {
       } catch (Throwable t) {
         logger.warn("GcdmServer getHeader failed ", t);
         t.printStackTrace();
-        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 
     @Override
-    public void getNetcdfData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
+    public void getCdmData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
       System.out.printf("GcdmServer getData %s %s%n", req.getLocation(), req.getVariableSpec());
       final Stopwatch stopwatch = Stopwatch.createStarted();
       long size = -1;
@@ -163,7 +153,7 @@ public class GcdmServer {
         DataResponse.Builder response =
             DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(
-            GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
+            GcdmProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
         responseObserver.onNext(response.build());
       }
 
@@ -258,7 +248,7 @@ public class GcdmServer {
       Formatter errlog = new Formatter();
       try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
         if (gridDataset == null) {
-          response.setError(GcdmNetcdfProto.Error.newBuilder()
+          response.setError(GcdmProto.Error.newBuilder()
               .setMessage(String.format("Dataset '%s' not found or not a GridDataset", request.getLocation())).build());
         } else {
           response.setDataset(GcdmGridConverter.encodeGridDataset(gridDataset));
@@ -271,7 +261,7 @@ public class GcdmServer {
         System.out.printf("GcdmServer getGridDataset failed %s %n%s%n", t.getMessage(), errlog);
         logger.warn("GcdmServer getGridDataset failed ", t);
         t.printStackTrace();
-        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 
@@ -321,7 +311,7 @@ public class GcdmServer {
     }
 
     void makeError(GcdmGridProto.GridDataResponse.Builder response, String message) {
-      response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(message).build());
+      response.setError(GcdmProto.Error.newBuilder().setMessage(message).build());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,14 +330,14 @@ public class GcdmServer {
 
         if (gridDataset == null) {
           response.setError(
-              GcdmNetcdfProto.Error.newBuilder().setMessage("Dataset not found or not a GridDataset").build());
+              GcdmProto.Error.newBuilder().setMessage("Dataset not found or not a GridDataset").build());
         } else {
           Optional<VerticalTransform> cto = gridDataset.findVerticalTransformByHash(request.getId());
           if (cto.isPresent()) {
             Array<?> data = cto.get().getCoordinateArray3D(request.getTimeIndex());
             response.setData3D(GcdmConverter.encodeData(data.getArrayType(), data));
           } else {
-            response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage("VerticalTransform not found").build());
+            response.setError(GcdmProto.Error.newBuilder().setMessage("VerticalTransform not found").build());
           }
         }
 
@@ -358,7 +348,7 @@ public class GcdmServer {
         System.out.printf("GcdmServer getVerticalTransform failed %s %n%s%n", t.getMessage(), errlog);
         logger.warn("GcdmServer getVerticalTransform failed ", t);
         t.printStackTrace();
-        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 

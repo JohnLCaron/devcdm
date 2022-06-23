@@ -7,10 +7,11 @@ package dev.cdm.core.api;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
+import dev.cdm.array.CompareArrayToArray;
 import dev.cdm.array.StructureData;
 import dev.cdm.array.StructureDataArray;
 import dev.cdm.array.StructureMembers;
-import dev.cdm.core.util.CompareArrayToArray;
+import dev.cdm.core.util.CompareCdmFiles;
 
 import static com.google.common.truth.Truth.assertThat;
 

@@ -6,7 +6,8 @@ package dev.cdm.core.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import dev.cdm.core.util.CompareArrayToArray;
+import dev.cdm.array.CompareArrayToArray;
+import dev.cdm.core.util.CompareCdmFiles;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -359,7 +360,7 @@ public class TestVariable {
 
     Array data = xvar.readArray(new Section("10:20"));
     assertThat(
-        CompareArrayToArray.compareData("testReadBySectionSpec", data, Arrays.makeArray(ArrayType.INT, 11, 200, 10)))
+            CompareArrayToArray.compareData("testReadBySectionSpec", data, Arrays.makeArray(ArrayType.INT, 11, 200, 10)))
             .isTrue();
   }
 

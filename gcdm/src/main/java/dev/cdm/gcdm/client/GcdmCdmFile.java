@@ -19,11 +19,11 @@ import javax.annotation.Nullable;
 import dev.cdm.array.Arrays;
 import dev.cdm.array.StructureDataArray;
 import dev.cdm.gcdm.protogen.GcdmGrpc;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.DataRequest;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.DataResponse;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.Header;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.HeaderRequest;
-import dev.cdm.gcdm.protogen.GcdmNetcdfProto.HeaderResponse;
+import dev.cdm.gcdm.protogen.GcdmServerProto.DataRequest;
+import dev.cdm.gcdm.protogen.GcdmServerProto.DataResponse;
+import dev.cdm.gcdm.protogen.GcdmProto.Header;
+import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderRequest;
+import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderResponse;
 import dev.cdm.gcdm.GcdmConverter;
 import dev.cdm.core.api.*;
 
@@ -61,7 +61,7 @@ public class GcdmCdmFile extends CdmFile {
     DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
       Iterator<DataResponse> responses =
-          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getNetcdfData(request);
+          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getCdmData(request);
       while (responses.hasNext()) {
         DataResponse response = responses.next();
         if (response.hasError()) {
@@ -99,12 +99,12 @@ public class GcdmCdmFile extends CdmFile {
   }
 
   @Override
-  public String getFileTypeId() {
+  public String getCdmFileTypeId() {
     return PROTOCOL;
   }
 
   @Override
-  public String getFileTypeDescription() {
+  public String getCdmFileTypeDescription() {
     return PROTOCOL;
   }
 
