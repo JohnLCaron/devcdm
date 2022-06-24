@@ -21,6 +21,7 @@ description = "gRPC client and server implementation of CDM Remote Procedure Cal
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -37,6 +38,7 @@ dependencies {
     implementation(libs.protobufJava)
     implementation(libs.slf4j)
     compileOnly(libs.tomcatAnnotationsApi)
+    implementation(libs.uomImpl)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
