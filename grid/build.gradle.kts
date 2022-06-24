@@ -13,6 +13,7 @@ description = "The CDM (next generation) grid module."
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -23,6 +24,7 @@ dependencies {
     implementation(libs.guava)
     compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
+    implementation(libs.uomImpl)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")

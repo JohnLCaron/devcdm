@@ -4,102 +4,47 @@
  */
 package dev.cdm.dataset.unit;
 
-
 import tech.units.indriya.format.SimpleUnitFormat;
 import tech.units.indriya.unit.Units;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
-import javax.measure.quantity.AmountOfSubstance;
 import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricCapacitance;
-import javax.measure.quantity.ElectricCharge;
-import javax.measure.quantity.ElectricConductance;
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricInductance;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.ElectricResistance;
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Force;
-import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Illuminance;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.LuminousFlux;
-import javax.measure.quantity.LuminousIntensity;
-import javax.measure.quantity.MagneticFlux;
-import javax.measure.quantity.MagneticFluxDensity;
-import javax.measure.quantity.Mass;
-import javax.measure.quantity.Power;
+
 import javax.measure.quantity.Pressure;
-import javax.measure.quantity.RadiationDoseAbsorbed;
-import javax.measure.quantity.RadiationDoseEffective;
-import javax.measure.quantity.Radioactivity;
-import javax.measure.quantity.SolidAngle;
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
-import javax.measure.quantity.Volume;
 import javax.measure.spi.ServiceProvider;
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.util.Map;
 
+import static java.lang.Math.PI;
+
 public class UdunitFormat extends SimpleUnitFormat {
-
-  // base units
-  static Unit<ElectricCurrent> ampere = Units.AMPERE;
-  static Unit<LuminousIntensity> candela = Units.CANDELA;
-  static Unit<Temperature> kelvin = Units.KELVIN;
-  static Unit<Mass> kilogram = Units.KILOGRAM;
-  static Unit<Length> meter = Units.METRE;
-  static Unit<AmountOfSubstance> mole = Units.MOLE;
-  static Unit<Time> second = Units.SECOND;
-  static Unit<Angle> radian = Units.RADIAN;
-  static Unit<SolidAngle> steradian = Units.STERADIAN;
-
-
-  static Unit<Temperature> celsius = Units.CELSIUS;
-  static Unit<ElectricCharge> coulomb = Units.COULOMB;
-  static Unit<ElectricCapacitance> farad = Units.FARAD;
-  static Unit<ElectricInductance> henry = Units.HENRY;
-  static Unit<Frequency> hertz = Units.HERTZ;
-  static Unit<Energy> joule = Units.JOULE;
-  static Unit<Volume> liter = Units.LITRE;
-  static Unit<LuminousFlux> lumen = Units.LUMEN;
-  static Unit<Illuminance> lux = Units.LUX;
-  static Unit<Force> newton = Units.NEWTON;
-  static Unit<ElectricResistance> ohm = Units.OHM;
-  static Unit<Pressure> pascal = Units.PASCAL;
-  static Unit<Dimensionless> percent = Units.PERCENT;
-  static Unit<ElectricConductance> siemens = Units.SIEMENS;
-  static Unit<MagneticFluxDensity> tesla = Units.TESLA;
-  static Unit<ElectricPotential> volt = Units.VOLT;
-  static Unit<Power> watt = Units.WATT;
-  static Unit<MagneticFlux> weber = Units.WEBER;
-
-  static Unit<Radioactivity> becquerel = Units.BECQUEREL;
-  static Unit<RadiationDoseAbsorbed> gray = Units.GRAY;
-  static Unit<RadiationDoseEffective> sievert = Units.SIEVERT;
-
-  static Unit<Time> minute = Units.MINUTE;
-  static Unit<Time> day = Units.DAY;
-  static Unit<Time> hour = Units.HOUR;
-
-  /////////////////////////////////////
 
   private static SimpleUnitFormat delegate = (SimpleUnitFormat) ServiceProvider.current().getFormatService().getUnitFormat("SIMPLE_ASCII");
 
   static {
     delegate.alias(Units.PERCENT, "percent");
-    delegate.alias(Units.PASCAL, "pa");
-    delegate.alias(Units.PASCAL.multiply(100), "mbar");
-    delegate.alias(Units.PASCAL.multiply(100), "millibar");
     delegate.alias(Units.CELSIUS, "degC");
+    delegate.alias(Units.METRE, "meters");
+
+    Unit<Pressure> mbar = Units.PASCAL.multiply(100);
+    delegate.alias(mbar, "mbar");
+    delegate.alias(mbar, "millibar");
+    delegate.alias(mbar, "hectopascals");
+    delegate.alias(Units.PASCAL, "pa");
 
     delegate.alias(Units.HOUR, "hours");
     delegate.alias(Units.MINUTE, "minutes");
     delegate.alias(Units.SECOND, "seconds");
+    delegate.alias(Units.SECOND, "sec");
+
+    Unit<Angle> degrees = Units.RADIAN.multiply(100/PI);
+    delegate.alias(degrees, "degrees_east");
+    delegate.alias(degrees, "degE");
+    delegate.alias(degrees, "degrees_north");
+    delegate.alias(degrees, "degN");
   }
 
   @Override
@@ -129,7 +74,12 @@ public class UdunitFormat extends SimpleUnitFormat {
 
   @Override
   public Unit<?> parse(CharSequence csq) throws MeasurementParseException {
-    return delegate.parse(csq);
+    try {
+      return delegate.parse(csq);
+    } catch (Exception e) {
+      String.format("Failed to parse '%s'%n", csq);
+      throw new RuntimeException(String.format("Failed to parse %s%n", csq), e);
+    }
   }
 
   @Override

@@ -4,7 +4,7 @@
  */
 package dev.cdm.dataset;
 
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.grid.api.TestGridDatasets;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

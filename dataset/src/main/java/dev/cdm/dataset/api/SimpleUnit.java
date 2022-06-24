@@ -1,6 +1,7 @@
 package dev.cdm.dataset.api;
 
 import dev.cdm.dataset.unit.UdunitFormat;
+import org.jetbrains.annotations.Nullable;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -9,14 +10,25 @@ import javax.measure.quantity.Length;
 
 import static javax.measure.MetricPrefix.KILO;
 import static tech.units.indriya.unit.Units.METRE;
+import static tech.units.indriya.unit.Units.PASCAL;
 
 public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
   static UdunitFormat udunitFormat = new UdunitFormat();
 
   public static final SimpleUnit<Length> kmUnit = new SimpleUnit(KILO(METRE));
+  public static final SimpleUnit<Length> pressureUnit = new SimpleUnit(PASCAL);
 
   public static <T extends Quantity<T>> SimpleUnit<T> factoryWithExceptions(String geoCoordinateUnits) {
     return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(geoCoordinateUnits)));
+  }
+
+  @Nullable
+  public static <T extends Quantity<T>> SimpleUnit<T> factory(String geoCoordinateUnits) {
+    try {
+      return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(geoCoordinateUnits)));
+    } catch (Throwable t) {
+      return null;
+    }
   }
 
   public static <T extends Quantity<T>> double getConversionFactor(String unit1s, String unit2s) {
@@ -39,6 +51,15 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
   public double convertTo(double value, SimpleUnit<T> outputUnit) throws IllegalArgumentException {
     UnitConverter scale2 = unit.getConverterTo(outputUnit.unit);
     return scale2.convert(value);
+  }
+
+  public boolean isCompatible(String other) {
+    Unit<?> otherUnit = udunitFormat.parse(other);
+    return this.unit.isCompatible(otherUnit);
+  }
+
+  public boolean isCompatible(SimpleUnit other) {
+    return this.unit.isCompatible(other.unit);
   }
 
 }
