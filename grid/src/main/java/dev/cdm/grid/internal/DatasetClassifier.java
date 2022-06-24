@@ -11,7 +11,7 @@ import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.Dimensions;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.FeatureType;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.CdmDataset;

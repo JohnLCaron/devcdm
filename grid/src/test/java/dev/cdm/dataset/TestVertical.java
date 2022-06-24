@@ -25,7 +25,7 @@ import dev.cdm.grid.api.GridCoordinateSystem;
 import dev.cdm.grid.api.GridHorizCoordinateSystem;
 import dev.cdm.grid.api.GridTimeCoordinateSystem;
 import dev.cdm.grid.internal.GridNetcdfDataset;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 
 import java.io.IOException;
 import java.util.Formatter;

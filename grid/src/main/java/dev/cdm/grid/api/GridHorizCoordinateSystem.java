@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 import dev.cdm.array.Immutable;
 import dev.cdm.array.Range;
 import dev.cdm.core.constants.AxisType;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.grid.internal.CylindricalCoord;
 import dev.cdm.grid.internal.SubsetHelpers;
 import dev.cdm.grid.internal.SubsetPointHelper;
@@ -442,8 +442,11 @@ public class GridHorizCoordinateSystem {
   // convert projection units to km
   private GridAxisPoint convertUnits(GridAxisPoint axis) {
     String units = axis.getUnits();
-    SimpleUnit axisUnit = SimpleUnit.factoryWithExceptions(units);
+    SimpleUnit axisUnit = SimpleUnit.factory(units);
     if (axisUnit == null) {
+      return axis;
+    }
+    if (!axisUnit.isCompatible(SimpleUnit.kmUnit)) {
       return axis;
     }
 
