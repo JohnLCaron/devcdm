@@ -8,7 +8,7 @@ package dev.cdm.dataset.transform.horiz;
 import com.google.common.base.Preconditions;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.geoloc.Projection;
 
 /**

@@ -28,9 +28,13 @@ public class CalendarDateUnit {
   public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(CalendarPeriod.Field.Second, false,
       new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC)));
 
+  public static boolean isDateUnit(String udunitString) {
+    return fromUdunitString(null, udunitString).isPresent();
+  }
+
   /**
    * Create a CalendarDateUnit from a calendar and a udunit string = "unit since calendarDate"
-   * 
+   *
    * @param calt use this Calendar, or null for default calendar
    * @param udunitString "unit since calendarDate"
    * @return CalendarDateUnit or empty if udunitString is not parseable

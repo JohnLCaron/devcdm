@@ -6,10 +6,10 @@ package dev.cdm.dataset.conv;
 
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Variable;
+import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.core.util.SimpleUnit;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
@@ -96,7 +96,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
             String unit = ((VariableDS.Builder<?>) v).getUnits();
             if (unit == null)
               continue;
-            if (SimpleUnit.isDateUnit(unit)) {
+            if (CalendarDateUnit.isDateUnit(unit)) {
               addAxisType(v, AxisType.Time); // CF-1
               break;
             }

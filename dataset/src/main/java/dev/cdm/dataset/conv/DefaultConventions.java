@@ -6,6 +6,7 @@
 package dev.cdm.dataset.conv;
 
 import dev.cdm.core.api.CdmFile;
+import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -16,7 +17,7 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
@@ -112,7 +113,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     if (map.get(AxisType.Time) == null) {
       for (VarProcess vp : varList) {
         String unit = vp.vb.getUnits();
-        if (unit != null && SimpleUnit.isDateUnit(unit)) {
+        if (unit != null && CalendarDateUnit.isDateUnit(unit)) {
           vp.isCoordinateAxis = true;
           map.put(AxisType.Time, vp);
           parseInfo.format(" Time Coordinate Axis added (unit) = %s from unit %s%n", vp.vb.getFullName(), unit);
@@ -207,7 +208,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     }
 
     if (vname.equalsIgnoreCase("time") || findAlias(vb).equalsIgnoreCase("time")) {
-      if (SimpleUnit.isDateUnit(unit)) {
+      if (CalendarDateUnit.isDateUnit(unit)) {
         return AxisType.Time;
       }
     }
@@ -267,7 +268,7 @@ public class DefaultConventions extends CoordSystemBuilder {
       return AxisType.Lat;
     }
 
-    if (SimpleUnit.isDateUnit(unit)) { // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
+    if (CalendarDateUnit.isDateUnit(unit)) { // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
       return AxisType.Time;
     }
 

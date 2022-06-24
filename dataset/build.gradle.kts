@@ -13,16 +13,21 @@ description = "The CDM (next generation) coordinate system module."
 
 repositories {
     mavenCentral()
+    mavenLocal()
+    //maven {
+    //    url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    //}
 }
 
 dependencies {
     api(project(":array"))
     api(project(":core"))
 
+    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.guava)
     implementation(libs.jdom2)
-    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
+    implementation(libs.uomImpl)
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")

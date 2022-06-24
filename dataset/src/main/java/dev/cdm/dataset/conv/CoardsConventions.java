@@ -3,9 +3,10 @@ package dev.cdm.dataset.conv;
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.calendar.Calendar;
+import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
-import dev.cdm.core.util.SimpleUnit;
+import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
@@ -60,7 +61,7 @@ class CoardsConventions extends CoordSystemBuilder {
     String unit = vb.getUnits();
     if (unit != null) {
       unit = unit.trim();
-      if (SimpleUnit.isDateUnit(unit)) {
+      if (CalendarDateUnit.isDateUnit(unit)) {
         Attribute calAttr = vb.getAttributeContainer().findAttributeIgnoreCase(CF.CALENDAR);
         if (calAttr == null) {
           calAttr = new Attribute(CF.CALENDAR, Calendar.gregorian.toString());
@@ -105,7 +106,7 @@ class CoardsConventions extends CoordSystemBuilder {
       return AxisType.Lat;
     }
 
-    if (SimpleUnit.isDateUnit(unit)) {
+    if (CalendarDateUnit.isDateUnit(unit)) {
       return AxisType.Time;
     }
     // look for other z coordinate
