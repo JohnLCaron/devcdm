@@ -14,6 +14,9 @@ description = "The CDM (next generation) coordinate system module."
 repositories {
     mavenCentral()
     mavenLocal()
+    //maven {
+    //    url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    //}
 }
 
 dependencies {
@@ -25,7 +28,6 @@ dependencies {
     implementation(libs.jdom2)
     implementation(libs.slf4j)
     implementation(libs.uomImpl)
-    // implementation(files("libs/indriya-2.1.4-SNAPSHOT.jar"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
