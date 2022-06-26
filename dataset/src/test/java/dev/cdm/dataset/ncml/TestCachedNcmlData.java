@@ -5,7 +5,7 @@
 package dev.cdm.dataset.ncml;
 
 import dev.cdm.dataset.api.TestCdmDatasets;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.core.api.CdmFile;
@@ -32,7 +32,7 @@ public class TestCachedNcmlData {
   }
 
   @Test
-  @Ignore("doesnt work because CdmFileProvider cant pass in IospMessage")
+  @Disabled("doesnt work because CdmFileProvider cant pass in IospMessage")
   public void testCachedDataWithStructure() throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.datasetLocalNcmlDir + "point/profileMultidim.ncml");
 

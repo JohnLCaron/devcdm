@@ -4,7 +4,6 @@
  */
 package dev.cdm.core.calendar;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import dev.cdm.core.calendar.chrono.Uniform30DayDate;
 

@@ -2,7 +2,7 @@ package dev.cdm.grid.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -53,7 +53,7 @@ public class TestReadGridDataset {
   }
 
   @Test
-  @Ignore("valtime not monotonic")
+  @Disabled("valtime not monotonic")
   public void testDependentAxis() throws Exception {
     String filename = TestGridDatasets.gridTestDir + "grid/2003021212_avn-x.nc";
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
@@ -62,7 +62,7 @@ public class TestReadGridDataset {
   }
 
   @Test
-  @Ignore("Cant read swath")
+  @Disabled("Cant read swath")
   public void testSwath() throws Exception {
     String filename =
         TestGridDatasets.gridLocalDir + "grid/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";

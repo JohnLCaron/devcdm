@@ -5,7 +5,7 @@
 
 package dev.cdm.grid.internal;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -19,7 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
  * Test {@link ExtractCoordinateValues}.
  * In this case, the bounds are flipped (lower, upper)
  */
-@Ignore("Malformed File")
+@Disabled("Malformed File")
 public class TestExtractCoordinateValuesMalformed {
 
   // from cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
