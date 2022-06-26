@@ -6,6 +6,7 @@ module dev.cdm.dataset {
   requires org.slf4j;
   requires tech.units.indriya;
   requires static org.jetbrains.annotations;
+  requires kotlin.stdlib;
 
   exports dev.cdm.dataset.api;
   exports dev.cdm.dataset.geoloc;

@@ -28,6 +28,7 @@ public class UdunitFormat extends SimpleUnitFormat {
     delegate.alias(Units.PERCENT, "percent");
     delegate.alias(Units.CELSIUS, "degC");
     delegate.alias(Units.METRE, "meters");
+    delegate.alias(Units.METRE, "meter");
 
     Unit<Pressure> mbar = Units.PASCAL.multiply(100);
     delegate.alias(mbar, "mbar");

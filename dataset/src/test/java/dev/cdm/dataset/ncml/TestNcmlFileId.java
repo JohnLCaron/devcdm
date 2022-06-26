@@ -1,17 +1,16 @@
-/*
- * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
- */
-package dev.cdm.dataset.api;
+package dev.cdm.dataset.ncml;
 
+import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasets;
+import dev.cdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link CdmDataset} */
-public class TestCdmDataset {
+/** Test getCdmFileTypeId */
+public class TestNcmlFileId {
   @Test
   public void testNcmlFileId() throws IOException {
     String filename = TestCdmDatasets.datasetLocalNcmlDir + "modifyAtts.ncml";

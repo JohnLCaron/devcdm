@@ -5,6 +5,7 @@
 plugins {
     id("java")
     id("java-library")
+    kotlin("jvm") version "1.6.21"
 }
 
 group = "dev.cdm"
@@ -28,6 +29,10 @@ dependencies {
     implementation(libs.jdom2)
     implementation(libs.slf4j)
     implementation(libs.uomImpl)
+
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.15")
+    implementation(kotlin("stdlib-common", "1.6.20"))
+    implementation(kotlin("stdlib", "1.6.20"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")

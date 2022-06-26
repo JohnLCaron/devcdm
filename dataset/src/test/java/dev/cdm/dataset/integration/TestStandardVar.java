@@ -2,10 +2,16 @@
  * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.cdm.dataset.api;
+package dev.cdm.dataset.integration;
 
 import dev.cdm.array.PrintArray;
 import dev.cdm.core.write.Netcdf3FormatWriter;
+import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasets;
+import dev.cdm.dataset.api.DatasetUrl;
+import dev.cdm.dataset.api.TestCdmDatasets;
+import dev.cdm.dataset.api.VariableDS;
+import dev.cdm.dataset.api.VariableEnhanced;
 import dev.cdm.dataset.testutil.CompareCdmFiles;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

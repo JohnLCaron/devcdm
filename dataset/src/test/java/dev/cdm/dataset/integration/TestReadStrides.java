@@ -2,10 +2,12 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.cdm.dataset.api;
+package dev.cdm.dataset.integration;
 
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Variable;
+import dev.cdm.dataset.api.CdmDatasets;
+import dev.cdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.Arrays;
