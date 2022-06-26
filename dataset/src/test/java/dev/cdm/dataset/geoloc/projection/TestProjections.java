@@ -7,7 +7,7 @@
 package dev.cdm.dataset.geoloc.projection;
 
 import dev.cdm.dataset.geoloc.CurvilinearProjection;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.NumericCompare;
 import dev.cdm.dataset.geoloc.Earth;
@@ -124,7 +124,7 @@ public class TestProjections {
   }
 
   @Test
-  @Ignore("fails")
+  @Disabled("fails")
   public void testAEAE() {
     testProjectionLatLonMax(new AlbersEqualAreaEllipse(), 180, 80, true);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
@@ -132,7 +132,7 @@ public class TestProjections {
   }
 
   @Test
-  @Ignore("fails")
+  @Disabled("fails")
   public void testLCCE() {
     testProjectionLatLonMax(new LambertConformalConicEllipse(), 360, 80, true);
     LambertConformalConicEllipse p = new LambertConformalConicEllipse();

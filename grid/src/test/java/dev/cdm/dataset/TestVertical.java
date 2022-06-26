@@ -14,7 +14,7 @@ import dev.cdm.dataset.transform.vertical.OceanSigma;
 import dev.cdm.dataset.transform.vertical.VerticalTransform;
 import dev.cdm.dataset.transform.vertical.WrfEta;
 import dev.cdm.grid.api.TestGridDatasets;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.InvalidRangeException;
@@ -49,7 +49,7 @@ public class TestVertical {
   }
 
   @Test
-  @Ignore("fails because not correctly slicing vertical dimension out")
+  @Disabled("fails because not correctly slicing vertical dimension out")
   public void testHIRLAMhybrid() throws Exception {
     open(TestGridDatasets.gridTestDir + "transforms/HIRLAMhybrid.ncml", "Relative_humidity_hybrid",
         AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit);

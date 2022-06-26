@@ -2,7 +2,7 @@ package dev.cdm.grid.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Test;
 import dev.cdm.core.constants.FeatureType;
 import dev.cdm.dataset.api.CdmDataset;
@@ -186,7 +186,7 @@ public class TestDatasetClassifier {
   }
 
   @Test
-  @Ignore("TODO not dealing with multiple groups; coverage ver6 looks wrong also (ok in ver5)")
+  @Disabled("TODO not dealing with multiple groups; coverage ver6 looks wrong also (ok in ver5)")
   public void problemWithGroups() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "gribCollections/ecmwf/mad/MAD10090000100900001";
 

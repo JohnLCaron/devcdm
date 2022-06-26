@@ -66,8 +66,7 @@ import java.io.IOException;
  * (In addition, there are two textual representations for netCDF data, though these are not usually thought of as
  * formats: CDL and NcML.)
  * 
- * The classic format was the only format for netCDF data created between 1989 and 2004 by the reference software from
- * Unidata.
+ * The classic format was the only format for netCDF data created between 1989 and 2004 by the reference software from Unidata.
  * It is still the default format for new netCDF data files, and the form in which most netCDF data is stored.
  * This format is also referred as CDF-1 format.
  * 
