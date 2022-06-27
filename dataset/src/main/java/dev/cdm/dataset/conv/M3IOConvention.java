@@ -65,7 +65,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new M3IOConvention(datasetBuilder);
     }
   }
@@ -73,7 +73,7 @@ public class M3IOConvention extends CoordSystemBuilder {
   /////////////////////////////////////////////////////////////////
   private ProjectionCTV projCT;
 
-  private M3IOConvention(CdmDataset.Builder<?> datasetBuilder) {
+  private M3IOConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }

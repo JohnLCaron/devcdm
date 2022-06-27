@@ -99,7 +99,7 @@ public class PrintArray {
     int[] dims = ma.getShape();
     int last = dims[0];
 
-    out.format("%n%s{", indent);
+    out.format("%s[", indent);
     IndexFn indexFn = IndexFn.builder(ma.getShape()).build();
 
     if ((rank == 1) && (ma.getArrayType() != ArrayType.STRUCTURE)) {
@@ -117,7 +117,7 @@ public class PrintArray {
         }
         out.format("%s", value);
       }
-      out.format("}");
+      out.format("]");
       return;
     }
 
@@ -211,7 +211,7 @@ public class PrintArray {
     int rank = ma.getRank();
 
     if (rank == 0) {
-      out.format("  \"%s\"", ma.get(0));
+      out.format(" \"%s\"", ma.get(0));
       return;
     }
 
@@ -220,7 +220,7 @@ public class PrintArray {
       for (int i = 0; i < ma.length(); i++) {
         if (!first)
           out.format(", ");
-        out.format("  \"%s\"", ma.get(i));
+        out.format("\"%s\"", ma.get(i));
         first = false;
       }
       return;

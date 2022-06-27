@@ -11,6 +11,7 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
@@ -26,7 +27,7 @@ import java.io.IOException;
 class CSMConvention extends CoardsConventions {
   private static final String CONVENTION_NAME = "NCAR-CSM";
 
-  CSMConvention(CdmDataset.Builder<?> datasetBuilder) {
+  CSMConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -71,7 +72,7 @@ class CSMConvention extends CoardsConventions {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CSMConvention(datasetBuilder);
     }
   }

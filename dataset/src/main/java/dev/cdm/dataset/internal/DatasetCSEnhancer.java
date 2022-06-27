@@ -3,19 +3,20 @@ package dev.cdm.dataset.internal;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Variable;
-import dev.cdm.core.util.CancelTask;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDataset.Enhance;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SequenceDS;
 import dev.cdm.dataset.api.StructureDS;
 import dev.cdm.dataset.api.VariableDS;
+import dev.cdm.core.util.CancelTask;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /** Helper class to enhance NetcdfDataset with scale/offset/missing */
-public class DatasetEnhancer {
+public class DatasetCSEnhancer {
 
   public static boolean enhanceNeeded(Set<Enhance> want, Set<Enhance> have) {
     if (want == null)
@@ -29,11 +30,11 @@ public class DatasetEnhancer {
     return false;
   }
 
-  private final CdmDataset.Builder<?> dsBuilder;
+  private final CdmDatasetCS.Builder<?> dsBuilder;
   private final Set<Enhance> wantEnhance;
   private final CancelTask cancelTask;
 
-  public DatasetEnhancer(CdmDataset.Builder<?> ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
+  public DatasetCSEnhancer(CdmDatasetCS.Builder<?> ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
     this.dsBuilder = ds;
     this.wantEnhance = wantEnhance == null ? EnumSet.noneOf(Enhance.class) : wantEnhance;
     this.cancelTask = cancelTask;
@@ -51,8 +52,32 @@ public class DatasetEnhancer {
    * Possible remove all direct access to Variable.enhance
    */
 
-  public CdmDataset.Builder<?> enhance() throws IOException {
+  public CdmDatasetCS.Builder<?> enhance() throws IOException {
+    // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
+    CoordSystemBuilder coordSysBuilder = null;
+    if (wantEnhance.contains(Enhance.CoordSystems) && !dsBuilder.getEnhanceMode().contains(Enhance.CoordSystems)) {
+      Optional<CoordSystemBuilder> hasNewBuilder = CoordSystemFactory.factory(dsBuilder, cancelTask);
+      if (hasNewBuilder.isPresent()) {
+        coordSysBuilder = hasNewBuilder.get();
+        coordSysBuilder.augmentDataset(cancelTask);
+        dsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
+      }
+    }
+
     enhanceGroup(dsBuilder.rootGroup);
+
+    // now find coord systems which may change some Variables to axes, etc
+    if (coordSysBuilder != null) {
+      // temporarily set enhanceMode if incomplete coordinate systems are allowed
+      if (wantEnhance.contains(Enhance.IncompleteCoordSystems)) {
+        dsBuilder.addEnhanceMode(Enhance.IncompleteCoordSystems);
+        coordSysBuilder.buildCoordinateSystems();
+        dsBuilder.removeEnhanceMode(Enhance.IncompleteCoordSystems);
+      } else {
+        coordSysBuilder.buildCoordinateSystems();
+      }
+    }
+
     dsBuilder.addEnhanceModes(wantEnhance);
     return dsBuilder;
   }

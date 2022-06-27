@@ -23,7 +23,7 @@ public class TestWRFTime {
   public void testWrfTimeUnderscore() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/WrfTimesStrUnderscore.nc";
     System.out.println(tstFile);
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       // make sure this file went through the WrfConvention
       assertThat(ncd.getConventionUsed()).isEqualTo("WRF");
       CoordinateAxis tca = ncd.findCoordinateAxis(AxisType.Time);
@@ -42,7 +42,7 @@ public class TestWRFTime {
     EnumSet<CdmDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);
     enhanceMode.add(CdmDataset.Enhance.IncompleteCoordSystems);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(tstFile);
-    try (CdmDataset ncd = CdmDatasets.openDataset(durl, enhanceMode, -1, null, null)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       List<CoordinateSystem> cs = ncd.getCoordinateSystems();
       assertThat(cs.size()).isEqualTo(1);
       CoordinateSystem dsCs = cs.get(0);
@@ -50,7 +50,7 @@ public class TestWRFTime {
 
       VariableDS var = (VariableDS) ncd.findVariable("T2");
       assertThat(var).isNotNull();
-      List<CoordinateSystem> varCs = var.getCoordinateSystems();
+      List<CoordinateSystem> varCs = ncd.makeCoordinateSystemsFor(var);
       assertThat(varCs.size()).isEqualTo(1);
       assertThat(dsCs).isEqualTo(varCs.get(0));
     }

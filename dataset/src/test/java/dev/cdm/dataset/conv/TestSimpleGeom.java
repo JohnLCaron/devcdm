@@ -5,6 +5,7 @@
 
 package dev.cdm.dataset.conv;
 
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
@@ -59,32 +60,32 @@ public class TestSimpleGeom {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
-    CdmDataset ncd = CdmDatasets.openDataset(tstFile);
+    try(CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
 
-    // make sure this dataset used the cfConvention
-    expected = cfConvention;
-    found = ncd.getConventionUsed();
-    testCond = found.equals(expected);
-    failMessage =
-        format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-    assertWithMessage(failMessage).that(testCond).isTrue();
+      // make sure this dataset used the cfConvention
+      expected = cfConvention;
+      found = ncd.getConventionUsed();
+      testCond = found.equals(expected);
+      failMessage =
+              format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
-    // check that attributes were filled in correctly
-    List<Variable> vars = ncd.getVariables();
-    for (Variable v : vars) {
-      if (v.findAttribute(CF.GEOMETRY) != null) {
-        assertThat(v.findAttribute(CF.NODE_COORDINATES)).isNotNull();
-        assertThat(v.findAttribute(_Coordinate.Axes)).isNotNull();
+      // check that attributes were filled in correctly
+      List<Variable> vars = ncd.getVariables();
+      for (Variable v : vars) {
+        if (v.findAttribute(CF.GEOMETRY) != null) {
+          assertThat(v.findAttribute(CF.NODE_COORDINATES)).isNotNull();
+          assertThat(v.findAttribute(_Coordinate.Axes)).isNotNull();
+        }
       }
     }
-    ncd.close();
   }
 
   @Test
   public void testCoordinateVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();
@@ -97,7 +98,7 @@ public class TestSimpleGeom {
   public void testVarLenDataVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();

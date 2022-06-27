@@ -7,6 +7,7 @@ package dev.cdm.dataset.conv;
 
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.calendar.CalendarDateUnit;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -43,7 +44,7 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   protected ProjectionCTV projCT;
 
-  private DefaultConventions(CdmDataset.Builder<?> datasetBuilder) {
+  private DefaultConventions(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = "Default";
   }
@@ -358,7 +359,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new DefaultConventions(datasetBuilder);
     }
   }

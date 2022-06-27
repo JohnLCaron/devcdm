@@ -2,13 +2,15 @@ package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
 import dev.cdm.array.ArrayType
+import dev.cdm.dataset.cdmdsl.CdmdslDataset
+import dev.cdm.dataset.cdmdsl.cdmdsl
 import org.junit.jupiter.api.Test
 
 class TestCdmDsl {
 
     @Test
     fun testModifyAtts() {
-        val cdmdsl: CdmDsl = cdmdsl("nc/example1.nc") {
+        val cdmdsl: CdmdslDataset = cdmdsl("nc/example1.nc") {
             attribute("Conventions").setValue("Metapps")
             attribute("title").remove()
             variable("rh") {
@@ -83,13 +85,13 @@ class TestCdmDsl {
 
     @Test
     fun testCoordSystem2() {
-        val cdmdsl = cdmdsl("nc/something.nc") {
+        val cdmdsl = cdmdsl("nc/something.nc", false) {
             coordSystem("x y time").setProjection("Mercator")
-            projection("Mercator") {
+            transform("Mercator") {
                 attribute("longitude of origin").setValue(23.0)
                 attribute("standard parellel").setValue(60.0)
             }
-            projection("UTM").useVariable("proj")
+            transform("UTM").useVariable("proj")
 
             variable("rh") {
                 coordSystemRef("x y time")

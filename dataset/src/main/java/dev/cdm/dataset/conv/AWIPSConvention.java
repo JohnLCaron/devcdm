@@ -45,7 +45,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   private static final boolean debugProj = false;
   private static final boolean debugBreakup = false;
 
-  AWIPSConvention(CdmDataset.Builder<?> datasetBuilder) {
+  AWIPSConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -63,7 +63,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new AWIPSConvention(datasetBuilder);
     }
   }

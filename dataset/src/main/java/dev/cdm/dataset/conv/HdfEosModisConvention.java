@@ -19,6 +19,7 @@ import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants.FeatureType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.core.iosp.IospUtils;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
 import dev.cdm.dataset.api.CdmDataset;
@@ -44,7 +45,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
   private static final String TIME_NAME = "time";
   private static final String CONVENTION_NAME = "HDF4-EOS-MODIS";
 
-  private HdfEosModisConvention(CdmDataset.Builder<?> datasetBuilder) {
+  private HdfEosModisConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -96,7 +97,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new HdfEosModisConvention(datasetBuilder);
     }
   }

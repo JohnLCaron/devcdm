@@ -5,6 +5,7 @@
 package dev.cdm.dataset;
 
 import com.google.common.base.Strings;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.transform.vertical.AtmosHybridSigmaPressure;
 import dev.cdm.dataset.transform.vertical.AtmosSigma;
 import dev.cdm.dataset.transform.vertical.ExistingFieldVerticalTransform;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.InvalidRangeException;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasets;
 import dev.cdm.grid.api.Grid;
 import dev.cdm.grid.api.GridCoordinateSystem;
@@ -45,7 +45,7 @@ public class TestVertical {
   @Test
   public void testExistingFieldVerticalTransform() throws Exception {
     open(TestGridDatasets.gridTestDir + "transforms/VExisting3D_NUWG.nc", "rhu_hybr", ExistingFieldVerticalTransform.class,
-        SimpleUnit.factoryWithExceptions("gp m"));
+            SimpleUnit.geopotentialHeight);
   }
 
   @Test
@@ -99,7 +99,7 @@ public class TestVertical {
     System.out.printf("compare %s %s%n", filename, gridName);
 
     Formatter errlog = new Formatter();
-    try (CdmDataset ds = CdmDatasets.openDataset(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
       GridNetcdfDataset GridNetcdfDataset = grido.get();

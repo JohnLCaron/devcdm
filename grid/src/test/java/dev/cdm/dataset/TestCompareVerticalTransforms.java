@@ -44,7 +44,7 @@ public class TestCompareVerticalTransforms {
           dev.cdm.dataset.transform.vertical.OceanSG2.class, SimpleUnit.kmUnit),
 
       Arguments.of(TestGridDatasets.gridTestDir + "transforms/VExisting3D_NUWG.nc", "rhu_hybr",
-          dev.cdm.dataset.transform.vertical.ExistingFieldVerticalTransform.class, SimpleUnit.factoryWithExceptions("gp m")),
+          dev.cdm.dataset.transform.vertical.ExistingFieldVerticalTransform.class, SimpleUnit.geopotentialHeight),
 
       Arguments.of(TestGridDatasets.gridTestDir + "transforms/temperature.nc", "Temperature",
           dev.cdm.dataset.transform.vertical.AtmosSigma.class, SimpleUnit.pressureUnit),

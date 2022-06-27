@@ -193,8 +193,8 @@ public class TestFindCoord {
   }
 
   private void doTest(String ncml, String varName, boolean bounded, double[] vals, int[] expect) throws IOException {
-    try (CdmDataset dataset = CdmDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
-      CoordinateAxis1D axis1D = (CoordinateAxis1D) dataset.findVariable(varName);
+    try (CdmDatasetCS dataset = CdmDatasets.openNcmlDatasetCS(new StringReader(ncml), null, null)) {
+      CoordinateAxis1D axis1D = (CoordinateAxis1D) dataset.findCoordinateAxis(varName);
       if (axis1D.isContiguous()) {
         double[] edge = axis1D.getCoordEdges();
         System.out.printf("%s bounded=%s", varName, bounded);

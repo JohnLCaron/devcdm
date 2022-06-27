@@ -6,7 +6,6 @@ package dev.cdm.dataset.api;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -14,7 +13,6 @@ import dev.cdm.array.Arrays;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.dataset.api.CdmDataset.Enhance;
-import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.internal.DataEnhancer;
 import dev.cdm.dataset.internal.EnhanceScaleMissingUnsigned;
 import dev.cdm.core.util.CancelTask;
@@ -26,7 +24,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -193,10 +190,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
     if (orgVar != null) {
       f.format("%nOriginal: %s %s%n", orgDataType, orgVar.getNameAndDimensions());
     }
-    f.format("Coordinate Systems%n");
-    for (CoordinateSystem csys : getCoordinateSystems()) {
-      f.format(" %s (%d)%n", csys.getName(), csys.getCoordinateAxes().size());
-    }
     return f.toString();
   }
 
@@ -297,11 +290,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return enhanceProxy.getUnitsString();
   }
 
-  @Override
-  public List<CoordinateSystem> getCoordinateSystems() {
-    return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final EnhancementsImpl enhanceProxy;
   private final EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy;
@@ -313,9 +301,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
   protected final ArrayType orgDataType; // keep separate for the case where there is no orgVar. TODO @Nullable?
   protected final @Nullable String orgName; // Variable was renamed, must keep track of the original name
   final String orgFileTypeId; // the original fileTypeId. TODO @Nullable?
-
-  // Not technically immutable because of this
-  private ImmutableList<CoordinateSystem> coordinateSystems;
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
@@ -372,14 +357,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
         .setUnits(this.enhanceProxy.getUnitsString()).setDesc(this.enhanceProxy.getDescription());
 
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
-  }
-
-  // Not technically immutable because of this
-  void setCoordinateSystems(CoordinatesHelper coords) {
-    if (this.coordinateSystems != null) {
-      throw new RuntimeException("Cant call twice");
-    }
-    this.coordinateSystems = ImmutableList.copyOf(coords.makeCoordinateSystemsFor(this));
   }
 
   /** Get Builder for this class that allows subclassing. */

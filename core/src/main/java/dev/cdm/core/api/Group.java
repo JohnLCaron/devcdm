@@ -493,8 +493,8 @@ public class Group {
     private final AttributeContainerMutable attributes = new AttributeContainerMutable("");
     public final ArrayList<Dimension> dimensions = new ArrayList<>();
     public final ArrayList<EnumTypedef> enumTypedefs = new ArrayList<>();
-    public final ArrayList<Builder> gbuilders = new ArrayList<>();
     public final ArrayList<Variable.Builder<?>> vbuilders = new ArrayList<>();
+    public final ArrayList<Builder> gbuilders = new ArrayList<>();
 
     private @Nullable Builder parentGroup; // null for root group; ignored during build()
     private CdmFile ncfile; // set by CdmFile.build()

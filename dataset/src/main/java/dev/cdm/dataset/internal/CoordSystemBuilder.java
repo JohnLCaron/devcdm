@@ -64,7 +64,7 @@ public class CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CoordSystemBuilder(datasetBuilder);
     }
   }
@@ -149,7 +149,7 @@ public class CoordSystemBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected final CdmDataset.Builder<?> datasetBuilder;
+  protected final CdmDatasetCS.Builder<?> datasetBuilder;
   protected final Group.Builder rootGroup;
   protected final CoordinatesHelper.Builder coords;
 
@@ -166,7 +166,7 @@ public class CoordSystemBuilder {
   protected boolean debug;
 
   // Used when using NcML to provide convention attributes.
-  protected CoordSystemBuilder(CdmDataset.Builder<?> datasetBuilder) {
+  protected CoordSystemBuilder(CdmDatasetCS.Builder<?> datasetBuilder) {
     this.datasetBuilder = datasetBuilder;
     this.rootGroup = datasetBuilder.rootGroup;
     this.coords = datasetBuilder.coords;

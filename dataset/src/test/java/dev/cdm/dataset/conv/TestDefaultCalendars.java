@@ -6,6 +6,7 @@
 package dev.cdm.dataset.conv;
 
 import dev.cdm.core.api.Attribute;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
@@ -40,7 +41,7 @@ public class TestDefaultCalendars {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/cfMissingCalendarAttr.nc";
 
     // open the test file
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
 
       // make sure this dataset used the cfConvention
       expected = cfConvention;
@@ -102,7 +103,7 @@ public class TestDefaultCalendars {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/coardsMissingCalendarAttr.nc";
 
     // open the test file
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       System.out.printf("testCoardsDefaultCalendar %s%n", ncd.getLocation());
       // make sure this dataset used the coardsConvention
       found = ncd.getConventionUsed();

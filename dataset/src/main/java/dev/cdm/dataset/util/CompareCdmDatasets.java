@@ -13,7 +13,6 @@ import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.geoloc.Projection;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -233,9 +232,9 @@ public class CompareCdmDatasets {
     f.format(" Time to compare = %d msecs%n", took);
 
     // coordinate systems
-    if (org instanceof CdmDataset && copy instanceof CdmDataset) {
-      CdmDataset orgds = (CdmDataset) org;
-      CdmDataset copyds = (CdmDataset) copy;
+    if (org instanceof CdmDatasetCS && copy instanceof CdmDatasetCS) {
+      CdmDatasetCS orgds = (CdmDatasetCS) org;
+      CdmDatasetCS copyds = (CdmDatasetCS) copy;
 
       // coordinate systems
       for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
@@ -326,12 +325,12 @@ public class CompareCdmDatasets {
     }
 
     // nested groups
-    List groups = new ArrayList();
+    List<Group> groups = new ArrayList();
     String name = org.isRoot() ? "root group" : org.getFullName();
     ok &= checkAll(name, org.getGroups(), copy.getGroups(), groups);
     for (int i = 0; i < groups.size(); i += 2) {
-      Group orgGroup = (Group) groups.get(i);
-      Group copyGroup = (Group) groups.get(i + 1);
+      Group orgGroup = groups.get(i);
+      Group copyGroup = groups.get(i + 1);
       ok &= compareGroups(orgGroup, copyGroup, filter);
     }
 
@@ -371,7 +370,7 @@ public class CompareCdmDatasets {
       ok &= CompareCdmFiles.compareVariableData(f, org, copy, false);
     }
 
-    // coordinate systems
+    /* coordinate systems
     if (org instanceof VariableEnhanced && copy instanceof VariableEnhanced) {
       VariableEnhanced orge = (VariableEnhanced) org;
       VariableEnhanced copye = (VariableEnhanced) copy;
@@ -386,7 +385,7 @@ public class CompareCdmDatasets {
           ok &= compareCoordinateSystem(cs1, cs2, filter);
         }
       }
-    }
+    } */
 
     // f.format(" Variable '%s' ok %s %n", org.getName(), ok);
     return ok;

@@ -8,7 +8,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import dev.cdm.array.Immutable;
-import dev.cdm.dataset.api.CdmDatasets;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.grid.api.GridDataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +22,7 @@ import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.CdmDataset;
-import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.api.VariableDS;
-import dev.cdm.dataset.api.VariableEnhanced;
 import dev.cdm.dataset.transform.vertical.VerticalTransform;
 import dev.cdm.dataset.transform.vertical.VerticalTransformFactory;
 import dev.cdm.grid.api.*;
@@ -46,13 +44,7 @@ import java.util.Set;
 public class GridNetcdfDataset implements GridDataset {
   private static final Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
 
-  public static Optional<GridNetcdfDataset> create(CdmDataset ncd, Formatter errInfo) throws IOException {
-    Set<Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || !enhance.contains(Enhance.CoordSystems)) {
-      enhance = CdmDataset.getDefaultEnhanceMode();
-      ncd = CdmDatasets.enhance(ncd, enhance, null);
-    }
-
+  public static Optional<GridNetcdfDataset> create(CdmDatasetCS ncd, Formatter errInfo) throws IOException {
     DatasetClassifier classifier = new DatasetClassifier(ncd, errInfo);
     if (classifier.getFeatureType() == FeatureType.GRID || classifier.getFeatureType() == FeatureType.CURVILINEAR) {
       return createGridDataset(ncd, classifier, errInfo);
@@ -61,7 +53,7 @@ public class GridNetcdfDataset implements GridDataset {
     }
   }
 
-  private static Optional<GridNetcdfDataset> createGridDataset(CdmDataset ncd, DatasetClassifier classifier,
+  private static Optional<GridNetcdfDataset> createGridDataset(CdmDatasetCS ncd, DatasetClassifier classifier,
       Formatter errInfo) throws IOException {
     FeatureType featureType = classifier.getFeatureType();
 
@@ -124,8 +116,8 @@ public class GridNetcdfDataset implements GridDataset {
       if (alreadyDone.contains(v.getFullName())) {
         continue;
       }
-      VariableEnhanced ve = (VariableEnhanced) v;
-      List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
+      VariableDS vds = (VariableDS) v;
+      List<CoordinateSystem> css = new ArrayList<>(ncd.makeCoordinateSystemsFor(vds));
       if (css.isEmpty()) {
         continue;
       }
@@ -139,7 +131,7 @@ public class GridNetcdfDataset implements GridDataset {
         GridCoordinateSystem gcs = track.gridCS;
         Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
         if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
-          Grid grid = new GridVariable(gcs, (VariableDS) ve);
+          Grid grid = new GridVariable(gcs, vds);
           gridsets.put(gcs, grid);
           alreadyDone.add(v.getFullName());
           break;
@@ -159,11 +151,11 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   private static class VerticalTransformFinder {
-    final CdmDataset ncd;
+    final CdmDatasetCS ncd;
     final Formatter errlog;
     final Set<TrackVerticalTransform> result;
 
-    VerticalTransformFinder(CdmDataset ncd, Formatter errlog) {
+    VerticalTransformFinder(CdmDatasetCS ncd, Formatter errlog) {
       this.ncd = ncd;
       this.errlog = errlog;
       this.result = new HashSet<>();

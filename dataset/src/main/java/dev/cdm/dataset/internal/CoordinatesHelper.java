@@ -127,14 +127,25 @@ public class CoordinatesHelper {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  public CoordinatesHelper.Builder toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  private CoordinatesHelper.Builder addLocalFieldsToBuilder(CoordinatesHelper.Builder b) {
+    this.coordAxes.forEach(axis -> b.addCoordinateAxis(axis.toBuilder()));
+    this.coordSystems.forEach(sys -> b.addCoordinateSystem(sys.toBuilder()));
+    this.coordTransforms.forEach(ct -> b.addCoordinateTransform(ct));
+    return b;
+  }
+
   public static Builder builder() {
     return new Builder();
   }
 
   public static class Builder {
-    public final List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
-    public final List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
-    public final List<ProjectionCTV> coordTransforms = new ArrayList<>();
+    public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
+    public final ArrayList<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
+    public final ArrayList<ProjectionCTV> coordTransforms = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
@@ -207,6 +218,11 @@ public class CoordinatesHelper {
         coordTransforms.add(ct);
       }
       return this;
+    }
+
+    public void replaceCoordinateTransform(ProjectionCTV ct) {
+      coordTransforms.stream().filter(t -> t.getName().equals(ct.getName())).findFirst().ifPresent(coordTransforms::remove);
+      addCoordinateTransform(ct);
     }
 
     private List<CoordinateAxis.Builder<?>> getAxesForSystem(CoordinateSystem.Builder<?> cs) {

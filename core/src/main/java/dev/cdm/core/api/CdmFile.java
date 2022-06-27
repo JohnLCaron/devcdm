@@ -109,6 +109,10 @@ public class CdmFile implements Closeable {
     }
   }
 
+  public AttributeContainer attributes() {
+    return rootGroup.attributes();
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**

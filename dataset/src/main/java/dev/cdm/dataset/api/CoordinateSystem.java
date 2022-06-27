@@ -377,7 +377,7 @@ public class CoordinateSystem {
 
   public static abstract class Builder<T extends Builder<T>> {
     public String coordAxesNames = "";
-    private String transName;
+    private String transName; // LOOK wtf?
     private boolean isImplicit;
     private boolean built;
 

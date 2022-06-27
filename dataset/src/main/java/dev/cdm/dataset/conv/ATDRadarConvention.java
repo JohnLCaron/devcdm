@@ -4,9 +4,9 @@
  */
 package dev.cdm.dataset.conv;
 
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.core.api.CdmFile;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
 import dev.cdm.dataset.internal.CoordSystemFactory;
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class ATDRadarConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "ATDRadar";
 
-  ATDRadarConvention(CdmDataset.Builder<?> datasetBuilder) {
+  ATDRadarConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -42,7 +42,7 @@ public class ATDRadarConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new ATDRadarConvention(datasetBuilder);
     }
   }

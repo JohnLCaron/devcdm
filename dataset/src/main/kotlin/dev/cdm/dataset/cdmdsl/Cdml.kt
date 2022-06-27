@@ -1,4 +1,4 @@
-package cdm.dataset.cdmdsl
+package dev.cdm.dataset.cdmdsl
 
 import dev.cdm.array.ArrayType
 
@@ -110,7 +110,7 @@ open class CdmlVariable constructor(val varName : String) {
         return att
     }
     fun getAttribute(attName: String) : CdmlAttribute {
-        return attributes.getOrPut(attName) {CdmlAttribute(attName)}
+        return attributes.getOrPut(attName) { CdmlAttribute(attName) }
     }
 }
 
@@ -131,7 +131,7 @@ class CdmlStructure constructor(varName : String) : CdmlVariable(varName) {
         return v
     }
     fun getVariable(varName: String): CdmlVariable {
-        return variables.getOrPut(varName) {CdmlVariable(varName)}
+        return variables.getOrPut(varName) { CdmlVariable(varName) }
     }
     fun getVariable(varName: String, lambda: CdmlVariable.() -> Unit): CdmlVariable {
         val builder = getVariable(varName)
@@ -151,7 +151,7 @@ class CdmlStructure constructor(varName : String) : CdmlVariable(varName) {
         return v
     }
     fun getStructure(varName: String): CdmlStructure {
-        return structures.getOrPut(varName) {CdmlStructure(varName)}
+        return structures.getOrPut(varName) { CdmlStructure(varName) }
     }
     fun getStructure(varName: String, lambda: CdmlVariable.() -> Unit): CdmlStructure {
         val builder = getStructure(varName)
@@ -209,7 +209,7 @@ class CdmlGroup constructor(val groupName : String) {
         return att
     }
     fun getAttribute(attName: String) : CdmlAttribute {
-        return attributes.getOrPut(attName) {CdmlAttribute(attName)}
+        return attributes.getOrPut(attName) { CdmlAttribute(attName) }
     }
     fun removeAttribute(attName: String) : CdmlGroup {
         attributes.getOrPut(attName) { CdmlAttribute(attName) }.action = Action.Remove
@@ -230,7 +230,7 @@ class CdmlGroup constructor(val groupName : String) {
         return v
     }
     fun getVariable(varName: String): CdmlVariable {
-        return variables.getOrPut(varName) {CdmlVariable(varName)}
+        return variables.getOrPut(varName) { CdmlVariable(varName) }
     }
     fun getVariable(varName: String, lambda: CdmlVariable.() -> Unit): CdmlVariable {
         val builder = getVariable(varName)
@@ -251,7 +251,7 @@ class CdmlGroup constructor(val groupName : String) {
         return v
     }
     fun getStructure(varName: String): CdmlStructure {
-        return structures.getOrPut(varName) {CdmlStructure(varName)}
+        return structures.getOrPut(varName) { CdmlStructure(varName) }
     }
     fun getStructure(varName: String, lambda: CdmlVariable.() -> Unit): CdmlStructure {
         val builder = getStructure(varName)
@@ -271,7 +271,7 @@ class CdmlGroup constructor(val groupName : String) {
         return g
     }
     fun getGroup(groupName: String): CdmlGroup {
-        return groups.getOrPut(groupName) {CdmlGroup(groupName)}
+        return groups.getOrPut(groupName) { CdmlGroup(groupName) }
     }
     fun getGroup(groupName: String, lambda: CdmlGroup.() -> Unit): CdmlGroup {
         val g = getGroup(groupName)

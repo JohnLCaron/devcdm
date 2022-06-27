@@ -10,6 +10,7 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
 import dev.cdm.core.util.CancelTask;
@@ -33,14 +34,14 @@ public class MADISStation extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new MADISStation(datasetBuilder);
     }
   }
 
   /////////////////////////////////////////////////////////////////
 
-  private MADISStation(CdmDataset.Builder<?> datasetBuilder) {
+  private MADISStation(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }

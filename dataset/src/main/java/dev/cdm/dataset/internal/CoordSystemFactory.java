@@ -7,6 +7,7 @@ import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.conv.CF1Convention;
 import dev.cdm.dataset.conv.DefaultConventions;
@@ -219,7 +220,7 @@ public class CoordSystemFactory {
    * @return the builder to be used
    * @throws IOException on io error
    */
-  public static Optional<CoordSystemBuilder> factory(CdmDataset.Builder<?> ds, CancelTask cancelTask)
+  public static Optional<CoordSystemBuilder> factory(CdmDatasetCS.Builder<?> ds, CancelTask cancelTask)
       throws IOException {
 
     // look for the Conventions attribute

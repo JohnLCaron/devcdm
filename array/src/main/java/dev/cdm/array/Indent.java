@@ -2,52 +2,46 @@ package dev.cdm.array;
 
 /** Maintains indentation level for printing nested structures. */
 public class Indent {
+  private final String blanks = " ".repeat(100);
   private final int nspaces;
 
   private int level;
-  private final StringBuilder blanks = new StringBuilder();
-  private String indent = "";
 
   /** Create an Indent with nspaces per level. */
   public Indent(int nspaces) {
     this.nspaces = nspaces;
-    makeBlanks(100);
+    this.level = 1;
   }
 
-  /** Increment the indent level */
+  /** Create an Indent with nspaces per level. */
+  public Indent(int nspaces, int level) {
+    this.nspaces = nspaces;
+    this.level = level;
+  }
+
   public Indent incr() {
     level++;
-    setIndentLevel(level);
     return this;
   }
 
   /** Decrement the indent level */
   public Indent decr() {
     level--;
-    setIndentLevel(level);
     return this;
   }
 
-  /** Get the indent level */
-  public int level() {
-    return level;
+  /** Increment the indent level, return new object */
+  public Indent incrNew() {
+    return new Indent(nspaces, level + 1);
+  }
+
+  /** Decrement the indent level, , return new object */
+  public Indent decrNew() {
+    return new Indent(nspaces, level - 1);
   }
 
   /** Return a String of nspaces * level blanks which is the indentation. */
   public String toString() {
-    return indent;
-  }
-
-  /** Set the indent level */
-  public void setIndentLevel(int level) {
-    this.level = level;
-    if (level * nspaces >= blanks.length())
-      makeBlanks(100);
-    int end = Math.min(level * nspaces, blanks.length());
-    indent = blanks.substring(0, end);
-  }
-
-  private void makeBlanks(int len) {
-    blanks.append(" ".repeat(Math.max(0, len * nspaces)));
+    return blanks.substring(0, nspaces * level);
   }
 }

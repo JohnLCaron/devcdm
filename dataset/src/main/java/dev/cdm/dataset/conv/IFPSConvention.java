@@ -20,6 +20,7 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.CoordinateAxis1D;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
@@ -79,14 +80,14 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new IFPSConvention(datasetBuilder);
     }
   }
 
   private Variable.Builder<?> projVar; // use this to get projection info
 
-  private IFPSConvention(CdmDataset.Builder<?> datasetBuilder) {
+  private IFPSConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
