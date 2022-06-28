@@ -13,7 +13,7 @@ import dev.cdm.array.Immutable;
 import java.util.Objects;
 
 /**
- * A Projection Coordinate Transform Variable has the metadata needed to construct a Projection.
+ * A Coordinate Transform Variable has the metadata needed to construct a Projection.
  */
 @Immutable
 public class ProjectionCTV {

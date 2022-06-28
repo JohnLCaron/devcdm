@@ -6,6 +6,7 @@ package dev.cdm.dataset.internal;
 
 import com.google.common.base.Preconditions;
 import dev.cdm.array.Array;
+import dev.cdm.array.Immutable;
 import dev.cdm.array.StructureData;
 import dev.cdm.array.StructureDataStorageBB;
 import dev.cdm.array.StructureMembers;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 /**
  * Enhance StructureData, for SequenceDS.
  */
+@Immutable
 public class SequenceArrayEnhancer implements Iterator<StructureData> {
   private final SequenceDS topStructure;
   private final Iterator<StructureData> orgIterator;
