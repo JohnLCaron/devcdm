@@ -509,8 +509,8 @@ public class CoordSystemBuilder {
    */
   private void makeCoordinateSystemsMaximal() {
 
-    boolean requireCompleteCoordSys =
-        !datasetBuilder.getEnhanceMode().contains(CdmDataset.Enhance.IncompleteCoordSystems);
+    boolean requireCompleteCoordSys = true;
+        // !datasetBuilder.getEnhanceMode().contains(CdmDataset.Enhance.IncompleteCoordSystems);
 
     for (VarProcess vp : varList) {
       if (vp.hasCoordinateSystem() || !vp.isData() || vp.vb.getDimensions().isEmpty()) {

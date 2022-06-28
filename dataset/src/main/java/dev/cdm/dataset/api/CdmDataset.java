@@ -76,13 +76,6 @@ public class CdmDataset extends CdmFile {
      * enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
      */
     ConvertMissing,
-    /** Build coordinate systems. */
-    CoordSystems,
-    /**
-     * Build coordinate systems allowing for incomplete coordinate systems (i.e. not
-     * every dimension in a variable has a corresponding coordinate variable.
-     */
-    IncompleteCoordSystems,
   }
 
   private static final Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,

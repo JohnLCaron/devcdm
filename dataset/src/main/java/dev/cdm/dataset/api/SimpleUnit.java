@@ -26,9 +26,12 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
   }
 
   @Nullable
-  public static <T extends Quantity<T>> SimpleUnit<T> factory(String geoCoordinateUnits) {
+  public static <T extends Quantity<T>> SimpleUnit<T> factory(@Nullable String units) {
+    if (units == null) {
+      return null;
+    }
     try {
-      return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(geoCoordinateUnits)));
+      return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(units)));
     } catch (Throwable t) {
       return null;
     }
@@ -59,7 +62,10 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
     return this.unit.isCompatible(otherUnit);
   }
 
-  public boolean isCompatible(SimpleUnit other) {
+  public boolean isCompatible(@Nullable SimpleUnit other) {
+    if (other == null) {
+      return false;
+    }
     return this.unit.isCompatible(other.unit);
   }
 

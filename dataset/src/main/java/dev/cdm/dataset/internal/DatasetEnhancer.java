@@ -3,7 +3,6 @@ package dev.cdm.dataset.internal;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Variable;
-import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.api.SequenceDS;
@@ -31,12 +30,10 @@ public class DatasetEnhancer {
 
   private final CdmDataset.Builder<?> dsBuilder;
   private final Set<Enhance> wantEnhance;
-  private final CancelTask cancelTask;
 
-  public DatasetEnhancer(CdmDataset.Builder<?> ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
+  public DatasetEnhancer(CdmDataset.Builder<?> ds, Set<Enhance> wantEnhance) {
     this.dsBuilder = ds;
     this.wantEnhance = wantEnhance == null ? EnumSet.noneOf(Enhance.class) : wantEnhance;
-    this.cancelTask = cancelTask;
   }
 
   /*

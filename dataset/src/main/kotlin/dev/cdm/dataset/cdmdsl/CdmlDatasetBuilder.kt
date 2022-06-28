@@ -23,6 +23,7 @@ fun CdmdslDataset.build(): CdmDatasetCS {
             Enhance.ApplyScaleOffset,
             Enhance.ConvertMissing
         )
+        // open with CS to use default parsing, then override as needed.
         val orgDataset = CdmDatasets.openDatasetCS(this.location)
         builder = orgDataset.toBuilder()
     }
@@ -35,7 +36,7 @@ fun CdmdslDataset.build(): CdmDatasetCS {
     val helper = result.sendIospMessage(IOSP_MESSAGE_GET_COORDS_HELPER) as CoordinatesHelper
     val helperb = helper.toBuilder()
     this.coordSystems.forEach {
-        buildCoordSystem(it.value, helperb, builder, result)
+        buildCoordSystem(it.value, helperb, builder)
     }
 
     this.transforms.forEach {
@@ -159,31 +160,31 @@ fun buildCoordSystem(
     csys: CdmdslCoordSystem,
     helper: CoordinatesHelper.Builder,
     orgDataset: CdmDatasetCS.Builder<*>,
-    result: CdmDataset
+    // result: CdmDataset
 ) {
     val orgHelper: CoordinatesHelper.Builder = orgDataset.coords
     val orgs: ArrayList<CoordinateSystem.Builder<*>> = orgHelper.coordSys
     val org = orgs.find { it.coordAxesNames == csys.name }
     if (org == null) {
-        val conv = findConvention(result.attributes().findAttributeString("Conventions", null));
+        val coordSysBuilder = findConvention(orgDataset)
 
         val builder = CoordinateSystem.builder()
         builder.setCoordAxesNames(csys.csysName)
         builder.setCoordinateTransformName(csys.projection)
         helper.addCoordinateSystem(builder)
 
-        // add named axes
+        /* add named axes
         csys.name.split(" ").forEach {
             if (helper.coordAxes.find { axis -> axis.shortName == it } == null) {
-                val v = result.findVariable(it)
+                val v = orgDataset.findVariable(it)
                 if (v != null) {
                     val vds = v as VariableDS
                     val axisb = CoordinateAxis.fromVariableDS(vds.toBuilder())
-                    axisb.setAxisType(conv.findAxisType(vds))
+                    axisb.setAxisType(coordSysBuilder.identifyAxisType(vds))
                     helper.addCoordinateAxis(axisb)
                 }
             }
-        }
+        } */
         return
     } else { // LOOK wrong, already built
         if (csys.action == Action.Remove) {

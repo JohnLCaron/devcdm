@@ -92,13 +92,13 @@ public class NcmlReader {
       case "convertunsigned" -> EnumSet.of(Enhance.ConvertUnsigned);
       case "applyscaleoffset" -> EnumSet.of(Enhance.ApplyScaleOffset);
       case "convertmissing" -> EnumSet.of(Enhance.ConvertMissing);
-      case "coordsystems" -> EnumSet.of(Enhance.CoordSystems);
-      case "incompletecoordsystems" -> EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
+      //case "coordsystems" -> EnumSet.of(Enhance.CoordSystems);
+      //case "incompletecoordsystems" -> EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
 
       // Legacy strings, retained for backwards compatibility:
       case "true" -> CdmDataset.getEnhanceAll();
       case "scalemissingdefer" -> CdmDataset.getEnhanceNone();
-      case "alldefer" -> EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
+      //case "alldefer" -> EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
       case "scalemissing" -> EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
       // Return null by default, since some valid strings actually return an empty set.
       default -> null;
@@ -449,8 +449,8 @@ public class NcmlReader {
     Set<CdmDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
       // cant just set enhance mode
-      if (DatasetCSEnhancer.enhanceNeeded(mode, null)) {
-        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+      if (DatasetEnhancer.enhanceNeeded(mode, null)) {
+        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode);
         enhancer.enhance();
         builder.setEnhanceMode(mode);
       }

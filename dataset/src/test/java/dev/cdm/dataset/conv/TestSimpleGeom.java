@@ -32,7 +32,7 @@ public class TestSimpleGeom {
     boolean testCond;
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
 
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       // make sure this dataset used the cfConvention
       expected = cfConvention;
       found = ncd.getConventionUsed();

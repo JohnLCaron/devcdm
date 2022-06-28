@@ -40,7 +40,7 @@ public class TestWRFTime {
     System.out.printf("Open %s%n", tstFile);
     Set<CdmDataset.Enhance> defaultEnhanceMode = CdmDataset.getDefaultEnhanceMode();
     EnumSet<CdmDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);
-    enhanceMode.add(CdmDataset.Enhance.IncompleteCoordSystems);
+    // enhanceMode.add(CdmDataset.Enhance.IncompleteCoordSystems);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(tstFile);
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
       List<CoordinateSystem> cs = ncd.getCoordinateSystems();

@@ -43,7 +43,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
    * 
    * @param group Reparent to this Group.
    * @param orgVar Wrap this Variable.
-   * @param enhance opriona default enhancements.
+   * @param enhance use the default enhancements, or none.
    */
   public static VariableDS fromVar(Group group, Variable orgVar, boolean enhance) {
     Preconditions.checkArgument(!(orgVar instanceof Structure),
@@ -69,6 +69,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Override
+  @Nullable
   public CdmFile getCdmFile() {
     // TODO can group really be null? Variable says no.
     return getParentGroup() == null ? null : getParentGroup().getCdmFile();
@@ -484,6 +485,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
       return self();
     }
 
+    @Nullable
     public String getUnits() {
       String result = units;
       if (result == null) {
@@ -495,6 +497,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
       return (result == null) ? null : result.trim();
     }
 
+    @Nullable
     public String getDescription() {
       String result = desc;
       if (result == null) {

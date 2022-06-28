@@ -32,16 +32,7 @@ public class CdmDatasets {
   // enhanced datasets
 
   /**
-   * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
-   *
-   * @param location location of file
-   */
-  public static CdmDataset openDataset(String location) throws IOException {
-    return openDataset(location, true, null);
-  }
-
-  /**
-   * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
+   * Factory method for opening a dataset with all enhancements and coordinate systems.
    *
    * @param location location of file
    */
@@ -53,8 +44,17 @@ public class CdmDatasets {
 
   public static CdmDatasetCS openDatasetCS(CdmFile ncfile) throws IOException {
     CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().copyFrom(ncfile).setOrgFile(ncfile);
-    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, CdmDataset.getEnhanceAll(), null);
+    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, CdmDataset.getEnhanceAll());
     return enhancer.enhance().build();
+  }
+
+  /**
+   * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
+   *
+   * @param location location of file
+   */
+  public static CdmDataset openDataset(String location) throws IOException {
+    return openDataset(location, true, null);
   }
 
   /**
@@ -123,7 +123,7 @@ public class CdmDatasets {
           throws IOException {
     CdmDataset.Builder<?> builder = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
     if (!builder.getEnhanceMode().isEmpty()) {
-      DatasetEnhancer enhancer = new DatasetEnhancer(builder, builder.getEnhanceMode(), cancelTask);
+      DatasetEnhancer enhancer = new DatasetEnhancer(builder, builder.getEnhanceMode());
       return enhancer.enhance().build();
     } else {
       return builder.build();
@@ -133,7 +133,7 @@ public class CdmDatasets {
   public static CdmDatasetCS openNcmlDatasetCS(Reader reader, String ncmlLocation, @Nullable CancelTask cancelTask)
           throws IOException {
     CdmDatasetCS.Builder<?> builder = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
-    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, builder.getEnhanceMode(), cancelTask);
+    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, builder.getEnhanceMode());
     return enhancer.enhance().build();
   }
 
@@ -149,8 +149,8 @@ public class CdmDatasets {
     if (ncfile instanceof CdmDataset) {
       CdmDataset ncd = (CdmDataset) ncfile;
       CdmDataset.Builder<?> builder = ncd.toBuilder();
-      if (DatasetCSEnhancer.enhanceNeeded(mode, ncd.getEnhanceMode())) {
-        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+      if (DatasetEnhancer.enhanceNeeded(mode, ncd.getEnhanceMode())) {
+        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode);
         return enhancer.enhance().build();
       } else {
         return ncd;
@@ -159,8 +159,8 @@ public class CdmDatasets {
 
     // original file not a CdmDataset
     CdmDataset.Builder<?> builder = CdmDataset.builder().copyFrom(ncfile).setOrgFile(ncfile);
-    if (DatasetCSEnhancer.enhanceNeeded(mode, null)) {
-      DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+    if (DatasetEnhancer.enhanceNeeded(mode, null)) {
+      DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode);
       return enhancer.enhance().build();
     }
     return builder.build();
