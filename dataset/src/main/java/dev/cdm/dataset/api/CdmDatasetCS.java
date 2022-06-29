@@ -6,6 +6,7 @@ import dev.cdm.core.api.Group;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.internal.CoordinatesHelper;
+import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 
 import java.util.List;
@@ -122,13 +123,11 @@ public class CdmDatasetCS extends CdmDataset {
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private CoordinatesHelper coords; // not immutable
+  private final CoordinatesHelper coords;
 
   private CdmDatasetCS(CdmDatasetCS.Builder<?> builder) {
     super(builder);
-
-    List<CoordinateAxis> axes = CoordinatesHelper.makeAxes(this);
-    this.coords = builder.coords.build(axes);
+    this.coords = builder.coords.build(this.getRootGroup());
   }
 
   public CdmDatasetCS.Builder<?> toBuilder() {
@@ -158,10 +157,15 @@ public class CdmDatasetCS extends CdmDataset {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends CdmDataset.Builder<T> {
-    public final CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
+    public CoordsHelperBuilder coords = new CoordsHelperBuilder();
     private boolean built;
 
     protected abstract T self();
+
+    public T setCoordsHelper(CoordsHelperBuilder coords) {
+      this.coords = coords;
+      return self();
+    }
 
     /**
      * Add a CoordinateAxis to the dataset coordinates and to the list of variables.

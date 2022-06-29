@@ -23,7 +23,7 @@ public class TestDatasetClassifier {
   public void testNamPolar() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "tds_index/NCEP/NAM/Polar_90km/NAM_Polar_90km_20201027_0000.grib2.ncx4";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
@@ -42,7 +42,7 @@ public class TestDatasetClassifier {
   public void testNamPolarCollection() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
@@ -61,7 +61,7 @@ public class TestDatasetClassifier {
   public void testNoGrids() throws IOException {
     // No Grids found because unidentified ensemble, time axis.
     String filename = TestGridDatasets.datasetLocalDir + "ncml/testNested.ncml";
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
@@ -74,7 +74,7 @@ public class TestDatasetClassifier {
   public void testScalarRuntime() throws IOException {
     // scalar runtime
     String filename = TestGridDatasets.gridLocalDir + "tds/ncep/GEFS_Global_1p0deg_Ensemble_20120215_0000.grib2";
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
@@ -112,7 +112,7 @@ public class TestDatasetClassifier {
   public void testScalarVert() throws IOException {
     // scalar runtime
     String filename = TestGridDatasets.gridTestDir + "coords/ukmo.nc";
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
@@ -150,7 +150,7 @@ public class TestDatasetClassifier {
   public void testFMRC() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "gribCollections/cfsr/pwat.gdas.199612.grb2";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
@@ -190,7 +190,7 @@ public class TestDatasetClassifier {
   public void problemWithGroups() throws IOException {
     String filename = TestGridDatasets.gridTestDir + "gribCollections/ecmwf/mad/MAD10090000100900001";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -216,7 +216,7 @@ public class TestDatasetClassifier {
   public void testRegularTimeOffset() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -236,7 +236,7 @@ public class TestDatasetClassifier {
     String filename = TestGridDatasets.gridLocalDir + "tds_index/NCEP/GFS/Global_0p25deg_ana/GFS-Global_0p25deg_ana.ncx4";
 
     // MRUTP has a runtime and time sharing the same dimension.
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -255,7 +255,7 @@ public class TestDatasetClassifier {
   public void testMRUTP2() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "gribCollections/anal/HRRRanalysis.ncx4";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -274,7 +274,7 @@ public class TestDatasetClassifier {
   public void testMRUTP3() throws IOException {
     String filename = TestGridDatasets.gridLocalDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -295,7 +295,7 @@ public class TestDatasetClassifier {
     String gridName = "Temperature";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -316,7 +316,7 @@ public class TestDatasetClassifier {
     String gridName = "temp";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -337,7 +337,7 @@ public class TestDatasetClassifier {
     String gridName = "temp";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
@@ -358,7 +358,7 @@ public class TestDatasetClassifier {
     String gridName = "h";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();

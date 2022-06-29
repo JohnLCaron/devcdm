@@ -118,7 +118,7 @@ public class CdmDataset extends CdmFile {
    *
    * @return conventions used to analyse coordinate systems
    */
-  public String getConventionUsed() {
+  public String getConventionBuilder() {
     return convUsed;
   }
 

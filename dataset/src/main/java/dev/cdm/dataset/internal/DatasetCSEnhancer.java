@@ -24,7 +24,9 @@ public class DatasetCSEnhancer extends DatasetEnhancer {
     dscsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
 
     // regular enhancements
-    super.enhance();
+    if (!this.wantEnhance.isEmpty()) {
+      super.enhance();
+    }
 
     // add the coordinate systems to dscsBuilder
     coordSysBuilder.buildCoordinateSystems();

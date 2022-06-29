@@ -70,7 +70,6 @@ public class PrintArray {
     if (units != null) {
       out.format(" %s", units);
     }
-    out.format("%n");
     ilev.decr();
     out.flush();
   }

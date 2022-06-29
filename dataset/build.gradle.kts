@@ -3,9 +3,9 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
+    kotlin("jvm") version "1.6.21"
     id("java")
     id("java-library")
-    kotlin("jvm") version "1.6.21"
 }
 
 group = "dev.cdm"
@@ -53,4 +53,14 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("cdmng-dataset")
+}
+
+sourceSets.main {
+    java.srcDirs("src/main/java", "src/main/kotlin")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

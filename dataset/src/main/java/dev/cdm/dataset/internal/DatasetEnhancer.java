@@ -29,7 +29,7 @@ public class DatasetEnhancer {
   }
 
   private final CdmDataset.Builder<?> dsBuilder;
-  private final Set<Enhance> wantEnhance;
+  protected final Set<Enhance> wantEnhance;
 
   public DatasetEnhancer(CdmDataset.Builder<?> ds, Set<Enhance> wantEnhance) {
     this.dsBuilder = ds;

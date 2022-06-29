@@ -1,13 +1,15 @@
-package dev.cdm.dataset.internal
+package dev.cdm.dataset.coordsysbuild
 
 import dev.cdm.core.calendar.CalendarDateUnit
 import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CF
-import dev.cdm.dataset.api.CdmDatasetCS
+import dev.cdm.core.constants._Coordinate
+import dev.cdm.dataset.api.CdmDataset
 import dev.cdm.dataset.api.SimpleUnit
 import dev.cdm.dataset.api.VariableDS
 
-open class DefaultConventions(dataset: CdmDatasetCS.Builder<*>) : CoordSysBuilder(dataset) {
+open class DefaultConventions(dataset: CdmDataset, conventionName : String = "DefaultConventions") :
+            CoordSysBuilder(dataset, conventionName) {
     private val lonUnits = arrayOf(
         "degrees_east", "degrees_E", "degreesE", "degree_east", "degree_E", "degreeE",
     )
@@ -18,8 +20,8 @@ open class DefaultConventions(dataset: CdmDatasetCS.Builder<*>) : CoordSysBuilde
         "level", "layer", "sigma_level",
     )
 
-    override fun identifyAxisType(vds : VariableDS.Builder<*>) : AxisType? {
-        val unit = vds.getUnits() ?: return null
+    override fun identifyAxisType(vds : VariableDS) : AxisType? {
+        val unit = vds.unitsString?: return null
 
         lonUnits.forEach {
             if (unit.equals(it, ignoreCase = true)) {
@@ -43,14 +45,15 @@ open class DefaultConventions(dataset: CdmDatasetCS.Builder<*>) : CoordSysBuilde
         if (SimpleUnit.pressureUnit.isCompatible(unit)) {
             return AxisType.Pressure
         }
-        val positive = vds.attributeContainer.findAttributeString(CF.POSITIVE, null)
-        return if (positive != null) {
+        val positive = vds.findAttributeString(CF.POSITIVE, null)
+        if (positive != null) {
             if (SimpleUnit.isCompatible("m", unit)) {
-                AxisType.Height
+                return AxisType.Height
             } else {
-                AxisType.GeoZ
+                return AxisType.GeoZ
             }
-        } else null
+        }
+        return super.identifyAxisType(vds)
     }
 
 }

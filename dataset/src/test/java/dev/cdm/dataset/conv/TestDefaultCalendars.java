@@ -41,11 +41,11 @@ public class TestDefaultCalendars {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/cfMissingCalendarAttr.nc";
 
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
 
       // make sure this dataset used the cfConvention
       expected = cfConvention;
-      found = ncd.getConventionUsed();
+      found = ncd.getConventionBuilder();
       testCond = found.equals(expected);
       failMessage =
               format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
@@ -103,10 +103,10 @@ public class TestDefaultCalendars {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/coardsMissingCalendarAttr.nc";
 
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       System.out.printf("testCoardsDefaultCalendar %s%n", ncd.getLocation());
       // make sure this dataset used the coardsConvention
-      found = ncd.getConventionUsed();
+      found = ncd.getConventionBuilder();
       expected = coardsConvention;
       testCond = found.equals(expected);
       failMessage =

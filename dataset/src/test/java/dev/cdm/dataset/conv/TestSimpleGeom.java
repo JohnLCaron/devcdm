@@ -13,7 +13,6 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CoordinateAxis;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasets;
 
 import java.io.IOException;
@@ -32,10 +31,10 @@ public class TestSimpleGeom {
     boolean testCond;
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
 
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       // make sure this dataset used the cfConvention
       expected = cfConvention;
-      found = ncd.getConventionUsed();
+      found = ncd.getConventionBuilder();
       testCond = found.equals(expected);
       failMessage =
           format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
@@ -60,11 +59,11 @@ public class TestSimpleGeom {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
-    try(CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
+    try(CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
 
       // make sure this dataset used the cfConvention
       expected = cfConvention;
-      found = ncd.getConventionUsed();
+      found = ncd.getConventionBuilder();
       testCond = found.equals(expected);
       failMessage =
               format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
@@ -85,7 +84,7 @@ public class TestSimpleGeom {
   public void testCoordinateVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();
@@ -98,7 +97,7 @@ public class TestSimpleGeom {
   public void testVarLenDataVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();

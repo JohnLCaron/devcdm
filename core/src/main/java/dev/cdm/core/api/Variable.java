@@ -148,6 +148,20 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     return Dimensions.makeDimensionsString(dimensions);
   }
 
+  // Get all dimension names, including parent structure
+  public Set<String> dimensionNamesAll() {
+    ImmutableSet.Builder<String> dimsAll = new ImmutableSet.Builder<>();
+    addDimensionNamesAll(dimsAll, this);
+    return dimsAll.build();
+  }
+
+  private void addDimensionNamesAll(ImmutableSet.Builder<String> result, Variable v) {
+    if (v.parentStructure != null) {
+      v.parentStructure.dimensionNamesAll().forEach(result::add);
+    }
+    dimensions.forEach(d -> result.add(d.getShortName()));
+  }
+
   /**
    * Get the number of bytes for one element of this Variable.
    * For Variables of primitive type, this is equal to getArrayType().getSize().

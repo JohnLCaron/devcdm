@@ -94,7 +94,7 @@ class TestCdmDsl {
             transform("UTM").useVariable("proj")
 
             variable("rh") {
-                coordSystemRef("x y time")
+                coordSystem("x y time")
             }
             variable("y", ArrayType.FLOAT, "y") {
                 setValues(41.0, 40.0, 39.0)

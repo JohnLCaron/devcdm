@@ -47,7 +47,7 @@ class CdmdslEnum constructor(val enumName : String, val basetype: ArrayType? = n
 open class CdmdslVariable constructor(val varName : String) : CdmdslBase(varName) {
     val attributes = mutableMapOf<String, CdmdslAttribute>()
     var dimensions : String? = null
-    var type : ArrayType? = null
+    var type : ArrayType? = ArrayType.CHAR
     var coordSysRef : String? = null
     var values : String? = null
     var dvalues : DoubleArray? = null
@@ -57,6 +57,18 @@ open class CdmdslVariable constructor(val varName : String) : CdmdslBase(varName
         this.dimensions = dimensions
     }
 
+    fun setDimensions(dimensions : String) : CdmdslVariable {
+        this.dimensions = dimensions
+        return this
+    }
+    fun setType(type : String) : CdmdslVariable {
+        val want = ArrayType.getTypeByName(type)
+        if (want == null) {
+            throw RuntimeException("invalid type $type for variable $varName")
+        }
+        this.type = want
+        return this
+    }
     fun setValues(values : String) : CdmdslVariable {
         this.values = values
         return this
@@ -81,8 +93,9 @@ open class CdmdslVariable constructor(val varName : String) : CdmdslBase(varName
         return attributes.getOrPut(attName) { CdmdslAttribute(attName) }
     }
 
-    fun coordSystemRef(name: String) {
-        this.coordSysRef = name
+    fun coordSystemRef(dimNames: String): CdmdslVariable {
+        this.coordSysRef = dimNames
+        return this
     }
 }
 
@@ -121,6 +134,14 @@ class CdmdslStructure constructor(varName : String) : CdmdslVariable(varName) {
     }
 }
 
+class CdmdslAxis constructor(varName : String) : CdmdslVariable(varName) {
+    var axisType : String? = null
+    fun setAxisType(axisType : String) : CdmdslAxis {
+        this.axisType = axisType
+        return this
+    }
+}
+
 class CdmdslGroup constructor(val groupName : String, val dataset : CdmdslDataset) : CdmdslBase(groupName) {
     val attributes = mutableMapOf<String, CdmdslAttribute>()
     val dimensions = mutableMapOf<String, CdmdslDimension>()
@@ -128,6 +149,7 @@ class CdmdslGroup constructor(val groupName : String, val dataset : CdmdslDatase
     val variables = mutableMapOf<String, CdmdslVariable>()
     val structures = mutableMapOf<String, CdmdslStructure>()
     val groups = mutableMapOf<String, CdmdslGroup>()
+    val axes = mutableMapOf<String, CdmdslAxis>()
 
     // add or replace. TODO what about all references to it ??
     fun dimension(dimName: String, length : Int): CdmdslDimension {
@@ -194,6 +216,12 @@ class CdmdslGroup constructor(val groupName : String, val dataset : CdmdslDatase
         return structures.getOrPut(varName) { CdmdslStructure(varName) }
     }
 
+    fun axis(varName: String, lambda: CdmdslAxis.() -> Unit): CdmdslAxis {
+        val v = axes.getOrPut(varName) { CdmdslAxis(varName) }
+        v.lambda()
+        return v
+    }
+
     fun group(groupName: String): CdmdslGroup {
         return groups.getOrPut(groupName) { CdmdslGroup(groupName, this.dataset) }
     }
@@ -203,8 +231,8 @@ class CdmdslGroup constructor(val groupName : String, val dataset : CdmdslDatase
         return g
     }
 
-    fun coordSystem(dimNames: String): CdmdslCoordSystem {
-        return dataset.coordSystem(dimNames)
+    fun coordSystem(csysName: String): CdmdslCoordSystem {
+        return dataset.coordSystem(csysName)
     }
 
     fun transform(name: String): CdmslTransform {
@@ -215,8 +243,19 @@ class CdmdslGroup constructor(val groupName : String, val dataset : CdmdslDatase
     }
 }
 
-class CdmdslCoordSystem constructor(val csysName : String) : CdmdslBase(csysName){
+class CdmdslCoordSystem constructor(var csysName : String) : CdmdslBase(csysName){
     var projection : String? = null
+    var axes : String? = null
+
+    fun setAxes(axes : String) : CdmdslCoordSystem {
+        this.axes = axes
+        return this
+    }
+
+    fun setName(csysName : String) : CdmdslCoordSystem {
+        this.csysName = csysName
+        return this
+    }
 
     fun setProjection(projection : String) : CdmdslCoordSystem {
         this.projection = projection
@@ -247,8 +286,9 @@ class CdmdslDataset constructor(val location : String?, val enhance : Boolean = 
     val coordSystems = mutableMapOf<String, CdmdslCoordSystem>()
     val transforms = mutableMapOf<String, CdmslTransform>()
 
-    fun coordSystem(dimNames: String): CdmdslCoordSystem {
-        return coordSystems.getOrPut(dimNames) { CdmdslCoordSystem(dimNames) }
+    // the name is the name of the CSV
+    fun coordSystem(csysName: String): CdmdslCoordSystem {
+        return coordSystems.getOrPut(csysName) { CdmdslCoordSystem(csysName) }
     }
 
     fun transform(name: String): CdmslTransform {
@@ -261,7 +301,7 @@ class CdmdslDataset constructor(val location : String?, val enhance : Boolean = 
     }
 }
 
-fun cdmdsl(location : String, enhance : Boolean = true, lambda: CdmdslGroup.() -> Unit): CdmdslDataset {
+fun cdmdsl(location : String? = null, enhance : Boolean = true, lambda: CdmdslGroup.() -> Unit): CdmdslDataset {
     val builder = CdmdslDataset(location, enhance)
     builder.root.lambda()
     return builder

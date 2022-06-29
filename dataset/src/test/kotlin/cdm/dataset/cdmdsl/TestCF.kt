@@ -8,7 +8,8 @@ import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.cdmdsl.CdmdslDataset
 import dev.cdm.dataset.cdmdsl.cdmdsl
 import dev.cdm.dataset.cdmdsl.write
-import dev.cdm.dataset.internal.build
+import dev.cdm.dataset.cdmdsl.writeDsl
+import dev.cdm.dataset.cdmdsl.build
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
@@ -19,9 +20,9 @@ class TestCF {
     @Throws(IOException::class)
     fun testCF() {
         println(cfFile)
-        CdmDatasets.openDatasetCS(cfFile).use { ncd ->
+        CdmDatasets.openDatasetCS(cfFile, true).use { ncd ->
             println(ncd.write())
-            assertThat(ncd.conventionUsed).startsWith("CF")
+            assertThat(ncd.conventionBuilder).startsWith("CF")
             val cs = ncd.findCoordinateSystem("level lat y lon x")
             assertThat(cs).isNotNull()
             val temp = ncd.findVariable("Temperature") as VariableDS
@@ -46,13 +47,14 @@ class TestCF {
             transform("level").useVariable("level")
 
             variable("Temperature") {
-                coordSystemRef("level y x")
+                coordSystem("level y x")
             }
         }
         assertThat(cdmdsl).isNotNull()
 
         val ncd = cdmdsl.build()
-        println(ncd.write())
+        // println(ncd.write())
+        println(ncd.writeDsl())
 
         val temp = ncd.findVariable("Temperature") as VariableDS
         assertThat(temp).isNotNull()

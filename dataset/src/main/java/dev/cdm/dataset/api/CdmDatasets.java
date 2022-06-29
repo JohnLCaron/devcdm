@@ -36,15 +36,16 @@ public class CdmDatasets {
    *
    * @param location location of file
    */
-  public static CdmDatasetCS openDatasetCS(String location) throws IOException {
+  public static CdmDatasetCS openDatasetCS(String location, boolean enhance) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
     CdmFile ncfile = openProtocolOrFile(durl, -1, null, null);
-    return openDatasetCS(ncfile);
+    return openDatasetCS(ncfile, enhance);
   }
 
-  public static CdmDatasetCS openDatasetCS(CdmFile ncfile) throws IOException {
+  public static CdmDatasetCS openDatasetCS(CdmFile ncfile, boolean enhance) throws IOException {
     CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().copyFrom(ncfile).setOrgFile(ncfile);
-    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, CdmDataset.getEnhanceAll());
+    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder,
+            enhance ? CdmDataset.getEnhanceAll() : CdmDataset.getEnhanceNone());
     return enhancer.enhance().build();
   }
 

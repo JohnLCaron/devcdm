@@ -38,7 +38,7 @@ public class TestCoordSystemBuilder {
     List<ProjectionCTV> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> builder =
-        CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
+        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
     CoordinateSystem coordSys = builder.build(axes, allProjs);
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
@@ -79,7 +79,7 @@ public class TestCoordSystemBuilder {
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
     CoordinateSystem.Builder<?> builder =
-        CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
+        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
     CoordinateSystem coordSys = builder.build(axes, ImmutableList.of());
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
