@@ -489,14 +489,15 @@ public class Group {
   }
 
   public static class Builder {
-    private @Nullable Builder parentGroup; // null for root group; ignored during build()
-    public final List<Builder> gbuilders = new ArrayList<>();
-    public final List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     public String shortName = "";
-    private CdmFile ncfile; // set by CdmFile.build()
     private final AttributeContainerMutable attributes = new AttributeContainerMutable("");
-    private final List<Dimension> dimensions = new ArrayList<>();
-    public final List<EnumTypedef> enumTypedefs = new ArrayList<>();
+    public final ArrayList<Dimension> dimensions = new ArrayList<>();
+    public final ArrayList<EnumTypedef> enumTypedefs = new ArrayList<>();
+    public final ArrayList<Variable.Builder<?>> vbuilders = new ArrayList<>();
+    public final ArrayList<Builder> gbuilders = new ArrayList<>();
+
+    private @Nullable Builder parentGroup; // null for root group; ignored during build()
+    private CdmFile ncfile; // set by CdmFile.build()
     private boolean built;
 
     public Builder setParentGroup(@Nullable Builder parentGroup) {
@@ -611,9 +612,25 @@ public class Group {
       return Optional.empty();
     }
 
-    // Unmodifiable iterator
+    // Unmodifiable iterators
+    public Iterable<Attribute> getAttributes() {
+      return ImmutableList.copyOf(getAttributeContainer());
+    }
+
     public Iterable<Dimension> getDimensions() {
       return ImmutableList.copyOf(dimensions);
+    }
+
+    public Iterable<EnumTypedef> getEnums() {
+      return ImmutableList.copyOf(enumTypedefs);
+    }
+
+    public Iterable<Variable.Builder> getVariables() {
+      return ImmutableList.copyOf(vbuilders);
+    }
+
+    public Iterable<Group.Builder> getGroups() {
+      return ImmutableList.copyOf(gbuilders);
     }
 
     /** Add a nested Group. */

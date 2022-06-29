@@ -64,7 +64,7 @@ public class CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CoordSystemBuilder(datasetBuilder);
     }
   }
@@ -149,7 +149,7 @@ public class CoordSystemBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected final CdmDataset.Builder<?> datasetBuilder;
+  protected final CdmDatasetCS.Builder<?> datasetBuilder;
   protected final Group.Builder rootGroup;
   protected final CoordinatesHelper.Builder coords;
 
@@ -166,10 +166,10 @@ public class CoordSystemBuilder {
   protected boolean debug;
 
   // Used when using NcML to provide convention attributes.
-  protected CoordSystemBuilder(CdmDataset.Builder<?> datasetBuilder) {
+  protected CoordSystemBuilder(CdmDatasetCS.Builder<?> datasetBuilder) {
     this.datasetBuilder = datasetBuilder;
     this.rootGroup = datasetBuilder.rootGroup;
-    this.coords = datasetBuilder.coords;
+    this.coords = CoordinatesHelper.builder();
   }
 
   protected void setConventionUsed(String convName) {
@@ -460,7 +460,7 @@ public class CoordSystemBuilder {
           vp.coordSysNames.add(coordSysName);
           parseInfo.format(" assigned explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
         } else {
-          CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder().setCoordAxesNames(coordSysName);
+          CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder(coordSysName).setCoordAxesNames(coordSysName);
           coords.addCoordinateSystem(csnew);
           vp.coordSysNames.add(coordSysName);
           parseInfo.format(" created explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
@@ -491,7 +491,7 @@ public class CoordSystemBuilder {
           vp.coordSysNames.add(csName);
           parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s%n", csName, vp);
         } else {
-          CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder().setCoordAxesNames(csName).setImplicit(true);
+          CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder(csName).setCoordAxesNames(csName).setImplicit(true);
           if (coords.isComplete(csnew, vp.vb)) {
             vp.coordSysNames.add(csName);
             coords.addCoordinateSystem(csnew);
@@ -509,8 +509,8 @@ public class CoordSystemBuilder {
    */
   private void makeCoordinateSystemsMaximal() {
 
-    boolean requireCompleteCoordSys =
-        !datasetBuilder.getEnhanceMode().contains(CdmDataset.Enhance.IncompleteCoordSystems);
+    boolean requireCompleteCoordSys = true;
+        // !datasetBuilder.getEnhanceMode().contains(CdmDataset.Enhance.IncompleteCoordSystems);
 
     for (VarProcess vp : varList) {
       if (vp.hasCoordinateSystem() || !vp.isData() || vp.vb.getDimensions().isEmpty()) {
@@ -554,7 +554,7 @@ public class CoordSystemBuilder {
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", csName, vp);
 
       } else {
-        CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder().setCoordAxesNames(csName);
+        CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder(csName).setCoordAxesNames(csName);
         // again, do coordinate systems need to be complete?
         // default enhance mode is yes, they must be complete
         if (requireCompleteCoordSys) {
@@ -648,7 +648,7 @@ public class CoordSystemBuilder {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
               coords.addCoordinateTransform(vp.ctv);
-              cs.setCoordinateTransformName(vp.ctv.getName());
+              cs.addTransformName(vp.ctv.getName());
               parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }
           }
@@ -671,7 +671,7 @@ public class CoordSystemBuilder {
         if (!axisTypesList.isEmpty()) {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxisTypes(cs, axisTypesList)) {
-              cs.setCoordinateTransformName(vp.ctv.getName());
+              cs.addTransformName(vp.ctv.getName());
               parseInfo.format("***assign (implicit coordAxisType) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }
           }
@@ -919,7 +919,7 @@ public class CoordSystemBuilder {
     protected void makeCoordinateSystem() {
       if (coordinateAxes != null) {
         String sysName = coords.makeCanonicalName(vb, coordinateAxes);
-        this.cs = CoordinateSystem.builder().setCoordAxesNames(sysName);
+        this.cs = CoordinateSystem.builder(sysName).setCoordAxesNames(sysName);
         parseInfo.format(" Made Coordinate System '%s'", sysName);
         coords.addCoordinateSystem(this.cs);
       }
@@ -981,7 +981,8 @@ public class CoordSystemBuilder {
             ct.getName());
         return;
       }
-      cs.setCoordinateTransformName(ct.getName());
+      cs.addTransformName(ct.getName()); // LOOK
+      cs.setProjectionName(ct.getName());
     }
 
   } // VarProcess

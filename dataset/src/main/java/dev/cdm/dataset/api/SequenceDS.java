@@ -4,7 +4,6 @@
  */
 package dev.cdm.dataset.api;
 
-import com.google.common.collect.ImmutableList;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.StructureData;
 import dev.cdm.core.api.Group;
@@ -15,7 +14,6 @@ import dev.cdm.dataset.internal.SequenceArrayEnhancer;
 
 import dev.cdm.array.Immutable;
 import java.util.Iterator;
-import java.util.List;
 
 /** An "enhanced" Sequence */
 @Immutable
@@ -35,11 +33,6 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
   @Override
   public String getOriginalName() {
     return orgName;
-  }
-
-  @Override
-  public List<CoordinateSystem> getCoordinateSystems() {
-    return ImmutableList.of();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////

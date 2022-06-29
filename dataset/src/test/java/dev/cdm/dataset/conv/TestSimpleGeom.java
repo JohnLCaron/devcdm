@@ -5,6 +5,7 @@
 
 package dev.cdm.dataset.conv;
 
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
@@ -12,7 +13,6 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CoordinateAxis;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasets;
 
 import java.io.IOException;
@@ -31,10 +31,10 @@ public class TestSimpleGeom {
     boolean testCond;
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
 
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       // make sure this dataset used the cfConvention
       expected = cfConvention;
-      found = ncd.getConventionUsed();
+      found = ncd.getConventionBuilder();
       testCond = found.equals(expected);
       failMessage =
           format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
@@ -59,32 +59,32 @@ public class TestSimpleGeom {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
-    CdmDataset ncd = CdmDatasets.openDataset(tstFile);
+    try(CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
 
-    // make sure this dataset used the cfConvention
-    expected = cfConvention;
-    found = ncd.getConventionUsed();
-    testCond = found.equals(expected);
-    failMessage =
-        format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-    assertWithMessage(failMessage).that(testCond).isTrue();
+      // make sure this dataset used the cfConvention
+      expected = cfConvention;
+      found = ncd.getConventionBuilder();
+      testCond = found.equals(expected);
+      failMessage =
+              format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
+      assertWithMessage(failMessage).that(testCond).isTrue();
 
-    // check that attributes were filled in correctly
-    List<Variable> vars = ncd.getVariables();
-    for (Variable v : vars) {
-      if (v.findAttribute(CF.GEOMETRY) != null) {
-        assertThat(v.findAttribute(CF.NODE_COORDINATES)).isNotNull();
-        assertThat(v.findAttribute(_Coordinate.Axes)).isNotNull();
+      // check that attributes were filled in correctly
+      List<Variable> vars = ncd.getVariables();
+      for (Variable v : vars) {
+        if (v.findAttribute(CF.GEOMETRY) != null) {
+          assertThat(v.findAttribute(CF.NODE_COORDINATES)).isNotNull();
+          assertThat(v.findAttribute(_Coordinate.Axes)).isNotNull();
+        }
       }
     }
-    ncd.close();
   }
 
   @Test
   public void testCoordinateVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();
@@ -97,7 +97,7 @@ public class TestSimpleGeom {
   public void testVarLenDataVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDataset ncd = CdmDatasets.openDataset(tstFile)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();

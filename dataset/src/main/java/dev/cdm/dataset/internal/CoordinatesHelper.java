@@ -13,6 +13,7 @@ import dev.cdm.core.api.Structure;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.*;
+import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 
@@ -110,6 +111,21 @@ public class CoordinatesHelper {
   private final ImmutableList<CoordinateSystem> coordSystems;
   private final ImmutableList<ProjectionCTV> coordTransforms;
 
+  public CoordinatesHelper(CoordsHelperBuilder builder, List<CoordinateAxis> axes) {
+    this.coordAxes = ImmutableList.copyOf(axes);
+
+    ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
+    ctBuilders.addAll(builder.getCoordTransforms().stream().filter(Objects::nonNull).collect(Collectors.toList()));
+    coordTransforms = ctBuilders.build();
+
+    List<ProjectionCTV> allProjections =
+        coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
+
+    // TODO remove coordSys not used by a variable....
+    this.coordSystems = builder.getCoordSys().stream().map(csb -> csb.build(this.coordAxes, allProjections))
+        .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
+  }
+
   private CoordinatesHelper(Builder builder, List<CoordinateAxis> axes) {
     this.coordAxes = ImmutableList.copyOf(axes);
 
@@ -118,23 +134,34 @@ public class CoordinatesHelper {
     coordTransforms = ctBuilders.build();
 
     List<ProjectionCTV> allProjections =
-        coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
+            coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
 
     // TODO remove coordSys not used by a variable....
     this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(this.coordAxes, allProjections))
-        .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
+            .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  public CoordinatesHelper.Builder toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  private CoordinatesHelper.Builder addLocalFieldsToBuilder(CoordinatesHelper.Builder b) {
+    this.coordAxes.forEach(axis -> b.addCoordinateAxis(axis.toBuilder()));
+    this.coordSystems.forEach(sys -> b.addCoordinateSystem(sys.toBuilder()));
+    this.coordTransforms.forEach(ct -> b.addCoordinateTransform(ct));
+    return b;
+  }
 
   public static Builder builder() {
     return new Builder();
   }
 
   public static class Builder {
-    public final List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
-    public final List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
-    public final List<ProjectionCTV> coordTransforms = new ArrayList<>();
+    public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
+    public final ArrayList<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
+    public final ArrayList<ProjectionCTV> coordTransforms = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
@@ -207,6 +234,16 @@ public class CoordinatesHelper {
         coordTransforms.add(ct);
       }
       return this;
+    }
+
+    public Builder addCoordinateTransforms(List<ProjectionCTV> transforms) {
+      coordTransforms.addAll(transforms);
+      return this;
+    }
+
+    public void replaceCoordinateTransform(ProjectionCTV ct) {
+      coordTransforms.stream().filter(t -> t.getName().equals(ct.getName())).findFirst().ifPresent(coordTransforms::remove);
+      addCoordinateTransform(ct);
     }
 
     private List<CoordinateAxis.Builder<?>> getAxesForSystem(CoordinateSystem.Builder<?> cs) {

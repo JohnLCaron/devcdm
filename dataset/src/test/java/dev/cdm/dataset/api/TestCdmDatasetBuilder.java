@@ -4,7 +4,7 @@
  */
 package dev.cdm.dataset.api;
 
-import dev.cdm.dataset.internal.CoordinatesHelper;
+import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.api.Attribute;
@@ -41,7 +41,7 @@ public class TestCdmDatasetBuilder {
 
     Formatter f = new Formatter();
     ncfile.getDetailInfo(f);
-    assertThat(f.toString()).startsWith("NetcdfDataset location= location");
+    assertThat(f.toString()).startsWith("CdmDataset location= location");
 
     Group group = ncfile.getRootGroup();
     assertThat(group.getCdmFile()).isEqualTo(ncfile);
@@ -71,8 +71,8 @@ public class TestCdmDatasetBuilder {
 
   @Test
   public void testCoordinatesHelper() {
-    CdmDataset.Builder<?> ncdb = CdmDataset.builder();
-    CoordinatesHelper.Builder coords = ncdb.coords;
+    CdmDatasetCS.Builder<?> ncdb = CdmDatasetCS.builder();
+    CoordsHelperBuilder coords = ncdb.coords;
 
     VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(CdmDataset.getEnhanceAll());
@@ -82,10 +82,10 @@ public class TestCdmDatasetBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(CdmDataset.getEnhanceAll());
     ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY));
 
-    CoordinateSystem.Builder<?> csb = CoordinateSystem.builder().setCoordAxesNames("xname yname");
+    CoordinateSystem.Builder<?> csb = CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname");
     coords.addCoordinateSystem(csb);
 
-    CdmDataset ncd = ncdb.build();
+    CdmDatasetCS ncd = ncdb.build();
     CoordinateSystem coordSys = ncd.findCoordinateSystem("yname xname");
     assertThat(coordSys).isNotNull();
 

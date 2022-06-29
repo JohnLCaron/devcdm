@@ -33,7 +33,7 @@ public class ADASConvention extends CoordSystemBuilder {
 
   private ProjectionCTV projCT;
 
-  ADASConvention(CdmDataset.Builder<?> datasetBuilder) {
+  ADASConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -240,7 +240,7 @@ public class ADASConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new ADASConvention(datasetBuilder);
     }
   }

@@ -36,7 +36,4 @@ public interface VariableEnhanced {
 
   /** Get the containing Group. */
   Group getParentGroup();
-
-  /** Get the list of Coordinate Systems for this Variable, larger number of axes first. */
-  List<CoordinateSystem> getCoordinateSystems();
 }

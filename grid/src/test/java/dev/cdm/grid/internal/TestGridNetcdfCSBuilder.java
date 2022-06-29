@@ -43,7 +43,7 @@ public class TestGridNetcdfCSBuilder {
     List<ProjectionCTV> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> csb =
-        CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
+        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
     CoordinateSystem coordSys = csb.build(axes, allProjs);
 
     // GridDataset

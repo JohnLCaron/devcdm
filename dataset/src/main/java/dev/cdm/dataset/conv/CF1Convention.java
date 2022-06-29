@@ -16,6 +16,7 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
@@ -114,7 +115,7 @@ public class CF1Convention extends CSMConvention {
 
   private int cfVersion = 0;
 
-  protected CF1Convention(CdmDataset.Builder<?> datasetBuilder) {
+  protected CF1Convention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
     String conv = rootGroup.getAttributeContainer().findAttributeString(CF.CONVENTIONS, null);
@@ -539,7 +540,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CF1Convention(datasetBuilder);
     }
   }

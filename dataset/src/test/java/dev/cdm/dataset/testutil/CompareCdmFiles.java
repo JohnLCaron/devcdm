@@ -7,9 +7,9 @@ package dev.cdm.dataset.testutil;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
+import dev.cdm.array.CompareArrayToArray;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.core.util.CompareArrayToArray;
 import dev.cdm.dataset.api.*;
 import dev.cdm.core.iosp.IospUtils;
 import dev.cdm.dataset.geoloc.Projection;
@@ -247,9 +247,9 @@ public class CompareCdmFiles {
     f.format(" Time to compare = %d msecs%n", took);
 
     // coordinate systems
-    if (org instanceof CdmDataset && copy instanceof CdmDataset) {
-      CdmDataset orgds = (CdmDataset) org;
-      CdmDataset copyds = (CdmDataset) copy;
+    if (org instanceof CdmDatasetCS && copy instanceof CdmDatasetCS) {
+      CdmDatasetCS orgds = (CdmDatasetCS) org;
+      CdmDatasetCS copyds = (CdmDatasetCS) copy;
 
       // coordinate systems
       for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
@@ -382,24 +382,7 @@ public class CompareCdmFiles {
 
     // data !!
     if (compareData) {
-      ok &= CompareArrayToArray.compareVariableData(f, org, copy, false);
-    }
-
-    // coordinate systems
-    if (org instanceof VariableEnhanced && copy instanceof VariableEnhanced) {
-      VariableEnhanced orge = (VariableEnhanced) org;
-      VariableEnhanced copye = (VariableEnhanced) copy;
-
-      for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
-        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
-            .findFirst().orElse(null);
-        if (cs2 == null) {
-          ok = false;
-          f.format("  ** Cant find CoordinateSystem '%s' in file2 for var %s %n", cs1.getName(), org.getShortName());
-        } else {
-          ok &= compareCoordinateSystem(cs1, cs2, filter);
-        }
-      }
+      ok &= dev.cdm.core.util.CompareCdmFiles.compareVariableData(f, org, copy, false);
     }
 
     // f.format(" Variable '%s' ok %s %n", org.getName(), ok);

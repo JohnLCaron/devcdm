@@ -16,6 +16,7 @@ import dev.cdm.dataset.api.VariableEnhanced;
 import java.nio.ByteBuffer;
 
 /** Enhance StructureData, for both StructureDS and SequenceDS. */
+@Immutable
 public class StructureDataArrayEnhancer {
   private final StructureEnhanced topStructure;
   private final StructureDataArray org;

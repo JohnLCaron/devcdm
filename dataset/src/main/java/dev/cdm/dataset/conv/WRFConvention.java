@@ -144,12 +144,12 @@ public class WRFConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new WRFConvention(datasetBuilder);
     }
   }
 
-  private WRFConvention(CdmDataset.Builder<?> datasetBuilder) {
+  private WRFConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }

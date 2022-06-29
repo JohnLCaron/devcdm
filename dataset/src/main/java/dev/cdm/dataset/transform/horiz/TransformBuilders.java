@@ -11,9 +11,9 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CoordinateAxis;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.geoloc.Earth;
 
 import java.util.List;
@@ -29,12 +29,12 @@ public class TransformBuilders {
    * Expressed in the unit of the coordinate variable identified by the standard name projection_x_coordinate
    * (projection_y_coordinate).
    */
-  public static double getFalseEastingScaleFactor(CdmDataset ds, AttributeContainer ctv) {
+  public static double getFalseEastingScaleFactor(CdmDatasetCS ds, AttributeContainer ctv) {
     String units = getGeoCoordinateUnits(ds, ctv);
     return getFalseEastingScaleFactor(units);
   }
 
-  public static String getGeoCoordinateUnits(CdmDataset ds, AttributeContainer ctv) {
+  public static String getGeoCoordinateUnits(CdmDatasetCS ds, AttributeContainer ctv) {
     String units = ctv.findAttributeString(CDM.UNITS, null);
     if (units == null) {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();

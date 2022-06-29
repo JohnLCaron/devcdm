@@ -6,6 +6,7 @@ import dev.cdm.core.calendar.Calendar;
 import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
@@ -30,7 +31,7 @@ class CoardsConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CoardsConventions(datasetBuilder);
     }
   }
@@ -51,7 +52,7 @@ class CoardsConventions extends CoordSystemBuilder {
    * time in such cases.
    */
 
-  CoardsConventions(CdmDataset.Builder<?> datasetBuilder) {
+  CoardsConventions(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }

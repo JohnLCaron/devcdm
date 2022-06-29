@@ -6,9 +6,6 @@ package dev.cdm.dataset.api;
 
 import com.google.common.collect.ImmutableSet;
 import dev.cdm.core.api.*;
-import dev.cdm.core.constants.AxisType;
-import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.internal.EnhanceScaleMissingUnsigned;
 
 import org.jetbrains.annotations.Nullable;
@@ -17,29 +14,27 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Set;
 
 /**
  * <p>
- * An "enhanced" CdmFile, adding standard attribute parsing such as
- * scale and offset, and explicit support for Coordinate Systems.
- * A {@code NetcdfDataset} wraps a {@code CdmFile}, or is defined by an NcML document.
+ * An "enhanced" CdmFile, adding standard attribute parsing such as scale and offset.
+ * Support for Coordinate Systems is in CdmDatasetCS.
  * </p>
  *
  * <p>
  * Be sure to close the dataset when done.
- * Using statics in {@code NetcdfDatets}, best practice is to use try-with-resource:
+ * Using statics in {@code CdmDatasets}, best practice is to use try-with-resource:
  * </p>
  * 
  * <pre>
- * try (NetcdfDataset ncd = NetcdfDatasets.openDataset(fileName)) {
+ * try (CdmDataset ncd = CdmDatasets.openDataset(fileName)) {
  *   ...
  * }
  * </pre>
  *
  * <p>
- * By default @code NetcdfDataset} is opened with all enhancements turned on. The default "enhance
+ * By default @code CdmDataset} is opened with all enhancements turned on. The default "enhance
  * mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the enhancements
  * you want in the dataset factory methods. The enhancements are:
  * </p>
@@ -50,20 +45,20 @@ import java.util.Set;
  * <li>ConvertUnsigned: reinterpret the bit patterns of any negative values as unsigned.</li>
  * <li>ApplyScaleOffset: process scale/offset attributes, and automatically convert the data.</li>
  * <li>ConvertMissing: replace missing data with NaNs, for efficiency.</li>
- * <li>CoordSystems: extract CoordinateSystem using the CoordSysBuilder plug-in mechanism.</li>
  * </ul>
  *
  * <p>
  * Automatic scale/offset processing has some overhead that you may not want to incur up-front. If so, open the
- * NetcdfDataset without {@code ApplyScaleOffset}. The VariableDS data type is not promoted and the data is not
+ * CdmDataset without {@code ApplyScaleOffset}. The VariableDS data type is not promoted and the data is not
  * converted on a read, but you can call the convertScaleOffset() routines to do the conversion later.
  * </p>
  */
 @Immutable
 public class CdmDataset extends CdmFile {
   public static final String IOSP_MESSAGE_GET_REFERENCED_FILE = "REFERENCED_FILE";
+  public static final String IOSP_MESSAGE_GET_COORDS_HELPER = "COORDS_HELPER";
 
-  /** Possible enhancements for a NetcdfDataset */
+  /** Possible enhancements for a CdmDataset */
   public enum Enhance {
     /** Convert enums to Strings. */
     ConvertEnums,
@@ -81,17 +76,10 @@ public class CdmDataset extends CdmFile {
      * enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
      */
     ConvertMissing,
-    /** Build coordinate systems. */
-    CoordSystems,
-    /**
-     * Build coordinate systems allowing for incomplete coordinate systems (i.e. not
-     * every dimension in a variable has a corresponding coordinate variable.
-     */
-    IncompleteCoordSystems,
   }
 
   private static final Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
-      Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
+      Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing));
   private static final Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
@@ -126,20 +114,11 @@ public class CdmDataset extends CdmFile {
   ////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get the list of all CoordinateSystem objects used by this dataset.
-   *
-   * @return list of type CoordinateSystem; may be empty, not null.
-   */
-  public List<CoordinateSystem> getCoordinateSystems() {
-    return coords.getCoordSystems();
-  }
-
-  /**
    * Get conventions used to analyse coordinate systems.
    *
    * @return conventions used to analyse coordinate systems
    */
-  public String getConventionUsed() {
+  public String getConventionBuilder() {
     return convUsed;
   }
 
@@ -150,88 +129,6 @@ public class CdmDataset extends CdmFile {
    */
   public Set<Enhance> getEnhanceMode() {
     return enhanceMode;
-  }
-
-  /**
-   * Get the list of all CoordinateAxis used by this dataset.
-   *
-   * @return list of type CoordinateAxis; may be empty, not null.
-   */
-  public List<CoordinateAxis> getCoordinateAxes() {
-    return coords.getCoordAxes();
-  }
-
-  /**
-   * Retrieve the CoordinateAxis with the specified Axis Type.
-   *
-   * @param type axis type
-   * @return the first CoordinateAxis that has that type, or null if not found
-   */
-  public CoordinateAxis findCoordinateAxis(AxisType type) {
-    if (type == null)
-      return null;
-    for (CoordinateAxis v : coords.getCoordAxes()) {
-      if (type == v.getAxisType())
-        return v;
-    }
-    return null;
-  }
-
-  /**
-   * Retrieve the CoordinateAxis with the specified fullName.
-   *
-   * @param fullName full escaped name of the coordinate axis
-   * @return the CoordinateAxis, or null if not found
-   */
-  public CoordinateAxis findCoordinateAxis(String fullName) {
-    if (fullName == null)
-      return null;
-    for (CoordinateAxis v : coords.getCoordAxes()) {
-      if (fullName.equals(v.getFullName()))
-        return v;
-    }
-    return null;
-  }
-
-  /**
-   * Retrieve the CoordinateSystem with the specified name.
-   *
-   * @param name String which identifies the desired CoordinateSystem
-   * @return the CoordinateSystem, or null if not found
-   */
-  public CoordinateSystem findCoordinateSystem(String name) {
-    if (name == null)
-      return null;
-    for (CoordinateSystem v : coords.getCoordSystems()) {
-      if (name.equals(v.getName()))
-        return v;
-    }
-    return null;
-  }
-
-  /** Return true if axis is 1D with a unique dimension. */
-  public boolean isIndependentCoordinate(CoordinateAxis axis) {
-    if (axis.isCoordinateVariable()) {
-      return true;
-    }
-    if (axis.getRank() != 1) {
-      return false;
-    }
-    if (axis.attributes().hasAttribute(_Coordinate.AliasForDimension)) {
-      return true;
-    }
-    Dimension dim = axis.getDimension(0);
-    for (CoordinateAxis other : getCoordinateAxes()) {
-      if (other == axis) {
-        continue;
-      }
-      for (Dimension odim : other.getDimensions()) {
-        if (dim.equals(odim)) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   @Override
@@ -270,7 +167,7 @@ public class CdmDataset extends CdmFile {
   /** Show debug / underlying implementation details */
   @Override
   public void getDetailInfo(Formatter f) {
-    f.format("NetcdfDataset location= %s%n", getLocation());
+    f.format("CdmDataset location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());
     f.format("  id= %s%n", getId());
     f.format("  fileType= %s%n", getCdmFileTypeId());
@@ -311,37 +208,16 @@ public class CdmDataset extends CdmFile {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final @Nullable CdmFile orgFile; // can be null in NcML
-  private final CoordinatesHelper coords;
   private final @Nullable String convUsed;
   private final ImmutableSet<Enhance> enhanceMode; // enhancement mode for this specific dataset
   private final @Nullable String fileTypeId;
 
-  private CdmDataset(Builder<?> builder) {
+  protected CdmDataset(Builder<?> builder) {
     super(builder);
     this.orgFile = builder.orgFile;
     this.fileTypeId = builder.fileTypeId;
     this.convUsed = builder.convUsed;
     this.enhanceMode = ImmutableSet.copyOf(builder.getEnhanceMode());
-
-    List<CoordinateAxis> axes = CoordinatesHelper.makeAxes(this);
-    this.coords = builder.coords.build(axes);
-
-    // We have to break VariableDS Immutability here, because VariableDS is constructed in CdmFile, but needs a
-    // link to the CoordinatesHelper, which isnt complete yet.
-    for (Variable v : this.getVariables()) {
-      if (v instanceof CoordinateAxis) {
-        continue;
-      }
-      if (v instanceof VariableDS) {
-        VariableDS vds = (VariableDS) v;
-        vds.setCoordinateSystems(coords);
-      }
-      // TODO This implies Structures can have CoordinateSystems. Review and justify this.
-      if (v instanceof StructureDS) {
-        StructureDS sds = (StructureDS) v;
-        sds.setCoordinateSystems(coords);
-      }
-    }
   }
 
   public Builder<?> toBuilder() {
@@ -349,17 +225,13 @@ public class CdmDataset extends CdmFile {
   }
 
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
-    this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
-    this.coords.getCoordTransforms().forEach(ct -> b.coords.addCoordinateTransform(ct));
-
     b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
         .setFileTypeId(this.fileTypeId);
 
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /** Get Builder for NetcdfDataset. */
+  /** Get Builder for CdmDataset. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -374,25 +246,12 @@ public class CdmDataset extends CdmFile {
   public static abstract class Builder<T extends Builder<T>> extends CdmFile.Builder<T> {
     @Nullable
     public CdmFile orgFile;
-    public final CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     private String convUsed;
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
     private String fileTypeId;
     private boolean built;
 
     protected abstract T self();
-
-    /**
-     * Add a CoordinateAxis to the dataset coordinates and to the list of variables.
-     * Replaces any existing Variable and CoordinateAxis with the same name.
-     */
-    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder<?> axis) {
-      if (axis == null)
-        return;
-      coords.replaceCoordinateAxis(axis);
-      group.replaceVariable(axis);
-      axis.setParentGroupBuilder(group);
-    }
 
     public T setOrgFile(CdmFile orgFile) {
       this.orgFile = orgFile;
@@ -451,7 +310,7 @@ public class CdmDataset extends CdmFile {
       return self();
     }
 
-    private void convertGroup(Group.Builder g, Group from) {
+    protected void convertGroup(Group.Builder g, Group from) {
       g.setName(from.getShortName());
 
       g.addEnumTypedefs(from.getEnumTypedefs()); // copy

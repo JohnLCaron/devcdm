@@ -5,8 +5,8 @@
 package dev.cdm.grid.api;
 
 import com.google.common.collect.Iterables;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.DatasetUrl;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasets;
 import dev.cdm.grid.internal.GridNetcdfDataset;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +60,7 @@ public class GridDatasetFactory {
   @Nullable
   public static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
     // Otherwise, wrap a CdmDataset
-    CdmDataset ds = CdmDatasets.openDataset(endpoint);
+    CdmDatasetCS ds = CdmDatasets.openDatasetCS(endpoint, true);
     Optional<GridNetcdfDataset> result =
         GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
     if (result.isEmpty()) {
@@ -73,7 +73,7 @@ public class GridDatasetFactory {
   }
 
   /** Wrap an already open CdmDataset as a GridDataset if possible. */
-  public static Optional<GridDataset> wrapGridDataset(CdmDataset ds, Formatter errLog) throws IOException {
+  public static Optional<GridDataset> wrapGridDataset(CdmDatasetCS ds, Formatter errLog) throws IOException {
     Optional<GridNetcdfDataset> result =
         GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
     if (result.isEmpty()) {

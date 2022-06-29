@@ -56,6 +56,14 @@ public class TestSimpleUnit {
   }
 
   @Test
+  public void testGeopotential() {
+    Unit<?> geopotentialHeight = Units.METRE_PER_SECOND.multiply(Units.METRE_PER_SECOND).multiply(9.80665);
+
+    SimpleUnit sunit = SimpleUnit.factoryWithExceptions("gp m");
+    System.out.printf("%s %s%n", sunit.unit(), sunit.unit().getName());
+  }
+
+  @Test
   public void testParseExpr() {
     SimpleUnit sunit = SimpleUnit.factoryWithExceptions("mbar");
     System.out.printf("%s %s%n", sunit.unit(), sunit.unit().getName());

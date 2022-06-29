@@ -9,6 +9,7 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.internal.CoordSystemBuilder;
@@ -24,7 +25,7 @@ import java.io.IOException;
 public class GIEFConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "GIEF";
 
-  GIEFConvention(CdmDataset.Builder<?> datasetBuilder) {
+  GIEFConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -81,7 +82,7 @@ public class GIEFConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDataset.Builder<?> datasetBuilder) {
+    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new GIEFConvention(datasetBuilder);
     }
   }

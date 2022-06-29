@@ -7,12 +7,14 @@ package dev.cdm.dataset.internal;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
+import dev.cdm.array.Immutable;
 import dev.cdm.dataset.api.CdmDataset.Enhance;
 import dev.cdm.dataset.api.VariableDS;
 
 import java.util.Set;
 
 /** Does enhancements to a VariableDS' data. */
+@Immutable
 public class DataEnhancer {
   private final VariableDS variableDS;
   private final ArrayType dataType;

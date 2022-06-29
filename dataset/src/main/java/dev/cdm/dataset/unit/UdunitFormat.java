@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.unit;
 
+import dev.cdm.dataset.api.SimpleUnit;
 import tech.units.indriya.format.SimpleUnitFormat;
 import tech.units.indriya.unit.Units;
 
@@ -28,6 +29,7 @@ public class UdunitFormat extends SimpleUnitFormat {
     delegate.alias(Units.PERCENT, "percent");
     delegate.alias(Units.CELSIUS, "degC");
     delegate.alias(Units.METRE, "meters");
+    delegate.alias(Units.METRE, "meter");
 
     Unit<Pressure> mbar = Units.PASCAL.multiply(100);
     delegate.alias(mbar, "mbar");
@@ -74,6 +76,9 @@ public class UdunitFormat extends SimpleUnitFormat {
 
   @Override
   public Unit<?> parse(CharSequence csq) throws MeasurementParseException {
+    if (csq.equals("gp m")) { // kludge !
+      return SimpleUnit.geopotentialHeight.unit();
+    }
     try {
       return delegate.parse(csq);
     } catch (Exception e) {

@@ -5,6 +5,7 @@
 package dev.cdm.dataset.internal;
 
 import com.google.common.base.Strings;
+import dev.cdm.array.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.cdm.array.Array;
@@ -137,6 +138,7 @@ import static dev.cdm.array.ArrayType.USHORT;
  * variants. Use the setXXXisMissing() to customize the behavior if needed.</li>
  * </ol>
  */
+// TODO @Immutable
 public class EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

@@ -3,6 +3,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
+    kotlin("jvm") version "1.6.21"
     id("java")
     id("java-library")
 }
@@ -29,6 +30,10 @@ dependencies {
     implementation(libs.slf4j)
     implementation(libs.uomImpl)
 
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.15")
+    implementation(kotlin("stdlib-common", "1.6.20"))
+    implementation(kotlin("stdlib", "1.6.20"))
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -48,4 +53,14 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("cdmng-dataset")
+}
+
+sourceSets.main {
+    java.srcDirs("src/main/java", "src/main/kotlin")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

@@ -4,6 +4,8 @@
  */
 package dev.cdm.core.constants;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Enumeration of Coordinate Axis types. These are used for tagging georeferencing axes.
  */
@@ -54,6 +56,7 @@ public enum AxisType {
    * @param name match this name
    * @return AxisType or null if no match.
    */
+  @Nullable
   public static AxisType getType(String name) {
     if (name == null)
       return null;

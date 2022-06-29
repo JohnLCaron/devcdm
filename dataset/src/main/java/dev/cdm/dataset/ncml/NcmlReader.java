@@ -6,6 +6,8 @@ package dev.cdm.dataset.ncml;
 
 import dev.cdm.core.api.CdmFiles;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasetCS;
+import dev.cdm.dataset.internal.DatasetEnhancer;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
@@ -33,7 +35,7 @@ import dev.cdm.dataset.api.CdmDatasets;
 import dev.cdm.dataset.api.SequenceDS;
 import dev.cdm.dataset.api.StructureDS;
 import dev.cdm.dataset.api.VariableDS;
-import dev.cdm.dataset.internal.DatasetEnhancer;
+import dev.cdm.dataset.internal.DatasetCSEnhancer;
 import dev.cdm.dataset.internal.AliasTranslator;
 import dev.cdm.core.util.URLnaming;
 import dev.cdm.core.util.CancelTask;
@@ -90,13 +92,13 @@ public class NcmlReader {
       case "convertunsigned" -> EnumSet.of(Enhance.ConvertUnsigned);
       case "applyscaleoffset" -> EnumSet.of(Enhance.ApplyScaleOffset);
       case "convertmissing" -> EnumSet.of(Enhance.ConvertMissing);
-      case "coordsystems" -> EnumSet.of(Enhance.CoordSystems);
-      case "incompletecoordsystems" -> EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
+      //case "coordsystems" -> EnumSet.of(Enhance.CoordSystems);
+      //case "incompletecoordsystems" -> EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
 
       // Legacy strings, retained for backwards compatibility:
       case "true" -> CdmDataset.getEnhanceAll();
       case "scalemissingdefer" -> CdmDataset.getEnhanceNone();
-      case "alldefer" -> EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
+      //case "alldefer" -> EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
       case "scalemissing" -> EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
       // Return null by default, since some valid strings actually return an empty set.
       default -> null;
@@ -227,7 +229,7 @@ public class NcmlReader {
    * @return the resulting NetcdfDataset.Builder
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static CdmDataset.Builder<?> readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
+  public static CdmDatasetCS.Builder<?> readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
     org.jdom2.Document doc;
     try {
@@ -337,7 +339,7 @@ public class NcmlReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  CdmDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
+  CdmDatasetCS.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
                                  @Nullable CancelTask cancelTask) throws IOException {
 
     // get ncml namespace and set namespace variable
@@ -388,7 +390,7 @@ public class NcmlReader {
     Element elemE = netcdfElem.getChild("explicit", ncNS);
     explicit = (elemE != null);
 
-    CdmDataset.Builder<?> builder = CdmDataset.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
+    CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
     if (this.refFile != null && !explicit) {
       // copy all the metadata from the original file.
       builder.copyFrom(this.refFile);
@@ -448,7 +450,7 @@ public class NcmlReader {
     if (mode != null) {
       // cant just set enhance mode
       if (DatasetEnhancer.enhanceNeeded(mode, null)) {
-        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode);
         enhancer.enhance();
         builder.setEnhanceMode(mode);
       }

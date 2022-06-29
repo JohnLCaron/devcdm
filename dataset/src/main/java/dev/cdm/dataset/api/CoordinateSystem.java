@@ -44,16 +44,14 @@ import java.util.Set;
  *    An(i,j,k,...) -&gt; Sn
  * </pre>
  *
- * Concretely, a CoordinateSystem is a set of coordinate axes, and an optional set
- * of coordinate transforms.
- * The domain rank of F is the number of dimensions it is a function of. The range rank is the number
- * of coordinate axes.
+ * Concretely, a CoordinateSystem is a set of coordinate axes, and an optional set of coordinate transforms.
+ * The domain rank of F is the number of dimensions it is a function of.
+ * The range rank is the number of coordinate axes.
  *
  * <p>
  * An important class of CoordinateSystems are <i>georeferencing</i> Coordinate Systems, that locate a
  * Variable's values in space and time. A CoordinateSystem that has a Lat and Lon axis, or a GeoX and GeoY
  * axis and a Projection CoordinateTransform will have <i>isGeoReferencing()</i> true.
- * A CoordinateSystem that has a Height, Pressure, or GeoZ axis will have <i>hasVerticalAxis()</i> true.
  */
 @Immutable
 public class CoordinateSystem {
@@ -288,7 +286,7 @@ public class CoordinateSystem {
     this.coordAxes = ImmutableList.copyOf(axesList);
 
     // calculated
-    this.name = makeName(coordAxes);
+    this.name = builder.name;
 
     CoordinateAxis xAxis = null, yAxis = null, zAxis = null, tAxis = null, latAxis = null, lonAxis = null;
     CoordinateAxis hAxis = null, pAxis = null, ensAxis = null;
@@ -343,29 +341,29 @@ public class CoordinateSystem {
 
     // Find the named coordinate transforms in allTransforms.
     ProjectionCTV proj = null;
-    if (builder.transName != null) {
-      proj = allProjections.stream().filter(ct -> builder.transName.equals(ct.getName())).findFirst().orElse(null);
+    if (builder.projName != null) {
+      proj = allProjections.stream().filter(ct -> builder.projName.equals(ct.getName())).findFirst().orElse(null);
     }
     this.projectionCTV = proj;
   }
 
   /** Convert to a mutable Builder. */
   public Builder<?> toBuilder() {
-    return addLocalFieldsToBuilder(builder());
+    return addLocalFieldsToBuilder(builder(this.name));
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     b.setImplicit(this.isImplicit).setCoordAxesNames(this.name);
     if (this.projectionCTV != null) {
-      b.setCoordinateTransformName(this.projectionCTV.getName());
+      b.addTransformName(this.projectionCTV.getName());
     }
     return b;
   }
 
   /** Get a Builder of CoordinateSystem */
-  public static Builder<?> builder() {
-    return new Builder2();
+  public static Builder<?> builder(String name) {
+    return new Builder2().setName(name);
   }
 
   private static class Builder2 extends Builder<Builder2> {
@@ -376,12 +374,19 @@ public class CoordinateSystem {
   }
 
   public static abstract class Builder<T extends Builder<T>> {
+    public String name;
     public String coordAxesNames = "";
-    private String transName;
+    public String projName;
+    private List<String> transforms = new ArrayList<>();
     private boolean isImplicit;
     private boolean built;
 
     protected abstract T self();
+
+    public T setName(String name) {
+      this.name = name;
+      return self();
+    }
 
     /** @param names list of axes full names, space delimited. Doesnt have to be sorted. */
     public T setCoordAxesNames(String names) {
@@ -389,14 +394,27 @@ public class CoordinateSystem {
       return self();
     }
 
-    public T setCoordinateTransformName(String ct) {
-      transName = ct;
+    public T setProjectionName(String projName) {
+      this.projName = projName;
+      return self();
+    }
+
+    public T addTransformName(String ct) {
+      transforms.add(ct);
       return self();
     }
 
     public T setImplicit(boolean isImplicit) {
       this.isImplicit = isImplicit;
       return self();
+    }
+
+    public boolean containsAxesNamed(String axes) {
+      return false;
+    }
+
+    public boolean containsAxesTypes(String axes) {
+      return false;
     }
 
     /**

@@ -4,7 +4,6 @@
  */
 package dev.cdm.dataset.api;
 
-import com.google.common.collect.ImmutableList;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.InvalidRangeException;
@@ -12,14 +11,12 @@ import dev.cdm.array.Section;
 import dev.cdm.array.StructureDataArray;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.internal.StructureDataArrayEnhancer;
 import dev.cdm.core.util.CancelTask;
 
 import org.jetbrains.annotations.Nullable;
 import dev.cdm.array.Immutable;
 import java.io.IOException;
-import java.util.List;
 
 /** An "enhanced" Structure. */
 @Immutable
@@ -73,11 +70,6 @@ public class StructureDS extends dev.cdm.core.api.Structure implements Structure
     return enhancer.enhance();
   }
 
-  @Override
-  public List<CoordinateSystem> getCoordinateSystems() {
-    return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
-  }
-
   public String getDescription() {
     return proxy.getDescription();
   }
@@ -86,21 +78,10 @@ public class StructureDS extends dev.cdm.core.api.Structure implements Structure
     return proxy.getUnitsString();
   }
 
-  // Not technically immutable because of this
-  void setCoordinateSystems(CoordinatesHelper coords) {
-    if (this.coordinateSystems != null) {
-      throw new RuntimeException("Cant call twice");
-    }
-    this.coordinateSystems = ImmutableList.copyOf(coords.makeCoordinateSystemsFor(this));
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected final EnhancementsImpl proxy;
   protected final Structure orgVar; // wrap this Variable
   protected final String orgName; // in case Variable was renamed, and we need the original name for aggregation
-
-  // Not technically immutable because of this
-  private ImmutableList<CoordinateSystem> coordinateSystems;
 
   protected StructureDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);

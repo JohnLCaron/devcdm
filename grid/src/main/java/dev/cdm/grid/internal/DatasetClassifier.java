@@ -11,6 +11,7 @@ import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.Dimensions;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.FeatureType;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateSystem;
@@ -37,7 +38,7 @@ public class DatasetClassifier {
   private final HashMap<String, CoordinateAxis> depAxes = new HashMap<>(); // eliminate duplicates
   private FeatureType featureType;
 
-  public DatasetClassifier(CdmDataset ds, Formatter infolog) {
+  public DatasetClassifier(CdmDatasetCS ds, Formatter infolog) {
     Preconditions.checkNotNull(ds);
     Preconditions.checkNotNull(infolog);
 

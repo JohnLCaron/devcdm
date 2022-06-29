@@ -7,6 +7,7 @@ import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.conv.CF1Convention;
 import dev.cdm.dataset.conv.DefaultConventions;
@@ -213,13 +214,9 @@ public class CoordSystemFactory {
 
   /**
    * Get a CoordSystemBuilder whose job it is to add Coordinate information to a NetcdfDataset.Builder.
-   *
-   * @param ds the NetcdfDataset.Builder to modify
-   * @param cancelTask allow user to bail out.
-   * @return the builder to be used
-   * @throws IOException on io error
+   * @param ds the CdmDatasetCS.Builder to modify
    */
-  public static Optional<CoordSystemBuilder> factory(CdmDataset.Builder<?> ds, CancelTask cancelTask)
+  public static CoordSystemBuilder factory(CdmDatasetCS.Builder<?> ds, CancelTask cancelTask)
       throws IOException {
 
     // look for the Conventions attribute
@@ -239,7 +236,7 @@ public class CoordSystemFactory {
       if (convNcml != null) {
         CoordSystemBuilder csb = new CoordSystemBuilder(ds);
         NcmlReader.wrapNcml(ds, convNcml, cancelTask);
-        return Optional.of(csb);
+        return csb;
       }
     }
     CoordSystemBuilderProvider coordSysFactory = null;
@@ -272,7 +269,7 @@ public class CoordSystemFactory {
     }
 
     ds.rootGroup.addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSystemBuilder.getClass().getName()));
-    return Optional.of(coordSystemBuilder);
+    return coordSystemBuilder;
   }
 
   private static CoordSystemBuilderProvider findConventionByIsMine(CdmFile orgFile) {

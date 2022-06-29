@@ -11,7 +11,6 @@ import dev.cdm.core.calendar.Calendar;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
-import dev.cdm.dataset.conv.CF1Convention;
 
 import org.jetbrains.annotations.Nullable;
 import dev.cdm.array.Immutable;
@@ -140,12 +139,12 @@ public class CoordinateAxis extends VariableDS {
       Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
       if (convention != null && convention.isString()) {
         String hasName = convention.getStringValue();
-        int version = CF1Convention.getVersion(hasName);
-        if (version >= 0) {
-          return Calendar.gregorian;
+        // int version = CF1Convention.getVersion(hasName);
+        // if (version >= 0) {
+          // return Calendar.gregorian;
           // if (version < 7 ) return Calendar.gregorian;
           // if (version >= 7 ) return Calendar.proleptic_gregorian; //
-        }
+        // }
         if (hasName != null && hasName.equalsIgnoreCase("COARDS"))
           return Calendar.gregorian;
       }
