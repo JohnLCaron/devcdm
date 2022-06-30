@@ -102,8 +102,8 @@ public class TestVertical {
     try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
-      GridNetcdfDataset GridNetcdfDataset = grido.get();
-      Grid grid = GridNetcdfDataset.findGrid(gridName).orElseThrow(() -> new RuntimeException("Cant open Grid " + gridName));
+      GridNetcdfDataset gridNetcdfDataset = grido.get();
+      Grid grid = gridNetcdfDataset.findGrid(gridName).orElseThrow(() -> new RuntimeException("Cant open Grid " + gridName));
 
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();

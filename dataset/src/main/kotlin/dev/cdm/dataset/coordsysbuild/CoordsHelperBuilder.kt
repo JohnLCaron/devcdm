@@ -1,9 +1,9 @@
 package dev.cdm.dataset.coordsysbuild
 
 import com.google.common.base.Preconditions
+import com.google.common.collect.ImmutableMap
 import dev.cdm.core.api.Dimension
 import dev.cdm.core.api.Group
-import dev.cdm.core.api.Variable
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.CoordinateAxis
 import dev.cdm.dataset.api.CoordinateSystem
@@ -17,7 +17,18 @@ class CoordsHelperBuilder {
     val coordAxes = mutableListOf<CoordinateAxis.Builder<*>>()
     val coordSys = mutableListOf<CoordinateSystem.Builder<*>>()
     val coordTransforms = mutableListOf<ProjectionCTV>()
+    val coordSysForVar = mutableMapOf<String, List<String>>()
     private var built = false
+
+    fun getCoordinateSystemFor() : Map<String, List<String>> {
+        return coordSysForVar.toMap()
+    }
+
+    fun setCoordinateSystemFor(varName : String, coordSys : List<String>): CoordsHelperBuilder {
+        Preconditions.checkNotNull(varName)
+        coordSysForVar[varName] = coordSys
+        return this
+    }
 
     fun addCoordinateAxis(axis: CoordinateAxis.Builder<*>?): CoordsHelperBuilder {
         if (axis != null) {
@@ -25,28 +36,6 @@ class CoordsHelperBuilder {
         }
         return this
     }
-
-    fun addCoordinateAxes(axes: Collection<CoordinateAxis.Builder<*>>): CoordsHelperBuilder {
-        Preconditions.checkNotNull(axes)
-        axes.forEach(Consumer { axis: CoordinateAxis.Builder<*>? ->
-            addCoordinateAxis(
-                axis
-            )
-        })
-        return this
-    }
-
-    /* LOOK
-    private fun findAxisByVerticalSearch(vb: VariableDS, shortName: String
-    ): CoordinateAxis.Builder<*>? {
-        val axis = vb.parentGroup.findVariableOrInParent(shortName)
-        if (axis != null) {
-            if (axis is CoordinateAxis.Builder<*>) {
-                return axis as CoordinateAxis.Builder<*>
-            }
-        }
-        return null
-    } */
 
     fun findAxisByFullName(fullName: String): CoordinateAxis.Builder<*>? {
         return coordAxes.find { it.fullName == fullName }
@@ -82,13 +71,6 @@ class CoordsHelperBuilder {
         return coordSys.find { it.coordAxesNames == coordAxesNames }
     }
 
-    fun addCoordinateSystems(systems: Collection<CoordinateSystem.Builder<*>>): CoordsHelperBuilder {
-        Preconditions.checkNotNull(systems)
-        coordSys.addAll(systems)
-        return this
-    }
-
-    // this is used when making a copy, we've thrown away the TransformBuilder
     fun addCoordinateTransform(ct: ProjectionCTV): CoordsHelperBuilder {
         Preconditions.checkNotNull(ct)
         if (coordTransforms.stream().noneMatch { old: ProjectionCTV -> old.name == ct.name }) {
@@ -110,9 +92,7 @@ class CoordsHelperBuilder {
     private fun getAxesForSystem(cs: CoordinateSystem.Builder<*>): List<CoordinateAxis.Builder<*>> {
         Preconditions.checkNotNull(cs)
         val axes: MutableList<CoordinateAxis.Builder<*>> = ArrayList()
-        val stoker = StringTokenizer(cs.coordAxesNames)
-        while (stoker.hasMoreTokens()) {
-            val vname = stoker.nextToken()
+        cs.coordAxesNames!!.split(" ").forEach { vname ->
             val vbOpt = findAxisByFullName(vname)
             if (vbOpt != null) {
                 axes.add(vbOpt)
@@ -123,16 +103,14 @@ class CoordsHelperBuilder {
         return axes
     }
 
-    fun makeCanonicalName(vb: VariableDS, axesNames: String?): String {
+    fun makeCanonicalName(vb: VariableDS, axesNames : String) : String {
         Preconditions.checkNotNull(axesNames)
-        val axes: MutableList<CoordinateAxis.Builder<*>> = ArrayList()
-        val stoker = StringTokenizer(axesNames)
-        while (stoker.hasMoreTokens()) {
-            val vname = stoker.nextToken()
+        val axes = mutableListOf<CoordinateAxis.Builder<*>>()
+        axesNames!!.split(" ").forEach { vname ->
             var vbOpt = findAxisByFullName(vname)
-            //if (vbOpt != null) {
-            //    vbOpt = findAxisByVerticalSearch(vb, vname)
-            //}
+            if (vbOpt == null) {
+                vbOpt = findAxisByVerticalSearch(vb, vname)
+            }
             if (vbOpt != null) {
                 axes.add(vbOpt)
             } else {
@@ -142,15 +120,24 @@ class CoordsHelperBuilder {
         return CoordinatesHelper.makeCanonicalName(axes)
     }
 
+    // dealing with axes in parent group. should be handled by fullName search ??
+    private fun findAxisByVerticalSearch(vb: VariableDS, shortName: String): CoordinateAxis.Builder<*>? {
+        val axis = vb.parentGroup.findVariableOrInParent(shortName)
+        if (axis != null) {
+            if (axis is CoordinateAxis.Builder<*>) { // LOOK always false
+                return axis as CoordinateAxis.Builder<*>
+            }
+        }
+        return null
+    }
+
     // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
-    fun isComplete(cs: CoordinateSystem.Builder<*>, vb: Variable.Builder<*>): Boolean {
+    fun isComplete(cs: CoordinateSystem.Builder<*>, vb: VariableDS): Boolean {
         Preconditions.checkNotNull(cs)
         Preconditions.checkNotNull(vb)
         val csDomain = HashSet<Dimension>()
         getAxesForSystem(cs).forEach(Consumer { axis: CoordinateAxis.Builder<*> ->
-            csDomain.addAll(
-                axis.dimensions
-            )
+            csDomain.addAll(axis.dimensions)
         })
         return CoordinateSystem.isComplete(vb.dimensions, csDomain)
     }
@@ -176,7 +163,6 @@ class CoordsHelperBuilder {
         return axes.find { it.axisType == want} != null
     }
 
-    // Note that only ncd.axes can be accessed, not coordsys or transforms.
     fun build(group : Group) : CoordinatesHelper? {
         check(!built) { "already built" }
         built = true

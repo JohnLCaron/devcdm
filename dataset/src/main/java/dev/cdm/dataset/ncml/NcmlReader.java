@@ -6,7 +6,6 @@ package dev.cdm.dataset.ncml;
 
 import dev.cdm.core.api.CdmFiles;
 import dev.cdm.dataset.api.CdmDataset;
-import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.internal.DatasetEnhancer;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -35,7 +34,6 @@ import dev.cdm.dataset.api.CdmDatasets;
 import dev.cdm.dataset.api.SequenceDS;
 import dev.cdm.dataset.api.StructureDS;
 import dev.cdm.dataset.api.VariableDS;
-import dev.cdm.dataset.internal.DatasetCSEnhancer;
 import dev.cdm.dataset.internal.AliasTranslator;
 import dev.cdm.core.util.URLnaming;
 import dev.cdm.core.util.CancelTask;
@@ -229,7 +227,7 @@ public class NcmlReader {
    * @return the resulting NetcdfDataset.Builder
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static CdmDatasetCS.Builder<?> readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
+  public static CdmDataset.Builder<?> readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
     org.jdom2.Document doc;
     try {
@@ -339,7 +337,7 @@ public class NcmlReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  CdmDatasetCS.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
+  CdmDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
                                  @Nullable CancelTask cancelTask) throws IOException {
 
     // get ncml namespace and set namespace variable
@@ -390,7 +388,7 @@ public class NcmlReader {
     Element elemE = netcdfElem.getChild("explicit", ncNS);
     explicit = (elemE != null);
 
-    CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
+    CdmDataset.Builder<?> builder = CdmDataset.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
     if (this.refFile != null && !explicit) {
       // copy all the metadata from the original file.
       builder.copyFrom(this.refFile);

@@ -8,14 +8,14 @@ import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.internal.CoordSystemFactory;
 import dev.cdm.core.util.CancelTask;
 
 import java.io.IOException;
 
 /** ATD Radar file (ad hoc guesses). */
-public class ATDRadarConvention extends CoordSystemBuilder {
+public class ATDRadarConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "ATDRadar";
 
   ATDRadarConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
@@ -42,7 +42,7 @@ public class ATDRadarConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new ATDRadarConvention(datasetBuilder);
     }
   }

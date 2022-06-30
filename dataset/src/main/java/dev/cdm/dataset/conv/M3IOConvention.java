@@ -15,7 +15,7 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.projection.AlbersEqualArea;
@@ -47,7 +47,7 @@ import java.util.TimeZone;
  * @author caron
  * @see "https://www.cmascenter.org/ioapi/"
  */
-public class M3IOConvention extends CoordSystemBuilder {
+public class M3IOConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "M3IO";
   private static final double earthRadius = 6370.000; // km
 
@@ -65,7 +65,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new M3IOConvention(datasetBuilder);
     }
   }

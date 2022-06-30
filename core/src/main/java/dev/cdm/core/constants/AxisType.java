@@ -6,9 +6,7 @@ package dev.cdm.core.constants;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Enumeration of Coordinate Axis types. These are used for tagging georeferencing axes.
- */
+/** Enumeration of Coordinate Axis types, for tagging georeferencing axes. */
 public enum AxisType {
   // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisType(AxisType)
   // and consider if need for addition to gcdm_grid.proto.
@@ -50,16 +48,12 @@ public enum AxisType {
     this.cfAxisName = cfAxisName;
   }
 
-  /**
-   * Find the AxisType that matches this name.
-   *
-   * @param name match this name
-   * @return AxisType or null if no match.
-   */
+  /** Find the AxisType that matches this name. */
   @Nullable
   public static AxisType getType(String name) {
-    if (name == null)
+    if (name == null || name.isEmpty()) {
       return null;
+    }
     try {
       return valueOf(name);
     } catch (IllegalArgumentException e) { // lame!
@@ -67,11 +61,7 @@ public enum AxisType {
     }
   }
 
-  /**
-   * axis ordering: runTime - ensemble - time - z - y - x or elev - azimuth - distance
-   *
-   * @return order
-   */
+  /** axis ordering: runTime - ensemble - time - z - y - x or elev - azimuth - distance */
   public int axisOrder() {
     return order;
   }

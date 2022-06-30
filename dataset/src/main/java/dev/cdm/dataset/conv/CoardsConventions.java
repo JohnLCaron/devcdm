@@ -8,10 +8,9 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SimpleUnit;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +20,7 @@ import java.io.IOException;
  * COARDS Convention. see http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html
  * Obsolete, do not use for new data.
  */
-class CoardsConventions extends CoordSystemBuilder {
+class CoardsConventions extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "COARDS";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -31,7 +30,7 @@ class CoardsConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CoardsConventions(datasetBuilder);
     }
   }

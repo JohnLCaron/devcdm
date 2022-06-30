@@ -356,7 +356,7 @@ public class CoordinateSystem {
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     b.setImplicit(this.isImplicit).setCoordAxesNames(this.name);
     if (this.projectionCTV != null) {
-      b.addTransformName(this.projectionCTV.getName());
+      b.setProjectionName(this.projectionCTV.getName());
     }
     return b;
   }

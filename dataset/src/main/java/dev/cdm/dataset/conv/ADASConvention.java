@@ -16,7 +16,7 @@ import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.LatLonPoint;
@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 /** ADAS netcdf files. Not finished because we dont have any tests files. */
-public class ADASConvention extends CoordSystemBuilder {
+public class ADASConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "ARPS/ADAS";
 
   private ProjectionCTV projCT;
@@ -240,7 +240,7 @@ public class ADASConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new ADASConvention(datasetBuilder);
     }
   }

@@ -10,11 +10,10 @@ import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 import java.util.StringTokenizer;
@@ -25,7 +24,7 @@ import java.util.StringTokenizer;
  * 
  * @see "https://web.archive.org/web/20130713015813/www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html"
  */
-public class UnidataObsConvention extends CoordSystemBuilder {
+public class UnidataObsConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "Unidata Observation Dataset v1.0";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -35,7 +34,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new UnidataObsConvention(datasetBuilder);
     }
   }

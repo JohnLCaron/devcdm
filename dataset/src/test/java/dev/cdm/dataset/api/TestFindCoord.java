@@ -9,192 +9,206 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringReader;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-/** Test CoordinateAxis1D.findCoord() */
+/**
+ * Test CoordinateAxis1D.findCoord()
+ */
 public class TestFindCoord {
 
   @Test
   public void testRegular() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
-        + "    <dimension name='lat'  length='2' />\n" + "    <dimension name='lon'  length='2' />\n"
-        + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
-        + "    <variable name='lat' shape='lat' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_north' />\n"
-        + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>-45 45</values>\n"
-        + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
-        + "        <values>-90 0 0 90</values>\n" + "    </variable>\n"
-        + "    <variable name='lon' shape='lon' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_east' />\n"
-        + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>90 270</values>\n"
-        + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
-        + "        <values>0 180 180 360</values>\n" + "    </variable>\n" + "</netcdf>";
+            + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
+            + "    <dimension name='lat'  length='2' />\n" + "    <dimension name='lon'  length='2' />\n"
+            + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
+            + "    <variable name='lat' shape='lat' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_north' />\n"
+            + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>-45 45</values>\n"
+            + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
+            + "        <values>-90 0 0 90</values>\n" + "    </variable>\n"
+            + "    <variable name='lon' shape='lon' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_east' />\n"
+            + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>90 270</values>\n"
+            + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
+            + "        <values>0 180 180 360</values>\n" + "    </variable>\n" + "</netcdf>";
 
-    doTest(ncml, "lat", false, new double[] {-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
-        new int[] {-1, 0, 0, 0, 0, 1, 1, 1, 1, -1, -1});
+    doTest(ncml, "lat", false, new double[]{-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
+            new int[]{-1, 0, 0, 0, 0, 1, 1, 1, 1, -1, -1});
 
-    doTest(ncml, "lon", false, new double[] {-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
-        new int[] {-1, -1, 0, 0, 0, 0, 1, 1, 1, 1, -1, -1, -1});
+    doTest(ncml, "lon", false, new double[]{-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
+            new int[]{-1, -1, 0, 0, 0, 0, 1, 1, 1, 1, -1, -1, -1});
 
-    doTest(ncml, "lat", true, new double[] {-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
-        new int[] {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1});
+    doTest(ncml, "lat", true, new double[]{-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
+            new int[]{0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1});
 
-    doTest(ncml, "lon", true, new double[] {-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
-        new int[] {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1});
+    doTest(ncml, "lon", true, new double[]{-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
+            new int[]{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1});
   }
 
   @Test
   public void testRegularDescending() throws IOException {
-    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
-        + "    <dimension name='lat'  length='2' />\n" + "    <dimension name='lon'  length='2' />\n"
-        + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
-        + "    <variable name='lat' shape='lat' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_north' />\n"
-        + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>45 -45</values>\n"
-        + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
-        + "        <values>90 0 0 -90</values>\n" + "    </variable>\n"
-        + "    <variable name='lon' shape='lon' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_east' />\n"
-        + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>270 90</values>\n"
-        + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
-        + "        <values>360 180 180 0</values>\n" + "    </variable>\n" + "</netcdf>";
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" //
+            + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"  //
+            + "    <dimension name='lat'  length='2' />\n"  //
+            + "    <dimension name='lon'  length='2' />\n"  //
+            + "    <dimension name='bnds' length='2' />\n"  //
+            + "    <attribute name='Conventions' value='CF-1.0' />\n"  //
+            + "    <variable name='lat' shape='lat' type='double'>\n"  //
+            + "        <attribute name='units' type='String' value='degrees_north' />\n"  //
+            + "        <attribute name='bounds' type='String' value='lat_bnds' />\n"  //
+            + "        <values>45 -45</values>\n"  //
+            + "    </variable>\n"  //
+            + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"  //
+            + "        <values>90 0 0 -90</values>\n"  //
+            + "    </variable>\n"  //
+            + "    <variable name='lon' shape='lon' type='double'>\n"  //
+            + "        <attribute name='units' type='String' value='degrees_east' />\n"  //
+            + "        <attribute name='bounds' type='String' value='lon_bnds' />\n"  //
+            + "        <values>270 90</values>\n"  //
+            + "    </variable>\n"  //
+            + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"  //
+            + "        <values>360 180 180 0</values>\n"  //
+            + "    </variable>\n"   //
+            + "</netcdf>";  //
 
-    doTest(ncml, "lat", false, new double[] {-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
-        new int[] {-1, -1, 1, 1, 1, 1, 0, 0, 0, 0, -1});
+    doTest(ncml, "lat", false, new double[]{-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
+            new int[]{-1, -1, 1, 1, 1, 1, 0, 0, 0, 0, -1});
 
-    doTest(ncml, "lon", false, new double[] {-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
-        new int[] {-1, -1, -1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1});
+    doTest(ncml, "lon", false, new double[]{-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
+            new int[]{-1, -1, -1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1});
 
-    doTest(ncml, "lat", true, new double[] {-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
-        new int[] {1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,});
+    doTest(ncml, "lat", true, new double[]{-91, -90, -67.5, -45, -22.5, 0, 22.5, 45, 67.5, 90, 91},
+            new int[]{1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,});
 
-    doTest(ncml, "lon", true, new double[] {-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
-        new int[] {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0});
+    doTest(ncml, "lon", true, new double[]{-91, -90, 0, 45, 90, 135, 180, 225, 270, 315, 360, 450, 451},
+            new int[]{1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0});
   }
 
   @Test
   public void testIrregular() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
-        + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
-        + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
-        + "    <variable name='lat' shape='lat' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_north' />\n"
-        + "        <attribute name='bounds' type='String' value='lat_bnds' />\n"
-        + "        <values>-45 10 45</values>\n" + "    </variable>\n"
-        + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
-        + "        <values>-90 5 5 15 15 90</values>\n" + "    </variable>\n"
-        + "    <variable name='lon' shape='lon' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_east' />\n"
-        + "        <attribute name='bounds' type='String' value='lon_bnds' />\n"
-        + "        <values>90 200 270</values>\n" + "    </variable>\n"
-        + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
-        + "        <values>0 180 180 220 220 360</values>\n" + "    </variable>\n" + "</netcdf>";
+            + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
+            + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
+            + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
+            + "    <variable name='lat' shape='lat' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_north' />\n"
+            + "        <attribute name='bounds' type='String' value='lat_bnds' />\n"
+            + "        <values>-45 10 45</values>\n" + "    </variable>\n"
+            + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
+            + "        <values>-90 5 5 15 15 90</values>\n" + "    </variable>\n"
+            + "    <variable name='lon' shape='lon' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_east' />\n"
+            + "        <attribute name='bounds' type='String' value='lon_bnds' />\n"
+            + "        <values>90 200 270</values>\n" + "    </variable>\n"
+            + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
+            + "        <values>0 180 180 220 220 360</values>\n" + "    </variable>\n" + "</netcdf>";
 
-    doTest(ncml, "lat", false, new double[] {-91, -90, -67.5, -45, -22.5, 0, 10, 45, 67.5, 90, 91},
-        new int[] {-1, 0, 0, 0, 0, 0, 1, 2, 2, 2, -1});
+    doTest(ncml, "lat", false, new double[]{-91, -90, -67.5, -45, -22.5, 0, 10, 45, 67.5, 90, 91},
+            new int[]{-1, 0, 0, 0, 0, 0, 1, 2, 2, 2, -1});
 
-    doTest(ncml, "lon", false, new double[] {-91, -90, 0, 45, 90, 135, 180, 210, 270, 315, 360, 450, 451},
-        new int[] {-1, -1, 0, 0, 0, 0, 1, 1, 2, 2, 2, -1, -1,});
+    doTest(ncml, "lon", false, new double[]{-91, -90, 0, 45, 90, 135, 180, 210, 270, 315, 360, 450, 451},
+            new int[]{-1, -1, 0, 0, 0, 0, 1, 1, 2, 2, 2, -1, -1,});
 
-    doTest(ncml, "lat", true, new double[] {-91, -90, -67.5, -45, -22.5, 0, 10, 45, 67.5, 90, 91},
-        new int[] {0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2});
+    doTest(ncml, "lat", true, new double[]{-91, -90, -67.5, -45, -22.5, 0, 10, 45, 67.5, 90, 91},
+            new int[]{0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2});
 
-    doTest(ncml, "lon", true, new double[] {-91, -90, 0, 45, 90, 135, 180, 210, 270, 315, 360, 450, 451},
-        new int[] {0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2});
+    doTest(ncml, "lon", true, new double[]{-91, -90, 0, 45, 90, 135, 180, 210, 270, 315, 360, 450, 451},
+            new int[]{0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2});
   }
 
   @Test
   public void testIrregularDescending() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
-        + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
-        + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
-        + "    <variable name='lat' shape='lat' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_north' />\n"
-        + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>44 40 30</values>\n"
-        + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
-        + "        <values>50 42 42 35 35 0</values>\n" + "    </variable>\n"
-        + "    <variable name='lon' shape='lon' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_east' />\n"
-        + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>9 0 -20</values>\n"
-        + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
-        + "        <values>20 0 0 -10 -10 -90</values>\n" + "    </variable>\n" + "</netcdf>";
+            + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
+            + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
+            + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
+            + "    <variable name='lat' shape='lat' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_north' />\n"
+            + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>44 40 30</values>\n"
+            + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
+            + "        <values>50 42 42 35 35 0</values>\n" + "    </variable>\n"
+            + "    <variable name='lon' shape='lon' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_east' />\n"
+            + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>9 0 -20</values>\n"
+            + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
+            + "        <values>20 0 0 -10 -10 -90</values>\n" + "    </variable>\n" + "</netcdf>";
 
-    doTest(ncml, "lat", false, new double[] {-90, -0, 0, 10, 33, 44, 55, 90}, new int[] {-1, 2, 2, 2, 2, 0, -1, -1});
+    doTest(ncml, "lat", false, new double[]{-90, -0, 0, 10, 33, 44, 55, 90}, new int[]{-1, 2, 2, 2, 2, 0, -1, -1});
 
-    doTest(ncml, "lon", false, new double[] {-91, -90, -12, -2, 0, 2, 22, 90}, new int[] {-1, 2, 2, 1, 1, 0, -1, -1,});
+    doTest(ncml, "lon", false, new double[]{-91, -90, -12, -2, 0, 2, 22, 90}, new int[]{-1, 2, 2, 1, 1, 0, -1, -1,});
 
-    doTest(ncml, "lat", true, new double[] {-90, -0, 0, 10, 33, 44, 55, 90}, new int[] {2, 2, 2, 2, 2, 0, 0, 0,});
+    doTest(ncml, "lat", true, new double[]{-90, -0, 0, 10, 33, 44, 55, 90}, new int[]{2, 2, 2, 2, 2, 0, 0, 0,});
 
-    doTest(ncml, "lon", true, new double[] {-91, -90, -12, -2, 0, 2, 22, 90}, new int[] {2, 2, 2, 1, 1, 0, 0, 0,});
+    doTest(ncml, "lon", true, new double[]{-91, -90, -12, -2, 0, 2, 22, 90}, new int[]{2, 2, 2, 1, 1, 0, 0, 0,});
   }
 
   @Test
   public void testNonContig() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
-        + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
-        + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
-        + "    <variable name='lat' shape='lat' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_north' />\n"
-        + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>10 20 90</values>\n"
-        + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
-        + "        <values>0 11 18 22 30 90</values>\n" + "    </variable>\n"
-        + "    <variable name='lon' shape='lon' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_east' />\n"
-        + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>0 10 90</values>\n"
-        + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
-        + "        <values>0 5 5 10 80 90</values>\n" + "    </variable>\n" + "</netcdf>";
+            + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
+            + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
+            + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
+            + "    <variable name='lat' shape='lat' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_north' />\n"
+            + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>10 20 90</values>\n"
+            + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
+            + "        <values>0 11 18 22 30 90</values>\n" + "    </variable>\n"
+            + "    <variable name='lon' shape='lon' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_east' />\n"
+            + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>0 10 90</values>\n"
+            + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
+            + "        <values>0 5 5 10 80 90</values>\n" + "    </variable>\n" + "</netcdf>";
 
-    doTest(ncml, "lat", false, new double[] {90, 50, 48, 41.5, 40, 33, 15, 0, -10},
-        new int[] {2, 2, 2, 2, 2, 2, -1, 0, -1,});
+    doTest(ncml, "lat", false, new double[]{90, 50, 48, 41.5, 40, 33, 15, 0, -10},
+            new int[]{2, 2, 2, 2, 2, 2, -1, 0, -1,});
 
-    doTest(ncml, "lon", false, new double[] {90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
-        new int[] {2, -1, -1, 0, 0, 0, -1, -1, -1, -1, -1, -1,});
+    doTest(ncml, "lon", false, new double[]{90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
+            new int[]{2, -1, -1, 0, 0, 0, -1, -1, -1, -1, -1, -1,});
 
-    doTest(ncml, "lat", true, new double[] {90, 50, 48, 41.5, 40, 33, 15.5, 0, -10},
-        new int[] {2, 2, 2, 2, 2, 2, 1, 0, 0,});
+    doTest(ncml, "lat", true, new double[]{90, 50, 48, 41.5, 40, 33, 15.5, 0, -10},
+            new int[]{2, 2, 2, 2, 2, 2, 1, 0, 0,});
 
-    doTest(ncml, "lon", true, new double[] {90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
-        new int[] {2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,});
+    doTest(ncml, "lon", true, new double[]{90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
+            new int[]{2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,});
   }
 
   @Test
   public void testNonContigDescending() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
-        + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
-        + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
-        + "    <variable name='lat' shape='lat' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_north' />\n"
-        + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>44 40 30</values>\n"
-        + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
-        + "        <values>50 42 41 35 32 0</values>\n" + "    </variable>\n"
-        + "    <variable name='lon' shape='lon' type='double'>\n"
-        + "        <attribute name='units' type='String' value='degrees_east' />\n"
-        + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>9 0 -20</values>\n"
-        + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
-        + "        <values>20 5 0 -10 -20 -90</values>\n" + "    </variable>\n" + "</netcdf>";
+            + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
+            + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
+            + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
+            + "    <variable name='lat' shape='lat' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_north' />\n"
+            + "        <attribute name='bounds' type='String' value='lat_bnds' />\n" + "        <values>44 40 30</values>\n"
+            + "    </variable>\n" + "    <variable name='lat_bnds' shape='lat bnds' type='double'>\n"
+            + "        <values>50 42 41 35 32 0</values>\n" + "    </variable>\n"
+            + "    <variable name='lon' shape='lon' type='double'>\n"
+            + "        <attribute name='units' type='String' value='degrees_east' />\n"
+            + "        <attribute name='bounds' type='String' value='lon_bnds' />\n" + "        <values>9 0 -20</values>\n"
+            + "    </variable>\n" + "    <variable name='lon_bnds' shape='lon bnds' type='double'>\n"
+            + "        <values>20 5 0 -10 -20 -90</values>\n" + "    </variable>\n" + "</netcdf>";
 
-    doTest(ncml, "lat", false, new double[] {90, 50, 48, 41.5, 40, 33, 15, 0, -10},
-        new int[] {-1, 0, 0, -1, 1, -1, 2, 2, -1,});
+    doTest(ncml, "lat", false, new double[]{90, 50, 48, 41.5, 40, 33, 15, 0, -10},
+            new int[]{-1, 0, 0, -1, 1, -1, 2, 2, -1,});
 
-    doTest(ncml, "lon", false, new double[] {90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
-        new int[] {-1, 0, 0, 0, -1, 1, 1, -1, 2, 2, 2, -1,});
+    doTest(ncml, "lon", false, new double[]{90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
+            new int[]{-1, 0, 0, 0, -1, 1, 1, -1, 2, 2, 2, -1,});
 
-    doTest(ncml, "lat", true, new double[] {90, 50, 48, 41.5, 40, 33, 15, 0, -10},
-        new int[] {0, 0, 0, 1, 1, 2, 2, 2, 2,});
+    doTest(ncml, "lat", true, new double[]{90, 50, 48, 41.5, 40, 33, 15, 0, -10},
+            new int[]{0, 0, 0, 1, 1, 2, 2, 2, 2,});
 
-    doTest(ncml, "lon", true, new double[] {90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
-        new int[] {0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,});
+    doTest(ncml, "lon", true, new double[]{90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
+            new int[]{0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,});
   }
 
   private void doTest(String ncml, String varName, boolean bounded, double[] vals, int[] expect) throws IOException {
     try (CdmDatasetCS dataset = CdmDatasets.openNcmlDatasetCS(new StringReader(ncml), null, null)) {
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dataset.findCoordinateAxis(varName);
+      assertThat(axis1D).isNotNull();
+
       if (axis1D.isContiguous()) {
         double[] edge = axis1D.getCoordEdges();
         System.out.printf("%s bounded=%s", varName, bounded);

@@ -174,7 +174,6 @@ public class GridNetcdfDataset implements GridDataset {
             makeVerticalTransforms(transformName, axesNames, v.attributes());
           }
         }
-
       }
       return result;
     }

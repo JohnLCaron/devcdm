@@ -18,7 +18,7 @@ import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.LatLonPoint;
@@ -38,7 +38,7 @@ import java.util.StringTokenizer;
  * NUWG Convention (ad hoc).
  * see https://www.unidata.ucar.edu/software/netcdf/NUWG/
  */
-public class NUWGConvention extends CoordSystemBuilder {
+public class NUWGConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "NUWG";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -48,7 +48,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new NUWGConvention(datasetBuilder);
     }
   }

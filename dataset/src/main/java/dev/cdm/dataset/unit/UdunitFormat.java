@@ -5,6 +5,7 @@
 package dev.cdm.dataset.unit;
 
 import dev.cdm.dataset.api.SimpleUnit;
+import org.jetbrains.annotations.Nullable;
 import tech.units.indriya.format.SimpleUnitFormat;
 import tech.units.indriya.unit.Units;
 
@@ -75,15 +76,16 @@ public class UdunitFormat extends SimpleUnitFormat {
   }
 
   @Override
-  public Unit<?> parse(CharSequence csq) throws MeasurementParseException {
+  @Nullable
+  public Unit<?> parse(CharSequence csq) {
     if (csq.equals("gp m")) { // kludge !
       return SimpleUnit.geopotentialHeight.unit();
     }
     try {
       return delegate.parse(csq);
     } catch (Exception e) {
-      String.format("Failed to parse '%s'%n", csq);
-      throw new RuntimeException(String.format("Failed to parse %s%n", csq), e);
+      System.out.printf("** Cant parse '%s'%n", csq);
+      return null;
     }
   }
 

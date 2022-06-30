@@ -52,8 +52,8 @@ import java.util.StringTokenizer;
  *
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
  */
-public class CoordSystemBuilder {
-  protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSystemBuilder.class);
+public class CoordSystemBuilderOld {
+  protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSystemBuilderOld.class);
   private static final boolean useMaximalCoordSys = true;
   private static final String CONVENTION_NAME = _Coordinate.Convention;
 
@@ -64,8 +64,8 @@ public class CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
-      return new CoordSystemBuilder(datasetBuilder);
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
+      return new CoordSystemBuilderOld(datasetBuilder);
     }
   }
 
@@ -166,7 +166,7 @@ public class CoordSystemBuilder {
   protected boolean debug;
 
   // Used when using NcML to provide convention attributes.
-  protected CoordSystemBuilder(CdmDatasetCS.Builder<?> datasetBuilder) {
+  protected CoordSystemBuilderOld(CdmDatasetCS.Builder<?> datasetBuilder) {
     this.datasetBuilder = datasetBuilder;
     this.rootGroup = datasetBuilder.rootGroup;
     this.coords = CoordinatesHelper.builder();
@@ -648,7 +648,7 @@ public class CoordSystemBuilder {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
               coords.addCoordinateTransform(vp.ctv);
-              cs.addTransformName(vp.ctv.getName());
+              cs.setProjectionName(vp.ctv.getName());
               parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }
           }
@@ -671,7 +671,7 @@ public class CoordSystemBuilder {
         if (!axisTypesList.isEmpty()) {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxisTypes(cs, axisTypesList)) {
-              cs.addTransformName(vp.ctv.getName());
+              cs.setProjectionName(vp.ctv.getName());
               parseInfo.format("***assign (implicit coordAxisType) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }
           }

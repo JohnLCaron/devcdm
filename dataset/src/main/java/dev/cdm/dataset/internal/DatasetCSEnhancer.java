@@ -8,20 +8,21 @@ import java.util.Set;
 
 /**
  * Helper class to enhance NetcdfDataset with scale/offset/missing and coordinate systems.
+ * Uses old CoordSystemBuilder
  */
 public class DatasetCSEnhancer extends DatasetEnhancer {
-  private final CdmDatasetCS.Builder<?> dscsBuilder;
+  private final CdmDatasetCS.Builder<?> dsBuilder;
 
   public DatasetCSEnhancer(CdmDatasetCS.Builder<?> ds, Set<Enhance> wantEnhance) {
     super(ds, wantEnhance);
-    this.dscsBuilder = ds;
+    this.dsBuilder = ds;
   }
 
   public CdmDatasetCS.Builder<?> enhance() throws IOException {
     // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
-    CoordSystemBuilder coordSysBuilder = CoordSystemFactory.factory(dscsBuilder, null);
+    CoordSystemBuilderOld coordSysBuilder = CoordSystemFactory.factory(dsBuilder, null);
     coordSysBuilder.augmentDataset(null);
-    dscsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
+    dsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
 
     // regular enhancements
     if (!this.wantEnhance.isEmpty()) {
@@ -31,6 +32,16 @@ public class DatasetCSEnhancer extends DatasetEnhancer {
     // add the coordinate systems to dscsBuilder
     coordSysBuilder.buildCoordinateSystems();
 
-    return dscsBuilder;
+    CoordinatesHelper.Builder coordsOld = coordSysBuilder.coords;
+    dsBuilder.coordsOld = coordsOld;
+
+    /* remove any coordinate axes in vbuilder
+    for (var vb : coordsOld.coordAxes) {
+      if (dsBuilder.rootGroup.removeVariable(vb.getFullName())) {
+        System.out.printf("remove %s == %s%n", vb.getFullName(), vb.getClass().getName());
+      }
+    } */
+
+    return dsBuilder;
   }
 }

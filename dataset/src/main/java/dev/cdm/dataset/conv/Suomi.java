@@ -12,15 +12,14 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateFormatter;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 /** Suomi coord sys builder. */
-public class Suomi extends CoordSystemBuilder {
+public class Suomi extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "Suomi";
 
   private Suomi(CdmDatasetCS.Builder<?> datasetBuilder) {
@@ -50,7 +49,7 @@ public class Suomi extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new Suomi(datasetBuilder);
     }
   }

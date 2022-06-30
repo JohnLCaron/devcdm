@@ -6,7 +6,6 @@ import dev.cdm.core.api.Group;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
 import dev.cdm.dataset.conv.CF1Convention;
@@ -22,7 +21,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.StringTokenizer;
 
@@ -54,7 +52,7 @@ public class CoordSystemFactory {
 
   // These get precedence
   static {
-    registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
+    registerConvention(_Coordinate.Convention, new CoordSystemBuilderOld.Factory());
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
     registerConvention("CDM-Extended-CF", new CF1Convention.Factory());
     // this is to test DefaultConventions, not needed when we remove old convention builders.
@@ -216,7 +214,7 @@ public class CoordSystemFactory {
    * Get a CoordSystemBuilder whose job it is to add Coordinate information to a NetcdfDataset.Builder.
    * @param ds the CdmDatasetCS.Builder to modify
    */
-  public static CoordSystemBuilder factory(CdmDatasetCS.Builder<?> ds, CancelTask cancelTask)
+  public static CoordSystemBuilderOld factory(CdmDatasetCS.Builder<?> ds, CancelTask cancelTask)
       throws IOException {
 
     // look for the Conventions attribute
@@ -234,7 +232,7 @@ public class CoordSystemFactory {
     if (convName != null) {
       String convNcml = ncmlHash.get(convName);
       if (convNcml != null) {
-        CoordSystemBuilder csb = new CoordSystemBuilder(ds);
+        CoordSystemBuilderOld csb = new CoordSystemBuilderOld(ds);
         NcmlReader.wrapNcml(ds, convNcml, cancelTask);
         return csb;
       }
@@ -259,7 +257,7 @@ public class CoordSystemFactory {
     }
 
     // Now process it.
-    CoordSystemBuilder coordSystemBuilder = coordSysFactory.open(ds);
+    CoordSystemBuilderOld coordSystemBuilder = coordSysFactory.open(ds);
     if (convName == null)
       coordSystemBuilder.addUserAdvice("No 'Conventions' global attribute.");
     else if (isDefault)
