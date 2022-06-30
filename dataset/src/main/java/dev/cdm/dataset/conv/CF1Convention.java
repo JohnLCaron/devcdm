@@ -18,10 +18,9 @@ import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.SimpleUnit;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 import java.io.IOException;
@@ -540,7 +539,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CF1Convention(datasetBuilder);
     }
   }

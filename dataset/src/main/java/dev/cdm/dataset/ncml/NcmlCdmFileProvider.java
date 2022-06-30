@@ -6,6 +6,7 @@
 package dev.cdm.dataset.ncml;
 
 import dev.cdm.core.api.CdmFile;
+import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.DatasetUrl;
 import dev.cdm.dataset.spi.CdmFileProvider;
 import dev.cdm.core.util.CancelTask;
@@ -27,7 +28,8 @@ public class NcmlCdmFileProvider implements CdmFileProvider {
 
   @Override
   public CdmFile open(String location, CancelTask cancelTask) throws IOException {
-    return NcmlReader.readNcml(location, null, cancelTask).build();
+    CdmDataset.Builder<?> builder =  NcmlReader.readNcml(location, null, cancelTask);
+    return builder.build();
   }
 
   @Override

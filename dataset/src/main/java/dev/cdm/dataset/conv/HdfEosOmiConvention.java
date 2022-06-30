@@ -19,7 +19,7 @@ import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ import java.util.Optional;
  * 
  * @see "http://aura.gsfc.nasa.gov/instruments/omi.html"
  */
-public class HdfEosOmiConvention extends CoordSystemBuilder {
+public class HdfEosOmiConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "HDF5-EOS-OMI";
 
   private HdfEosOmiConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
@@ -91,7 +91,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new HdfEosOmiConvention(datasetBuilder);
     }
   }

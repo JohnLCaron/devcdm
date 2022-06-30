@@ -47,6 +47,9 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
   public static boolean isCompatible(String unit1s, String unit2s) {
     Unit<?> unit1 = udunitFormat.parse(unit1s);
     Unit<?> unit2 = udunitFormat.parse(unit2s);
+    if (unit1 == null || unit2 == null) {
+      return false;
+    }
     return unit1.isCompatible(unit2);
   }
 
@@ -59,11 +62,14 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
 
   public boolean isCompatible(String other) {
     Unit<?> otherUnit = udunitFormat.parse(other);
+    if (otherUnit == null) {
+      return false;
+    }
     return this.unit.isCompatible(otherUnit);
   }
 
   public boolean isCompatible(@Nullable SimpleUnit other) {
-    if (other == null) {
+    if (other == null || this.unit == null) {
       return false;
     }
     return this.unit.isCompatible(other.unit);

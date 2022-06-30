@@ -277,8 +277,8 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * @return true if a coordinate variable.
    */
   public boolean isCoordinateVariable() {
-    if ((getArrayType() == ArrayType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be
-                                                                          // coordinate
+    // Structures and StructureMembers cant be coordinate
+    if ((getArrayType() == ArrayType.STRUCTURE) || isMemberOfStructure())
       // variables
       return false;
 

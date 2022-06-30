@@ -9,12 +9,11 @@ import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Variable;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.internal.CoordSystemFactory;
 import dev.cdm.core.util.CancelTask;
 
@@ -37,7 +36,7 @@ public class CEDRICRadarConvention extends CF1Convention {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new CEDRICRadarConvention(datasetBuilder);
     }
   }

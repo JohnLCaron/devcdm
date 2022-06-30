@@ -72,21 +72,22 @@ public class TestCdmDatasetBuilder {
   @Test
   public void testCoordinatesHelper() {
     CdmDatasetCS.Builder<?> ncdb = CdmDatasetCS.builder();
-    CoordsHelperBuilder coords = ncdb.coords;
+    CoordsHelperBuilder coords = new CoordsHelperBuilder();
+    ncdb.coords = coords;
 
     VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(CdmDataset.getEnhanceAll());
-    ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX));
+    coords.addCoordinateAxis(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX));
 
     VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setArrayType(ArrayType.FLOAT)
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(CdmDataset.getEnhanceAll());
-    ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY));
+    coords.addCoordinateAxis(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY));
 
     CoordinateSystem.Builder<?> csb = CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname");
     coords.addCoordinateSystem(csb);
 
     CdmDatasetCS ncd = ncdb.build();
-    CoordinateSystem coordSys = ncd.findCoordinateSystem("yname xname");
+    CoordinateSystem coordSys = ncd.findCoordinateSystem("xname yname");
     assertThat(coordSys).isNotNull();
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);

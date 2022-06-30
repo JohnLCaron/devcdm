@@ -9,16 +9,15 @@ import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 import java.util.StringTokenizer;
 
 /** MADIS Station Convention. */
-public class MADISStation extends CoordSystemBuilder {
+public class MADISStation extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "MADIS_Station_1.0";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -34,7 +33,7 @@ public class MADISStation extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new MADISStation(datasetBuilder);
     }
   }

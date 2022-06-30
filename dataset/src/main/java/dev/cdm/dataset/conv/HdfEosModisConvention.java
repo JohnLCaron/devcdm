@@ -22,10 +22,9 @@ import dev.cdm.core.iosp.IospUtils;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateAxis1D;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.projection.Sinusoidal;
@@ -37,7 +36,7 @@ import java.util.Optional;
  * 
  * @see "https://lpdaac.usgs.gov/products/modis_overview"
  */
-public class HdfEosModisConvention extends CoordSystemBuilder {
+public class HdfEosModisConvention extends CoordSystemBuilderOld {
   private static final String CRS = "Projection";
   private static final String DATA_GROUP = "Data_Fields";
   private static final String DIMX_NAME = "XDim";
@@ -97,7 +96,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new HdfEosModisConvention(datasetBuilder);
     }
   }

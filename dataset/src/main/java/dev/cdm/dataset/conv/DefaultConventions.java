@@ -20,7 +20,7 @@ import dev.cdm.core.constants.CF;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.VariableDS;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.Projection;
@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Default Coordinate Conventions. Used when no other is specified or recognized. */
-public class DefaultConventions extends CoordSystemBuilder {
+public class DefaultConventions extends CoordSystemBuilderOld {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConventions.class);
 
   protected ProjectionCTV projCT;
@@ -358,7 +358,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new DefaultConventions(datasetBuilder);
     }
   }

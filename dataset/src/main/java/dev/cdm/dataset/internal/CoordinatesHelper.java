@@ -7,6 +7,7 @@ package dev.cdm.dataset.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Structure;
@@ -18,10 +19,13 @@ import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 
 import dev.cdm.array.Immutable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringTokenizer;
@@ -95,7 +99,18 @@ public class CoordinatesHelper {
     return coordTransforms;
   }
 
+  @Nullable
+  public CoordinateSystem findCoordinateSystem(String name) {
+    Preconditions.checkNotNull(name);
+    return coordSystems.stream().filter(cs -> cs.getName().equals(name)).findFirst().orElse(null);
+  }
+
   public List<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
+    List<String> names = coordSysForVar.get(v.getFullName());
+    if (names != null) {
+      return names.stream().map(this::findCoordinateSystem).filter(Objects::nonNull).toList();
+    }
+
     ArrayList<CoordinateSystem> result = new ArrayList<>();
     for (CoordinateSystem csys : coordSystems) {
       if (csys.isCoordinateSystemFor(v) && csys.isComplete(v)) {
@@ -110,6 +125,7 @@ public class CoordinatesHelper {
   private final ImmutableList<CoordinateAxis> coordAxes;
   private final ImmutableList<CoordinateSystem> coordSystems;
   private final ImmutableList<ProjectionCTV> coordTransforms;
+  private final Map<String, List<String>> coordSysForVar;
 
   public CoordinatesHelper(CoordsHelperBuilder builder, List<CoordinateAxis> axes) {
     this.coordAxes = ImmutableList.copyOf(axes);
@@ -124,6 +140,8 @@ public class CoordinatesHelper {
     // TODO remove coordSys not used by a variable....
     this.coordSystems = builder.getCoordSys().stream().map(csb -> csb.build(this.coordAxes, allProjections))
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
+
+    this.coordSysForVar = builder.getCoordinateSystemFor();
   }
 
   private CoordinatesHelper(Builder builder, List<CoordinateAxis> axes) {
@@ -139,6 +157,8 @@ public class CoordinatesHelper {
     // TODO remove coordSys not used by a variable....
     this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(this.coordAxes, allProjections))
             .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
+
+    this.coordSysForVar = Map.of();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +179,7 @@ public class CoordinatesHelper {
   }
 
   public static class Builder {
-    public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
+    public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>(); // we dont use these
     public final ArrayList<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
     public final ArrayList<ProjectionCTV> coordTransforms = new ArrayList<>();
     private boolean built;
@@ -317,11 +337,12 @@ public class CoordinatesHelper {
       return false;
     }
 
-    // Note that only ncd.axes can be accessed, not coordsys or transforms.
-    public CoordinatesHelper build(List<CoordinateAxis> coordAxes) {
-      if (built)
+    public CoordinatesHelper build(List<CoordinateAxis> coordAxes ) {
+      if (built) {
         throw new IllegalStateException("already built");
+      }
       built = true;
+
       return new CoordinatesHelper(this, coordAxes);
     }
   }

@@ -127,7 +127,17 @@ public class CdmDatasetCS extends CdmDataset {
 
   private CdmDatasetCS(CdmDatasetCS.Builder<?> builder) {
     super(builder);
-    this.coords = builder.coords.build(this.getRootGroup());
+    if (builder.coords != null) {
+      this.coords = builder.coords.build(this.getRootGroup());
+    } else if (builder.coordsOld != null) {
+      List<CoordinateAxis> coordAxes = this.getVariables().stream()
+              .filter(it -> it instanceof CoordinateAxis)
+              .map(it -> (CoordinateAxis) it)
+              .toList();
+      this.coords = builder.coordsOld.build(coordAxes);
+    } else {
+      throw new IllegalStateException("CdmDatasetCS has no CoordinatesHelper builder");
+    }
   }
 
   public CdmDatasetCS.Builder<?> toBuilder() {
@@ -142,9 +152,6 @@ public class CdmDatasetCS extends CdmDataset {
     return (CdmDatasetCS.Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /**
-   * Get Builder for NetcdfDataset.
-   */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -157,7 +164,8 @@ public class CdmDatasetCS extends CdmDataset {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends CdmDataset.Builder<T> {
-    public CoordsHelperBuilder coords = new CoordsHelperBuilder();
+    public CoordinatesHelper.Builder coordsOld;
+    public CoordsHelperBuilder coords;
     private boolean built;
 
     protected abstract T self();
@@ -174,7 +182,9 @@ public class CdmDatasetCS extends CdmDataset {
     public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder<?> axis) {
       if (axis == null)
         return;
-      coords.replaceCoordinateAxis(axis);
+      if (coords != null) {
+        coords.replaceCoordinateAxis(axis);
+      }
       group.replaceVariable(axis);
       axis.setParentGroupBuilder(group);
     }

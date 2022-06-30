@@ -13,19 +13,18 @@ import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.internal.CoordSystemFactory;
 import dev.cdm.core.util.CancelTask;
 
 import java.io.IOException;
 
 /** Zebra ATD files. */
-public class ZebraConvention extends CoordSystemBuilder {
+public class ZebraConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "Zebra";
 
   ZebraConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
@@ -87,7 +86,7 @@ public class ZebraConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new ZebraConvention(datasetBuilder);
     }
   }

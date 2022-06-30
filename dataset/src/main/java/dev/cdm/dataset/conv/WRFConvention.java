@@ -25,7 +25,7 @@ import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.SimpleUnit;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.LatLonPoint;
@@ -117,7 +117,7 @@ import java.util.Optional;
  * 3: Mercator
  * 6: latitude and longitude (including global)
  */
-public class WRFConvention extends CoordSystemBuilder {
+public class WRFConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "WRF";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -144,7 +144,7 @@ public class WRFConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new WRFConvention(datasetBuilder);
     }
   }

@@ -1,4 +1,4 @@
-package cdm.dataset.internal
+package cdm.dataset.coordsysbuild
 
 import com.google.common.truth.Truth.assertThat
 import dev.cdm.core.constants.AxisType
@@ -112,8 +112,9 @@ class TestCoordSysBuilder {
         val csys = withcs.findCoordinateSystem("csys");
         assertThat(csys.projection).isNull()
 
-        println("${withcs.variables.map {it.shortName}}")
-        assertThat(withcs.variables).hasSize(7)
-
+        println("variables = ${withcs.variables.map {it.fullName}}")
+        println("axes = ${withcs.coordinateAxes.map {it.fullName}}")
+        println("systems = ${withcs.coordinateSystems.map {it.name}}")
+        println("transforms = ${withcs.coordinateTransforms.map {it.name}}")
     }
 }

@@ -11,7 +11,7 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.Projection;
@@ -33,7 +33,7 @@ public class GDVConvention extends CSMConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new GDVConvention(datasetBuilder);
     }
   }

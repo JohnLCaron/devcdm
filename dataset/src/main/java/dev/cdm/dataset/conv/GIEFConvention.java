@@ -8,11 +8,10 @@ import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.ncml.NcmlReader;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.internal.CoordSystemFactory;
 import dev.cdm.core.util.CancelTask;
 
@@ -22,7 +21,7 @@ import java.io.IOException;
  * GEIF Convention.
  * https://www.metnet.navy.mil/~hofschnr/GIEF-F/1.2/
  */
-public class GIEFConvention extends CoordSystemBuilder {
+public class GIEFConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "GIEF";
 
   GIEFConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
@@ -82,7 +81,7 @@ public class GIEFConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new GIEFConvention(datasetBuilder);
     }
   }

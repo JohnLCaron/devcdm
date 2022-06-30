@@ -6,44 +6,21 @@ import dev.cdm.array.ArrayType
 import dev.cdm.core.api.Attribute
 import dev.cdm.core.api.Dimension
 import dev.cdm.core.api.Group
+import dev.cdm.core.api.Variable
 import dev.cdm.core.constants.AxisType
+import dev.cdm.core.constants.CF
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.CdmDataset
 import dev.cdm.dataset.api.CoordinateAxis
 import dev.cdm.dataset.api.CoordinateSystem
 import dev.cdm.dataset.api.VariableDS
+import dev.cdm.dataset.internal.CoordinatesHelper
 import dev.cdm.dataset.transform.horiz.ProjectionCTV
 
 private val useMaximalCoordSys = true
+private val requireCompleteCoordSys = true
 
 open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String = _Coordinate.Convention) {
-
-    /**
-     * Calculate if this is a classic coordinate variable: has same name as its first dimension.
-     * If type char, must be 2D, else must be 1D.
-     *
-     * @return true if a coordinate variable.
-     */
-    fun isCoordinateVariable(vb: VariableDS): Boolean {
-        // Structures and StructureMembers cant be coordinate variables
-        if (vb.arrayType == ArrayType.STRUCTURE || vb.parentStructure != null) return false
-        val rank = vb.rank
-        if (rank == 1) {
-            val firstd = vb.dimensions[0]
-            if (firstd != null && vb.shortName == firstd.shortName) {
-                return true
-            }
-        }
-        if (rank == 2) { // two dimensional
-            val firstd = vb.dimensions[0]
-            // must be char valued (then its really a String)
-            return firstd != null && vb.shortName == firstd.shortName && vb.arrayType == ArrayType.CHAR
-        }
-        return false
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
     internal val root: Group = dataset.rootGroup
     internal val varList = mutableListOf<VarProcess>()
     internal val coordVarsForDimension: Multimap<DimensionWithGroup, VarProcess> = ArrayListMultimap.create()
@@ -77,20 +54,24 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         // assign explicit CoordinateSystem objects to variables
         assignCoordinateSystemsExplicit()
 
-        /* assign implicit CoordinateSystem objects to variables
+        // assign implicit CoordinateSystem objects to variables
         makeCoordinateSystemsImplicit()
 
         // optionally assign implicit CoordinateSystem objects to variables that dont have one yet
         if (useMaximalCoordSys) {
             makeCoordinateSystemsMaximal()
         }
-        */
 
         // make Coordinate Transforms
         makeCoordinateTransforms()
 
         // assign Coordinate Transforms
         assignCoordinateTransforms()
+
+        // set the coordinate systems for variables
+        varList.forEach { vp ->
+            coords.setCoordinateSystemFor(vp.vds.fullName, vp.coordSysNames)
+        }
 
         return coords
     }
@@ -104,33 +85,33 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         }
     }
 
-    open fun identifyIsPositive(vds: VariableDS): Boolean? {
-        return helper.identifyIsPositive(vds)
-    }
-
     open fun identifyAxisType(vds: VariableDS): AxisType? {
         return helper.identifyAxisType(vds)
     }
 
-    open fun identifyCoordinateAxes() {
-        helper.identifyCoordinateAxes()
-        varList.forEach { vp ->
-            if (vp.coordinates != null) {
-                identifyCoordinateAxesFromList(vp, vp.coordinates!!)
-            }
-        }
+    open fun identifyIsPositive(vds: VariableDS): Boolean? {
+        return helper.identifyIsPositive(vds)
     }
 
     open fun identifyCoordinateVariables() {
         helper.identifyCoordinateVariables()
     }
 
+    open fun identifyCoordinateAxes() {
+        helper.identifyCoordinateAxes()
+        varList.forEach { vp ->
+            if (vp.coordinatesAll != null) {
+                identifyCoordinateAxesFromList(vp, vp.coordinatesAll!!)
+            }
+        }
+    }
+
     // coordinates is a list of space-delimited coordinate names
-    fun identifyCoordinateAxesFromList(vp: VarProcess, coordinates: String) {
+    private fun identifyCoordinateAxesFromList(vp: VarProcess, coordinates: String) {
         coordinates.split(" ").forEach { vname ->
             var ap = findVarProcess(vname, vp)
             if (ap == null) {
-                val gb = vp.vb.parentGroup
+                val gb = vp.vds.parentGroup
                 val vopt = gb.findVariableOrInParent(vname)
                 if (vopt != null) {
                     ap = findVarProcess(vopt.fullName, vp)
@@ -164,12 +145,12 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         varList.forEach { vp ->
             if (vp.isCoordinateAxis || vp.isCoordinateVariable) {
                 if (vp.axisType == null) {
-                    vp.axisType = identifyAxisType(vp.vb)
+                    vp.axisType = identifyAxisType(vp.vds)
                 }
                 if (vp.axisType == null) {
                     info.appendLine("Coordinate Axis '${vp}' does not have an assigned AxisType")
                 }
-                vp.makeIntoCoordinateAxis()
+                vp.makeCoordinateAxis()
             }
         }
 
@@ -192,16 +173,110 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
     /** Assign explicit CoordinateSystem objects to variables. */
     open fun assignCoordinateSystemsExplicit() {
         helper.assignCoordinateSystemsExplicit()
+
+        // look for explicit listings of coordinate axes in _Coordinate.Axes, add to the data variable
+        varList.forEach { vp ->
+            if (vp.coordinatesAll != null && !vp.hasCoordinateSystem() && vp.isData()) {
+                val coordSysName = coords.makeCanonicalName(vp.vds, vp.coordinatesAll!!)
+                val cso = coords.findCoordinateSystem(coordSysName)
+                if (cso != null) {
+                    vp.assignCoordinateSystem(coordSysName, "(explicit)")
+                } else {
+                    val csnew = CoordinateSystem.builder(coordSysName).setCoordAxesNames(coordSysName)
+                    coords.addCoordinateSystem(csnew)
+                    vp.assignCoordinateSystem(coordSysName, "(explicit)")
+                }
+            }
+        }
     }
 
     /**
-     * Take all previously identified Coordinate Transforms and create a CoordinateTransform object by
-     * calling CoordTransBuilder.makeCoordinateTransform().
+     * Make implicit CoordinateSystem objects for variables that dont already have one, by using the
+     * variables' list of coordinate axes, and any coordinateVariables for it. Must be at least 2
+     * axes. All of a variable's _Coordinate Variables_ plus any variables listed in a
+     * *__CoordinateAxes_* or *_coordinates_* attribute will be made into an *_implicit_* Coordinate
+     * System. If there are at least two axes, and the coordinate system uses all of the variable's
+     * dimensions, it will be assigned to the data variable.
      */
+    open fun makeCoordinateSystemsImplicit() {
+        varList.forEach { vp ->
+            if (!vp.hasCoordinateSystem() && vp.maybeData()) {
+                val axesList = vp.findAllCoordinateAxes()
+                if (axesList.size < 2) {
+                    return
+                }
+                val csName = CoordinatesHelper.makeCanonicalName(axesList)
+                val csb = coords.findCoordinateSystem(csName)
+                if (csb != null && coords.isComplete(csb, vp.vds)) {
+                    vp.assignCoordinateSystem(csName, "(implicit)")
+                } else {
+                    val csnew = CoordinateSystem.builder(csName).setCoordAxesNames(csName).setImplicit(true)
+                    if (coords.isComplete(csnew, vp.vds)) {
+                        vp.assignCoordinateSystem(csName, "(implicit)")
+                        coords.addCoordinateSystem(csnew)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * If a variable still doesnt have a coordinate system, use hueristics to try to find one that was
+     * probably forgotten. Examine existing axes, create the maximal set of axes that fits the variable.
+     */
+    open fun makeCoordinateSystemsMaximal() {
+        varList.forEach { vp ->
+            if (vp.hasCoordinateSystem() || !vp.isData() || vp.vds.dimensions.isEmpty()) {
+                return
+            }
+
+            // look through all axes that fit
+            val axisList = mutableListOf<CoordinateAxis.Builder<*>>()
+            varList.filter { it.axis != null }.forEach { vpAxis ->
+                if (vpAxis.axis!!.dimensions.isEmpty()) {
+                    return  // scalar coords must be explicitly added.
+                }
+                if (hasCompatibleDimensions(vp.vds, vpAxis.vds)) {
+                    axisList.add(vpAxis.axis!!)
+                }
+            }
+            if (axisList.size < 2) {
+                return
+            }
+            val csName = CoordinatesHelper.makeCanonicalName(axisList)
+            val csb = coords.findCoordinateSystem(csName)
+            var okToBuild = false
+
+            // do coordinate systems need to be complete?
+            if (requireCompleteCoordSys) {
+                if (csb != null) {
+                    okToBuild = coords.isComplete(csb, vp.vds)
+                }
+            } else {
+                // coordinate system can be incomplete, so we're ok to build if we find something
+                okToBuild = true
+            }
+            if (csb != null && okToBuild) {
+                vp.assignCoordinateSystem(csName, "(maximal)")
+            } else {
+                val csnew = CoordinateSystem.builder(csName).setCoordAxesNames(csName)
+                if (requireCompleteCoordSys) {
+                    okToBuild = coords.isComplete(csnew, vp.vds)
+                }
+                if (okToBuild) {
+                    csnew.setImplicit(true)
+                    vp.assignCoordinateSystem(csName, "(maximal)")
+                    coords.addCoordinateSystem(csnew)
+                }
+            }
+        }
+    }
+
+    /** Take previously identified Coordinate Transforms and create a CoordinateTransform for it */
     open fun makeCoordinateTransforms() {
         varList.forEach { vp ->
             if (vp.isCoordinateTransform && vp.ctv == null) {
-                vp.ctv = makeTransformBuilder(vp.vb)
+                vp.ctv = makeTransformBuilder(vp.vds)
             }
             if (vp.ctv != null) {
                 coords.addCoordinateTransform(vp.ctv!!)
@@ -209,13 +284,29 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         }
     }
 
-    protected open fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
+    internal fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
         // at this point dont know if its a Projection or a VerticalTransform
         return ProjectionCTV(vb.fullName, vb.attributes(), null)
     }
 
+    /** Assign CoordinateTransform objects to Variables and Coordinate Systems.  */
     open fun assignCoordinateTransforms() {
         helper.assignCoordinateTransforms()
+
+        // look for _CoordinateAxes on the CTV, apply to any Coordinate Systems that contain all these axes
+        varList.forEach { vp ->
+            if (vp.coordinatesAll != null && vp.isCoordinateTransform && vp.ctv != null) {
+                //  look for Coordinate Systems that contain all these axes
+                varList.forEach { csv ->
+                    if (csv.isCoordinateSystem && csv.cs != null) {
+                        if (csv.cs!!.containsAxesNamed(vp.coordinatesAll)) {
+                            csv.cs!!.addTransformName(vp.transformName) // TODO
+                            info.appendLine("Assign (implicit coordAxes) coordTransform '${vp.transformName}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun findVarProcess(name: String?, from: VarProcess?): VarProcess? {
@@ -224,16 +315,16 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         }
 
         // search on vb full name
-        varList.find { name == it.vb.fullName }?.let { return it }
+        varList.find { name == it.vds.fullName }?.let { return it }
 
         // prefer ones in the same group with short name
         if (from != null) {
-            varList.find { name == it.vb.shortName && it.vb.parentGroup == from.vb.parentGroup }
+            varList.find { name == it.vds.shortName && it.vds.parentGroup == from.vds.parentGroup }
                 ?.let { return it }
         }
 
         // WAEF, use short name from anywhere
-        varList.find { name == it.vb.shortName }?.let { return it }
+        varList.find { name == it.vds.shortName }?.let { return it }
         return null
     }
 
@@ -245,16 +336,9 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
     }
 
     /** Classifications of Variables into axis, systems and transforms  */
-    inner class VarProcess(val gb: Group, val vb: VariableDS) {
-        val coordSysNames = mutableListOf<String>()
-
-        // attributes
-        var positive: String? = null // _Coordinate.ZisPositive or CF.POSITIVE
-        var coordinateAxes: String? // _Coordinate.Axes
-        var coordinateTransforms: String? // _Coordinate.Transforms
-        var coordAxisTypes: String? // _Coordinate.AxisTypes
-        var coordTransformType: String? // _Coordinate.TransformType
-        var coordinates: String? = null // CF coordinates (set by subclasses)
+    inner class VarProcess(val group: Group, val vds: VariableDS) {
+        // data variable
+        val coordSysNames = mutableListOf<String>() // LOOK where used ??
 
         // coord axes
         var isCoordinateVariable = false
@@ -262,29 +346,23 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         var axisType: AxisType? = null
         var axis: CoordinateAxis.Builder<*>? = null
 
-        // coord systems
-        var isCoordinateSystem: Boolean
+        // coord system
+        var isCoordinateSystem: Boolean = false
+        var coordinatesAll: String? = null // complete list of coordinates, eg from _Coordinate.Axes
         var cs: CoordinateSystem.Builder<*>? = null
 
         // coord transform
+        var isCoordinateTransform: Boolean = false
         var transformName: String? = null
-        var isCoordinateTransform: Boolean
         var ctv: ProjectionCTV? = null
 
         /** Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes.  */
         init {
-            isCoordinateVariable = isCoordinateVariable(vb)
+            isCoordinateVariable = vds.isCoordinateVariable
             if (isCoordinateVariable) {
                 info.appendLine("Identify Coordinate Variable '${this}'")
-                coordVarsForDimension.put(DimensionWithGroup(vb.dimensions[0], gb), this)
+                coordVarsForDimension.put(DimensionWithGroup(vds.dimensions[0], group), this)
             }
-
-            coordinateAxes = vb.findAttributeString(_Coordinate.Axes, null)
-            coordinateTransforms = vb.findAttributeString(_Coordinate.Transforms, null)
-            isCoordinateSystem = coordinateTransforms != null
-            coordAxisTypes = vb.findAttributeString(_Coordinate.AxisTypes, null)
-            coordTransformType = vb.findAttributeString(_Coordinate.TransformType, null)
-            isCoordinateTransform = coordTransformType != null || coordAxisTypes != null
         }
 
         fun isData(): Boolean =
@@ -294,7 +372,7 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
 
         fun hasCoordinateSystem(): Boolean = !coordSysNames.isEmpty()
 
-        override fun toString(): String = vb.shortName
+        override fun toString(): String = vds.shortName
 
         fun setIsCoordinateAxis(extra : String = "") {
             if (!isCoordinateAxis) {
@@ -310,45 +388,72 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
             isCoordinateSystem = true
         }
 
-        fun setIsTransform(extra : String = "") {
+        fun assignCoordinateSystem(csysName: String, extra : String = "") {
+            if (!isCoordinateSystem) {
+                info.appendLine("Assign CoordinateSystem $csysName to '${this}' $extra")
+            }
+            coordSysNames.add(csysName)
+        }
+
+        fun setIsCoordinateTransform(extra : String = "") {
             if (!isCoordinateTransform) {
                 info.appendLine("Identify CoordinateTransform '${this}' $extra")
             }
             isCoordinateTransform = true
         }
 
-        /**
-         * Turn the variable into a coordinate axis.
-         * Add to the dataset, replacing variable if needed.
-         */
-        fun makeIntoCoordinateAxis(): CoordinateAxis.Builder<*>? {
+        // note that you could pass the empty string to add coordinate variables
+        fun setPartialCoordinates(partialCoordinates: String) {
+            val axes = mutableListOf<String>()
+            axes.addAll(partialCoordinates.split(" "))
+            // add missing coord vars
+            vds.dimensions.forEach { dim->
+                coordVarsForDimension.get(DimensionWithGroup(dim, group)).forEach { vp ->
+                    val axis = vp.vds.shortName
+                    if (axis != vds.shortName && !axes.contains(axis)) {
+                        axes.add(axis)
+                    }
+                }
+            }
+            this.coordinatesAll = axes.joinToString(" ")
+        }
+
+        /** Make a coordinate axis from the variable. */
+        fun makeCoordinateAxis(): CoordinateAxis.Builder<*>? {
             if (this.axis != null) {
                 return this.axis
             }
 
             // Create a CoordinateAxis out of this variable.
-            val axis = CoordinateAxis.fromVariableDS(vb.toBuilder())
+            val axis = CoordinateAxis.fromVariableDS(vds.toBuilder())
+            if (axisType == null) {
+                axisType = identifyAxisType(vds)
+            }
             if (axisType != null) {
                 axis.setAxisType(axisType)
                 axis.addAttribute(Attribute(_Coordinate.AxisType, axisType.toString()))
-                if (axisType!!.isVert && positive != null) {
-                    axis.addAttribute(Attribute(_Coordinate.ZisPositive, positive))
+                if (axisType!!.isVert) {
+                    val positive = identifyIsPositive(vds)
+                    if (positive != null) {
+                        axis.addAttribute(Attribute(_Coordinate.ZisPositive, if (positive) CF.POSITIVE_UP else CF.POSITIVE_DOWN))
+                    }
                 }
             }
+            // add to CoordsHelper, note the original dataset has not been changed
             coords.addCoordinateAxis(axis)
             this.axis = axis
             return axis
         }
 
-        /** For any variable listed in a coordinateAxes attribute, make into a coordinate.  */
+        /** For any variable listed in coordinatesAll or coordinates, make into a coordinate.  */
         fun makeCoordinatesFromCoordinateSystem() {
-            if (coordinateAxes != null) {
-                coordinateAxes!!.split(" ").forEach { vname ->
+            if (coordinatesAll != null) {
+                coordinatesAll!!.split(" ").forEach { vname ->
                     val ap = findVarProcess(vname, this)
                     if (ap != null) {
-                        ap.makeIntoCoordinateAxis()
+                        ap.makeCoordinateAxis()
                     } else {
-                        info.appendLine("*** Cant find axes '${vname}' for Coordinate System '${vb.fullName}'")
+                        info.appendLine("*** Cant find axes '${vname}' for Coordinate System '${vds.fullName}'")
                     }
                 }
             }
@@ -356,48 +461,26 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
 
         /** For explicit coordinate system variables, make a CoordinateSystem.  */
         fun makeCoordinateSystem() {
-            if (coordinateAxes != null) {
-                val coordNames: String = coords.makeCanonicalName(vb, coordinateAxes)
-                cs = CoordinateSystem.builder(vb.shortName).setCoordAxesNames(coordNames)
-                info.appendLine("Made Coordinate System '${vb.shortName}' on axes '${coordNames}'")
-                coords.addCoordinateSystem(cs!!)
+            if (coordinatesAll != null) {
+                val coordNames: String = coords.makeCanonicalName(vds, coordinatesAll!!)
+                val cs = CoordinateSystem.builder(vds.shortName).setCoordAxesNames(coordNames)
+                info.appendLine("Made Coordinate System '${vds.shortName}' on axes '${coordNames}'")
+                coords.addCoordinateSystem(cs)
+                this.cs = cs
             }
         }
 
         /**
-         * Create a list of coordinate axes for this data variable. Use the list of names in axes or
-         * coordinates field.
-         *
-         * @param addCoordVariables if true, add any coordinate variables that are missing.
+         * Create a list of coordinate axes for this data variable, from names in coordinatesAll
          * @return list of coordinate axes for this data variable.
          */
-        fun findCoordinateAxes(addCoordVariables: Boolean): List<CoordinateAxis.Builder<*>?> {
+        fun findAllCoordinateAxes(): List<CoordinateAxis.Builder<*>?> {
             val axesList: MutableList<CoordinateAxis.Builder<*>?> = ArrayList()
-            if (coordinateAxes != null) { // explicit axes
-                coordinateAxes!!.split(" ").forEach { vname ->
+            if (coordinatesAll != null) { // explicit axes
+                coordinatesAll!!.split(" ").forEach { vname ->
                     val ap = findVarProcess(vname, this)
                     if (ap != null) {
-                        val axis = ap.makeIntoCoordinateAxis()
-                        if (!axesList.contains(axis)) {
-                            axesList.add(axis)
-                        }
-                    }
-                }
-            } else if (coordinates != null) { // CF partial listing of axes
-                coordinates!!.split(" ").forEach { vname ->
-                    val ap = findVarProcess(vname, this)
-                    if (ap != null) {
-                        val axis = ap.makeIntoCoordinateAxis() // TODO check if its legal
-                        if (!axesList.contains(axis)) {
-                            axesList.add(axis)
-                        }
-                    }
-                }
-            }
-            if (addCoordVariables) {
-                for (d in vb!!.dimensions) {
-                    for (vp in coordVarsForDimension.get(DimensionWithGroup(d, gb))) {
-                        val axis = vp.makeIntoCoordinateAxis()
+                        val axis = ap.makeCoordinateAxis()
                         if (!axesList.contains(axis)) {
                             axesList.add(axis)
                         }
@@ -408,4 +491,37 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         }
     } // VarProcess
 
+}
+
+/**
+ * Does this axis "fit" this variable. True if all of the dimensions in the axis also appear in
+ * the variable.
+ *
+ * @param v the given variable
+ * @param axis check if this axis is ok for the given variable
+ * @return true if all of the dimensions in the axis also appear in the variable.
+ */
+fun hasCompatibleDimensions(v: Variable, axis: Variable): Boolean {
+    val varDims = HashSet(v.dimensions)
+    val groupv: Group = v.getParentGroup()
+    val groupa = axis.parentGroup
+    val commonGroup = groupv.commonParent(groupa)
+
+    // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
+    var checkDims = axis.rank
+    if (axis.arrayType == ArrayType.CHAR) checkDims--
+    for (i in 0 until checkDims) {
+        val axisDim = axis.getDimension(i)
+        if (!axisDim.isShared) { // anon dimensions dont count.
+            continue
+        }
+        if (!varDims.contains(axisDim)) {
+            return false
+        }
+        // The dimension must be in the common parent group
+        if (groupa !== groupv && commonGroup.findDimension(axisDim) == null) {
+            return false
+        }
+    }
+    return true
 }

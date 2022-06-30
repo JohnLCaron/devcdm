@@ -22,10 +22,9 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.CoordinateAxis1D;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.geoloc.LatLonPoint;
@@ -41,7 +40,7 @@ import java.util.ArrayList;
  * 
  * @author Burks
  */
-public class IFPSConvention extends CoordSystemBuilder {
+public class IFPSConvention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "IFPS";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -80,7 +79,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new IFPSConvention(datasetBuilder);
     }
   }

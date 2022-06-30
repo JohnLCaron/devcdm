@@ -133,7 +133,10 @@ public class CdmDatasets {
 
   public static CdmDatasetCS openNcmlDatasetCS(Reader reader, String ncmlLocation, @Nullable CancelTask cancelTask)
           throws IOException {
-    CdmDatasetCS.Builder<?> builder = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
+    CdmDataset.Builder<?> ncml = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
+    CdmDataset ds = ncml.build();
+    CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().copyFrom(ds).setOrgFile(ds);
+
     DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, builder.getEnhanceMode());
     return enhancer.enhance().build();
   }

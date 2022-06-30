@@ -112,9 +112,9 @@ open class CFConventions(dataset: CdmDataset) : DefaultConventions(dataset, "CFC
     override fun identifyCoordinateAxes() {
         // A Variable is made into a Coordinate Axis if listed in a coordinates attribute from any variable
         varList.forEach { vp ->
-            val coordinateAxes = vp.vb.findAttributeString(CF.COORDINATES, null)
-            if (coordinateAxes != null) {
-                identifyCoordinateAxesFromList(vp, coordinateAxes)
+            val coordinates = vp.vds.findAttributeString(CF.COORDINATES, null)
+            if (coordinates != null) {
+                vp.setPartialCoordinates(coordinates)
             }
         }
         super.identifyCoordinateAxes()
@@ -123,30 +123,30 @@ open class CFConventions(dataset: CdmDataset) : DefaultConventions(dataset, "CFC
     override fun identifyCoordinateTransforms() {
         // look for vertical transforms
         varList.forEach { vp ->
-            val stdName = vp.vb.findAttributeString(CF.STANDARD_NAME, null)
+            val stdName = vp.vds.findAttributeString(CF.STANDARD_NAME, null)
             verticalUnits.forEach {
                 if (stdName.equals(it, ignoreCase = true)) {
                     vp.isCoordinateTransform = true
                     info.appendLine("Identify CoordinateTransform '${vp}'")
-                    vp.setIsTransform("from ${CF.STANDARD_NAME}")
+                    vp.setIsCoordinateTransform("from ${CF.STANDARD_NAME}")
                 }
             }
         }
 
         // look for horizontal transforms LOOK could check if they are known
         varList.forEach { vp ->
-            val gridMapping = vp.vb.findAttributeString(CF.GRID_MAPPING, null)
+            val gridMapping = vp.vds.findAttributeString(CF.GRID_MAPPING, null)
             if (gridMapping != null) {
-                val gridMapVar = vp.gb.findVariableLocal(gridMapping)
+                val gridMapVar = vp.group.findVariableOrInParent(gridMapping)
                 if (gridMapVar == null) {
-                    info.appendLine("***Cant find gridMapping '${gridMapping}' in variable $vp")
+                    info.appendLine("***Cant find gridMapping variable '${gridMapping}' referenced by variable '$vp'")
                 } else {
                     // TODO might be group relative - CF does not specify
                     val gridVp = findVarProcess(gridMapping, vp)
                     if (gridVp == null) {
-                        info.appendLine("***Cant find gridMapping '${gridMapping}' in variable $vp")
+                        info.appendLine("***Cant find gridMapping '${gridMapping}' referenced by variable '$vp'")
                     } else {
-                        gridVp.setIsTransform("from ${CF.GRID_MAPPING}")
+                        gridVp.setIsCoordinateTransform("from ${CF.GRID_MAPPING}")
                     }
                 }
             }

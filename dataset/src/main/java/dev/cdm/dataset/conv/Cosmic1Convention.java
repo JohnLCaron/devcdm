@@ -16,17 +16,16 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.dataset.spi.CoordSystemBuilderProvider;
-import dev.cdm.dataset.internal.CoordSystemBuilder;
+import dev.cdm.dataset.internal.CoordSystemBuilderOld;
 import dev.cdm.core.util.CancelTask;
 
 import java.io.IOException;
 
 /** Cosmic data - version 1 and 3 */
-public class Cosmic1Convention extends CoordSystemBuilder {
+public class Cosmic1Convention extends CoordSystemBuilderOld {
   private static final String CONVENTION_NAME = "Cosmic1";
 
   public static class Factory implements CoordSystemBuilderProvider {
@@ -46,7 +45,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(CdmDatasetCS.Builder<?> datasetBuilder) {
+    public CoordSystemBuilderOld open(CdmDatasetCS.Builder<?> datasetBuilder) {
       return new Cosmic1Convention(datasetBuilder);
     }
   }
