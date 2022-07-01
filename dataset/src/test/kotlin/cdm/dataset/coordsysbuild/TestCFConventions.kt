@@ -18,7 +18,7 @@ class TestCFConventions {
         println(orgDataset.write())
 
         val convention = findConvention(orgDataset)
-        val coords = convention.buildCoordinateSystems()
+        val coords = convention.buildCoordinateSystems(orgDataset)
         assertThat(coords).isNotNull()
         println(convention.info)
 

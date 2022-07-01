@@ -13,6 +13,7 @@ import static javax.measure.MetricPrefix.KILO;
 import static tech.units.indriya.unit.Units.METRE;
 import static tech.units.indriya.unit.Units.PASCAL;
 
+// why does this extend Quantity ??
 public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
   static UdunitFormat udunitFormat = new UdunitFormat();
 

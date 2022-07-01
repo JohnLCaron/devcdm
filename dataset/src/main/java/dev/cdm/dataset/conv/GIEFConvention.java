@@ -19,10 +19,10 @@ import java.io.IOException;
 
 /**
  * GEIF Convention.
- * https://www.metnet.navy.mil/~hofschnr/GIEF-F/1.2/
+ * <a href="https://www.metnet.navy.mil/~hofschnr/GIEF-F/1.2/">...</a>
  */
 public class GIEFConvention extends CoordSystemBuilderOld {
-  private static final String CONVENTION_NAME = "GIEF";
+  private static final String CONVENTION_NAME = "GIEF/GIEF-F";
 
   GIEFConvention(CdmDatasetCS.Builder<?> datasetBuilder) {
     super(datasetBuilder);

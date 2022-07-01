@@ -20,6 +20,8 @@ import java.io.Reader;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import static dev.cdm.dataset.coordsysbuild.ConventionsKt.openDatasetWithCoordSys;
+
 /**
  * Static helper methods for CdmDataset.
  */
@@ -47,6 +49,11 @@ public class CdmDatasets {
     DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder,
             enhance ? CdmDataset.getEnhanceAll() : CdmDataset.getEnhanceNone());
     return enhancer.enhance().build();
+  }
+
+  /** Uses the kotlin coordsysbuilder package. */
+  public static CdmDatasetCS openDatasetWithCS(String location, boolean enhance) throws IOException {
+    return openDatasetWithCoordSys(location, enhance);
   }
 
   /**

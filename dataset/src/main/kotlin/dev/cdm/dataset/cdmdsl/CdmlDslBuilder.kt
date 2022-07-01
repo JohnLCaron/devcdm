@@ -4,7 +4,6 @@ import dev.cdm.array.ArrayType
 import dev.cdm.core.api.*
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.*
-import dev.cdm.dataset.api.CdmDataset.Enhance
 import dev.cdm.dataset.api.CdmDataset.IOSP_MESSAGE_GET_COORDS_HELPER
 import dev.cdm.dataset.internal.CoordinatesHelper
 import org.slf4j.LoggerFactory
@@ -15,21 +14,17 @@ private val logger = LoggerFactory.getLogger("CdmDsl")
 private val attsOnly = true
 
 fun CdmdslDataset.build(): CdmDatasetCS {
-    var builder = CdmDatasetCS.builder()
-
     // TODO open as dataset or file? with enhanced metadata or not?
     if (this.location != null) {
-        // no coordinate systems ??
-        val enhancemants = EnumSet.of(
-            Enhance.ConvertEnums,
-            Enhance.ConvertUnsigned,
-            Enhance.ApplyScaleOffset,
-            Enhance.ConvertMissing
-        )
-        // open with CS to use default parsing, then override as needed.
         val orgDataset = CdmDatasets.openDatasetCS(this.location, this.enhance)
-        builder = orgDataset.toBuilder()
+        return build(orgDataset)
     }
+    return build(null)
+}
+
+fun CdmdslDataset.build(orgDataset : CdmDataset?): CdmDatasetCS {
+    val builder = CdmDatasetCS.builder()
+    orgDataset?.let { builder.copyFrom(orgDataset) }
 
     // pull in all the non-coord changes and build so we have finished variables
     buildGroup(this.root, builder.rootGroup)
@@ -161,6 +156,11 @@ fun buildVariable(cvar: CdmdslVariable, groupb : Group.Builder) : Variable.Build
         org = VariableDS.builder()
         groupb.vbuilders.add(org)
         cvar.name?.let { org.setName(cvar.name) }
+        if (cvar.type == null) {
+            // default when not specified for new
+            org.setArrayType(ArrayType.CHAR)
+        }
+
     } else {
         if (cvar.action == Action.Remove) {
             groupb.vbuilders.remove(org)
@@ -171,6 +171,7 @@ fun buildVariable(cvar: CdmdslVariable, groupb : Group.Builder) : Variable.Build
     orgv.setParentGroupBuilder(groupb)
     cvar.rename?.let { orgv.setName(cvar.rename) }
     cvar.type?.let { orgv.setArrayType(cvar.type) }
+    cvar.autoGen?.let { orgv.setAutoGen(cvar.autoGen!!.get(0), cvar.autoGen!!.get(1)) }
     cvar.dimensions?.let { org.setDimensionsByName(cvar.dimensions) }
     cvar.attributes.forEach {
         buildAtt(it.value, orgv.getAttributeContainer())

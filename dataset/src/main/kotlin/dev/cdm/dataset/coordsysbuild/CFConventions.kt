@@ -3,11 +3,10 @@ package dev.cdm.dataset.coordsysbuild
 import dev.cdm.core.calendar.CalendarDateUnit
 import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CF
-import dev.cdm.dataset.api.CdmDataset
 import dev.cdm.dataset.api.SimpleUnit
 import dev.cdm.dataset.api.VariableDS
 
-open class CFConventions(dataset: CdmDataset) : DefaultConventions(dataset, "CFConventions") {
+open class CFConventions(name: String = "CFConventions") : DefaultConventions(name) {
     private val verticalUnits = arrayOf(
         "atmosphere_ln_pressure_coordinate", "atmosphere_sigma_coordinate",
         "atmosphere_hybrid_sigma_pressure_coordinate", "atmosphere_hybrid_height_coordinate",

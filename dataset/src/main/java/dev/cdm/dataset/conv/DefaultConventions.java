@@ -122,7 +122,7 @@ public class DefaultConventions extends CoordSystemBuilderOld {
       }
     }
 
-    // look for missing axes by using name hueristics
+    /* look for missing axes by using name hueristics
     for (VarProcess vp : varList) {
       if (vp.isCoordinateVariable) {
         continue;
@@ -135,7 +135,7 @@ public class DefaultConventions extends CoordSystemBuilderOld {
           map.put(atype, vp);
         }
       }
-    }
+    } */
   }
 
   /**
