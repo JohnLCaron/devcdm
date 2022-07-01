@@ -47,10 +47,11 @@ class CdmdslEnum constructor(val enumName : String, val basetype: ArrayType? = n
 open class CdmdslVariable constructor(val varName : String) : CdmdslBase(varName) {
     val attributes = mutableMapOf<String, CdmdslAttribute>()
     var dimensions : String? = null
-    var type : ArrayType? = ArrayType.CHAR
+    var type : ArrayType? = null
     var coordSysRef : String? = null
     var values : String? = null
     var dvalues : DoubleArray? = null
+    var autoGen : DoubleArray? = null
 
     constructor(varName: String, type: ArrayType, dimensions : String) : this(varName) {
         this.type = type
@@ -81,6 +82,11 @@ open class CdmdslVariable constructor(val varName : String) : CdmdslBase(varName
     fun setValues(vararg ivalues : Int) : CdmdslVariable {
         this.dvalues = DoubleArray( ivalues.size) {idx -> ivalues[idx].toDouble() }
         this.type = ArrayType.INT
+        return this
+    }
+    fun generateValues(start: Double, incr: Double) : CdmdslVariable {
+        this.autoGen = DoubleArray(2) {idx -> if (idx == 0) start else incr}
+        this.type = ArrayType.DOUBLE
         return this
     }
 
@@ -286,7 +292,7 @@ class CdmdslDataset constructor(val location : String?, val enhance : Boolean = 
     val coordSystems = mutableMapOf<String, CdmdslCoordSystem>()
     val transforms = mutableMapOf<String, CdmslTransform>()
 
-    // the name is the name of the CSV
+    // the name is the name of the coord system variable (CSV)
     fun coordSystem(csysName: String): CdmdslCoordSystem {
         return coordSystems.getOrPut(csysName) { CdmdslCoordSystem(csysName) }
     }

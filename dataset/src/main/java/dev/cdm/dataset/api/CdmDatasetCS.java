@@ -136,7 +136,8 @@ public class CdmDatasetCS extends CdmDataset {
               .toList();
       this.coords = builder.coordsOld.build(coordAxes);
     } else {
-      throw new IllegalStateException("CdmDatasetCS has no CoordinatesHelper builder");
+      // there are no coordinates
+      this.coords = new CoordsHelperBuilder().build(this.getRootGroup());
     }
   }
 
@@ -145,6 +146,9 @@ public class CdmDatasetCS extends CdmDataset {
   }
 
   private CdmDatasetCS.Builder<?> addLocalFieldsToBuilder(Builder<? extends CdmDataset.Builder<?>> b) {
+    if (b.coords == null) {
+      b.coords = new CoordsHelperBuilder();
+    }
     this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
     this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
     this.coords.getCoordTransforms().forEach(ct -> b.coords.addCoordinateTransform(ct));

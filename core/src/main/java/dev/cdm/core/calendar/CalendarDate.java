@@ -67,6 +67,15 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   }
 
   /**
+   * Parse an iso data string into a CalendarDate using loose formatting rules.
+   * @see UdunitCalendarDateParser#parseUdunitIsoDate
+   */
+  @Nullable
+  static CalendarDate parse(String isoDate) {
+    return fromUdunitIsoDate(null, isoDate).orElse(null);
+  }
+
+  /**
    * Create Calendar date from fields, using UTC and ISO8601 calendar.
    *
    * @param year any integer

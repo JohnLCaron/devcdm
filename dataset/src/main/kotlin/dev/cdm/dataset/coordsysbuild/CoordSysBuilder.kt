@@ -3,6 +3,7 @@ package dev.cdm.dataset.coordsysbuild
 import com.google.common.collect.ArrayListMultimap
 import com.google.common.collect.Multimap
 import dev.cdm.array.ArrayType
+import dev.cdm.array.Arrays
 import dev.cdm.core.api.Attribute
 import dev.cdm.core.api.Dimension
 import dev.cdm.core.api.Group
@@ -20,21 +21,30 @@ import dev.cdm.dataset.transform.horiz.ProjectionCTV
 private val useMaximalCoordSys = true
 private val requireCompleteCoordSys = true
 
-open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String = _Coordinate.Convention) {
-    internal val root: Group = dataset.rootGroup
+open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention) {
     internal val varList = mutableListOf<VarProcess>()
     internal val coordVarsForDimension: Multimap<DimensionWithGroup, VarProcess> = ArrayListMultimap.create()
 
     internal val coords = CoordsHelperBuilder()
     internal val info = StringBuilder()
+
     private val helper = CoordAttrConvention(this)
 
+    fun addInfo(addInfo : StringBuilder) : CoordSysBuilder {
+        this.info.append(addInfo)
+        return this
+    }
+
+    open fun augment(dataset: CdmDataset) : CdmDataset {
+        return dataset
+    }
+
     // All these steps may be overriden by subclasses.
-    open fun buildCoordinateSystems() : CoordsHelperBuilder {
+    open fun buildCoordinateSystems(dataset: CdmDataset) : CoordsHelperBuilder {
         info.appendLine("Parsing with Convention '${conventionName}'")
 
         // Bookkeeping info for each variable is kept in the VarProcess inner class
-        addVariables(root)
+        addVariables(dataset.rootGroup)
 
         // identify which variables are coordinate axes
         identifyCoordinateVariables()
@@ -146,6 +156,9 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
             if (vp.isCoordinateAxis || vp.isCoordinateVariable) {
                 if (vp.axisType == null) {
                     vp.axisType = identifyAxisType(vp.vds)
+                }
+                if (vp.axisType == null) {
+                    vp.axisType = desperateAxisType(vp.vds)
                 }
                 if (vp.axisType == null) {
                     info.appendLine("Coordinate Axis '${vp}' does not have an assigned AxisType")
@@ -390,7 +403,7 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
 
         fun assignCoordinateSystem(csysName: String, extra : String = "") {
             if (!isCoordinateSystem) {
-                info.appendLine("Assign CoordinateSystem $csysName to '${this}' $extra")
+                info.appendLine("Assign CoordinateSystem '$csysName' to '${this}' $extra")
             }
             coordSysNames.add(csysName)
         }
@@ -471,10 +484,14 @@ open class CoordSysBuilder(val dataset: CdmDataset, val conventionName : String 
         }
 
         /**
-         * Create a list of coordinate axes for this data variable, from names in coordinatesAll
+         * Create a list of coordinate axes for this data variable, from coordinateVariables and names in coordinatesAll
          * @return list of coordinate axes for this data variable.
          */
         fun findAllCoordinateAxes(): List<CoordinateAxis.Builder<*>?> {
+            if (coordinatesAll == null) {
+                // this will set coordinates to be the coordinate variables
+                setPartialCoordinates("")
+            }
             val axesList: MutableList<CoordinateAxis.Builder<*>?> = ArrayList()
             if (coordinatesAll != null) { // explicit axes
                 coordinatesAll!!.split(" ").forEach { vname ->
@@ -524,4 +541,22 @@ fun hasCompatibleDimensions(v: Variable, axis: Variable): Boolean {
         }
     }
     return true
+}
+
+/**
+ * Create a "dummy" Coordinate Transform Variable based on the given ProjectionCTV.
+ * This creates a scalar Variable with dummy data, which is just a container for the transform
+ * attributes.
+ *
+ * @param ctv ProjectionCTV with Coordinate Transform Variable attributes set.
+ * @return the Coordinate Transform Variable. You must add it to the dataset.
+ */
+fun makeCoordinateTransformVariable(ctv: ProjectionCTV): VariableDS.Builder<*> {
+    val v = VariableDS.builder().setName(ctv.name).setArrayType(ArrayType.CHAR)
+    v.addAttributes(ctv.ctvAttributes)
+    v.addAttribute(Attribute(_Coordinate.TransformType, "Projection"))
+
+    // fake data
+    v.setSourceData(Arrays.factory<Any>(ArrayType.CHAR, intArrayOf(), charArrayOf(' ')))
+    return v
 }

@@ -89,7 +89,7 @@ class TestCoordSysBuilder {
         println(testDataset.write())
 
         val convention = findConvention(testDataset)
-        val coords = convention.buildCoordinateSystems()
+        val coords = convention.buildCoordinateSystems(testDataset)
         assertThat(coords).isNotNull()
         println(convention.info)
 

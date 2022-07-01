@@ -60,7 +60,7 @@ class TestCF {
         assertThat(temp).isNotNull()
         assertThat(ncd.makeCoordinateSystemsFor(temp).size).isEqualTo(1)
 
-        val cs = ncd.findCoordinateSystem("level y x")
+        val cs = ncd.findCoordinateSystem("y x")
         assertThat(cs).isNotNull()
     }
 

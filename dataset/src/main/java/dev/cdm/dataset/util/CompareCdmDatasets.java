@@ -220,16 +220,15 @@ public class CompareCdmDatasets {
     this.showCompare = showCompare;
     this.showEach = showEach;
 
-    f.format(" First file = %s%n", org.getLocation());
-    f.format(" Second file= %s%n", copy.getLocation());
+    // f.format(" Compare %s (file1) to %s (file2) %n", org.getLocation(), copy.getLocation());
 
-    long start = System.currentTimeMillis();
+    // long start = System.currentTimeMillis();
 
     boolean ok = compareGroups(org.getRootGroup(), copy.getRootGroup(), objFilter);
-    f.format(" Files are the same = %s%n", ok);
+    //f.format(" Files are the same = %s%n", ok);
 
-    long took = System.currentTimeMillis() - start;
-    f.format(" Time to compare = %d msecs%n", took);
+    //long took = System.currentTimeMillis() - start;
+    //f.format(" Time to compare = %d msecs%n", took);
 
     // coordinate systems
     if (org instanceof CdmDatasetCS && copy instanceof CdmDatasetCS) {

@@ -148,9 +148,9 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
             if (coordinateSystemsFor != null && csysVar.cs != null) {
                 val dimSet: MutableSet<String> = HashSet()
                 coordinateSystemsFor.split(" ").forEach { dname ->
-                    val dimOpt: Optional<Dimension> = builder.root.findDimension(dname)
-                    if (dimOpt.isPresent) {
-                        dimSet.add(dimOpt.get().shortName)
+                    val wantDim: Dimension? = csysVar.group.findDimension(dname).orElse(null)
+                    if (wantDim != null) {
+                        dimSet.add(wantDim.shortName)
                     } else {
                         builder.info.appendLine("***Cant find Dimension '$dname' referenced from '${csysVar.vds}'")
                         return

@@ -14,29 +14,6 @@ import org.junit.jupiter.api.Test
 class TestDsl {
 
     @Test
-    fun testWriteDsl() {
-        val cdmdsl: CdmdslDataset = cdmdsl( TestCdmDatasets.datasetLocalNcmlDir + "nc/example1.nc") {
-        }
-        assertThat(cdmdsl).isNotNull()
-
-        val cd: CdmDatasetCS = cdmdsl.build()
-        println(cd.writeDsl())
-
-        val builder = findConvention(cd)
-        val cshb = builder.buildCoordinateSystems()
-        assertThat(cshb).isNotNull()
-
-        val coords = CoordinatesHelper.builder()
-        coords.addCoordinateAxes(cshb.coordAxes)
-        coords.addCoordinateSystems(cshb.coordSys)
-        coords.addCoordinateTransforms(cshb.coordTransforms)
-
-        val withcs = cd.toBuilder().setCoordsHelper(cshb).build()
-        assertThat(withcs).isNotNull()
-        println(withcs.writeDsl())
-    }
-
-    @Test
     fun testNoReferencedDataset() {
         val cdmdsl: CdmdslDataset = cdmdsl() {
             attribute("title").setValue("Example Data")

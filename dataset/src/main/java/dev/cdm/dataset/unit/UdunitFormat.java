@@ -28,9 +28,12 @@ public class UdunitFormat extends SimpleUnitFormat {
 
   static {
     delegate.alias(Units.PERCENT, "percent");
+    delegate.alias(Units.CELSIUS, "celsius");
+    delegate.alias(Units.CELSIUS, "deg_C");
     delegate.alias(Units.CELSIUS, "degC");
     delegate.alias(Units.METRE, "meters");
     delegate.alias(Units.METRE, "meter");
+    delegate.alias(Units.MOLE, "moles");
 
     Unit<Pressure> mbar = Units.PASCAL.multiply(100);
     delegate.alias(mbar, "mbar");
@@ -48,6 +51,8 @@ public class UdunitFormat extends SimpleUnitFormat {
     delegate.alias(degrees, "degE");
     delegate.alias(degrees, "degrees_north");
     delegate.alias(degrees, "degN");
+    delegate.alias(degrees, "deg");
+    delegate.alias(degrees, "degrees");
   }
 
   @Override
