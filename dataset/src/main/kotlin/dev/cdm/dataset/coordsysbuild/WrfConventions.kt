@@ -10,8 +10,8 @@ import dev.cdm.dataset.transform.vertical.WrfEta
 class WrfConventions() : CoordSysBuilder("WrfConventions") {
 
     var augmenter: WrfAugment? = null
-    override fun augment(dataset: CdmDataset): CdmDataset {
-        augmenter = WrfAugment(dataset, this.info)
+    override fun augment(orgDataset: CdmDataset): CdmDataset {
+        augmenter = WrfAugment(orgDataset, this.info)
         return augmenter!!.augment()
     }
 

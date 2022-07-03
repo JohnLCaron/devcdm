@@ -223,7 +223,9 @@ public class CoordinateAxis extends VariableDS {
     @Override
     public T copyFrom(VariableDS.Builder<?> vds) {
       super.copyFrom(vds);
-      setParentGroupName(((Builder)vds).getParentGroupName());
+      if (vds instanceof CoordinateAxis.Builder<?>) {
+        setParentGroupName(((CoordinateAxis.Builder<?>)vds).getParentGroupName());
+      }
       return self();
     }
 

@@ -832,7 +832,8 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    *
    * @return the attribute value, or defaultValue if not found
    */
-  public String findAttributeString(String attName, String defaultValue) {
+  @Nullable
+  public String findAttributeString(String attName, @Nullable String defaultValue) {
     return attributes.findAttributeString(attName, defaultValue);
   }
 

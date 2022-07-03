@@ -25,15 +25,10 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
     internal val varList = mutableListOf<VarProcess>()
     internal val coordVarsForDimension: Multimap<DimensionWithGroup, VarProcess> = ArrayListMultimap.create()
 
-    internal val coords = CoordsHelperBuilder()
+    internal val coords = CoordsHelperBuilder(conventionName)
     internal val info = StringBuilder()
 
     private val helper = CoordAttrConvention(this)
-
-    fun addInfo(addInfo: StringBuilder): CoordSysBuilder {
-        this.info.append(addInfo)
-        return this
-    }
 
     open fun augment(orgDataset: CdmDataset): CdmDataset {
         return orgDataset
@@ -97,11 +92,14 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
     }
 
     open fun identifyAxisType(vds: VariableDS): AxisType? {
+        if (vds.shortName == "time") {
+            println("HEY")
+        }
         return helper.identifyAxisType(vds)
     }
 
-    open fun identifyIsPositive(vds: VariableDS): Boolean? {
-        return helper.identifyIsPositive(vds)
+    open fun identifyZIsPositive(vds: VariableDS): Boolean? {
+        return helper.identifyZIsPositive(vds)
     }
 
     open fun identifyCoordinateVariables() {
@@ -298,7 +296,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
         }
     }
 
-    internal fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
+    open fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
         // at this point dont know if its a Projection or a VerticalTransform
         return ProjectionCTV(vb.fullName, vb.attributes(), null)
     }
@@ -307,15 +305,15 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
     open fun assignCoordinateTransforms() {
         helper.assignCoordinateTransforms()
 
-        // look for _CoordinateAxes on the CTV, apply to any Coordinate Systems that contain all these axes
+        // look for already set coordinatesAll, apply to any Coordinate Systems that contain all these axes
         varList.forEach { vp ->
             if (vp.coordinatesAll != null && vp.isCoordinateTransform && vp.ctv != null) {
                 //  look for Coordinate Systems that contain all these axes
                 varList.forEach { csv ->
                     if (csv.isCoordinateSystem && csv.cs != null) {
                         if (coords.containsAxes(csv.cs!!, vp.coordinatesAll!!)) {
-                            csv.cs!!.addTransformName(vp.transformName) // TODO
-                            info.appendLine("Assign (implicit coordAxes) coordTransform '${vp.transformName}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                            csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
+                            info.appendLine("Assign (implicit coordAxes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                         }
                     }
                 }
@@ -367,7 +365,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
 
         // coord transform
         var isCoordinateTransform: Boolean = false
-        var transformName: String? = null
+        // var transformName: String? = null
         var ctv: ProjectionCTV? = null
 
         /** Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes.  */
@@ -447,7 +445,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
                 axis.setAxisType(axisType)
                 axis.addAttribute(Attribute(_Coordinate.AxisType, axisType.toString()))
                 if (axisType!!.isVert) {
-                    val positive = identifyIsPositive(vds)
+                    val positive = identifyZIsPositive(vds)
                     if (positive != null) {
                         axis.addAttribute(
                             Attribute(

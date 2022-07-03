@@ -19,16 +19,17 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.IOException
 import java.util.stream.Stream
 
-var showOrg = true
+var showOrg = false
+var showAug = true
 var showInfo = true
-var showDsl = true
+var showResult = true
 
 class TestCompareCoordsysBuilding {
     companion object {
         @Throws(IOException::class)
         @JvmStatic
         fun params(): Stream<Arguments> {
-            return testFilesIn(TestFiles.coreLocalDir + "/hdfeos2")
+            return testFilesIn(TestFiles.coreLocalDir)
                 .addNameFilter { !it.startsWith("WrfNoTimeVar") }
                 .addNameFilter(FileFilterSkipSuffixes("cdl txt"))
                 .withRecursion()
@@ -80,19 +81,20 @@ fun compareCoordinateSystems(filename: String) {
 
 fun openNewCoordSys(filename: String, enhance : Boolean): CdmDatasetCS {
     val orgDataset = CdmDatasets.openDataset(filename, enhance, null)
+    if (showOrg) println("original = ${orgDataset.write()}")
 
-    val convention = findCoordSysBuilder(orgDataset)
-    val augmentedDataset = convention.augment(orgDataset)
-    if (showOrg) println(augmentedDataset.write())
+    val coordSysBuilder = findCoordSysBuilder(orgDataset)
+    val augmentedDataset = coordSysBuilder.augment(orgDataset)
+    if (showAug) println("augmented = ${augmentedDataset.write()}")
 
-    val coords = convention.buildCoordinateSystems(augmentedDataset)
-    if (showInfo) println(convention.info)
+    val coords = coordSysBuilder.buildCoordinateSystems(augmentedDataset)
+    if (showInfo) println(coordSysBuilder.info)
 
     val withcs = CdmDatasetCS.builder().copyFrom(augmentedDataset)
         .setCoordsHelper(coords)
-        .setConventionUsed(convention.conventionName)
+        .setConventionUsed(coords.conventionName)
         .build()
 
-    if (showDsl) println(withcs.writeDsl())
+    if (showResult) println(withcs.writeDsl())
     return withcs
 }

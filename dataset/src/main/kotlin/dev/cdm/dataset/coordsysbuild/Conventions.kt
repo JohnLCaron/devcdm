@@ -9,11 +9,19 @@ fun findCoordSysBuilder(dataset: CdmDataset): CoordSysBuilder {
     return when {
         conv == "Default" -> DefaultConventions()
         conv.startsWith("CF-1.") -> CFConventions()
+        conv.startsWith("COARDS") -> DefaultConventions()
         conv.startsWith("GIEF") -> GiefConventions()
-        isWrfConventions(dataset) -> WrfConventions()
+        conv.startsWith("MARS") -> DefaultConventions()
+        conv.startsWith("NCAR-CSM") -> DefaultConventions()
+        conv.startsWith("NUWG") -> NuwgConventions()
+        conv.startsWith("Zebra") -> ZebraConventions()
         isHdfEosOmi(dataset) -> HdfEosOmiConventions()
         isHdfEosModis(dataset) -> HdfEosModisConventions()
-        else -> CoordSysBuilder(conv)
+        isIfpsConventions(dataset) -> IfpsConventions()
+        isM3ioConventions(dataset) -> M3ioConventions()
+        isWrfConventions(dataset) -> WrfConventions()
+        isCedricRadarConvention(dataset) -> CedricRadarConventions()
+        else -> CoordSysBuilder()
     }
 }
 

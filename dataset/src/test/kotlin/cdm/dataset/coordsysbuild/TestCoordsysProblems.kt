@@ -1,8 +1,14 @@
 package cdm.dataset.coordsysbuild
 
+import dev.cdm.test.util.TestFiles
 import org.junit.jupiter.api.Test
 
 class TestCoordsysProblems {
+
+    @Test
+    fun testProblem() {
+        compareCoordinateSystems(TestFiles.coreLocalDir + "/netcdf4/testCFGridWriter.nc4")
+    }
 
     @Test
     fun testHasStructure() {

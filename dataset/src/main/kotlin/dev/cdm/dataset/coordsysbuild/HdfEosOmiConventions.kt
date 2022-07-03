@@ -24,7 +24,6 @@ open class HdfEosOmiConventions(name: String = "HdfEos-Aura-Omi") : CoordSysBuil
 
         val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
         val rootBuilder = datasetBuilder.rootGroup
-        val globalAtts : AttributeContainerMutable = rootBuilder.attributeContainer
 
         val gridso: Optional<Group.Builder> = rootBuilder.findGroupNested("/HDFEOS/GRIDS")
         gridso.ifPresent { grids: Group.Builder ->

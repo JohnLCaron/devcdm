@@ -82,7 +82,7 @@ fun Variable.write(builder: StringBuilder, indent: Indent, dataset : CdmDatasetC
     builder.appendLine("")
 }
 
-fun Group.write(out: StringBuilder, indent: Indent, dataset : CdmDatasetCS? = null) {
+fun Group.write(out: StringBuilder, indent: Indent) {
     out.appendLine("${indent}group '${this.shortName}'")
     indent.incr()
 

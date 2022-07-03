@@ -72,7 +72,7 @@ public class TestCdmDatasetBuilder {
   @Test
   public void testCoordinatesHelper() {
     CdmDatasetCS.Builder<?> ncdb = CdmDatasetCS.builder();
-    CoordsHelperBuilder coords = new CoordsHelperBuilder();
+    CoordsHelperBuilder coords = new CoordsHelperBuilder("testCoordinatesHelper");
     ncdb.coords = coords;
 
     VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)

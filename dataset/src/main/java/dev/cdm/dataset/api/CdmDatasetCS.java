@@ -137,7 +137,7 @@ public class CdmDatasetCS extends CdmDataset {
       this.coords = builder.coordsOld.build(coordAxes);
     } else {
       // there are no coordinates
-      this.coords = new CoordsHelperBuilder().build(this);
+      this.coords = new CoordsHelperBuilder("NoCoords").build(this);
     }
   }
 
@@ -147,7 +147,7 @@ public class CdmDatasetCS extends CdmDataset {
 
   private CdmDatasetCS.Builder<?> addLocalFieldsToBuilder(Builder<? extends CdmDataset.Builder<?>> b) {
     if (b.coords == null) {
-      b.coords = new CoordsHelperBuilder();
+      b.coords = new CoordsHelperBuilder(coords.getConventionName());
     }
     this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
     this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));

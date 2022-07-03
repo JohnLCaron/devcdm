@@ -161,13 +161,15 @@ class CompareCdmDataset(
 
         // coordinate systems
         if (org is CdmDatasetCS && copy is CdmDatasetCS) {
+            out.format("Compare CdmDatasetCS conv1 = '%s' conv2 = '%s' %n", org.conventionBuilder, copy.conventionBuilder)
+
             // each one in copy must be in original, but not reverse
             val todo = mutableSetOf<CoordinateSystem>()
-            todo.addAll(copy.coordinateSystems)
-            org.coordinateSystems.forEach { csys1 ->
+            todo.addAll(org.coordinateSystems)
+            copy.coordinateSystems.forEach { csys2 ->
                 var matchOne = false
                 run breakout@{
-                    todo.forEach { csys2 ->
+                    todo.forEach { csys1 ->
                         if (compareCoordSys(csys1, csys2)) {
                             matchOne = true
                             todo.remove(csys2)
@@ -175,7 +177,10 @@ class CompareCdmDataset(
                         }
                     }
                 }
-                if (!matchOne) ok = false
+                if (!matchOne) {
+                    ok = false
+                    out.format("cant find match for file2 coordsys '%s' %n", csys2)
+                }
             }
         }
         return ok
@@ -194,7 +199,7 @@ class CompareCdmDataset(
             return false
         }
         if (csys1.projection != csys2.projection) {
-            return csys1.projection!!.equals(csys2.projection)
+            return false
         }
         var matchAll = true
         val todo = mutableSetOf<CoordinateAxis>()
@@ -210,24 +215,46 @@ class CompareCdmDataset(
                     }
                 }
             }
-            if (!matchOne) matchAll = false
+            if (!matchOne) {
+                matchAll = false
+                out.format("cant find match for file1 coordaxis '%s' %n", axis1.fullName)
+            }
+        }
+        if (todo.isEmpty()) {
+            out.format("cant find match for file2 coordaxis '%s' %n", todo)
         }
         return matchAll
     }
 
     // look for equivilient (not equal) coordinate axis
     fun compareCoordAxis(axis1: CoordinateAxis, axis2: CoordinateAxis): Boolean {
-        println("compare axes '${axis1.shortName}' and '${axis2.shortName}'")
+        println(" axes '${axisSummary(axis1)}' with\n      '${axisSummary(axis2)}'")
         if (axis1.axisType != axis2.axisType) {
             return false
         }
-        if (!SimpleUnit.isCompatible(axis1.unitsString, axis2.unitsString)) {
+        if (!compatibleUnits(axis1.unitsString, axis2.unitsString)) {
             return false
         }
         if (axis1.dimensionSet != axis2.dimensionSet) {
             return false
         }
         return true
+    }
+
+    fun compatibleUnits(units1: String?, units2: String?): Boolean {
+        val unit1 = SimpleUnit.factory(units1)
+        val unit2 = SimpleUnit.factory(units2)
+        if (unit1 == null && unit2 == null) {
+            return true
+        }
+        if (unit1 == null || unit2 == null) {
+            return false
+        }
+        return unit1.isCompatible(unit2)
+    }
+
+    fun axisSummary(axis : CoordinateAxis) : String {
+        return "${axis.shortName},${axis.axisType},${axis.unitsString},${axis.dimensionSet.map { it.shortName } }"
     }
 
     fun compareVariables(org: CdmFile, copy: CdmFile): Boolean {
@@ -315,8 +342,7 @@ class CompareCdmDataset(
     }
 
     private fun compareVariables(
-        org: Variable, copy: Variable, filter: CdmObjFilter?, compareData: Boolean,
-        justOne: Boolean
+        org: Variable, copy: Variable, filter: CdmObjFilter?, compareData: Boolean, justOne: Boolean
     ): Boolean {
         var ok = true
         if (showCompare) out.format("compare Variable %s to %s %n", org.fullName, copy.fullName)
@@ -407,12 +433,12 @@ class CompareCdmDataset(
         var ok = true
         for (att1 in list1) {
             if (CdmObjFilter!!.attCheckOk(att1)) {
-                ok = ok and checkAtt(name, att1, "file1", list1, "file2", list2, CdmObjFilter)
+                ok = ok and checkAtt(name, att1, "file1","file2", list2, CdmObjFilter)
             }
         }
         for (att2 in list2) {
             if (CdmObjFilter!!.attCheckOk(att2)) {
-                ok = ok and checkAtt(name, att2, "file2", list2, "file1", list1, CdmObjFilter)
+                ok = ok and checkAtt(name, att2, "file2","file1", list1, CdmObjFilter)
             }
         }
         return ok
@@ -576,20 +602,21 @@ class CompareCdmDataset(
 
     // check that want is in both list1 and list2, using object.equals()
     private fun checkAtt(
-        what: String, want: Attribute, name1: String, list1: AttributeContainer, name2: String,
-        list2: AttributeContainer, CdmObjFilter: CdmObjFilter?
+        what: String, want: Attribute, name1: String, name2: String, list2: AttributeContainer, CdmObjFilter: CdmObjFilter?
     ): Boolean {
+        if (CdmObjFilter != null && !CdmObjFilter.attCheckOk(want)) {
+            return true
+        }
+
         var ok = true
         val found = list2.findAttributeIgnoreCase(want.shortName)
         if (found == null) {
-            val check = CdmObjFilter!!.attCheckOk(want)
             out.format("  ** Attribute %s: %s (%s) not in %s %n", what, want, name1, name2)
             ok = false
         } else {
             if (!CdmObjFilter!!.attsAreEqual(want, found)) {
-                out.format(
-                    "  ** Attribute %s: %s 0x%x (%s) not equal to %s 0x%x (%s) %n", what, want, want.hashCode(), name1,
-                    found, found.hashCode(), name2
+                out.format("  ** Attribute %s: %s 0x%x (%s) not equal to %s 0x%x (%s) %n",
+                    what, want, want.hashCode(), name1, found, found.hashCode(), name2
                 )
                 ok = false
             } else if (showEach) {

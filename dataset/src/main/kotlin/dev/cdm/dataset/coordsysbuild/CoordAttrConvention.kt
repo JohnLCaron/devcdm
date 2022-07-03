@@ -14,7 +14,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
         return coordAxisType?.let { AxisType.getType(coordAxisType) }
     }
 
-    fun identifyIsPositive(vds: VariableDS): Boolean? {
+    fun identifyZIsPositive(vds: VariableDS): Boolean? {
         val positive = vds.findAttributeString(_Coordinate.ZisPositive, null)
         if (positive != null) {
             return positive.trim { it <= ' ' }.lowercase() == "up"
@@ -26,7 +26,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
     fun identifyCoordinateAxes() {
         // A Variable is made into a Coordinate Axis if of these is true:
 
-        // It has any of the _CoordinateAxisType, __CoordinateAliasForDimension, or _CoordinateZisPositive attributes.
+        // It has any of the _CoordinateAxisType, or _CoordinateZisPositive attributes.
         builder.varList.forEach { vp ->
             if (null != vp.vds.findAttributeString(_Coordinate.AxisType, null) ||
                 null != vp.vds.findAttributeString(_Coordinate.ZisPositive, null)
@@ -61,7 +61,10 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
                             builder.info.appendLine("**ERROR Coordinate Variable Alias '${vp.vds.fullName}' names wrong dimension '${coordVarAlias}'")
                         } else {
                             vp.setIsCoordinateAxis("Alias '${vp.vds.fullName}' for dimension '${coordVarAlias}'")
-                            builder.coordVarsForDimension.put(CoordSysBuilder.DimensionWithGroup(coordDim, vp.group), vp)
+                            builder.coordVarsForDimension.put(
+                                CoordSysBuilder.DimensionWithGroup(coordDim, vp.group),
+                                vp
+                            )
                         }
                     }
                 }
@@ -75,7 +78,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
 
         builder.varList.forEach { vp ->
             // It is listed in a _CoordinateSystems attribute from any variable in the file.
-            val coordinateSystems : String? = vp.vds.findAttributeString(_Coordinate.Systems, null)
+            val coordinateSystems: String? = vp.vds.findAttributeString(_Coordinate.Systems, null)
             coordinateSystems?.split(" ")?.forEach { vname ->
                 val ref = builder.findVarProcess(vname, vp)
                 if (ref != null) {
@@ -109,7 +112,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
 
         builder.varList.forEach { vp ->
             // It is listed in a _CoordinateTransforms attribute from any variable in the file.
-            val coordinateTransforms : String? = vp.vds.findAttributeString(_Coordinate.Transforms, null)
+            val coordinateTransforms: String? = vp.vds.findAttributeString(_Coordinate.Transforms, null)
             coordinateTransforms?.split(" ")?.forEach { vname ->
                 val ref = builder.findVarProcess(vname, vp)
                 if (ref != null) {
@@ -126,7 +129,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
 
         // _Coordinate.Systems on a data Variable points to its Coordinate System Variable(s)
         builder.varList.forEach { vp ->
-            val coordinateSystems : String? = vp.vds.findAttributeString(_Coordinate.Systems, null)
+            val coordinateSystems: String? = vp.vds.findAttributeString(_Coordinate.Systems, null)
             if (!vp.isCoordinateTransform) {
                 coordinateSystems?.split(" ")?.forEach { vname ->
                     val ap = builder.findVarProcess(vname, vp)
@@ -144,7 +147,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
 
         // _CoordinateSystemFor attribute point to dimensions used by data variables
         builder.varList.forEach { csysVar ->
-            val coordinateSystemsFor : String? = csysVar.vds.findAttributeString(_Coordinate.SystemFor, null)
+            val coordinateSystemsFor: String? = csysVar.vds.findAttributeString(_Coordinate.SystemFor, null)
             if (coordinateSystemsFor != null && csysVar.cs != null) {
                 val dimSet: MutableSet<String> = HashSet()
                 coordinateSystemsFor.split(" ").forEach { dname ->
@@ -175,7 +178,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
         builder.varList.forEach { vp ->
             val coordinateTransforms = vp.vds.findAttributeString(_Coordinate.Transforms, null)
             if (coordinateTransforms != null && vp.isCoordinateSystem && vp.cs != null) {
-                coordinateTransforms!!.split(" ").forEach { vname ->
+                coordinateTransforms.split(" ").forEach { vname ->
                     val ap = builder.findVarProcess(vname, vp)
                     if (ap != null) {
                         if (ap.ctv != null) {
@@ -197,7 +200,7 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
         builder.varList.forEach { vp ->
             val coordinateSystems = vp.vds.findAttributeString(_Coordinate.Systems, null)
             if (vp.isCoordinateTransform && vp.ctv != null && coordinateSystems != null) {
-                coordinateSystems!!.split(" ").forEach { vname ->
+                coordinateSystems.split(" ").forEach { vname ->
                     val cts = builder.findVarProcess(vname, vp)
                     if (cts == null) {
                         builder.info.appendLine("***Cant find coordSystem variable= '$vname' referenced from var '$vp'")
@@ -217,20 +220,20 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
             if (vp.isCoordinateTransform && vp.ctv != null && coordAxisTypes != null) {
                 //  look for Coordinate Systems that contain all these axes
                 builder.coords.coordSys.forEach { coordSys ->
-                        if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
-                            coordSys.addTransformName(vp.transformName) // TODO
-                            coordSys.setProjectionName(vp.transformName)
-                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.transformName}' to CoordSys '${coordSys.name}'")
-                        }
+                    if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
+                        coordSys.addTransformName(vp.ctv!!.name) // TODO
+                        coordSys.setProjectionName(vp.ctv!!.name)
+                        builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+                    }
                 }
                 // TODO do we need to do both?
                 //  look for Coordinate Systems Variables that contain all these axes
                 builder.varList.forEach { csv ->
                     if (csv.isCoordinateSystem && csv.cs != null) {
                         if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
-                            csv.cs!!.addTransformName(vp.transformName) // TODO
-                            csv.cs!!.setProjectionName(vp.transformName)
-                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.transformName}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                            csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
+                            csv.cs!!.setProjectionName(vp.ctv!!.name)
+                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                         }
                     }
                 }

@@ -419,8 +419,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
                     info.appendLine("ERROR: cant parse Time string = '${dateS}'")
 
                     // one more try
-                    val startAtt: String =
-                        rootBuilder.getAttributeContainer().findAttributeString("START_DATE", null)
+                    val startAtt = rootBuilder.getAttributeContainer().findAttributeString("START_DATE", null)
                     if (nt == 1 && null != startAtt) {
                         try {
                             cd = CalendarDate.fromUdunitIsoDate(null, startAtt)

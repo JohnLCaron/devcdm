@@ -99,7 +99,7 @@ fun desperateAxisType(vb: VariableDS): AxisType? {
         if (CalendarDateUnit.isDateUnit(unit)) {
             return AxisType.Time
         }
-        return AxisType.Time // kludge: see aggSynGrid.xml example test
+        // return AxisType.Time // kludge: see aggSynGrid.xml example test
     }
 
     return null

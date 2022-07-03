@@ -18,6 +18,7 @@ private  val  CONVENTION_NAME = "HDF4-EOS-MODIS"
 
 open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConventions(name) {
     private var addTimeCoord : Boolean = false
+    private var projCTV : ProjectionCTV? = null
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
@@ -112,14 +113,13 @@ open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConvention
             val maxY = lowerRight.getNumericValue(1)!!.toDouble()
             var hasProjection = false
             var coordinates: String? = null
-            val ct: ProjectionCTV
             if (projAtt == "GCTP_SNSOID") {
                 hasProjection = true
                 val projParams = crs.attributeContainer.findAttribute(IospUtils.HDFEOS_CRS_ProjParams)
                 check(projParams != null) {"Cant find attribute " + IospUtils.HDFEOS_CRS_ProjParams}
 
-                ct = makeSinusoidalProjection(CRS, projParams)
-                val crss = makeCoordinateTransformVariable(ct)
+                projCTV = makeSinusoidalProjection(CRS, projParams)
+                val crss = makeCoordinateTransformVariable(projCTV!!)
                 crss.addAttribute(Attribute(_Coordinate.AxisTypes, "GeoX GeoY"))
                 dataG.addVariable(crss)
                 datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(dataG, DIMX_NAME, dimX.length, minX, maxX, true))
@@ -189,6 +189,12 @@ open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConvention
         val falseNorth = projParams.getNumericValue(7)!!.toDouble()
         val proj = Sinusoidal(centMer, falseEast * .001, falseNorth * .001, radius * .001)
         return ProjectionCTV(name, proj)
+    }
+
+    ///////////////////////////////////////////
+
+    override fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
+        return projCTV
     }
 }
 

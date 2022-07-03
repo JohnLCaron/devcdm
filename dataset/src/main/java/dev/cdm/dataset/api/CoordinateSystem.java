@@ -66,7 +66,7 @@ public class CoordinateSystem {
     List<CoordinateAxis> axesSorted = new ArrayList<>(axes);
     axesSorted.sort(new CoordinateAxis.AxisComparator());
     ArrayList<String> names = new ArrayList<>();
-    axesSorted.forEach(axis -> names.add(CdmFiles.makeFullName(axis)));
+    axesSorted.forEach(axis -> names.add(axis.getShortName()));
     return String.join(" ", names);
   }
 
@@ -228,12 +228,16 @@ public class CoordinateSystem {
   /**
    * Do we have the named axis?
    * 
-   * @param axisFullName (full unescaped) name of axis
+   * @param axisName name of axis: check short then full name
    * @return true if we have an axis of that name
    */
-  public boolean containsAxis(String axisFullName) {
+  public boolean containsAxis(String axisName) {
     for (CoordinateAxis ca : coordAxes) {
-      if (ca.getFullName().equals(axisFullName))
+      if (ca.getShortName().equals(axisName))
+        return true;
+    }
+    for (CoordinateAxis ca : coordAxes) {
+      if (ca.getFullName().equals(axisName))
         return true;
     }
     return false;
@@ -396,7 +400,7 @@ public class CoordinateSystem {
       return self();
     }
 
-    /** @param names list of axes full names, space delimited. Doesnt have to be sorted. */
+    /** @param names list of axes names, space delimited. Doesnt have to be sorted. */
     public T setCoordAxesNames(String names) {
       this.coordAxesNames = names;
       return self();

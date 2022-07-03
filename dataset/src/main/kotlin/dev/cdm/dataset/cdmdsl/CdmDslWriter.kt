@@ -69,9 +69,8 @@ fun Variable.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatas
     builder.appendLine("${indent}setType(\"${this.arrayType.name}\")")
     builder.appendLine("${indent}setDimensions(\"${Dimensions.makeDimensionsString(this.dimensions)}\")")
     this.attributes().forEach { it.writeDsl(builder, indent) }
-    if (dataset != null) {
-        val vds = this as VariableDS
-        dataset.makeCoordinateSystemsFor(vds).forEach {
+    if (dataset != null && this is VariableDS) {
+        dataset.makeCoordinateSystemsFor(this).forEach {
             builder.appendLine("${indent}coordSystem(\"${it.name}\")")
         }
     }
@@ -99,7 +98,7 @@ fun Group.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatasetC
     }
 
     if (!this.groups.isEmpty()) {
-        this.groups.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew()) }
+        this.groups.forEach { it.writeDsl(builder, indent.incrNew()) }
         builder.appendLine()
     }
     indent.decr()
@@ -121,7 +120,7 @@ fun CoordinateAxis.writeDsl(builder: StringBuilder, indent: Indent) {
 fun CoordinateSystem.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}coordSystem(\"${this.name}\") {")
     indent.incr()
-    builder.appendLine("${indent}setAxis(\"${this.axesName}\")")
+    builder.appendLine("${indent}setAxes(\"${this.axesName}\")")
     if (this.projection != null) {
         builder.appendLine("${indent}setProjection(\"${this.projection!!.name}\")")
     }
