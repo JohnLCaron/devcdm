@@ -2,13 +2,10 @@ package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
 import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.TestCdmDatasets
 import dev.cdm.dataset.cdmdsl.CdmdslDataset
 import dev.cdm.dataset.cdmdsl.cdmdsl
 import dev.cdm.dataset.cdmdsl.writeDsl
-import dev.cdm.dataset.internal.CoordinatesHelper
 import dev.cdm.dataset.cdmdsl.build
-import dev.cdm.dataset.coordsysbuild.findConvention
 import org.junit.jupiter.api.Test
 
 class TestDsl {

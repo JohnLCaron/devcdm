@@ -50,10 +50,10 @@ public class CEDRICRadarConvention extends CF1Convention {
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
     NcmlReader.wrapNcmlResource(datasetBuilder, CoordSystemFactory.resourcesDir + "CEDRICRadar.ncml", cancelTask);
 
-    VariableDS.Builder<?> lat = (VariableDS.Builder<?>) rootGroup.findVariableLocal("radar_latitude")
-        .orElseThrow(() -> new IllegalStateException("Must have radar_latitude variable"));
-    VariableDS.Builder<?> lon = (VariableDS.Builder<?>) rootGroup.findVariableLocal("radar_longitude")
-        .orElseThrow(() -> new IllegalStateException("Must have radar_longitude variable"));
+    VariableDS.Builder<?> lat = (VariableDS.Builder<?>) rootGroup.findVariableLocal("sensor_latitude")
+        .orElseThrow(() -> new IllegalStateException("Must have sensor_latitude variable"));
+    VariableDS.Builder<?> lon = (VariableDS.Builder<?>) rootGroup.findVariableLocal("sensor_longitude")
+        .orElseThrow(() -> new IllegalStateException("Must have sensor_longitude variable"));
     float latv = ((Number) lat.orgVar.readArray().getScalar()).floatValue();
     float lonv = ((Number) lon.orgVar.readArray().getScalar()).floatValue();
 

@@ -42,12 +42,21 @@ public class CoordinateAxis extends VariableDS {
   /**
    * Create a coordinate axis from an existing VariableDS.Builder.
    *
-   * @param vdsBuilder an existing Variable in dataset.
+   * @param vds an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
+  public static Builder<?> fromVariableDS(Variable vds) {
+    if ((vds.getRank() == 0) || (vds.getRank() == 1)
+        || (vds.getRank() == 2 && vds.getArrayType() == ArrayType.CHAR)) {
+      return CoordinateAxis1D.builder().copyFrom(vds).setParentGroupName(vds.getParentGroup().getFullName());
+    } else {
+      return CoordinateAxis.builder().copyFrom(vds).setParentGroupName(vds.getParentGroup().getFullName());
+    }
+  }
+
   public static Builder<?> fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
-        || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == ArrayType.CHAR)) {
+            || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == ArrayType.CHAR)) {
       return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
     } else {
       return CoordinateAxis.builder().copyFrom(vdsBuilder);
@@ -168,7 +177,7 @@ public class CoordinateAxis extends VariableDS {
 
   // Add local fields to the Builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    b.setAxisType(this.axisType).setBoundary(this.boundaryRef);
+    b.setAxisType(this.axisType).setBoundary(this.boundaryRef).setParentGroupName(this.getParentGroup().getFullName());
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
@@ -188,6 +197,7 @@ public class CoordinateAxis extends VariableDS {
     public AxisType axisType;
     protected String boundaryRef;
     private boolean built;
+    protected String parentGroupName; // parent group full name. needed for coordsys building
 
     protected abstract T self();
 
@@ -201,9 +211,21 @@ public class CoordinateAxis extends VariableDS {
       return self();
     }
 
+    public T setParentGroupName(String groupName) {
+      this.parentGroupName = groupName;
+      return self();
+    }
+
+    public String getParentGroupName() {
+      return parentGroupName;
+    }
+
     @Override
     public T copyFrom(VariableDS.Builder<?> vds) {
       super.copyFrom(vds);
+      if (vds instanceof CoordinateAxis.Builder<?>) {
+        setParentGroupName(((CoordinateAxis.Builder<?>)vds).getParentGroupName());
+      }
       return self();
     }
 

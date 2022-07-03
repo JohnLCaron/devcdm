@@ -1,9 +1,8 @@
 package dev.cdm.dataset.coordsysbuild
 
 import com.google.common.base.Preconditions
-import com.google.common.collect.ImmutableMap
+import dev.cdm.core.api.CdmFile
 import dev.cdm.core.api.Dimension
-import dev.cdm.core.api.Group
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.CoordinateAxis
 import dev.cdm.dataset.api.CoordinateSystem
@@ -13,7 +12,7 @@ import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.util.*
 import java.util.function.Consumer
 
-class CoordsHelperBuilder {
+class CoordsHelperBuilder(val conventionName : String) {
     val coordAxes = mutableListOf<CoordinateAxis.Builder<*>>()
     val coordSys = mutableListOf<CoordinateSystem.Builder<*>>()
     val coordTransforms = mutableListOf<ProjectionCTV>()
@@ -37,8 +36,9 @@ class CoordsHelperBuilder {
         return this
     }
 
-    fun findAxisByFullName(fullName: String): CoordinateAxis.Builder<*>? {
-        return coordAxes.find { it.fullName == fullName }
+    fun findAxisByName(name: String): CoordinateAxis.Builder<*>? {
+        val found = coordAxes.find { it.fullName == name }
+        return found?.let { coordAxes.find { it.shortName == name } }
     }
 
     fun findAxisByType(csys: CoordinateSystem.Builder<*>, type: AxisType): CoordinateAxis.Builder<*>? {
@@ -51,7 +51,7 @@ class CoordsHelperBuilder {
     }
 
     fun replaceCoordinateAxis(axis: CoordinateAxis.Builder<*>): Boolean {
-        val want = findAxisByFullName(axis.fullName)
+        val want = findAxisByName(axis.fullName)
         if (want != null) {
             coordAxes.remove(want)
         }
@@ -93,7 +93,7 @@ class CoordsHelperBuilder {
         Preconditions.checkNotNull(cs)
         val axes: MutableList<CoordinateAxis.Builder<*>> = ArrayList()
         cs.coordAxesNames!!.split(" ").forEach { vname ->
-            val vbOpt = findAxisByFullName(vname)
+            val vbOpt = findAxisByName(vname)
             if (vbOpt != null) {
                 axes.add(vbOpt)
             } else {
@@ -106,8 +106,8 @@ class CoordsHelperBuilder {
     fun makeCanonicalName(vb: VariableDS, axesNames : String) : String {
         Preconditions.checkNotNull(axesNames)
         val axes = mutableListOf<CoordinateAxis.Builder<*>>()
-        axesNames!!.split(" ").forEach { vname ->
-            var vbOpt = findAxisByFullName(vname)
+        axesNames.trim().split(" ").forEach { vname ->
+            var vbOpt = findAxisByName(vname)
             if (vbOpt == null) {
                 vbOpt = findAxisByVerticalSearch(vb, vname)
             }
@@ -122,11 +122,9 @@ class CoordsHelperBuilder {
 
     // dealing with axes in parent group. should be handled by fullName search ??
     private fun findAxisByVerticalSearch(vb: VariableDS, shortName: String): CoordinateAxis.Builder<*>? {
-        val axis = vb.parentGroup.findVariableOrInParent(shortName)
-        if (axis != null) {
-            if (axis is CoordinateAxis.Builder<*>) { // LOOK always false
-                return axis as CoordinateAxis.Builder<*>
-            }
+        val vaxis = vb.parentGroup.findVariableOrInParent(shortName)
+        if (vaxis != null) {
+            return findAxisByName(vaxis.getFullName())
         }
         return null
     }
@@ -142,11 +140,27 @@ class CoordsHelperBuilder {
         return CoordinateSystem.isComplete(vb.dimensions, csDomain)
     }
 
-    fun containsAxes(cs: CoordinateSystem.Builder<*>, dataAxes: List<CoordinateAxis.Builder<*>>): Boolean {
-        Preconditions.checkNotNull(cs)
+    fun containsAxes(csys: CoordinateSystem.Builder<*>, axisNames: String): Boolean {
+        val axes = mutableListOf<CoordinateAxis.Builder<*>>()
+        axisNames.split(" ").forEach { name ->
+            val axis = findAxisByName(name)
+            if (axis != null) {
+                axes.add(axis)
+            }
+        }
+        return containsAxes(csys, axes)
+    }
+
+    fun containsAxes(csys: CoordinateSystem.Builder<*>, dataAxes: List<CoordinateAxis.Builder<*>>): Boolean {
+        Preconditions.checkNotNull(csys)
         Preconditions.checkNotNull(dataAxes)
-        val csAxes = getAxesForSystem(cs)
+        val csAxes = getAxesForSystem(csys)
         return csAxes.containsAll(dataAxes)
+    }
+
+    fun containsAxisTypes(csys: CoordinateSystem.Builder<*>, axisTypes: String): Boolean {
+        val list = axisTypes.split(" ").map { AxisType.valueOf(it) }
+        return containsAxisTypes(csys, list)
     }
 
     fun containsAxisTypes(cs: CoordinateSystem.Builder<*>, axisTypes: List<AxisType>): Boolean {
@@ -163,9 +177,13 @@ class CoordsHelperBuilder {
         return axes.find { it.axisType == want} != null
     }
 
-    fun build(group : Group) : CoordinatesHelper? {
+    fun build(cdmFile : CdmFile) : CoordinatesHelper? {
         check(!built) { "already built" }
         built = true
-        return CoordinatesHelper(this, this.coordAxes.map{ it -> it.build(group) })
+        return CoordinatesHelper(this, this.coordAxes.map{ it ->
+            val useGroup = cdmFile.findGroup(it.getParentGroupName())
+            check(useGroup != null)
+            it.build(useGroup)
+        })
     }
 }

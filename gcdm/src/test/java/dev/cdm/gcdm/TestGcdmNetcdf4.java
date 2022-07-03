@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.dataset.api.CdmDatasets;
-import dev.cdm.dataset.util.CompareCdmDatasets;
+import dev.cdm.dataset.util.CompareCdmDataset;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -49,7 +49,7 @@ public class TestGcdmNetcdf4 {
     try (CdmFile ncfile = CdmDatasets.openFile(filename, null);
          GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = new CompareCdmDatasets().compare(ncfile, gcdmFile);
+      boolean ok = new CompareCdmDataset().compare(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }

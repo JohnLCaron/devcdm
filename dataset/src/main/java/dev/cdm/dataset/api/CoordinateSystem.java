@@ -66,7 +66,7 @@ public class CoordinateSystem {
     List<CoordinateAxis> axesSorted = new ArrayList<>(axes);
     axesSorted.sort(new CoordinateAxis.AxisComparator());
     ArrayList<String> names = new ArrayList<>();
-    axesSorted.forEach(axis -> names.add(CdmFiles.makeFullName(axis)));
+    axesSorted.forEach(axis -> names.add(axis.getShortName()));
     return String.join(" ", names);
   }
 
@@ -78,6 +78,11 @@ public class CoordinateSystem {
   /** Get the name of the Coordinate System */
   public String getName() {
     return name;
+  }
+
+  /** Get the name of the Coordinate System */
+  public String getAxesName() {
+    return makeName(this.coordAxes);
   }
 
   /** Get the Collection of Dimensions used by any of the CoordinateAxes. */
@@ -223,12 +228,16 @@ public class CoordinateSystem {
   /**
    * Do we have the named axis?
    * 
-   * @param axisFullName (full unescaped) name of axis
+   * @param axisName name of axis: check short then full name
    * @return true if we have an axis of that name
    */
-  public boolean containsAxis(String axisFullName) {
+  public boolean containsAxis(String axisName) {
     for (CoordinateAxis ca : coordAxes) {
-      if (ca.getFullName().equals(axisFullName))
+      if (ca.getShortName().equals(axisName))
+        return true;
+    }
+    for (CoordinateAxis ca : coordAxes) {
+      if (ca.getFullName().equals(axisName))
         return true;
     }
     return false;
@@ -275,9 +284,12 @@ public class CoordinateSystem {
     // find referenced coordinate axes
     List<CoordinateAxis> axesList = new ArrayList<>();
     for (String axisName : StringUtil2.split(builder.coordAxesNames)) {
-      Optional<CoordinateAxis> found = axesAll.stream().filter(a -> axisName.equals(a.getFullName())).findFirst();
+      Optional<CoordinateAxis> found = axesAll.stream().filter(axis -> axisName.equals(axis.getFullName())).findFirst();
       if (found.isEmpty()) {
-        throw new RuntimeException("Cant find axis " + axisName);
+        found = axesAll.stream().filter(axis -> axisName.equals(axis.getShortName())).findFirst();
+      }
+      if (found.isEmpty()) {
+          throw new RuntimeException("Cant find axis " + axisName);
       } else {
         axesList.add(found.get());
       }
@@ -388,7 +400,7 @@ public class CoordinateSystem {
       return self();
     }
 
-    /** @param names list of axes full names, space delimited. Doesnt have to be sorted. */
+    /** @param names list of axes names, space delimited. Doesnt have to be sorted. */
     public T setCoordAxesNames(String names) {
       this.coordAxesNames = names;
       return self();
@@ -407,14 +419,6 @@ public class CoordinateSystem {
     public T setImplicit(boolean isImplicit) {
       this.isImplicit = isImplicit;
       return self();
-    }
-
-    public boolean containsAxesNamed(String axes) {
-      return false;
-    }
-
-    public boolean containsAxesTypes(String axes) {
-      return false;
     }
 
     /**

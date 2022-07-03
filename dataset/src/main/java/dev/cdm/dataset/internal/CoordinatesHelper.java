@@ -7,7 +7,6 @@ package dev.cdm.dataset.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.api.Structure;
@@ -87,6 +86,11 @@ public class CoordinatesHelper {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
+
+  public String getConventionName() {
+    return conventionName;
+  }
+
   public List<CoordinateAxis> getCoordAxes() {
     return coordAxes;
   }
@@ -122,12 +126,14 @@ public class CoordinatesHelper {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
+  private final String conventionName;
   private final ImmutableList<CoordinateAxis> coordAxes;
   private final ImmutableList<CoordinateSystem> coordSystems;
   private final ImmutableList<ProjectionCTV> coordTransforms;
   private final Map<String, List<String>> coordSysForVar;
 
   public CoordinatesHelper(CoordsHelperBuilder builder, List<CoordinateAxis> axes) {
+    this.conventionName = builder.getConventionName();
     this.coordAxes = ImmutableList.copyOf(axes);
 
     ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
@@ -145,6 +151,7 @@ public class CoordinatesHelper {
   }
 
   private CoordinatesHelper(Builder builder, List<CoordinateAxis> axes) {
+    this.conventionName = builder.conventionName;
     this.coordAxes = ImmutableList.copyOf(axes);
 
     ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
@@ -164,7 +171,7 @@ public class CoordinatesHelper {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public CoordinatesHelper.Builder toBuilder() {
-    return addLocalFieldsToBuilder(builder());
+    return addLocalFieldsToBuilder(builder(this.conventionName));
   }
 
   private CoordinatesHelper.Builder addLocalFieldsToBuilder(CoordinatesHelper.Builder b) {
@@ -174,11 +181,12 @@ public class CoordinatesHelper {
     return b;
   }
 
-  public static Builder builder() {
-    return new Builder();
+  public static Builder builder(String conventionName) {
+    return new Builder().setConventionName(conventionName);
   }
 
   public static class Builder {
+    String conventionName = "none";
     public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>(); // we dont use these
     public final ArrayList<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
     public final ArrayList<ProjectionCTV> coordTransforms = new ArrayList<>();
@@ -189,6 +197,11 @@ public class CoordinatesHelper {
         return this;
       }
       coordAxes.add(axis);
+      return this;
+    }
+
+    public Builder setConventionName(String conventionName) {
+      this.conventionName = conventionName;
       return this;
     }
 

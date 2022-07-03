@@ -169,7 +169,8 @@ public class CoordSystemBuilderOld {
   protected CoordSystemBuilderOld(CdmDatasetCS.Builder<?> datasetBuilder) {
     this.datasetBuilder = datasetBuilder;
     this.rootGroup = datasetBuilder.rootGroup;
-    this.coords = CoordinatesHelper.builder();
+    String conventionName = (datasetBuilder.coords == null) ? "unknown" : datasetBuilder.coords.getConventionName();
+    this.coords = CoordinatesHelper.builder(conventionName);
   }
 
   protected void setConventionUsed(String convName) {

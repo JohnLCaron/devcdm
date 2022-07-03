@@ -9,7 +9,8 @@ import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.CdmDatasets;
-import dev.cdm.dataset.util.CompareCdmDatasets;
+import dev.cdm.dataset.util.CdmObjFilter;
+import dev.cdm.dataset.util.CompareCdmDataset;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,13 +47,14 @@ public class TestOpenCdmDatasets {
     try (CdmDataset ncd = CdmDatasets.openDataset(filename, false, null);
          CdmDatasetCS ncdc = CdmDatasets.openDatasetCS(filename, false)) {
 
-      boolean ok = new CompareCdmDatasets().compare(ncd, ncdc, new LocalFilter());
+      boolean ok = new CompareCdmDataset().compare(ncd, ncdc, new LocalFilter());
       assertThat(ok).isTrue();
     }
   }
 
-  public static class LocalFilter implements CompareCdmDatasets.ObjFilter {
+  public static class LocalFilter extends CdmObjFilter {
 
+    @Override
     public boolean attCheckOk(Attribute att) {
       String name = att.getShortName();
 
@@ -71,7 +73,7 @@ public class TestOpenCdmDatasets {
          CdmDatasetCS ncdc = CdmDatasets.openDatasetCS(filename, true)) {
 
       // does not compare coordinate systems
-      boolean ok = new CompareCdmDatasets().compare(ncd, ncdc, new LocalFilter());
+      boolean ok = new CompareCdmDataset().compare(ncd, ncdc, new LocalFilter());
       assertThat(ok).isTrue();
     }
   }

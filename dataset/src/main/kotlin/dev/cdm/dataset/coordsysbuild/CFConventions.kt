@@ -89,7 +89,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
         return if (CalendarDateUnit.fromUdunitString(null, unit).isPresent) AxisType.Time else null
     }
 
-    override fun identifyIsPositive(vds: VariableDS): Boolean? {
+    override fun identifyZIsPositive(vds: VariableDS): Boolean? {
         val vertCoordUnits = vds.unitsString
         if (vertCoordUnits == null) {
             return true
@@ -104,7 +104,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
             return true
         }
 
-        return super.identifyIsPositive(vds)
+        return super.identifyZIsPositive(vds)
     }
 
     /** Identify coordinate axes, using _Coordinate.Axes attribute.  */
@@ -145,7 +145,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
                     if (gridVp == null) {
                         info.appendLine("***Cant find gridMapping '${gridMapping}' referenced by variable '$vp'")
                     } else {
-                        gridVp.setIsCoordinateTransform("from ${CF.GRID_MAPPING}")
+                        gridVp.setIsCoordinateTransform("from ${vp} to ${gridVp}")
                     }
                 }
             }

@@ -9,7 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.util.CompareCdmFiles;
 import dev.cdm.dataset.api.CdmDatasets;
-import dev.cdm.dataset.util.CompareCdmDatasets;
+import dev.cdm.dataset.util.CompareCdmDataset;
 import org.junit.Test;
 
 import dev.cdm.gcdm.client.GcdmCdmFile;
@@ -149,7 +149,7 @@ public class TestGcdmCdmFileProblem {
     String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (CdmFile ncfile = CdmDatasets.openFile(path.toString(), null);
          GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
-      boolean ok = new CompareCdmDatasets().compare(ncfile, gcdmFile);
+      boolean ok = new CompareCdmDataset().compare(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }

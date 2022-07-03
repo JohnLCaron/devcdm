@@ -7,6 +7,7 @@ package dev.cdm.core.api;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import dev.cdm.core.util.CdmFullNames;
 import dev.cdm.core.util.EscapeStrings;
 import dev.cdm.core.util.Indent;
 import dev.cdm.array.StructureData;
@@ -114,6 +115,16 @@ public class CdmFile implements Closeable {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
+  private CdmFullNames cdmFullNames = null;
+
+  /** Helper class for dealing with full names. */
+  public CdmFullNames cdmFullNames() {
+    if (cdmFullNames == null) {
+      cdmFullNames = new CdmFullNames(this);
+    }
+    return cdmFullNames;
+  }
+
 
   /**
    * Find an attribute, with the specified (escaped full) name. It may be nested in multiple groups and/or structures.
@@ -128,6 +139,11 @@ public class CdmFile implements Closeable {
    *        "/group/subgroup/@attName", "/group/subgroup/var@attName", or "/group/subgroup/struct.member@attName"
    * @return Attribute or null if not found.
    */
+  @Nullable
+  public Attribute findAttributeFromFullName(String fullNameEscaped) {
+    return cdmFullNames().findAttribute(fullNameEscaped);
+  }
+
   @Nullable
   public Attribute findAttribute(String fullNameEscaped) {
     if (Strings.isNullOrEmpty(fullNameEscaped)) {
@@ -203,6 +219,7 @@ public class CdmFile implements Closeable {
    * @param fullName Dimension full name, e.g. "/group/subgroup/dim".
    * @return the Dimension or {@code null} if it wasn't found.
    */
+
   @Nullable
   public Dimension findDimension(String fullName) {
     if (fullName == null || fullName.isEmpty()) {
@@ -241,6 +258,11 @@ public class CdmFile implements Closeable {
    * @return Group or null if not found.
    */
   @Nullable
+  public Group findGroupFromFullName(String fullName) {
+    return cdmFullNames().findGroup(fullName);
+  }
+
+  @Nullable
   public Group findGroup(@Nullable String fullName) {
     if (fullName == null || fullName.isEmpty())
       return rootGroup;
@@ -259,15 +281,18 @@ public class CdmFile implements Closeable {
 
   /**
    * Find a Variable, with the specified (escaped full) name. It may possibly be nested in multiple groups and/or
-   * structures. An embedded
-   * "." is interpreted as structure.member. An embedded "/" is interpreted as group/variable. If the name actually has
-   * a ".", you must
-   * escape it (call CdmFiles.makeValidPathName(varname)) Any other chars may also be escaped, as they are removed
-   * before testing.
+   * structures. An embedded "." is interpreted as structure.member. An embedded "/" is interpreted as group/variable.
+   * If the name actually has a ".", you must escape it (call CdmFiles.makeValidPathName(varname)).
+   * Any other chars may also be escaped, as they are removed before testing.
    *
-   * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
+   * @param fullName eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
    */
+  @Nullable
+  public Variable findVariableFromFullName(String fullName) {
+    return cdmFullNames().findVariable(fullName);
+  }
+
   @Nullable
   public Variable findVariable(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {

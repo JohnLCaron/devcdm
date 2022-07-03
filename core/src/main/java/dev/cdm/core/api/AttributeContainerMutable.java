@@ -108,7 +108,8 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   @Override
-  public String findAttributeString(String attName, String defaultValue) {
+  @Nullable
+  public String findAttributeString(String attName, @Nullable String defaultValue) {
     String attValue = null;
     Attribute att = findAttributeIgnoreCase(attName);
 
@@ -134,6 +135,7 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   @Override
+  @Nullable
   public Attribute findAttributeIgnoreCase(String name) {
     Attribute result = findAttribute(name);
     return (result != null) ? result

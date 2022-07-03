@@ -127,7 +127,6 @@ public class HdfEosModisConvention extends CoordSystemBuilderOld {
   public void augmentDataset(CancelTask cancelTask) {
     addTimeCoord = addTimeCoordinate();
     augmentGroup(rootGroup);
-    rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.0"));
   }
 
   private boolean addTimeCoordinate() {

@@ -22,8 +22,8 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
   public static final SimpleUnit<Length> geopotentialHeight = new SimpleUnit(Units.METRE_PER_SECOND.multiply(Units.METRE_PER_SECOND).multiply(9.80665));
 
 
-  public static <T extends Quantity<T>> SimpleUnit<T> factoryWithExceptions(String geoCoordinateUnits) {
-    return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(geoCoordinateUnits)));
+  public static <T extends Quantity<T>> SimpleUnit<T> factoryWithExceptions(String units) {
+    return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(units)));
   }
 
   @Nullable
@@ -32,15 +32,16 @@ public record SimpleUnit<T extends Quantity<T>> (Unit<T> unit) {
       return null;
     }
     try {
-      return (SimpleUnit<T>) (new SimpleUnit(udunitFormat.parse(units)));
+      Unit<?> unit = udunitFormat.parse(units);
+      return (unit == null) ? null : new SimpleUnit(unit);
     } catch (Throwable t) {
       return null;
     }
   }
 
-  public static <T extends Quantity<T>> double getConversionFactor(String unit1s, String unit2s) {
-    Unit<T> unit1 = (Unit<T>) udunitFormat.parse(unit1s);
-    Unit<T> unit2 = (Unit<T>) udunitFormat.parse(unit2s);
+  public static <T extends Quantity<T>> double getConversionFactor(String units1, String units2) {
+    Unit<T> unit1 = (Unit<T>) udunitFormat.parse(units1);
+    Unit<T> unit2 = (Unit<T>) udunitFormat.parse(units2);
     UnitConverter scale2 = unit1.getConverterTo(unit2);
     return scale2.convert(1.0);
   }
