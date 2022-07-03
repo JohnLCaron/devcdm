@@ -3,10 +3,7 @@ package dev.cdm.dataset.cdmdsl
 import dev.cdm.array.Indent
 import dev.cdm.array.PrintArray.printArray
 import dev.cdm.core.api.*
-import dev.cdm.dataset.api.CdmDataset
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.CoordinateAxis
-import dev.cdm.dataset.api.VariableDS
+import dev.cdm.dataset.api.*
 import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.util.*
 
@@ -15,43 +12,51 @@ fun CdmDataset.writeDsl(): String {
 
     builder.appendLine("cdmdsl(\"${this.location}\") {")
     val indent = Indent(2)
-    this.rootGroup.attributes().forEach { it.writeDsl(builder, indent.incrNew()) }
-    builder.appendLine()
 
-    this.rootGroup.dimensions.forEach { it.writeDsl(builder, indent.incrNew()) }
-    builder.appendLine()
+    if (!this.rootGroup.attributes().isEmpty()) {
+        this.rootGroup.attributes().forEach { it.writeDsl(builder, indent.incrNew()) }
+        builder.appendLine()
+    }
+
+    if (!this.rootGroup.dimensions.isEmpty()) {
+        this.rootGroup.dimensions.forEach { it.writeDsl(builder, indent.incrNew()) }
+        builder.appendLine()
+    }
+
+    val datasetCs : CdmDatasetCS? = if (this is CdmDatasetCS) this else null
+
+    if (!this.rootGroup.variables.isEmpty()) {
+        this.rootGroup.variables.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew(), datasetCs) }
+        builder.appendLine()
+    }
 
     if (this is CdmDatasetCS) {
-        this.rootGroup.variables.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew(), this) }
-        builder.appendLine()
-
         this.coordinateAxes.forEach { it.writeDsl(builder, indent.incrNew()) }
+        this.coordinateSystems.forEach { it.writeDsl(builder, indent.incrNew()) }
+        this.coordinateTransforms.forEach { it.writeDsl(builder, indent.incrNew()) }
         builder.appendLine()
-
-        this.getCoordinateTransforms().forEach { it.writeDsl(builder, indent.incrNew()) }
-
-    } else {
-        this.rootGroup.variables.forEach { it.writeDsl(builder, indent.incrNew()) }
     }
 
-    /*
-    builder.appendLine("${indent}:conventionBuilder= ${this.conventionBuilder}")
-    builder.appendLine("${indent}:enhance = ${this.enhanceMode}")
-    val obj = this.sendIospMessage(CdmDataset.IOSP_MESSAGE_GET_REFERENCED_FILE)
-    if (obj != null) {
-        builder.appendLine("${indent}:originalFile = \"${(obj as CdmFile).location}\"")
+    if (!this.rootGroup.groups.isEmpty()) {
+        this.rootGroup.groups.forEach { it.writeDsl(builder, indent.incrNew(), datasetCs) }
+        builder.appendLine()
     }
 
-     */
     builder.appendLine("${indent.decr()}}");
-
     return builder.toString()
 }
 
 fun Attribute.writeDsl(builder: StringBuilder, indent: Indent) {
+    val values = this.arrayValues?.let { shortenPrintArray(it, 80) }
+    builder.appendLine("${indent}attribute(\"${this.name.trim()}\").setValue(${values})");
+}
+
+fun <T> shortenPrintArray(arrayValues : dev.cdm.array.Array<T>, len : Int) : String {
     val out = Formatter()
-    printArray(out, this.arrayValues, null, Indent(0))
-    builder.appendLine("${indent}attribute(\"${this.name.trim()}\").setValue(${out})");
+    printArray(out, arrayValues, null, Indent(0))
+    var values = out.toString().replace("\n","")
+    if (values.length > len) values = values.take(len) + "...\""
+    return values
 }
 
 fun Dimension.writeDsl(builder: StringBuilder, indent: Indent) {
@@ -74,6 +79,34 @@ fun Variable.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatas
     builder.appendLine("${indent}}");
 }
 
+fun Group.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatasetCS? = null) {
+    builder.appendLine("${indent}group(\"${this.getShortName()}\") {")
+    indent.incr()
+
+    if (!this.attributes().isEmpty()) {
+        this.attributes().forEach { it.writeDsl(builder, indent.incrNew()) }
+        builder.appendLine()
+    }
+
+    if (!this.dimensions.isEmpty()) {
+        this.dimensions.forEach { it.writeDsl(builder, indent.incrNew()) }
+        builder.appendLine()
+    }
+
+    if (!this.variables.isEmpty()) {
+        this.variables.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew(), dataset) }
+        builder.appendLine()
+    }
+
+    if (!this.groups.isEmpty()) {
+        this.groups.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew()) }
+        builder.appendLine()
+    }
+    indent.decr()
+    builder.appendLine("${indent}}");
+}
+
+
 fun CoordinateAxis.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}axis(\"${this.getShortName()}\") {")
     indent.incr()
@@ -81,6 +114,17 @@ fun CoordinateAxis.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}setDimensions(\"${Dimensions.makeDimensionsString(this.dimensions)}\")")
     builder.appendLine("${indent}setAxisType(\"${this.axisType?.name}\")")
     this.attributes().forEach { it.writeDsl(builder, indent) }
+    indent.decr()
+    builder.appendLine("${indent}}");
+}
+
+fun CoordinateSystem.writeDsl(builder: StringBuilder, indent: Indent) {
+    builder.appendLine("${indent}coordSystem(\"${this.name}\") {")
+    indent.incr()
+    builder.appendLine("${indent}setAxis(\"${this.axesName}\")")
+    if (this.projection != null) {
+        builder.appendLine("${indent}setProjection(\"${this.projection!!.name}\")")
+    }
     indent.decr()
     builder.appendLine("${indent}}");
 }

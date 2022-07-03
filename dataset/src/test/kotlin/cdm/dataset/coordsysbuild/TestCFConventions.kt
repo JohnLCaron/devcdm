@@ -4,9 +4,11 @@ import com.google.common.truth.Truth.assertThat
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets
+import dev.cdm.dataset.api.TestCdmDatasets
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.cdmdsl.*
-import dev.cdm.dataset.coordsysbuild.findConvention
+import dev.cdm.dataset.coordsysbuild.findCoordSysBuilder
+import dev.cdm.test.util.testFilesIn
 import org.junit.jupiter.api.Test
 
 class TestCFConventions {
@@ -17,7 +19,7 @@ class TestCFConventions {
         val orgDataset = CdmDatasets.openDataset(cfFile, false, null)
         println(orgDataset.write())
 
-        val convention = findConvention(orgDataset)
+        val convention = findCoordSysBuilder(orgDataset)
         val coords = convention.buildCoordinateSystems(orgDataset)
         assertThat(coords).isNotNull()
         println(convention.info)
@@ -59,5 +61,16 @@ class TestCFConventions {
         println("axes = ${withcs.coordinateAxes.map {it.fullName}}")
         println("systems = ${withcs.coordinateSystems.map {it.name}}")
         println("transforms = ${withcs.coordinateTransforms.map {it.name}}")
+    }
+
+    @Test
+    fun testDir() {
+        val files = testFilesIn(TestCdmDatasets.datasetLocalDir)
+            .addNameFilter { !it.startsWith("WrfNoTimeVar") }
+            .withRecursion()
+            .build()
+        files.forEach {
+            println("${it.get()[0]}")
+        }
     }
 }

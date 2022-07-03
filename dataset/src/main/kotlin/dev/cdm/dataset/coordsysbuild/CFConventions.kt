@@ -145,7 +145,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
                     if (gridVp == null) {
                         info.appendLine("***Cant find gridMapping '${gridMapping}' referenced by variable '$vp'")
                     } else {
-                        gridVp.setIsCoordinateTransform("from ${CF.GRID_MAPPING}")
+                        gridVp.setIsCoordinateTransform("from ${vp} to ${gridVp}")
                     }
                 }
             }

@@ -1083,7 +1083,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     public CdmFile ncfile; // set in Group build() if null
     private Structure parentStruct; // set in Structure.build(), no not use otherwise
 
-    protected Group.Builder parentBuilder;
+    protected Group.Builder parentBuilder; // LOOK can get rid of when delete old coordsys building (I think)
     protected Structure.Builder<?> parentStructureBuilder;
     private ArrayList<Dimension> dimensions = new ArrayList<>();
     public Object spiObject;
@@ -1297,6 +1297,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     public T setParentGroupBuilder(Group.Builder parent) {
+      Preconditions.checkNotNull(parent);
       this.parentBuilder = parent;
       return self();
     }

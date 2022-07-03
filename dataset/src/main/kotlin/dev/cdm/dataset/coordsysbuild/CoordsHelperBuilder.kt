@@ -2,6 +2,7 @@ package dev.cdm.dataset.coordsysbuild
 
 import com.google.common.base.Preconditions
 import com.google.common.collect.ImmutableMap
+import dev.cdm.core.api.CdmFile
 import dev.cdm.core.api.Dimension
 import dev.cdm.core.api.Group
 import dev.cdm.core.constants.AxisType
@@ -142,11 +143,27 @@ class CoordsHelperBuilder {
         return CoordinateSystem.isComplete(vb.dimensions, csDomain)
     }
 
-    fun containsAxes(cs: CoordinateSystem.Builder<*>, dataAxes: List<CoordinateAxis.Builder<*>>): Boolean {
-        Preconditions.checkNotNull(cs)
+    fun containsAxes(csys: CoordinateSystem.Builder<*>, axisNames: String): Boolean {
+        val axes = mutableListOf<CoordinateAxis.Builder<*>>()
+        axisNames.split(" ").forEach { name ->
+            val axis = findAxisByFullName(name)
+            if (axis != null) {
+                axes.add(axis)
+            }
+        }
+        return containsAxes(csys, axes)
+    }
+
+    fun containsAxes(csys: CoordinateSystem.Builder<*>, dataAxes: List<CoordinateAxis.Builder<*>>): Boolean {
+        Preconditions.checkNotNull(csys)
         Preconditions.checkNotNull(dataAxes)
-        val csAxes = getAxesForSystem(cs)
+        val csAxes = getAxesForSystem(csys)
         return csAxes.containsAll(dataAxes)
+    }
+
+    fun containsAxisTypes(csys: CoordinateSystem.Builder<*>, axisTypes: String): Boolean {
+        val list = axisTypes.split(" ").map { AxisType.valueOf(it) }
+        return containsAxisTypes(csys, list)
     }
 
     fun containsAxisTypes(cs: CoordinateSystem.Builder<*>, axisTypes: List<AxisType>): Boolean {
@@ -163,9 +180,13 @@ class CoordsHelperBuilder {
         return axes.find { it.axisType == want} != null
     }
 
-    fun build(group : Group) : CoordinatesHelper? {
+    fun build(cdmFile : CdmFile) : CoordinatesHelper? {
         check(!built) { "already built" }
         built = true
-        return CoordinatesHelper(this, this.coordAxes.map{ it -> it.build(group) })
+        return CoordinatesHelper(this, this.coordAxes.map{ it ->
+            val useGroup = cdmFile.findGroup(it.getParentGroupName())
+            check(useGroup != null)
+            it.build(useGroup)
+        })
     }
 }

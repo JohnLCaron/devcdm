@@ -39,6 +39,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testImplementation(project(":test-utils"))
 }
 
 tasks.getByName<Test>("test") {

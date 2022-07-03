@@ -25,10 +25,10 @@ import java.io.IOException
 import java.util.*
 import java.util.regex.Pattern
 
-class WrfAugment(dataset: CdmDataset, val info : StringBuilder) {
+class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
     val datasetBuilder = CdmDatasetCS.builder().copyFrom(dataset)
     val rootBuilder = datasetBuilder.rootGroup
-    val rootAtts : AttributeContainerMutable = rootBuilder.attributeContainer
+    val globalAtts : AttributeContainerMutable = rootBuilder.attributeContainer
 
     val gridE: Boolean
     val projType: Int
@@ -38,18 +38,18 @@ class WrfAugment(dataset: CdmDataset, val info : StringBuilder) {
     var centerY = 0.0
 
     init {
-        val type: String? = rootAtts.findAttributeString("GRIDTYPE", null)
+        val type: String? = globalAtts.findAttributeString("GRIDTYPE", null)
         gridE = (type != null) && type.equals("E", ignoreCase = true)
 
-        val lat1: Double = rootAtts.findAttributeDouble("TRUELAT1", Double.NaN)
-        val lat2: Double = rootAtts.findAttributeDouble("TRUELAT2", Double.NaN)
-        val centralLat: Double = rootAtts.findAttributeDouble("CEN_LAT", Double.NaN)// center of grid
-        val centralLon: Double = rootAtts.findAttributeDouble("CEN_LON", Double.NaN) // center of grid
-        val standardLon: Double = rootAtts.findAttributeDouble("STAND_LON", Double.NaN) // true longitude
-        val standardLat: Double = rootAtts.findAttributeDouble("MOAD_CEN_LAT", Double.NaN)
+        val lat1: Double = globalAtts.findAttributeDouble("TRUELAT1", Double.NaN)
+        val lat2: Double = globalAtts.findAttributeDouble("TRUELAT2", Double.NaN)
+        val centralLat: Double = globalAtts.findAttributeDouble("CEN_LAT", Double.NaN)// center of grid
+        val centralLon: Double = globalAtts.findAttributeDouble("CEN_LON", Double.NaN) // center of grid
+        val standardLon: Double = globalAtts.findAttributeDouble("STAND_LON", Double.NaN) // true longitude
+        val standardLat: Double = globalAtts.findAttributeDouble("MOAD_CEN_LAT", Double.NaN)
         var proj: Projection? = null
 
-        projType = rootAtts.findAttributeInteger("MAP_PROJ", -1)
+        projType = globalAtts.findAttributeInteger("MAP_PROJ", -1)
         check(projType != -1) { "WRF must have numeric MAP_PROJ attribute" }
         when (projType) {
             0 -> {
@@ -462,14 +462,14 @@ class WrfAugment(dataset: CdmDataset, val info : StringBuilder) {
     }
 
     private fun makeSoilDepthCoordAxis(coordVarName: String): CoordinateAxis.Builder<*>? {
-        val varOpt: Optional<Variable.Builder<*>> = rootBuilder.findVariableLocal(coordVarName)
-        if (varOpt.isEmpty) {
+        val referencedVar = dataset.findVariable(coordVarName)
+        if (referencedVar == null) {
             return null
         }
-        val coordVarB = varOpt.get() as VariableDS.Builder<*>
-        val coordVar = coordVarB.orgVar
+        val referencedVarDS = referencedVar as VariableDS
+        val coordVar = referencedVarDS.originalVariable // why do we need the original?
         var soilDim: Dimension? = null
-        val dims = coordVar.dimensions
+        val dims = coordVar!!.dimensions
         for (d in dims) {
             if (d.shortName.startsWith("soil_layers")) soilDim = d
         }
@@ -477,36 +477,29 @@ class WrfAugment(dataset: CdmDataset, val info : StringBuilder) {
 
         // One dimensional case, can convert existing variable
         if (coordVar.rank == 1) {
-            coordVarB.addAttribute(
-                Attribute(
-                    CF.POSITIVE,
-                    CF.POSITIVE_DOWN
-                )
-            ) // soil depth gets larger as you go down
-            coordVarB.addAttribute(Attribute(_Coordinate.AxisType, "GeoZ"))
-            if (coordVarName != soilDim.shortName) coordVarB.addAttribute(
-                Attribute(
-                    _Coordinate.AliasForDimension,
-                    soilDim.shortName
-                )
-            )
-            return CoordinateAxis.fromVariableDS(coordVarB)
+            val vbuilder = CoordinateAxis.fromVariableDS(referencedVar)
+            vbuilder.addAttribute(Attribute(CF.POSITIVE, CF.POSITIVE_DOWN))
+            // soil depth gets larger as you go down
+            vbuilder.addAttribute(Attribute(_Coordinate.AxisType, "GeoZ"))
+            if (coordVarName != soilDim.shortName) {
+                vbuilder.addAttribute(Attribute(_Coordinate.AliasForDimension, soilDim.shortName))
+            }
+            return vbuilder
         }
+
+        // otherwise synthesize a new one
         val units = coordVar.attributes().findAttributeString(CDM.UNITS, "")
-        val v: CoordinateAxis.Builder<*> =
+        val vbuilder: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName("soilDepth").setArrayType(ArrayType.DOUBLE)
-                .setParentGroupBuilder(rootBuilder)
+                .setParentGroupName("")
                 .setDimensionsByName(soilDim.shortName).setUnits(units).setDesc("soil depth")
-        v.addAttribute(Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)) // soil depth gets larger as you go down
-        v.setAxisType(AxisType.GeoZ)
-        v.addAttribute(Attribute(_Coordinate.AxisType, "GeoZ"))
-        v.setUnits(CDM.UNITS)
-        if (v.shortName != soilDim.shortName) v.addAttribute(
-            Attribute(
-                _Coordinate.AliasForDimension,
-                soilDim.shortName
-            )
-        )
+        vbuilder.addAttribute(Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)) // soil depth gets larger as you go down
+        vbuilder.setAxisType(AxisType.GeoZ)
+        vbuilder.addAttribute(Attribute(_Coordinate.AxisType, "GeoZ"))
+        vbuilder.setUnits(CDM.UNITS)
+        if (vbuilder.shortName != soilDim.shortName) {
+            vbuilder.addAttribute(Attribute(_Coordinate.AliasForDimension, soilDim.shortName))
+        }
 
         // read first time slice
         val n = coordVar.getShape(1)
@@ -519,14 +512,14 @@ class WrfAugment(dataset: CdmDataset, val info : StringBuilder) {
             for (`val` in array) {
                 newArray[count++] = `val`.toDouble()
             }
-            v.setSourceData(Arrays.factory<Any>(ArrayType.DOUBLE, intArrayOf(n), newArray))
+            vbuilder.setSourceData(Arrays.factory<Any>(ArrayType.DOUBLE, intArrayOf(n), newArray))
         } catch (e: Exception) {
-            e.printStackTrace()
+            throw RuntimeException(e)
         }
-        return v
+        return vbuilder
     }
 
     private fun findAttributeDouble(attname: String): Double {
-        return rootAtts.findAttributeDouble(attname, Double.NaN)
+        return globalAtts.findAttributeDouble(attname, Double.NaN)
     }
 }

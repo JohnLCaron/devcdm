@@ -7,7 +7,6 @@ package dev.cdm.core.api;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import dev.cdm.array.CompareArrayToArray;
-import dev.cdm.core.util.CompareCdmFiles;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -42,6 +41,7 @@ public class TestVariable {
     assertThat(var.isMetadata()).isEqualTo(false);
     assertThat(var.isUnlimited()).isEqualTo(false);
     assertThat(var.isVariableLength()).isEqualTo(false);
+    assertThat(var.getParentGroup()).isNotNull();
   }
 
   @Test

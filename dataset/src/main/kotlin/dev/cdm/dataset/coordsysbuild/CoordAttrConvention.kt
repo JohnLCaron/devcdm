@@ -216,10 +216,20 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
             val coordAxisTypes = vp.vds.findAttributeString(_Coordinate.AxisTypes, null)
             if (vp.isCoordinateTransform && vp.ctv != null && coordAxisTypes != null) {
                 //  look for Coordinate Systems that contain all these axes
+                builder.coords.coordSys.forEach { coordSys ->
+                        if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
+                            coordSys.addTransformName(vp.transformName) // TODO
+                            coordSys.setProjectionName(vp.transformName)
+                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.transformName}' to CoordSys '${coordSys.name}'")
+                        }
+                }
+                // TODO do we need to do both?
+                //  look for Coordinate Systems Variables that contain all these axes
                 builder.varList.forEach { csv ->
                     if (csv.isCoordinateSystem && csv.cs != null) {
-                        if (csv.cs!!.containsAxesTypes(coordAxisTypes)) {
+                        if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
                             csv.cs!!.addTransformName(vp.transformName) // TODO
+                            csv.cs!!.setProjectionName(vp.transformName)
                             builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.transformName}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                         }
                     }

@@ -8,49 +8,54 @@ import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.util.*
 
 fun CdmDataset.write(): String {
-    val builder = StringBuilder()
+    val out = StringBuilder()
 
-    builder.appendLine("cdml ${this.location}")
+    out.appendLine("cdml ${this.location}")
     val indent = Indent(2)
-    builder.appendLine("${indent}attributes:")
-    this.rootGroup.attributes().forEach { it.write(builder, indent.incrNew()) }
+    out.appendLine("${indent}attributes:")
+    this.rootGroup.attributes().forEach { it.write(out, indent.incrNew()) }
 
-    builder.appendLine("\n${indent}dimensions:")
-    this.rootGroup.dimensions.forEach { it.write(builder, indent.incrNew()) }
+    if (this.rootGroup.dimensions.isNotEmpty()) {
+        out.appendLine("\n${indent}dimensions:")
+        this.rootGroup.dimensions.forEach { it.write(out, indent.incrNew()) }
+    }
+
+    if (rootGroup.variables.isNotEmpty()) {
+        out.appendLine("\n${indent}variables:")
+        this.rootGroup.variables.filter { it !is CoordinateAxis }.forEach { it.write(out, indent.incrNew()) }
+    }
 
     if (this is CdmDatasetCS) {
-        builder.appendLine("\n${indent}variables:")
-        this.rootGroup.variables.filter {it !is CoordinateAxis}.forEach { it.write(builder, indent.incrNew(), this) }
+        out.appendLine("${indent}coordinateAxes:")
+        this.coordinateAxes.forEach { it.write(out, indent.incrNew()) }
 
-        builder.appendLine("${indent}coordinateAxes:")
-        this.coordinateAxes.forEach { it.write(builder, indent.incrNew()) }
+        out.appendLine("${indent}coordinateSystems:")
+        this.coordinateSystems.forEach { it.write(out, indent.incrNew()) }
 
-        builder.appendLine("${indent}coordinateSystems:")
-        this.coordinateSystems.forEach { it.write(builder, indent.incrNew()) }
+        out.appendLine("${indent}transforms:")
+        this.getCoordinateTransforms().forEach { it.write(out, indent.incrNew()) }
 
-        builder.appendLine("${indent}transforms:")
-        this.getCoordinateTransforms().forEach { it.write(builder, indent.incrNew()) }
-
-    } else {
-        builder.appendLine("\n${indent}variables:")
-        this.rootGroup.variables.filter {it !is CoordinateAxis}.forEach { it.write(builder, indent.incrNew()) }
     }
 
-    builder.appendLine("")
-    builder.appendLine("${indent}:conventionsUsed = ${this.conventionBuilder}")
-    builder.appendLine("${indent}:enhance = ${this.enhanceMode}")
+    if (rootGroup.groups.isNotEmpty()) {
+        out.appendLine("\n${indent}groups:")
+        rootGroup.groups.forEach { it.write(out, indent.incrNew()) }
+    }
+
+    out.appendLine("")
+    out.appendLine("${indent}:conventionsUsed = ${this.conventionBuilder}")
+    out.appendLine("${indent}:enhance = ${this.enhanceMode}")
     val obj = this.sendIospMessage(CdmDataset.IOSP_MESSAGE_GET_REFERENCED_FILE)
     if (obj != null) {
-        builder.appendLine("${indent}:originalFile = \"${(obj as CdmFile).location}\"")
+        out.appendLine("${indent}:originalFile = \"${(obj as CdmFile).location}\"")
     }
 
-    return builder.toString()
+    return out.toString()
 }
 
 fun Attribute.write(builder: StringBuilder, indent: Indent) {
-    val out = Formatter()
-    printArray(out, this.arrayValues, null, Indent(0))
-    builder.appendLine("$indent${this.arrayType} ${this.name.trim()} = $out")
+    val values = this.arrayValues?.let { shortenPrintArray(it, 80) }
+    builder.appendLine("$indent${this.arrayType} ${this.name.trim()} = $values")
 }
 
 fun Dimension.write(builder: StringBuilder, indent: Indent) {
@@ -75,6 +80,31 @@ fun Variable.write(builder: StringBuilder, indent: Indent, dataset : CdmDatasetC
         }
     }
     builder.appendLine("")
+}
+
+fun Group.write(out: StringBuilder, indent: Indent, dataset : CdmDatasetCS? = null) {
+    out.appendLine("${indent}group '${this.shortName}'")
+    indent.incr()
+
+    if (!this.attributes().isEmpty()) {
+        out.appendLine("${indent}attributes:")
+        this.attributes().forEach { it.write(out, indent.incrNew()) }
+    }
+
+    if (this.dimensions.isNotEmpty()) {
+        out.appendLine("\n${indent}dimensions:")
+        this.dimensions.forEach { it.write(out, indent.incrNew()) }
+    }
+
+    if (this.variables.isNotEmpty()) {
+        out.appendLine("\n${indent}variables:")
+        this.variables.filter { it !is CoordinateAxis }.forEach { it.write(out, indent.incrNew()) }
+    }
+
+    if (this.groups.isNotEmpty()) {
+        out.appendLine("\n${indent}groups:")
+        this.groups.forEach { it.write(out, indent.incrNew()) }
+    }
 }
 
 fun CoordinateSystem.write(builder: StringBuilder, indent: Indent) {

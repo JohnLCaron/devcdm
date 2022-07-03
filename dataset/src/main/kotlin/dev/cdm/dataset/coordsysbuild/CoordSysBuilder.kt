@@ -21,7 +21,7 @@ import dev.cdm.dataset.transform.horiz.ProjectionCTV
 private val useMaximalCoordSys = true
 private val requireCompleteCoordSys = true
 
-open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention) {
+open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) {
     internal val varList = mutableListOf<VarProcess>()
     internal val coordVarsForDimension: Multimap<DimensionWithGroup, VarProcess> = ArrayListMultimap.create()
 
@@ -30,17 +30,17 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
 
     private val helper = CoordAttrConvention(this)
 
-    fun addInfo(addInfo : StringBuilder) : CoordSysBuilder {
+    fun addInfo(addInfo: StringBuilder): CoordSysBuilder {
         this.info.append(addInfo)
         return this
     }
 
-    open fun augment(dataset: CdmDataset) : CdmDataset {
-        return dataset
+    open fun augment(orgDataset: CdmDataset): CdmDataset {
+        return orgDataset
     }
 
     // All these steps may be overriden by subclasses.
-    open fun buildCoordinateSystems(dataset: CdmDataset) : CoordsHelperBuilder {
+    open fun buildCoordinateSystems(dataset: CdmDataset): CoordsHelperBuilder {
         info.appendLine("Parsing with Convention '${conventionName}'")
 
         // Bookkeeping info for each variable is kept in the VarProcess inner class
@@ -87,8 +87,9 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
     }
 
     private fun addVariables(group: Group) {
-        group.variables.forEach { vb ->
-                varList.add(VarProcess(group, vb as VariableDS))
+        // LOOK excluding Structures and Sequences for now
+        group.variables.filter { it is VariableDS }.forEach { vb ->
+            varList.add(VarProcess(group, vb as VariableDS))
         }
         for (nested in group.groups) {
             addVariables(nested)
@@ -312,7 +313,7 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
                 //  look for Coordinate Systems that contain all these axes
                 varList.forEach { csv ->
                     if (csv.isCoordinateSystem && csv.cs != null) {
-                        if (csv.cs!!.containsAxesNamed(vp.coordinatesAll)) {
+                        if (coords.containsAxes(csv.cs!!, vp.coordinatesAll!!)) {
                             csv.cs!!.addTransformName(vp.transformName) // TODO
                             info.appendLine("Assign (implicit coordAxes) coordTransform '${vp.transformName}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                         }
@@ -387,28 +388,28 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
 
         override fun toString(): String = vds.shortName
 
-        fun setIsCoordinateAxis(extra : String = "") {
+        fun setIsCoordinateAxis(extra: String = "") {
             if (!isCoordinateAxis) {
                 info.appendLine("Identify CoordinateAxis '${this}' $extra")
             }
             isCoordinateAxis = true
         }
 
-        fun setIsCoordinateSystem(extra : String = "") {
+        fun setIsCoordinateSystem(extra: String = "") {
             if (!isCoordinateSystem) {
                 info.appendLine("Identify CoordinateSystem '${this}' $extra")
             }
             isCoordinateSystem = true
         }
 
-        fun assignCoordinateSystem(csysName: String, extra : String = "") {
+        fun assignCoordinateSystem(csysName: String, extra: String = "") {
             if (!isCoordinateSystem) {
                 info.appendLine("Assign CoordinateSystem '$csysName' to '${this}' $extra")
             }
             coordSysNames.add(csysName)
         }
 
-        fun setIsCoordinateTransform(extra : String = "") {
+        fun setIsCoordinateTransform(extra: String = "") {
             if (!isCoordinateTransform) {
                 info.appendLine("Identify CoordinateTransform '${this}' $extra")
             }
@@ -420,7 +421,7 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
             val axes = mutableListOf<String>()
             axes.addAll(partialCoordinates.split(" "))
             // add missing coord vars
-            vds.dimensions.forEach { dim->
+            vds.dimensions.forEach { dim ->
                 coordVarsForDimension.get(DimensionWithGroup(dim, group)).forEach { vp ->
                     val axis = vp.vds.shortName
                     if (axis != vds.shortName && !axes.contains(axis)) {
@@ -438,7 +439,7 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
             }
 
             // Create a CoordinateAxis out of this variable.
-            val axis = CoordinateAxis.fromVariableDS(vds.toBuilder())
+            val axis = CoordinateAxis.fromVariableDS(vds)
             if (axisType == null) {
                 axisType = identifyAxisType(vds)
             }
@@ -448,7 +449,12 @@ open class CoordSysBuilder(val conventionName : String = _Coordinate.Convention)
                 if (axisType!!.isVert) {
                     val positive = identifyIsPositive(vds)
                     if (positive != null) {
-                        axis.addAttribute(Attribute(_Coordinate.ZisPositive, if (positive) CF.POSITIVE_UP else CF.POSITIVE_DOWN))
+                        axis.addAttribute(
+                            Attribute(
+                                _Coordinate.ZisPositive,
+                                if (positive) CF.POSITIVE_UP else CF.POSITIVE_DOWN
+                            )
+                        )
                     }
                 }
             }
@@ -535,7 +541,8 @@ fun hasCompatibleDimensions(v: Variable, axis: Variable): Boolean {
         if (!varDims.contains(axisDim)) {
             return false
         }
-        // The dimension must be in the common parent group
+        // The dimension must be in the common parent group.
+        // LOOK this could be - as long as the Dimensions are equal, not counting Group.
         if (groupa !== groupv && commonGroup.findDimension(axisDim) == null) {
             return false
         }

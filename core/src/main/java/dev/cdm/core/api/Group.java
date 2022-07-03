@@ -159,11 +159,7 @@ public class Group {
     return null;
   }
 
-  /**
-   * Retrieve the nested Group with the specified (short) name. May be any level of nesting.
-   *
-   * @param groupShortName short name of the nested group you are looking for.
-   */
+  /** Retrieve the nested Group with the specified short name. May be any level of nesting. */
   public Optional<Group> findGroupNested(String groupShortName) {
     if (groupShortName == null) {
       return Optional.empty();
@@ -251,7 +247,7 @@ public class Group {
 
   /**
    * Get the full name of this Group.
-   * Certain characters are backslash escaped (see CdmFiles.makeFullName(Group))
+   * Certain characters are backslash escaped (see CdmFullNames.makeFullName(Group))
    *
    * @return full name with backslash escapes
    */
@@ -486,6 +482,10 @@ public class Group {
 
   public static Builder builder() {
     return new Builder();
+  }
+
+  public static Builder builder(String name) {
+    return new Builder().setName(name);
   }
 
   public static class Builder {
@@ -813,6 +813,7 @@ public class Group {
     }
 
     /**
+     * LOOK remove?
      * Find a Variable, with the specified (escaped full) name.
      * It may possibly be nested in multiple groups and/or structures.
      * An embedded "." is interpreted as structure.member.

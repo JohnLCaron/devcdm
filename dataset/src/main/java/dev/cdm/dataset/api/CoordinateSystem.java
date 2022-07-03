@@ -80,6 +80,11 @@ public class CoordinateSystem {
     return name;
   }
 
+  /** Get the name of the Coordinate System */
+  public String getAxesName() {
+    return makeName(this.coordAxes);
+  }
+
   /** Get the Collection of Dimensions used by any of the CoordinateAxes. */
   public Collection<Dimension> getDomain() {
     return ImmutableList.copyOf(domain);
@@ -275,9 +280,12 @@ public class CoordinateSystem {
     // find referenced coordinate axes
     List<CoordinateAxis> axesList = new ArrayList<>();
     for (String axisName : StringUtil2.split(builder.coordAxesNames)) {
-      Optional<CoordinateAxis> found = axesAll.stream().filter(a -> axisName.equals(a.getFullName())).findFirst();
+      Optional<CoordinateAxis> found = axesAll.stream().filter(axis -> axisName.equals(axis.getFullName())).findFirst();
       if (found.isEmpty()) {
-        throw new RuntimeException("Cant find axis " + axisName);
+        found = axesAll.stream().filter(axis -> axisName.equals(axis.getShortName())).findFirst();
+      }
+      if (found.isEmpty()) {
+          throw new RuntimeException("Cant find axis " + axisName);
       } else {
         axesList.add(found.get());
       }
@@ -407,14 +415,6 @@ public class CoordinateSystem {
     public T setImplicit(boolean isImplicit) {
       this.isImplicit = isImplicit;
       return self();
-    }
-
-    public boolean containsAxesNamed(String axes) {
-      return false;
-    }
-
-    public boolean containsAxesTypes(String axes) {
-      return false;
     }
 
     /**

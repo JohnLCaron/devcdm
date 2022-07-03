@@ -128,7 +128,7 @@ public class CdmDatasetCS extends CdmDataset {
   private CdmDatasetCS(CdmDatasetCS.Builder<?> builder) {
     super(builder);
     if (builder.coords != null) {
-      this.coords = builder.coords.build(this.getRootGroup());
+      this.coords = builder.coords.build(this);
     } else if (builder.coordsOld != null) {
       List<CoordinateAxis> coordAxes = this.getVariables().stream()
               .filter(it -> it instanceof CoordinateAxis)
@@ -137,7 +137,7 @@ public class CdmDatasetCS extends CdmDataset {
       this.coords = builder.coordsOld.build(coordAxes);
     } else {
       // there are no coordinates
-      this.coords = new CoordsHelperBuilder().build(this.getRootGroup());
+      this.coords = new CoordsHelperBuilder().build(this);
     }
   }
 
