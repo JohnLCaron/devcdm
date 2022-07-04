@@ -558,6 +558,7 @@ public class Attribute {
     /**
      * Set the values from a list of String or one of the primitives
      * Integer, Float, Double, Short, Long, Integer, Byte.
+     * The ArrayType is set from the List
      */
     public Builder setValues(List<?> values, boolean unsigned) {
       if (values == null || values.isEmpty()) {

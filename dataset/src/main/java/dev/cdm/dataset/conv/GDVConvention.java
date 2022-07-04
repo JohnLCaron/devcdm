@@ -162,7 +162,7 @@ public class GDVConvention extends CSMConvention {
 
     if (vname.equalsIgnoreCase("lev") || findAlias(v).equalsIgnoreCase("lev")
         || (vname.equalsIgnoreCase("level") || findAlias(v).equalsIgnoreCase("level")))
-      return AxisType.GeoZ;
+      return AxisType.Pressure;
 
     if (vname.equalsIgnoreCase("z") || findAlias(v).equalsIgnoreCase("z")
         || (vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth")))

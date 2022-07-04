@@ -5,22 +5,28 @@ import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets
 
 fun findCoordSysBuilder(dataset: CdmDataset): CoordSysBuilder {
-    val conv = dataset.rootGroup.findAttributeString("Conventions", "none")
+    var conv = dataset.rootGroup.findAttributeString("Conventions", "none")
+    if (conv == "none") {
+        conv = dataset.rootGroup.findAttributeString("Convention", "none")
+    }
     return when {
         conv == "Default" -> DefaultConventions()
         conv.startsWith("CF-1.") -> CFConventions()
         conv.startsWith("COARDS") -> DefaultConventions()
+        conv.startsWith("GDV") -> GdvConventions()
         conv.startsWith("GIEF") -> GiefConventions()
         conv.startsWith("MARS") -> DefaultConventions()
         conv.startsWith("NCAR-CSM") -> DefaultConventions()
         conv.startsWith("NUWG") -> NuwgConventions()
-        conv.startsWith("Zebra") -> ZebraConventions()
+        isAwipsSatConvention(dataset) -> AwipsSatConventions() // must come before isAwipsConvention
+        isAwipsConvention(dataset) -> AwipsConventions()
+        isCedricRadarConvention(dataset) -> CedricRadarConventions()
         isHdfEosOmi(dataset) -> HdfEosOmiConventions()
         isHdfEosModis(dataset) -> HdfEosModisConventions()
         isIfpsConventions(dataset) -> IfpsConventions()
         isM3ioConventions(dataset) -> M3ioConventions()
         isWrfConventions(dataset) -> WrfConventions()
-        isCedricRadarConvention(dataset) -> CedricRadarConventions()
+        isZebraConvention(dataset) -> ZebraConventions()
         else -> CoordSysBuilder()
     }
 }

@@ -7,7 +7,31 @@ class TestCoordsysProblems {
 
     @Test
     fun testProblem() {
-        compareCoordinateSystems(TestFiles.coreLocalDir + "/netcdf4/testCFGridWriter.nc4")
+        compareCoordinateSystems(
+            "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/wrf/global.nc")
+    }
+
+    @Test
+    fun testAWIP() {
+        compareCoordinateSystems(
+            "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/awips/awips.nc")
+    }
+
+
+    @Test
+    fun testAWIPSat() {
+        compareCoordinateSystems(
+            "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/awips/20150602_0830_sport_imerg_noHemis_rr.nc")
+    }
+
+    @Test
+    fun testGDV() {
+        compareCoordinateSystems("/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/gdv/testGDV.nc")
+    }
+
+    @Test
+    fun testZebra() {
+        compareCoordinateSystems("/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/zebra/SPOL_3Volumes.nc")
     }
 
     @Test

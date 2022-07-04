@@ -16,6 +16,10 @@ import dev.cdm.dataset.geoloc.projection.LambertConformal
 import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.io.IOException
 
+/**
+ * IFPS Convention Allows Local NWS forecast office generated forecast datasets to be brought into IDV.
+ * @author Burks
+ */
 open class IfpsConventions(name: String = "IFPS") : CoordSysBuilder(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
@@ -30,7 +34,6 @@ open class IfpsConventions(name: String = "IFPS") : CoordSysBuilder(name) {
 
         val latVar = rootBuilder.findVariableLocal("latitude")
             .orElseThrow { IllegalStateException("Cant find variable latitude") } as VariableDS.Builder<*>
-
         latVar.setUnits(CDM.LAT_UNITS)
         latVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lat.toString()))
 
@@ -42,7 +45,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordSysBuilder(name) {
 
         // figure out the time coordinate for each data variable
         // always separate; could try to discover if they are the same
-        for (ncvar in rootBuilder.vbuilders) {
+        rootBuilder.vbuilders.toMutableList().forEach { ncvar ->
             // variables that are used but not displayable or have no data have DIM_0, also don't want history, since those
             // are just how the person edited the grids
             if (ncvar.rank > 2 && "DIM_0" != ncvar.firstDimensionName

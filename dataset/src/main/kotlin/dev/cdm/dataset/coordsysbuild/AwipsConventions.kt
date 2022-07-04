@@ -1,7 +1,10 @@
 package dev.cdm.dataset.coordsysbuild
 
+import dev.cdm.core.api.CdmFile
 import dev.cdm.core.constants.AxisType
-import dev.cdm.dataset.api.*
+import dev.cdm.dataset.api.CdmDataset
+import dev.cdm.dataset.api.SimpleUnit
+import dev.cdm.dataset.api.VariableDS
 
 open class AwipsConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
 
@@ -37,10 +40,11 @@ open class AwipsConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
         val unit = vds.unitsString
         if (unit != null) {
             if (SimpleUnit.pressureUnit.isCompatible(unit)) return AxisType.Pressure
+            if (SimpleUnit.pressureUnit.isCompatible(unit)) return AxisType.Pressure
             if (SimpleUnit.kmUnit.isCompatible(unit)) return AxisType.Height
         }
-        // otherwise guess
-        return AxisType.GeoZ
+        // dunno
+        return super.identifyAxisType(vds)
     }
 
     override fun identifyZIsPositive(vds: VariableDS): Boolean? {
@@ -55,7 +59,14 @@ open class AwipsConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
         }
 
         // dunno
-        return null
+        return super.identifyZIsPositive(vds);
     }
+}
 
+
+fun isAwipsConvention(ncfile: CdmFile): Boolean {
+    return null != ncfile.findAttribute("projName") &&
+            null != ncfile.findDimension("charsPerLevel") &&
+            null != ncfile.findDimension("x") &&
+            null != ncfile.findDimension("y")
 }

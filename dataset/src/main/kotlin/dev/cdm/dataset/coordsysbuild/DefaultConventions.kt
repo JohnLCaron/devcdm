@@ -15,10 +15,10 @@ open class DefaultConventions(name: String = "DefaultConventions") : CoordSysBui
 }
 
 private val lonUnits = arrayOf(
-    "degrees_east", "degrees_E", "degreesE", "degree_east", "degree_E", "degreeE",
+    "degrees_east", "degrees_E", "degreesE", "degree_east", "degree_E", "degreeE", "degrees E"
 )
 private val latUnits = arrayOf(
-    "degrees_north", "degrees_N", "degreesN", "degree_north", "degree_N", "degreeN",
+    "degrees_north", "degrees_N", "degreesN", "degree_north", "degree_N", "degreeN", "degrees N"
 )
 private val vertUnits = arrayOf(
     "level", "layer", "sigma_level",
@@ -84,7 +84,7 @@ fun desperateAxisType(vb: VariableDS): AxisType? {
     if (vname.equals("lat", ignoreCase = true) || vname.equals("latitude", ignoreCase = true)) {
         return AxisType.Lat
     }
-    if (vname.equals("lev", ignoreCase = true) || vname.equals("level", ignoreCase = true)) {
+    if (vname.equals("lev", true) || vname.equals("level", true) || vname.equals("zlev", true)) {
         return AxisType.GeoZ
     }
     if (vname.equals("z", ignoreCase = true) || vname.equals("altitude", ignoreCase = true) ||
