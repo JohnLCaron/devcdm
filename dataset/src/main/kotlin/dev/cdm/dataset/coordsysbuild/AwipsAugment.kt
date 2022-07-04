@@ -24,7 +24,7 @@ import java.util.*
 val debugBreakup = false
 val debugProj = false
 
-class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
+open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
     val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
     val rootBuilder = datasetBuilder.rootGroup
     val globalAtts : AttributeContainerMutable = rootBuilder.attributeContainer
@@ -35,7 +35,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
     var dx = 0.0
     var dy = 0.0
 
-    fun augment(): CdmDataset {
+    open fun augment(): CdmDataset {
         val nx: Int = rootBuilder.findDimension("x").map {it.length}
             .orElseThrow { RuntimeException("missing dimension x") }
         val ny: Int = rootBuilder.findDimension("y").map {it.length}
@@ -133,8 +133,8 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
        * "MB 400    ", "MB 350    ", "MB 300    ", "MB 250    ", "MB 200    ", "MB 150    ", "MB 100    ", "BL 0 30   ",
        * "BL 60 90  ", "BL 90 120 ", "BL 120 150",
        * "BL 150 180", ""
-       */if (!stoke.hasMoreTokens()) continue  // skip it
-
+       */
+        if (!stoke.hasMoreTokens()) continue  // skip it
             // first token is the unit
             val units = stoke.nextToken().trim { it <= ' ' }
             if (units != currentUnits) {
@@ -182,9 +182,14 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         if (debugBreakup) {
             info.appendLine("  make Dimension and ZCoord $name length $len")
         }
+        val zunits = makeUnitsName(units)
         val v = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(rootBuilder)
-            .setDimensionsByName(name).setUnits(makeUnitsName(units)).setDesc(makeLongName(name))
+            .setDimensionsByName(name).setUnits(zunits).setDesc(makeLongName(name))
+
+        val positive: String = if (SimpleUnit.pressureUnit.isCompatible(zunits)) "up" else "down"
+        v.addAttribute(Attribute(_Coordinate.ZisPositive, positive))
+
         val dvalues = DoubleArray(values.size)
         var countv = 0
         for (s in values) {
@@ -256,7 +261,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
     }
 
     @Throws(NoSuchElementException::class)
-    private fun makeLCProjection(name: String): ProjectionCTV {
+    protected fun makeLCProjection(name: String): ProjectionCTV {
         val centralLat = findAttributeDouble("centralLat")
         val centralLon = findAttributeDouble("centralLon")
         val rotation = findAttributeDouble("rotation")
@@ -275,7 +280,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
     }
 
     @Throws(NoSuchElementException::class)
-    private fun makeStereoProjection(name: String): ProjectionCTV {
+    protected fun makeStereoProjection(name: String): ProjectionCTV {
         val centralLat = findAttributeDouble("centralLat")
         val centralLon = findAttributeDouble("centralLon")
 
@@ -306,7 +311,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         return ProjectionCTV(name, proj)
     }
 
-    fun makeXCoordAxis(xname: String?): CoordinateAxis.Builder<*>? {
+    protected fun makeXCoordAxis(xname: String?): CoordinateAxis.Builder<*>? {
         val v = CoordinateAxis1D.builder().setName(xname).setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(rootBuilder).setDimensionsByName(xname).setUnits("km").setDesc("x on projection")
         v.setAutoGen(startx, dx)
@@ -314,7 +319,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         return v
     }
 
-    fun makeYCoordAxis(yname: String?): CoordinateAxis.Builder<*>? {
+    protected fun makeYCoordAxis(yname: String?): CoordinateAxis.Builder<*>? {
         val v = CoordinateAxis1D.builder().setName(yname).setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(rootBuilder).setDimensionsByName(yname).setUnits("km").setDesc("y on projection")
         v.setAutoGen(starty, dy)
@@ -322,7 +327,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         return v
     }
 
-    private fun makeLonCoordAxis(n: Int, xname: String): CoordinateAxis.Builder<*>? {
+    protected fun makeLonCoordAxis(n: Int, xname: String): CoordinateAxis.Builder<*>? {
         val min = findAttributeDouble("xMin")
         val max = findAttributeDouble("xMax")
         val d = findAttributeDouble("dx")
@@ -336,7 +341,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         return v
     }
 
-    private fun makeLatCoordAxis(n: Int, name: String): CoordinateAxis.Builder<*>? {
+    protected fun makeLatCoordAxis(n: Int, name: String): CoordinateAxis.Builder<*>? {
         val min = findAttributeDouble("yMin")
         val max = findAttributeDouble("yMax")
         val d = findAttributeDouble("dy")
@@ -425,7 +430,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         }
         val refVar = rootBuilder.findVariableLocal("reftime").get() as VariableDS.Builder<*>
         val refValue = refVar.orgVar.readScalarDouble()
-        if (refValue == IospUtils.NC_FILL_DOUBLE) { // why?
+        if (refValue == IospUtils.NC_FILL_DOUBLE || java.lang.Double.isNaN(refValue)) { // why?
             return null
         }
 
@@ -447,7 +452,7 @@ class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         return timeCoord
     }
 
-    private fun findAttributeDouble(attname: String?): Double {
+    protected fun findAttributeDouble(attname: String?): Double {
         val att: Attribute? = globalAtts.findAttributeIgnoreCase(attname)
         if (att == null || att.isString) {
             info.appendLine("ERROR cant find numeric attribute= $attname")

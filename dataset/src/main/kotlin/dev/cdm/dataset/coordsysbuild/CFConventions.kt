@@ -86,7 +86,10 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
         }
 
         // Check time units
-        return if (CalendarDateUnit.fromUdunitString(null, unit).isPresent) AxisType.Time else null
+        if (CalendarDateUnit.fromUdunitString(null, unit).isPresent) {
+            return AxisType.Time
+        }
+        return super.identifyAxisType(vds)
     }
 
     override fun identifyZIsPositive(vds: VariableDS): Boolean? {

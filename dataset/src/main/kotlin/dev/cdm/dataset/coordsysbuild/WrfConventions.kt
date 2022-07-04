@@ -84,8 +84,10 @@ fun isWrfConventions(ncfile: CdmDataset): Boolean {
     if (dynOpt != -1 && dynOpt != 2) { // if it exists, it must equal 2.
         return false
     }
+    // ig gridType exixts, must be C or E
     val gridType = ncfile.rootGroup.findAttributeString("GRIDTYPE", null)
-    val isCorE = (gridType != null) &&
-            (gridType.equals("C", ignoreCase = true) || gridType.equals("E", ignoreCase = true))
-    return isCorE && ncfile.findAttribute("MAP_PROJ") != null
+    if (gridType != null && !gridType.equals("C", ignoreCase = true) && !gridType.equals("E", ignoreCase = true)) {
+        return false
+    }
+    return ncfile.findAttribute("MAP_PROJ") != null
 }

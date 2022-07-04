@@ -2,6 +2,9 @@ package cdm.dataset.coordsysbuild
 
 import com.google.common.truth.Truth.assertThat
 import dev.cdm.core.api.Attribute
+import dev.cdm.core.api.Variable
+import dev.cdm.core.constants.CDM
+import dev.cdm.core.constants.CF
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets
@@ -20,7 +23,7 @@ import java.io.IOException
 import java.util.stream.Stream
 
 var showOrg = false
-var showAug = true
+var showAug = false
 var showInfo = true
 var showResult = true
 
@@ -29,35 +32,26 @@ class TestCompareCoordsysBuilding {
         @Throws(IOException::class)
         @JvmStatic
         fun params(): Stream<Arguments> {
-            return testFilesIn(TestFiles.coreLocalDir)
-                .addNameFilter { !it.startsWith("WrfNoTimeVar") }
-                .addNameFilter(FileFilterSkipSuffixes("cdl txt"))
+            return testFilesIn("/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions")
+                .addNameFilter { !it.startsWith("WrfNoTimeVar") && !it.startsWith("0150602_0830_sport_imerg_noHemis_rr.nc")}
+                .addNameFilter(FileFilterSkipSuffixes("cdl pdf txt"))
                 .withRecursion()
                 .build()
-           // return Stream.of(
-               // Arguments.of(TestCdmDatasets.coreLocalDir + "WrfNoTimeVar.nc"),
-           /* return Stream.concat(
-                Files.list(Paths.get(TestCdmDatasets.datasetLocalDir))
-                    .filter { file: Path? -> !Files.isDirectory(file) }
-                    .filter { file: Path -> !file.fileName.toString().startsWith("WrfNoTimeVar") }
-                    .map { obj: Path -> obj.toString() }
-                    .map { arguments: String? -> Arguments.of(arguments) },
-                Stream.of(
-                    Arguments.of("/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/gief/coamps.wind_uv.nc"),
-                    Arguments.of(TestCdmDatasets.datasetLocalNcmlDir + "testRead.xml"),
-                    Arguments.of(TestCdmDatasets.datasetLocalNcmlDir + "readMetadata.xml"),
-                    Arguments.of(TestCdmDatasets.datasetLocalNcmlDir + "testReadHttps.xml"),
-                )  // */
+            // return Stream.of(
+            // Arguments.of(TestCdmDatasets.coreLocalDir + "WrfNoTimeVar.nc"),
+            /* return Stream.concat(
+                 Files.list(Paths.get(TestCdmDatasets.datasetLocalDir))
+                     .filter { file: Path? -> !Files.isDirectory(file) }
+                     .filter { file: Path -> !file.fileName.toString().startsWith("WrfNoTimeVar") }
+                     .map { obj: Path -> obj.toString() }
+                     .map { arguments: String? -> Arguments.of(arguments) },
+                 Stream.of(
+                     Arguments.of("/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/gief/coamps.wind_uv.nc"),
+                     Arguments.of(TestCdmDatasets.datasetLocalNcmlDir + "testRead.xml"),
+                     Arguments.of(TestCdmDatasets.datasetLocalNcmlDir + "readMetadata.xml"),
+                     Arguments.of(TestCdmDatasets.datasetLocalNcmlDir + "testReadHttps.xml"),
+                 )  // */
 
-        }
-    }
-
-    class LocalFilter : CdmObjFilter() {
-        override fun attCheckOk(att: Attribute): Boolean {
-            val name = att.shortName
-            return !name.startsWith("_Coordinate") &&
-                    name != "calendar" &&
-                    name != _Coordinate._CoordSysBuilder
         }
     }
 
@@ -70,16 +64,32 @@ class TestCompareCoordsysBuilding {
     }
 }
 
+private val ignoreVariables = "time"
+
+private class LocalFilter : CdmObjFilter() {
+    override fun attCheckOk(att: Attribute): Boolean {
+        val name = att.shortName
+        return !name.startsWith("_Coordinate") &&
+                name != "process" &&
+                name != "_enhanced" &&
+                name != _Coordinate._CoordSysBuilder
+    }
+
+    override fun ignoreVariable(v: Variable): Boolean {
+        return ignoreVariables.contains(v.shortName)
+    }
+}
+
 fun compareCoordinateSystems(filename: String) {
     CdmDatasets.openDatasetCS(filename, true).use { ncdc ->
         openNewCoordSys(filename, true).use { withcs ->
-            val ok = CompareCdmDataset().compare(ncdc, withcs, TestCompareCoordsysBuilding.LocalFilter())
+            val ok = CompareCdmDataset().compare(ncdc, withcs, LocalFilter())
             assertThat(ok).isTrue()
         }
     }
 }
 
-fun openNewCoordSys(filename: String, enhance : Boolean): CdmDatasetCS {
+fun openNewCoordSys(filename: String, enhance: Boolean): CdmDatasetCS {
     val orgDataset = CdmDatasets.openDataset(filename, enhance, null)
     if (showOrg) println("original = ${orgDataset.write()}")
 

@@ -92,9 +92,6 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
     }
 
     open fun identifyAxisType(vds: VariableDS): AxisType? {
-        if (vds.shortName == "time") {
-            println("HEY")
-        }
         return helper.identifyAxisType(vds)
     }
 
@@ -306,6 +303,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
         helper.assignCoordinateTransforms()
 
         // look for already set coordinatesAll, apply to any Coordinate Systems that contain all these axes
+        // TODO do we need to do this?
         varList.forEach { vp ->
             if (vp.coordinatesAll != null && vp.isCoordinateTransform && vp.ctv != null) {
                 //  look for Coordinate Systems that contain all these axes

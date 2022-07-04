@@ -1,5 +1,6 @@
 package dev.cdm.dataset.coordsysbuild
 
+import dev.cdm.core.api.CdmFile
 import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CDM
 import dev.cdm.core.constants.CF
@@ -9,12 +10,14 @@ import dev.cdm.dataset.cdmdsl.CdmdslDataset
 import dev.cdm.dataset.cdmdsl.build
 import dev.cdm.dataset.cdmdsl.cdmdsl
 
-open class ZebraConventions(name: String = "Zebra") : CoordSysBuilder(name) {
+open class ZebraConventions(name: String = "Zebra") : DefaultConventions(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val unitsFromBase = orgDataset.findAttribute("time_offset@units")
 
         val cdmdsl: CdmdslDataset = cdmdsl {
+            attribute(CF.CONVENTIONS).setValue("Zebra")
+
             variable("latitude") {
                 attribute(_Coordinate.AxisType).setValue(AxisType.Lat.name)
             }
@@ -29,7 +32,6 @@ open class ZebraConventions(name: String = "Zebra") : CoordSysBuilder(name) {
                 if (unitsFromBase != null && unitsFromBase.isString) {
                     unitsFromBase.stringValue?.let { attribute(CDM.UNITS).setValue(it) }
                 }
-                attribute(CDM.LONG_NAME).setValue("time coordinate")
                 attribute("process").setValue("CDM ZebraConventions = base_time + time_offset")
                 attribute(_Coordinate.AxisType).setValue(AxisType.Time.name)
             }
@@ -37,4 +39,9 @@ open class ZebraConventions(name: String = "Zebra") : CoordSysBuilder(name) {
         return cdmdsl.build(orgDataset)
     }
 
+}
+
+fun isZebraConvention(ncfile: CdmFile): Boolean {
+    val s = ncfile.rootGroup.findAttributeString("Convention", "none")
+    return s.startsWith("Zebra")
 }

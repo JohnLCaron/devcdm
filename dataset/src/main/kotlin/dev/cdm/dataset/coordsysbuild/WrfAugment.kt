@@ -146,7 +146,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
                 dataVar.addAttribute(Attribute(_Coordinate.Systems, "LatLonCoordSys"))
             }
         } else if (projType == 6) {
-            rootBuilder.vbuilders.forEach { v ->
+            rootBuilder.vbuilders.toMutableList().forEach { v ->
                 if (v.shortName.startsWith("XLAT")) {
                     val v2 = removeConstantTimeDim(v)
                     v2.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lat.toString()))
@@ -252,6 +252,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         val startx = centerX - dx * (nx - 1) / 2
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
                 .setDimensionsByName(dim.shortName).setUnits("degrees_east")
                 .setDesc("synthesized longitude coordinate")
         v.setAutoGen(startx, dx)
@@ -268,6 +269,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         val starty = centerY - dy * (ny - 1) / 2
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
                 .setDimensionsByName(dim.shortName).setUnits("degrees_north")
                 .setDesc("synthesized latitude coordinate")
         v.setAutoGen(starty, dy)
@@ -288,7 +290,8 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         val startx = centerX - dx * (nx - 1) / 2 // ya just gotta know
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
-                .setParentGroupBuilder(rootBuilder).setDimensionsByName(dim.shortName).setUnits("km")
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
+                .setDimensionsByName(dim.shortName).setUnits("km")
                 .setDesc("synthesized GeoX coordinate from DX attribute")
         v.setAutoGen(startx, dx)
         v.setAxisType(AxisType.GeoX)
@@ -309,7 +312,8 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         val starty = centerY - dy * (ny - 1) / 2 // - dy/2; // ya just gotta know
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
-                .setParentGroupBuilder(rootBuilder).setDimensionsByName(dim.shortName).setUnits("km")
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
+                .setDimensionsByName(dim.shortName).setUnits("km")
                 .setDesc("synthesized GeoY coordinate from DY attribute")
         v.setAxisType(AxisType.GeoY)
         v.addAttribute(Attribute(_Coordinate.AxisType, "GeoY"))
@@ -328,7 +332,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         val fromWhere = if (axisName.endsWith("stag")) "ZNW" else "ZNU"
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
-                .setParentGroupBuilder(rootBuilder)
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
                 .setDimensionsByName(dim.shortName).setUnits("").setDesc("eta values from variable $fromWhere")
         v.addAttribute(Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)) // eta coordinate is 1.0 at bottom, 0 at top
         v.setAxisType(AxisType.GeoZ)
@@ -368,7 +372,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         if (dim == null) return null
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.SHORT)
-                .setParentGroupBuilder(rootBuilder)
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
                 .setDimensionsByName(dim.shortName).setUnits("").setDesc("synthesized coordinate: only an index")
         v.setAxisType(AxisType.GeoZ)
         v.addAttribute(Attribute(_Coordinate.AxisType, "GeoZ"))
@@ -451,7 +455,8 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         }
         val v: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
-                .setParentGroupBuilder(rootBuilder).setDimensionsByName(dim.shortName)
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
+                .setDimensionsByName(dim.shortName)
                 .setUnits("secs since 1970-01-01 00:00:00").setDesc("synthesized time coordinate from Times(time)")
         v.setAxisType(AxisType.Time)
         v.addAttribute(Attribute(_Coordinate.AxisType, "Time"))
@@ -490,7 +495,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
         val units = coordVar.attributes().findAttributeString(CDM.UNITS, "")
         val vbuilder: CoordinateAxis.Builder<*> =
             CoordinateAxis1D.builder().setName("soilDepth").setArrayType(ArrayType.DOUBLE)
-                .setParentGroupName("")
+                .setParentGroupName("").setParentGroupBuilder(rootBuilder)
                 .setDimensionsByName(soilDim.shortName).setUnits(units).setDesc("soil depth")
         vbuilder.addAttribute(Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)) // soil depth gets larger as you go down
         vbuilder.setAxisType(AxisType.GeoZ)

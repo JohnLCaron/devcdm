@@ -172,7 +172,6 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
         }
     }
 
-    /** Assign CoordinateTransform objects to Variables and Coordinate Systems.  */
     fun assignCoordinateTransforms() {
         // look for transform assignments on the coordinate systems CSV to add to the CSV
         builder.varList.forEach { vp ->
@@ -214,32 +213,57 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
             }
         }
 
-        // look for _CoordinateAxisTypes on the CTV, apply to any Coordinate Systems that contain all these axes
+        // look for _CoordinateAxes on the CTV, apply to any Coordinate Systems that contain all these axes
         builder.varList.forEach { vp ->
-            val coordAxisTypes = vp.vds.findAttributeString(_Coordinate.AxisTypes, null)
-            if (vp.isCoordinateTransform && vp.ctv != null && coordAxisTypes != null) {
+            val coordAxes = vp.vds.findAttributeString(_Coordinate.Axes, null)
+            if (coordAxes != null && vp.isCoordinateTransform && vp.ctv != null) {
                 //  look for Coordinate Systems that contain all these axes
                 builder.coords.coordSys.forEach { coordSys ->
-                    if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
+                    if (builder.coords.containsAxes(coordSys, coordAxes)) {
                         coordSys.addTransformName(vp.ctv!!.name) // TODO
                         coordSys.setProjectionName(vp.ctv!!.name)
-                        builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+                        builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
                     }
                 }
                 // TODO do we need to do both?
                 //  look for Coordinate Systems Variables that contain all these axes
                 builder.varList.forEach { csv ->
                     if (csv.isCoordinateSystem && csv.cs != null) {
-                        if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
+                        if (builder.coords.containsAxisTypes(csv.cs!!, coordAxes)) {
                             csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
                             csv.cs!!.setProjectionName(vp.ctv!!.name)
-                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                            builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                        }
+                    }
+                }
+            }
+
+
+            // look for _CoordinateAxisTypes on the CTV, apply to any Coordinate Systems that contain all these axes
+            builder.varList.forEach { vp ->
+                val coordAxisTypes = vp.vds.findAttributeString(_Coordinate.AxisTypes, null)
+                if (vp.isCoordinateTransform && vp.ctv != null && coordAxisTypes != null) {
+                    //  look for Coordinate Systems that contain all these axes
+                    builder.coords.coordSys.forEach { coordSys ->
+                        if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
+                            coordSys.addTransformName(vp.ctv!!.name) // TODO
+                            coordSys.setProjectionName(vp.ctv!!.name)
+                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+                        }
+                    }
+                    // TODO do we need to do both?
+                    //  look for Coordinate Systems Variables that contain all these axes
+                    builder.varList.forEach { csv ->
+                        if (csv.isCoordinateSystem && csv.cs != null) {
+                            if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
+                                csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
+                                csv.cs!!.setProjectionName(vp.ctv!!.name)
+                                builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                            }
                         }
                     }
                 }
             }
         }
     }
-
-
 }

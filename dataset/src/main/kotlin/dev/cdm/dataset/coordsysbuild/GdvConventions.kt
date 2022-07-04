@@ -1,9 +1,12 @@
 package dev.cdm.dataset.coordsysbuild
 
 import dev.cdm.array.ArrayType
+import dev.cdm.core.api.Attribute
 import dev.cdm.core.api.Group
 import dev.cdm.core.constants.AxisType
+import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.CdmDataset
+import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.geoloc.Projection
 import dev.cdm.dataset.geoloc.projection.LambertConformal
@@ -14,20 +17,16 @@ import java.util.*
 
 open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
     var projCT : ProjectionCTV? = null
-    
+
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         projCT = makeProjectionCT(orgDataset.rootGroup)
         if (projCT != null) {
-            // LOOK we dont really have to add a CTV do we ?
-            /* val vb = makeCoordinateTransformVariable(projCT!!)
-            rootGroup.addVariable(vb)
-            val xname = findCoordinateName(AxisType.GeoX)
-            val yname = findCoordinateName(AxisType.GeoY)
-            if (xname != null && yname != null) {
-                vb.addAttribute(Attribute(_Coordinate.Axes, "$xname $yname"))
-            }
+            val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
 
-             */
+            val vb = makeCoordinateTransformVariable(projCT!!)
+            vb.addAttribute(Attribute(_Coordinate.AxisTypes, "${AxisType.GeoY.name} ${AxisType.GeoX.name}"))
+            datasetBuilder.rootGroup.addVariable(vb)
+            return datasetBuilder.build()
         }
         return orgDataset
     }
@@ -65,18 +64,18 @@ open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
                 p[count++] = stoke.nextToken().toDouble()
             }
         }
-        info.appendLine("GDV Conventions projection $projection params = ${p}")
         val proj: Projection
-        proj = if (projection.equals("LambertConformal", ignoreCase = true)) 
+        proj = if (projection.equals("LambertConformal", true))
             LambertConformal(p[0], p[1], p[2], p[3])
-        else if (projection.equals("TransverseMercator", ignoreCase = true)) 
+        else if (projection.equals("TransverseMercator", true))
             TransverseMercator(p[0], p[1], p[2])
-        else if (projection.equals("Stereographic", ignoreCase = true) || projection.equals("Oblique_Stereographic", ignoreCase = true))
+        else if (projection.equals("Stereographic", true) || projection.equals("Oblique_Stereographic", true))
             Stereographic(p[0], p[1], p[2])
         else {
             info.appendLine("GDV Conventions error: Unknown projection $projection")
             return null
         }
+        info.appendLine("GDV Conventions add projection $projection")
         return ProjectionCTV(proj.className, proj)
     }
 
@@ -91,37 +90,37 @@ open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
         return null
     }
      */
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     override fun identifyAxisType(vds: VariableDS): AxisType? {
         val vname = vds.shortName
-        if (vname.equals("x", ignoreCase = true) || 
-            findAlias(vds).equals("x", ignoreCase = true)) 
+        if (vname.equals("x", true) ||
+            findAlias(vds).equals("x", true))
             return AxisType.GeoX
-        if (vname.equals("lon", ignoreCase = true) || 
-            vname.equals("longitude", ignoreCase = true) || 
-            findAlias(vds).equals("lon", ignoreCase = true))
+        if (vname.equals("lon", true) ||
+            vname.equals("longitude", true) ||
+            findAlias(vds).equals("lon", true))
             return AxisType.Lon
-        if (vname.equals("y", ignoreCase = true) || 
-            findAlias(vds).equals("y", ignoreCase = true)) 
+        if (vname.equals("y", true) ||
+            findAlias(vds).equals("y", true))
             return AxisType.GeoY
-        if (vname.equals("lat", ignoreCase = true) || 
-            vname.equals("latitude", ignoreCase = true) || 
-            findAlias(vds).equals("lat", ignoreCase = true)) 
+        if (vname.equals("lat", true) ||
+            vname.equals("latitude", true) ||
+            findAlias(vds).equals("lat", true))
             return AxisType.Lat
-        if (vname.equals("lev", ignoreCase = true) || 
-            findAlias(vds).equals("lev", ignoreCase = true) || 
-            vname.equals("level", ignoreCase = true) || 
-            findAlias(vds).equals("level", ignoreCase = true))
-            return AxisType.GeoZ
-        if (vname.equals("z", ignoreCase = true) || 
-            findAlias(vds).equals("z", ignoreCase = true) || 
-            vname.equals("altitude", ignoreCase = true) || 
-            vname.equals("depth", ignoreCase = true))
+        if (vname.equals("lev", true) ||
+            findAlias(vds).equals("lev", true) ||
+            vname.equals("level", true) ||
+            findAlias(vds).equals("level", true))
+            return AxisType.Pressure
+        if (vname.equals("z", true) ||
+            findAlias(vds).equals("z", true) ||
+            vname.equals("altitude", true) ||
+            vname.equals("depth", true))
             return AxisType.Height
-        if (vname.equals("time", ignoreCase = true) || 
-            findAlias(vds).equals("time", ignoreCase = true)) 
+        if (vname.equals("time", true) ||
+            findAlias(vds).equals("time", true))
             return AxisType.Time
 
         return super.identifyAxisType(vds)

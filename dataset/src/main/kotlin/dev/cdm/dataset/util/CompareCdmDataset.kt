@@ -39,6 +39,11 @@ open class CdmObjFilter {
     }
 
     // if true, compare variable, else skip comparision
+    open fun ignoreVariable(v: Variable): Boolean {
+        return true
+    }
+
+    // if true, compare variable, else skip comparision
     open fun varDataTypeCheckOk(v: Variable): Boolean {
         return true
     }
@@ -186,9 +191,9 @@ class CompareCdmDataset(
         return ok
     }
 
-    // look for equivilient (not equal) coordinate systems
+    // look for equivalent (not equal) coordinate systems
     fun compareCoordSys(csys1: CoordinateSystem, csys2: CoordinateSystem): Boolean {
-        println("compare sys '${csys1.name}' and '${csys2.name}'")
+        println(" csys '${csysSummary(csys1)}' with\n      '${csysSummary(csys2)}'")
         if (csys1.coordinateAxes.size != csys2.coordinateAxes.size) {
             return false
         }
@@ -220,13 +225,17 @@ class CompareCdmDataset(
                 out.format("cant find match for file1 coordaxis '%s' %n", axis1.fullName)
             }
         }
-        if (todo.isEmpty()) {
+        if (!todo.isEmpty()) {
             out.format("cant find match for file2 coordaxis '%s' %n", todo)
         }
         return matchAll
     }
 
-    // look for equivilient (not equal) coordinate axis
+    fun csysSummary(csys : CoordinateSystem) : String {
+        return "${csys.name},${csys.projection?.name},${csys.coordinateAxes.map { it.shortName } }"
+    }
+
+    // look for equivalent (not equal) coordinate axis
     fun compareCoordAxis(axis1: CoordinateAxis, axis2: CoordinateAxis): Boolean {
         println(" axes '${axisSummary(axis1)}' with\n      '${axisSummary(axis2)}'")
         if (axis1.axisType != axis2.axisType) {
@@ -305,7 +314,7 @@ class CompareCdmDataset(
 
         // variables
         // cant use object equality, just match on short name
-        for (orgV in org.variables) {
+        org.variables.filter { !filter.ignoreVariable(it) }.forEach { orgV ->
             val copyVar = copy.findVariableLocal(orgV.shortName)
             ok = if (copyVar == null) {
                 out.format(" ** cant find variable %s in 2nd file%n", orgV.fullName)

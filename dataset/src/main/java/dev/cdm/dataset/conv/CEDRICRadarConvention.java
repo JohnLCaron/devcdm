@@ -30,9 +30,11 @@ public class CEDRICRadarConvention extends CF1Convention {
 
     @Override
     public boolean isMine(CdmFile ncfile) {
-      Dimension s = ncfile.findDimension("cedric_general_scaling_factor");
-      Variable v = ncfile.findVariable("cedric_run_date");
-      return v != null && s != null;
+      return (ncfile.findDimension("cedric_general_scaling_factor") != null) &&
+              (ncfile.findVariable("cedric_run_date")  != null) &&
+              (ncfile.findVariable("sensor_latitude")  != null) &&
+              (ncfile.findVariable("sensor_longitude")  != null) &&
+              (ncfile.findVariable("Projection") != null);
     }
 
     @Override
