@@ -43,7 +43,6 @@ public class TestVertical {
       assertThat(csyss).hasSize(1);
       CoordinateSystem csys = csyss.get(0);
 
-      assertThat(csys.getProjection()).isNotNull();
       assertThat(csys.findAxis(AxisType.GeoZ)).isNotNull();
     }
     return true;

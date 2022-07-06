@@ -88,22 +88,22 @@ fun buildGroup(cgroup: CdmdslGroup, groupb: Group.Builder) {
 
 fun buildAtt(catt: CdmdslAttribute, atts: AttributeContainerMutable) {
     val oatt = atts.findAttribute(catt.name)
-    if (oatt == null) {
-        atts.addAttribute(Attribute(catt.name, catt.values))
-    } else {
-        if (catt.action == Action.Remove) {
-            atts.remove(oatt)
-            return
-        }
-        val builder = oatt.toBuilder()
-        if (catt.rename != null) {
-            builder.setName(catt.rename)
-        }
-        if (catt.values != null) {
-            builder.setStringValue(catt.values)
-        }
-        atts.addAttribute(builder.build())
+    if (oatt != null && catt.action == Action.Remove) {
+        atts.remove(oatt)
+        return
     }
+    val builder : Attribute.Builder = if (oatt != null) oatt.toBuilder() else Attribute.builder(catt.name)
+    if (catt.rename != null) {
+        builder.setName(catt.rename)
+    }
+    if (catt.values != null) {
+        builder.setStringValue(catt.values)
+        builder.setArrayType(ArrayType.STRING)
+    } else if (catt.dvalue != null) {
+        builder.setNumericValue(catt.dvalue, catt.isUnsigned!!)
+        builder.setArrayType(catt.type?: ArrayType.DOUBLE)
+    }
+    atts.addAttribute(builder.build())
 }
 
 fun buildDimension(cdim: CdmdslDimension, groupb: Group.Builder) {

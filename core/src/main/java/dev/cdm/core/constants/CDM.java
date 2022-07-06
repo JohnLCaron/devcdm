@@ -48,6 +48,7 @@ public class CDM {
   public static final String CF_EXTENDED = "CDM-Extended-CF";
   public static final String FILE_FORMAT = "file_format";
   public static final String GAUSSIAN = "gaussian_lats";
+  public static final String GeoCoordinateUnits = "geoCoordinateUnits";
   public static final String LAT_UNITS = "degrees_north";
   public static final String LON_UNITS = "degrees_east";
   public static final String RLATLON_UNITS = "degrees";

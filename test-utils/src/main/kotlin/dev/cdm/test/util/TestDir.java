@@ -4,7 +4,6 @@
  */
 package dev.cdm.test.util;
 
-import org.junit.jupiter.params.provider.Arguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +11,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class TestDir {
   private static final Logger logger = LoggerFactory.getLogger(TestDir.class);
@@ -30,6 +26,7 @@ public class TestDir {
   public static final String datasetLocalNcmlDir = "../dataset/src/test/data/ncml/";
   public static final String coreLocalDir = "../core/src/test/data/netcdf3/";
   public static final String extraTestDir = "/home/snake/tmp/testData/";
+  public static final String oldTestDir = "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/";
 
   /**
    * cdm-test data directory (distributed with code but can depend on data not in github (e.g. NcML files can reference

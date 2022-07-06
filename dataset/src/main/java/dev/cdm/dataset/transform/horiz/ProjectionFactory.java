@@ -7,6 +7,7 @@ package dev.cdm.dataset.transform.horiz;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
+import dev.cdm.dataset.api.CoordinateTransform;
 import dev.cdm.dataset.geoloc.Projection;
 
 import org.jetbrains.annotations.Nullable;
@@ -118,11 +119,8 @@ public class ProjectionFactory {
   /**
    * Do we have a Projection, or can we make one for projCtv?
    */
-  public static boolean hasProjectionFor(ProjectionCTV projCtv) {
-    if (projCtv.getPrecomputedProjection() != null) {
-      return true;
-    }
-    AttributeContainer ctv = projCtv.getCtvAttributes();
+  public static boolean hasProjectionFor(CoordinateTransform projCtv) {
+    AttributeContainer ctv = projCtv.metadata();
     // standard name
     String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
     if (null == transform_name)
@@ -162,44 +160,51 @@ public class ProjectionFactory {
    * @return CoordinateTransform, or null if failure.
    */
   @Nullable
-  public static Projection makeProjection(ProjectionCTV projCtv, Formatter parseInfo) {
-    if (projCtv.getPrecomputedProjection() != null) {
-      return projCtv.getPrecomputedProjection();
-    }
-    AttributeContainer ctv = projCtv.getCtvAttributes();
-    // standard name
-    String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
-    if (null == transform_name)
-      transform_name = ctv.findAttributeString("Projection_Name", null);
-
-    // these names are from CF - dont want to have to duplicate
-    if (null == transform_name)
-      transform_name = ctv.findAttributeString(CF.GRID_MAPPING_NAME, null);
-    if (null == transform_name)
-      transform_name = ctv.findAttributeString(CF.STANDARD_NAME, null);
-
-    // Finally check the units
-    if (null == transform_name)
-      transform_name = ctv.findAttributeString(CDM.UNITS, null);
-
-    if (null == transform_name) {
-      parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
-      return null;
-    }
-
-    transform_name = transform_name.trim();
-
-    // do we have a transform registered for this ?
+  public static Projection makeProjection(CoordinateTransform projCtv, Formatter parseInfo) {
+    // do we have a transform registered for this name ?
     Class<?> builderClass = null;
     for (Transform transform : transformList) {
-      if (transform.transName.equals(transform_name)) {
+      if (transform.transName.equals(projCtv.name())) {
         builderClass = transform.transClass;
         break;
       }
     }
-    if (null == builderClass) {
-      parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s%n", transform_name, ctv);
-      return null;
+
+    // look throogh metadata. LOOK - should we get rid of this?
+    if (builderClass == null) {
+      AttributeContainer ctv = projCtv.metadata();
+      // standard name
+      String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
+      if (null == transform_name)
+        transform_name = ctv.findAttributeString("Projection_Name", null);
+
+      // these names are from CF - dont want to have to duplicate
+      if (null == transform_name)
+        transform_name = ctv.findAttributeString(CF.GRID_MAPPING_NAME, null);
+      if (null == transform_name)
+        transform_name = ctv.findAttributeString(CF.STANDARD_NAME, null);
+
+      // Finally check the units
+      if (null == transform_name)
+        transform_name = ctv.findAttributeString(CDM.UNITS, null);
+
+      if (null == transform_name) {
+        parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
+        return null;
+      }
+
+      transform_name = transform_name.trim();
+      for (Transform transform : transformList) {
+        if (transform.transName.equals(transform_name)) {
+          builderClass = transform.transClass;
+          break;
+        }
+      }
+
+      if (null == builderClass) {
+        parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s%n", transform_name, ctv);
+        return null;
+      }
     }
 
     // get an instance of that class
@@ -212,13 +217,13 @@ public class ProjectionFactory {
     }
 
     ProjectionBuilder horizBuilder = (ProjectionBuilder) builderObject;
-    Projection proj = horizBuilder.makeProjection(ctv, projCtv.getGeounits());
+    Projection proj = horizBuilder.makeProjection(projCtv.metadata(), projCtv.getXYunits());
 
     if (proj != null) {
-      parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
+      parseInfo.format(" Made Coordinate transform %s class: %s%n", projCtv.name(),
           builderObject.getClass().getName());
     } else {
-      parseInfo.format(" Failed to make Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
+      parseInfo.format(" Failed to make Coordinate transform %s class: %s%n", projCtv.name(),
           builderObject.getClass().getName());
     }
 

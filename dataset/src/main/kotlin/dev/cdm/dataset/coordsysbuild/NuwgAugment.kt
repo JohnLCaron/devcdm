@@ -46,7 +46,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
             }
         }
         navInfoList.navInfo.sortWith(NavComparator())
-        info.appendLine("$navInfoList")
+        if (dumpNav) info.appendLine("$navInfoList")
 
         // problem is NUWG doesnt identify the x, y coords.
         // so we get to hack it in here
@@ -291,7 +291,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
             )
 
         override fun toString(): String {
-            return String.format("%14s %20s %s%n", name, stringValue, description)
+            return String.format("%14s %20s %s", name, stringValue, description)
         }
     }
 

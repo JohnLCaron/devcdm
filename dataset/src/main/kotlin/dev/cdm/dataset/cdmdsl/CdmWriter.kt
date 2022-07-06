@@ -121,10 +121,9 @@ fun CoordinateAxis.write(builder: StringBuilder, indent: Indent) {
     builder.appendLine("")
 }
 
-// LOOK ProjectionCTV includes vert transforms wtf?
-fun ProjectionCTV.write(builder: StringBuilder, indent: Indent) {
+fun CoordinateTransform.write(builder: StringBuilder, indent: Indent) {
     builder.appendLine("$indent${this.name}")
-    this.ctvAttributes.forEach { it.write(builder, indent.incrNew()) }
+    this.metadata.forEach { it.write(builder, indent.incrNew()) }
     builder.appendLine("")
 }
 

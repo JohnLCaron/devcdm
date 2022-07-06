@@ -7,7 +7,7 @@ import dev.cdm.dataset.api.VariableDS
 import java.util.*
 
 // see coord_attr_conv.md
-class CoordAttrConvention(val builder: CoordSysBuilder) {
+class CoordAttrConvention(val builder: CoordinatesBuilder) {
 
     fun identifyAxisType(vds: VariableDS): AxisType? {
         val coordAxisType = vds.findAttributeString(_Coordinate.AxisType, null)
@@ -20,28 +20,6 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
             return positive.trim { it <= ' ' }.lowercase() == "up"
         }
         return null
-    }
-
-    /** Identify coordinate axes, using _Coordinate.Axes attribute.  */
-    fun identifyCoordinateAxes() {
-        // A Variable is made into a Coordinate Axis if of these is true:
-
-        // It has any of the _CoordinateAxisType, or _CoordinateZisPositive attributes.
-        builder.varList.forEach { vp ->
-            if (null != vp.vds.findAttributeString(_Coordinate.AxisType, null) ||
-                null != vp.vds.findAttributeString(_Coordinate.ZisPositive, null)
-            ) {
-                vp.setIsCoordinateAxis()
-            }
-        }
-
-        // It is listed in a _CoordinateAxes attribute from any variable in the file.
-        builder.varList.forEach { vp ->
-            val coordinatesAll = vp.vds.findAttributeString(_Coordinate.Axes, null)
-            if (coordinatesAll != null) {
-                vp.coordinatesAll = coordinatesAll
-            }
-        }
     }
 
     fun identifyCoordinateVariables() {
@@ -62,12 +40,34 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
                         } else {
                             vp.setIsCoordinateAxis("Alias '${vp.vds.fullName}' for dimension '${coordVarAlias}'")
                             builder.coordVarsForDimension.put(
-                                CoordSysBuilder.DimensionWithGroup(coordDim, vp.group),
+                                CoordinatesBuilder.DimensionWithGroup(coordDim, vp.group),
                                 vp
                             )
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /** Identify coordinate axes, using _Coordinate.Axes attribute.  */
+    fun identifyCoordinateAxes() {
+        // A Variable is made into a Coordinate Axis if of these is true:
+
+        // It has any of the _CoordinateAxisType, or _CoordinateZisPositive attributes.
+        builder.varList.forEach { vp ->
+            if (null != vp.vds.findAttributeString(_Coordinate.AxisType, null) ||
+                null != vp.vds.findAttributeString(_Coordinate.ZisPositive, null)
+            ) {
+                vp.setIsCoordinateAxis()
+            }
+        }
+
+        // It is listed in a _CoordinateAxes attribute from any variable in the file.
+        builder.varList.forEach { vp ->
+            val coordinatesAll = vp.vds.findAttributeString(_Coordinate.Axes, null)
+            if (coordinatesAll != null) {
+                vp.coordinatesAll = coordinatesAll
             }
         }
     }
@@ -216,23 +216,27 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
         // look for _CoordinateAxes on the CTV, apply to any Coordinate Systems that contain all these axes
         builder.varList.forEach { vp ->
             val coordAxes = vp.vds.findAttributeString(_Coordinate.Axes, null)
-            if (coordAxes != null && vp.isCoordinateTransform && vp.ctv != null) {
-                //  look for Coordinate Systems that contain all these axes
-                builder.coords.coordSys.forEach { coordSys ->
-                    if (builder.coords.containsAxes(coordSys, coordAxes)) {
-                        coordSys.addTransformName(vp.ctv!!.name) // TODO
-                        coordSys.setProjectionName(vp.ctv!!.name)
-                        builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+            if (coordAxes != null) {
+                if (vp.isCoordinateTransform && vp.ctv != null) {
+                    //  look for Coordinate Systems that contain all these axes
+                    builder.coords.coordSys.forEach { coordSys ->
+                        if (builder.coords.containsAxes(coordSys, coordAxes)) {
+                            coordSys.setProjectionName(vp.ctv!!.name)
+                            if (coordSys.addTransformName(vp.ctv!!.name)) {
+                                builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+                            }
+                        }
                     }
-                }
-                // TODO do we need to do both?
-                //  look for Coordinate Systems Variables that contain all these axes
-                builder.varList.forEach { csv ->
-                    if (csv.isCoordinateSystem && csv.cs != null) {
-                        if (builder.coords.containsAxisTypes(csv.cs!!, coordAxes)) {
-                            csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
-                            csv.cs!!.setProjectionName(vp.ctv!!.name)
-                            builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                    // TODO do we need to do both?
+                    //  look for Coordinate Systems Variables that contain all these axes
+                    builder.varList.forEach { csv ->
+                        if (csv.isCoordinateSystem && csv.cs != null) {
+                            if (builder.coords.containsAxisTypes(csv.cs!!, coordAxes)) {
+                                csv.cs!!.setProjectionName(vp.ctv!!.name)
+                                if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
+                                    builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                                }
+                            }
                         }
                     }
                 }
@@ -246,9 +250,10 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
                     //  look for Coordinate Systems that contain all these axes
                     builder.coords.coordSys.forEach { coordSys ->
                         if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
-                            coordSys.addTransformName(vp.ctv!!.name) // TODO
                             coordSys.setProjectionName(vp.ctv!!.name)
-                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+                            if (coordSys.addTransformName(vp.ctv!!.name)) {
+                                builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
+                            }
                         }
                     }
                     // TODO do we need to do both?
@@ -256,9 +261,10 @@ class CoordAttrConvention(val builder: CoordSysBuilder) {
                     builder.varList.forEach { csv ->
                         if (csv.isCoordinateSystem && csv.cs != null) {
                             if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
-                                csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
                                 csv.cs!!.setProjectionName(vp.ctv!!.name)
-                                builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                                if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
+                                    builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                                }
                             }
                         }
                     }

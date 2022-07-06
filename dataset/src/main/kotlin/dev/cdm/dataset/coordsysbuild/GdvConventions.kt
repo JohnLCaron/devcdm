@@ -7,6 +7,7 @@ import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.CdmDataset
 import dev.cdm.dataset.api.CdmDatasetCS
+import dev.cdm.dataset.api.CoordinateTransform
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.geoloc.Projection
 import dev.cdm.dataset.geoloc.projection.LambertConformal
@@ -185,7 +186,7 @@ open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
             val vp = findVarProcess(projCT!!.getName(), null)
             if (vp != null) {
                 vp.isCoordinateTransform = true
-                vp.ctv = projCT
+                vp.ctv = CoordinateTransform(projCT!!)
             }
         }
         super.makeCoordinateTransforms()

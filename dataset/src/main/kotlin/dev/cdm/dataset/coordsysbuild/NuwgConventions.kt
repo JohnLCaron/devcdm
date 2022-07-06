@@ -3,7 +3,7 @@ package dev.cdm.dataset.coordsysbuild
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.*
 
-open class NuwgConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
+open class NuwgConventions(name: String = "AWIPS") : CoordinatesBuilder(name) {
 
     var nuwg: NuwgAugment? = null
     override fun augment(orgDataset: CdmDataset): CdmDataset {
@@ -17,7 +17,7 @@ open class NuwgConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
             val vp = findVarProcess(projCTV.name, null)
             if (vp != null) {
                 vp.isCoordinateTransform = true
-                vp.ctv = projCTV
+                vp.ctv = CoordinateTransform(projCTV)
             }
         }
         super.makeCoordinateTransforms()

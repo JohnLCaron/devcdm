@@ -1,7 +1,12 @@
 package cdm.dataset.coordsysbuild
 
-import dev.cdm.test.util.TestFiles
+import com.google.common.truth.Truth.assertThat
+import dev.cdm.dataset.api.CdmDatasetCS
+import dev.cdm.dataset.api.CdmDatasets.openDatasetWithCS
+import dev.cdm.dataset.api.VariableDS
+import dev.cdm.dataset.coordsysbuild.openDatasetWithCoordSys
 import org.junit.jupiter.api.Test
+import java.io.IOException
 
 class TestCoordsysProblems {
 

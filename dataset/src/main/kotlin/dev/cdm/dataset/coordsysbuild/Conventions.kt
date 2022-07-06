@@ -4,7 +4,7 @@ import dev.cdm.dataset.api.CdmDataset
 import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets
 
-fun findCoordSysBuilder(dataset: CdmDataset): CoordSysBuilder {
+fun findCoordSysBuilder(dataset: CdmDataset): CoordinatesBuilder {
     var conv = dataset.rootGroup.findAttributeString("Conventions", "none")
     if (conv == "none") {
         conv = dataset.rootGroup.findAttributeString("Convention", "none")
@@ -27,7 +27,7 @@ fun findCoordSysBuilder(dataset: CdmDataset): CoordSysBuilder {
         isM3ioConventions(dataset) -> M3ioConventions()
         isWrfConventions(dataset) -> WrfConventions()
         isZebraConvention(dataset) -> ZebraConventions()
-        else -> CoordSysBuilder()
+        else -> CoordinatesBuilder()
     }
 }
 
@@ -45,6 +45,7 @@ fun openDatasetWithCoordSys(orgDataset: CdmDataset) : CdmDatasetCS {
         .setCoordsHelper(coords)
         .setConventionUsed(coordSysBuilder.conventionName)
         .build()
+    println(coordSysBuilder.info)
 
     return withcs
 }

@@ -2,7 +2,6 @@ package dev.cdm.dataset.coordsysbuild
 
 import dev.cdm.array.ArrayType
 import dev.cdm.core.api.Attribute
-import dev.cdm.core.api.AttributeContainerMutable
 import dev.cdm.core.api.CdmFile
 import dev.cdm.core.api.Group
 import dev.cdm.core.constants.*
@@ -12,7 +11,7 @@ import dev.cdm.dataset.api.CoordinateAxis
 import dev.cdm.dataset.api.CoordinateAxis1D
 import java.util.*
 
-open class HdfEosOmiConventions(name: String = "HdfEos-Aura-Omi") : CoordSysBuilder(name) {
+open class HdfEosOmiConventions(name: String = "HdfEos-Aura-Omi") : CoordinatesBuilder(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val nestedAtt = "/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel"

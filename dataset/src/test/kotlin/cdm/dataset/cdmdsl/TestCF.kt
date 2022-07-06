@@ -2,7 +2,9 @@ package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
 import dev.cdm.array.Array
+import dev.cdm.core.api.CdmFile
 import dev.cdm.core.constants.AxisType
+import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.cdmdsl.CdmdslDataset
@@ -53,14 +55,16 @@ class TestCF {
         assertThat(cdmdsl).isNotNull()
 
         val ncd = cdmdsl.build()
+        val withcs = CdmDatasets.openDatasetCS(ncd, true)
+
         // println(ncd.write())
-        println(ncd.writeDsl())
+        println(withcs.writeDsl())
 
-        val temp = ncd.findVariable("Temperature") as VariableDS
+        val temp = withcs.findVariable("Temperature") as VariableDS
         assertThat(temp).isNotNull()
-        assertThat(ncd.makeCoordinateSystemsFor(temp).size).isEqualTo(1)
+        assertThat(withcs.makeCoordinateSystemsFor(temp).size).isEqualTo(1)
 
-        val cs = ncd.findCoordinateSystem("y x")
+        val cs = withcs.findCoordinateSystem("y x")
         assertThat(cs).isNotNull()
     }
 

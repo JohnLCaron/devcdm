@@ -9,6 +9,7 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.FeatureType;
+import dev.cdm.dataset.api.CoordinateTransform;
 import dev.cdm.dataset.geoloc.Projection;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
@@ -412,7 +413,7 @@ public class GcdmGridConverter {
   @Nullable
   public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
     AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
-    ProjectionCTV projCTV = new ProjectionCTV(proto.getName(), ctv, proto.getGeoUnit());
+    CoordinateTransform projCTV = new CoordinateTransform(proto.getName(), ctv, true);
     return ProjectionFactory.makeProjection(projCTV, errlog);
   }
 

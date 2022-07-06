@@ -9,7 +9,7 @@ import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.projection.Sinusoidal
 import dev.cdm.dataset.transform.horiz.ProjectionCTV
 
-private  val  CRS = "Projection"
+private  val  CRS = "sinusoidal"
 private  val  DATA_GROUP = "Data_Fields"
 private  val  DIMX_NAME = "XDim"
 private  val  DIMY_NAME = "YDim"
@@ -121,7 +121,9 @@ open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConvention
                 projCTV = makeSinusoidalProjection(CRS, projParams)
                 val crss = makeCoordinateTransformVariable(projCTV!!)
                 crss.addAttribute(Attribute(_Coordinate.AxisTypes, "GeoX GeoY"))
+                // LOOK addVariable CTV shouldne be needed ??
                 dataG.addVariable(crss)
+                // LOOK replace needed ??
                 datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(dataG, DIMX_NAME, dimX.length, minX, maxX, true))
                 datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(dataG, DIMY_NAME, dimY.length, minY, maxY, false))
                 coordinates = if (addTimeCoord) TIME_NAME + " " + DIMX_NAME + " " + DIMY_NAME else DIMX_NAME + " " + DIMY_NAME
@@ -193,8 +195,8 @@ open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConvention
 
     ///////////////////////////////////////////
 
-    override fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
-        return projCTV
+    override fun makeTransformBuilder(vb: VariableDS, isProjection : Boolean): CoordinateTransform? {
+        return CoordinateTransform(projCTV!!)
     }
 }
 

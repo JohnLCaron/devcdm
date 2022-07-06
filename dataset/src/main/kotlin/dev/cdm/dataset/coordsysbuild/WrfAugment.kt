@@ -153,7 +153,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
                 } else if (v.shortName.startsWith("XLONG")) {
                     val v2 = removeConstantTimeDim(v)
                     v2.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lon.toString()))
-                } else if (v.shortName == "T") { // TODO ANOTHER MAJOR KLUDGE to pick up 4D fields
+                } /* else if (v.shortName == "T") { // TODO ANOTHER MAJOR KLUDGE to pick up 4D fields
                     v.addAttribute(Attribute(_Coordinate.Axes, "Time XLAT XLONG z"))
                 } else if (v.shortName == "U") {
                     v.addAttribute(Attribute(_Coordinate.Axes, "Time XLAT_U XLONG_U z"))
@@ -161,7 +161,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
                     v.addAttribute(Attribute(_Coordinate.Axes, "Time XLAT_V XLONG_V z"))
                 } else if (v.shortName == "W") {
                     v.addAttribute(Attribute(_Coordinate.Axes, "Time XLAT XLONG z_stag"))
-                }
+                } */
             }
         }
 

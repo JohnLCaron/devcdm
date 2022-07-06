@@ -13,7 +13,7 @@ import dev.cdm.dataset.cdmdsl.cdmdsl
 open class ZebraConventions(name: String = "Zebra") : DefaultConventions(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
-        val unitsFromBase = orgDataset.findAttribute("time_offset@units")
+        val unitsFromBase = orgDataset.findAttributeFromFullName("base_time@units")
 
         val cdmdsl: CdmdslDataset = cdmdsl {
             attribute(CF.CONVENTIONS).setValue("Zebra")
@@ -28,12 +28,13 @@ open class ZebraConventions(name: String = "Zebra") : DefaultConventions(name) {
                 attribute(_Coordinate.AxisType).setValue(AxisType.Height.name)
                 attribute(_Coordinate.ZisPositive).setValue(CF.POSITIVE_UP)
             }
-            variable("base_time") {
+            variable("time_offset") {
                 if (unitsFromBase != null && unitsFromBase.isString) {
                     unitsFromBase.stringValue?.let { attribute(CDM.UNITS).setValue(it) }
                 }
                 attribute("process").setValue("CDM ZebraConventions = base_time + time_offset")
                 attribute(_Coordinate.AxisType).setValue(AxisType.Time.name)
+                attribute(_Coordinate.AliasForDimension).setValue("time")
             }
         }
         return cdmdsl.build(orgDataset)

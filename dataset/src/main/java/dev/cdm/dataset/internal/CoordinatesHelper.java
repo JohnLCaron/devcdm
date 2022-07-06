@@ -14,7 +14,6 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
-import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 
 import dev.cdm.array.Immutable;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 
 /** An immutable helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
-public class CoordinatesHelper {
+public class CoordinatesHelper implements Coordinates {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
 
   public static List<CoordinateAxis> makeAxes(CdmDataset ncd) {
@@ -86,20 +85,23 @@ public class CoordinatesHelper {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
-
+  @Override
   public String getConventionName() {
     return conventionName;
   }
 
-  public List<CoordinateAxis> getCoordAxes() {
+  @Override
+  public List<CoordinateAxis> getCoordinateAxes() {
     return coordAxes;
   }
 
-  public List<CoordinateSystem> getCoordSystems() {
+  @Override
+  public List<CoordinateSystem> getCoordinateSystems() {
     return coordSystems;
   }
 
-  public List<ProjectionCTV> getCoordTransforms() {
+  @Override
+  public List<CoordinateTransform> getCoordinateTransforms() {
     return coordTransforms;
   }
 
@@ -109,8 +111,10 @@ public class CoordinatesHelper {
     return coordSystems.stream().filter(cs -> cs.getName().equals(name)).findFirst().orElse(null);
   }
 
-  public List<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
-    List<String> names = coordSysForVar.get(v.getFullName());
+  @Override
+  public List<CoordinateSystem> makeCoordinateSystemsFor(VariableDS v) {
+    String fullName = v.getFullName();
+    List<String> names = coordSysForVar.get(fullName);
     if (names != null) {
       return names.stream().map(this::findCoordinateSystem).filter(Objects::nonNull).toList();
     }
@@ -129,22 +133,16 @@ public class CoordinatesHelper {
   private final String conventionName;
   private final ImmutableList<CoordinateAxis> coordAxes;
   private final ImmutableList<CoordinateSystem> coordSystems;
-  private final ImmutableList<ProjectionCTV> coordTransforms;
+  private final ImmutableList<CoordinateTransform> coordTransforms;
   private final Map<String, List<String>> coordSysForVar;
 
   public CoordinatesHelper(CoordsHelperBuilder builder, List<CoordinateAxis> axes) {
     this.conventionName = builder.getConventionName();
     this.coordAxes = ImmutableList.copyOf(axes);
-
-    ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
-    ctBuilders.addAll(builder.getCoordTransforms().stream().filter(Objects::nonNull).collect(Collectors.toList()));
-    coordTransforms = ctBuilders.build();
-
-    List<ProjectionCTV> allProjections =
-        coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
+    this.coordTransforms = ImmutableList.copyOf(builder.getCoordTransforms());
 
     // TODO remove coordSys not used by a variable....
-    this.coordSystems = builder.getCoordSys().stream().map(csb -> csb.build(this.coordAxes, allProjections))
+    this.coordSystems = builder.getCoordSys().stream().map(csb -> csb.build(this.coordAxes, this.coordTransforms))
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
 
     this.coordSysForVar = builder.getCoordinateSystemFor();
@@ -154,11 +152,11 @@ public class CoordinatesHelper {
     this.conventionName = builder.conventionName;
     this.coordAxes = ImmutableList.copyOf(axes);
 
-    ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
+    ImmutableList.Builder<CoordinateTransform> ctBuilders = ImmutableList.builder();
     ctBuilders.addAll(builder.coordTransforms.stream().filter(Objects::nonNull).collect(Collectors.toList()));
     coordTransforms = ctBuilders.build();
 
-    List<ProjectionCTV> allProjections =
+    List<CoordinateTransform> allProjections =
             coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
 
     // TODO remove coordSys not used by a variable....
@@ -189,7 +187,7 @@ public class CoordinatesHelper {
     String conventionName = "none";
     public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>(); // we dont use these
     public final ArrayList<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
-    public final ArrayList<ProjectionCTV> coordTransforms = new ArrayList<>();
+    public final ArrayList<CoordinateTransform> coordTransforms = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
@@ -254,29 +252,13 @@ public class CoordinatesHelper {
       return coordSys.stream().filter(cs -> cs.coordAxesNames.equals(coordAxesNames)).findFirst();
     }
 
-    public Builder addCoordinateSystems(Collection<CoordinateSystem.Builder<?>> systems) {
-      Preconditions.checkNotNull(systems);
-      coordSys.addAll(systems);
-      return this;
-    }
-
     // this is used when making a copy, we've thrown away the TransformBuilder
-    public Builder addCoordinateTransform(ProjectionCTV ct) {
+    public Builder addCoordinateTransform(CoordinateTransform ct) {
       Preconditions.checkNotNull(ct);
-      if (coordTransforms.stream().noneMatch(old -> old.getName().equals(ct.getName()))) {
+      if (coordTransforms.stream().noneMatch(old -> old.name().equals(ct.name()))) {
         coordTransforms.add(ct);
       }
       return this;
-    }
-
-    public Builder addCoordinateTransforms(List<ProjectionCTV> transforms) {
-      coordTransforms.addAll(transforms);
-      return this;
-    }
-
-    public void replaceCoordinateTransform(ProjectionCTV ct) {
-      coordTransforms.stream().filter(t -> t.getName().equals(ct.getName())).findFirst().ifPresent(coordTransforms::remove);
-      addCoordinateTransform(ct);
     }
 
     private List<CoordinateAxis.Builder<?>> getAxesForSystem(CoordinateSystem.Builder<?> cs) {
