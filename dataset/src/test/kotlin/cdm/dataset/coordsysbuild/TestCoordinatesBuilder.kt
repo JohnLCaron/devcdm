@@ -7,7 +7,7 @@ import dev.cdm.dataset.cdmdsl.*
 import dev.cdm.dataset.coordsysbuild.findCoordSysBuilder
 import org.junit.jupiter.api.Test
 
-class TestCoordSysBuilder {
+class TestCoordinatesBuilder {
 
     fun createTestDataset() : CdmDatasetCS {
         val cdmdsl: CdmdslDataset = cdmdsl() {
@@ -98,10 +98,10 @@ class TestCoordSysBuilder {
             .setConventionUsed(convention.conventionName)
             .build()
         assertThat(withcs).isNotNull()
-        println(withcs.write())
+        println(withcs.writeDsl())
 
         assertThat(withcs.conventionBuilder).isEqualTo("DefaultConventions")
-        assertThat(withcs.coordinateSystems).hasSize(2)
+        assertThat(withcs.coordinateSystems).hasSize(3)
         assertThat(withcs.coordinateAxes).hasSize(4)
         assertThat(withcs.coordinateTransforms).hasSize(2)
 

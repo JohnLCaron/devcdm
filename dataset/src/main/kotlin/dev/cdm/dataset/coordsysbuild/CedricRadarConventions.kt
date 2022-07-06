@@ -16,8 +16,14 @@ import dev.cdm.dataset.cdmdsl.cdmdsl
 open class CedricRadarConventions(name: String = "CEDRICRadar") : CFConventions(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
-        val lat = orgDataset.findVariable("sensor_latitude")
-        val lon = orgDataset.findVariable("sensor_longitude")
+        var lat = orgDataset.findVariable("sensor_latitude")
+        if (lat == null) {
+            lat = orgDataset.findVariable("radar_latitude")
+        }
+        var lon = orgDataset.findVariable("sensor_longitude")
+        if (lon == null) {
+            lon = orgDataset.findVariable("radar_longitude")
+        }
         val latv = lat!!.readScalarFloat().toDouble()
         val lonv = lon!!.readScalarFloat().toDouble()
 
@@ -55,8 +61,8 @@ open class CedricRadarConventions(name: String = "CEDRICRadar") : CFConventions(
 
             variable("ProjectionCTV") {
                 attribute(CF.GRID_MAPPING_NAME).setValue("flat_earth")
-                attribute("longitude_of_projection_origin").setValue(lonv)
-                attribute("latitude_of_projection_origin").setValue(latv)
+                attribute(CF.LONGITUDE_OF_PROJECTION_ORIGIN).setValue(lonv)
+                attribute(CF.LATITUDE_OF_PROJECTION_ORIGIN).setValue(latv)
                 attribute(_Coordinate.TransformType).setValue("Projection")
                 attribute(_Coordinate.AxisTypes).setValue("GeoX GeoY")
             }

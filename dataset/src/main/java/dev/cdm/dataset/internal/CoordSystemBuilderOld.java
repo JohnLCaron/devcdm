@@ -582,14 +582,14 @@ public class CoordSystemBuilderOld {
         vp.ctv = makeTransformBuilder(vp.vb);
       }
       if (vp.ctv != null) {
-        coords.addCoordinateTransform(vp.ctv);
+        coords.addCoordinateTransform(new CoordinateTransform(vp.ctv));
       }
     }
   }
 
   protected ProjectionCTV makeTransformBuilder(Variable.Builder<?> vb) {
     // at this point dont know if its a Projection or a VerticalTransform
-    return new ProjectionCTV(vb.getFullName(), vb.getAttributeContainer(), null);
+    return new ProjectionCTV(vb.shortName, vb.getAttributeContainer(), null);
   }
 
   /** Assign CoordinateTransform objects to Variables and Coordinate Systems. */
@@ -648,7 +648,7 @@ public class CoordSystemBuilderOld {
         if (!dataAxesList.isEmpty()) {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
-              coords.addCoordinateTransform(vp.ctv);
+              coords.addCoordinateTransform(new CoordinateTransform(vp.ctv));
               cs.setProjectionName(vp.ctv.getName());
               parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }

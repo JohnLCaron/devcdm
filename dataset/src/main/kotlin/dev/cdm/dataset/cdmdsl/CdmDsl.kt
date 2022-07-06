@@ -20,6 +20,7 @@ class CdmdslAttribute constructor(attName : String) : CdmdslBase(attName) {
     var type : ArrayType? = null
     var values : String? = null
     var dvalue : Double? = null
+    var isUnsigned : Boolean? = false
 
     constructor(attName: String, values : String, type: ArrayType? = ArrayType.STRING) : this(attName) {
         this.type = type
@@ -31,6 +32,9 @@ class CdmdslAttribute constructor(attName : String) : CdmdslBase(attName) {
     }
     fun setValue(attValue : String) {
         this.values = attValue
+    }
+    fun setUnsigned(isUnsigned : Boolean) {
+        this.isUnsigned = isUnsigned
     }
 }
 

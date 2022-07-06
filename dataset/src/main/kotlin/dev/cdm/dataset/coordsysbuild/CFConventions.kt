@@ -110,7 +110,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
         return super.identifyZIsPositive(vds)
     }
 
-    /** Identify coordinate axes, using _Coordinate.Axes attribute.  */
+    /** Identify coordinate systems for a variable, using "coordinates" attribute.  */
     override fun identifyCoordinateAxes() {
         // A Variable is made into a Coordinate Axis if listed in a coordinates attribute from any variable
         varList.forEach { vp ->
@@ -128,7 +128,6 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
             val stdName = vp.vds.findAttributeString(CF.STANDARD_NAME, null)
             verticalUnits.forEach {
                 if (stdName.equals(it, ignoreCase = true)) {
-                    vp.isCoordinateTransform = true
                     info.appendLine("Identify CoordinateTransform '${vp}'")
                     vp.setIsCoordinateTransform("from ${CF.STANDARD_NAME}")
                 }
@@ -136,6 +135,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
         }
 
         // look for horizontal transforms LOOK could check if they are known
+        // thjis tells us that this variable's coordinate system has this projection
         varList.forEach { vp ->
             val gridMapping = vp.vds.findAttributeString(CF.GRID_MAPPING, null)
             if (gridMapping != null) {
@@ -149,6 +149,7 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
                         info.appendLine("***Cant find gridMapping '${gridMapping}' referenced by variable '$vp'")
                     } else {
                         gridVp.setIsCoordinateTransform("from ${vp} to ${gridVp}")
+                        vp.gridMapping = gridMapping
                     }
                 }
             }

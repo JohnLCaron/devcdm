@@ -5,8 +5,7 @@
 package dev.cdm.dataset.api;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.dataset.geoloc.projection.FlatEarth;
-import dev.cdm.dataset.transform.horiz.ProjectionCTV;
+import dev.cdm.core.api.AttributeContainerMutable;
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.constants.AxisType;
@@ -34,11 +33,12 @@ public class TestCoordSystemBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(CdmDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    ProjectionCTV projct = new ProjectionCTV("horiz", new FlatEarth());
-    List<ProjectionCTV> allProjs = ImmutableList.of(projct);
+    CoordinateTransform projct = new CoordinateTransform("flat_earth", AttributeContainerMutable.of(), true);
+    List<CoordinateTransform> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> builder =
         CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
+    builder.addTransformName("flat_earth");
     CoordinateSystem coordSys = builder.build(axes, allProjs);
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
@@ -51,9 +51,9 @@ public class TestCoordSystemBuilder {
     assertThat(xaxis.findAttributeString(CDM.UNITS, "")).isEqualTo("xunits");
     assertThat(xaxis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("xdesc");
 
-    assertThat(coordSys.getProjection()).isEqualTo(projct.getPrecomputedProjection());
+    assertThat(coordSys.getProjection()).isNotNull();
+    assertThat(coordSys.getProjection().getName()).isEqualTo("FlatEarth");
 
-    assertThat(coordSys.isImplicit()).isFalse();
     assertThat(coordSys.isGeoReferencing()).isTrue();
     assertThat(coordSys.isGeoXY()).isTrue();
     assertThat(coordSys.isLatLon()).isFalse();

@@ -20,7 +20,7 @@ import java.io.IOException
  * IFPS Convention Allows Local NWS forecast office generated forecast datasets to be brought into IDV.
  * @author Burks
  */
-open class IfpsConventions(name: String = "IFPS") : CoordSysBuilder(name) {
+open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)

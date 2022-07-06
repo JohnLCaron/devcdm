@@ -1,7 +1,10 @@
 package dev.cdm.grid.internal;
 
 import com.google.common.collect.ImmutableList;
+import dev.cdm.core.api.AttributeContainer;
+import dev.cdm.core.api.AttributeContainerMutable;
 import dev.cdm.core.api.Group;
+import dev.cdm.dataset.api.CoordinateTransform;
 import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import org.junit.Test;
 import dev.cdm.array.ArrayType;
@@ -39,11 +42,11 @@ public class TestGridNetcdfCSBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(CdmDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    ProjectionCTV projct = new ProjectionCTV("horiz", new FlatEarth());
-    List<ProjectionCTV> allProjs = ImmutableList.of(projct);
+    CoordinateTransform projct = new CoordinateTransform("flat_earth", AttributeContainerMutable.of(), true);
+    List<CoordinateTransform> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> csb =
-        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
+        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz").addTransformName("flat_earth");;
     CoordinateSystem coordSys = csb.build(axes, allProjs);
 
     // GridDataset

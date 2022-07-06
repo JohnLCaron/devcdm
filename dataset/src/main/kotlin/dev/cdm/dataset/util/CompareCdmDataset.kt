@@ -143,6 +143,7 @@ fun checkContains(what: String?, container: List<Any?>, wantList: List<Any?>, ou
     return ok
 }
 
+private const val skipTransforms = true
 private val IDENTITY_FILTER = CdmObjFilter()
 
 class CompareCdmDataset(
@@ -203,7 +204,7 @@ class CompareCdmDataset(
         if (csys1.isLatLon != csys2.isLatLon) {
             return false
         }
-        if (csys1.projection != csys2.projection) {
+        if (!skipTransforms && csys1.projection != csys2.projection) {
             return false
         }
         var matchAll = true

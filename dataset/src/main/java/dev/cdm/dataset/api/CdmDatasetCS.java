@@ -7,7 +7,6 @@ import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
-import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 
 import java.util.List;
 
@@ -20,15 +19,15 @@ public class CdmDatasetCS extends CdmDataset {
    * @return list of type CoordinateSystem; may be empty, not null.
    */
   public List<CoordinateSystem> getCoordinateSystems() {
-    return coords.getCoordSystems();
+    return coords.getCoordinateSystems();
   }
 
   public List<CoordinateSystem> makeCoordinateSystemsFor(VariableDS vds) {
     return coords.makeCoordinateSystemsFor(vds);
   }
 
-  public List<ProjectionCTV> getCoordinateTransforms() {
-    return coords.getCoordTransforms();
+  public List<CoordinateTransform> getCoordinateTransforms() {
+    return coords.getCoordinateTransforms();
   }
 
   /**
@@ -37,7 +36,7 @@ public class CdmDatasetCS extends CdmDataset {
    * @return list of type CoordinateAxis; may be empty, not null.
    */
   public List<CoordinateAxis> getCoordinateAxes() {
-    return coords.getCoordAxes();
+    return coords.getCoordinateAxes();
   }
 
   /**
@@ -49,7 +48,7 @@ public class CdmDatasetCS extends CdmDataset {
   public CoordinateAxis findCoordinateAxis(AxisType type) {
     if (type == null)
       return null;
-    for (CoordinateAxis v : coords.getCoordAxes()) {
+    for (CoordinateAxis v : coords.getCoordinateAxes()) {
       if (type == v.getAxisType())
         return v;
     }
@@ -65,7 +64,7 @@ public class CdmDatasetCS extends CdmDataset {
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null)
       return null;
-    for (CoordinateAxis v : coords.getCoordAxes()) {
+    for (CoordinateAxis v : coords.getCoordinateAxes()) {
       if (fullName.equals(v.getFullName()))
         return v;
     }
@@ -81,7 +80,7 @@ public class CdmDatasetCS extends CdmDataset {
   public CoordinateSystem findCoordinateSystem(String name) {
     if (name == null)
       return null;
-    for (CoordinateSystem v : coords.getCoordSystems()) {
+    for (CoordinateSystem v : coords.getCoordinateSystems()) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -123,7 +122,7 @@ public class CdmDatasetCS extends CdmDataset {
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private final CoordinatesHelper coords;
+  private final Coordinates coords;
 
   private CdmDatasetCS(CdmDatasetCS.Builder<?> builder) {
     super(builder);
@@ -149,9 +148,9 @@ public class CdmDatasetCS extends CdmDataset {
     if (b.coords == null) {
       b.coords = new CoordsHelperBuilder(coords.getConventionName());
     }
-    this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
-    this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
-    this.coords.getCoordTransforms().forEach(ct -> b.coords.addCoordinateTransform(ct));
+    this.coords.getCoordinateAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
+    this.coords.getCoordinateSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
+    this.coords.getCoordinateTransforms().forEach(ct -> b.coords.addCoordinateTransform(ct));
 
     return (CdmDatasetCS.Builder<?>) super.addLocalFieldsToBuilder(b);
   }

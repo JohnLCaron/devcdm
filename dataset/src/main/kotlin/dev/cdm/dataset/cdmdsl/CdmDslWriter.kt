@@ -23,10 +23,11 @@ fun CdmDataset.writeDsl(): String {
         builder.appendLine()
     }
 
-    val datasetCs : CdmDatasetCS? = if (this is CdmDatasetCS) this else null
+    val datasetCs: CdmDatasetCS? = if (this is CdmDatasetCS) this else null
 
     if (!this.rootGroup.variables.isEmpty()) {
-        this.rootGroup.variables.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew(), datasetCs) }
+        this.rootGroup.variables.filter { it !is CoordinateAxis }
+            .forEach { it.writeDsl(builder, indent.incrNew(), datasetCs) }
         builder.appendLine()
     }
 
@@ -46,15 +47,28 @@ fun CdmDataset.writeDsl(): String {
     return builder.toString()
 }
 
+fun CdmDatasetCS.writeCSDsl(): String {
+    val builder = StringBuilder()
+
+    builder.appendLine("cdmdsl(\"${this.location}\") {")
+    val indent = Indent(2)
+    this.coordinateAxes.forEach { it.writeDsl(builder, indent.incrNew()) }
+    this.coordinateSystems.forEach { it.writeDsl(builder, indent.incrNew()) }
+    this.coordinateTransforms.forEach { it.writeDsl(builder, indent.incrNew()) }
+    builder.appendLine()
+    builder.appendLine("${indent.decr()}}");
+    return builder.toString()
+}
+
 fun Attribute.writeDsl(builder: StringBuilder, indent: Indent) {
     val values = this.arrayValues?.let { shortenPrintArray(it, 80) }
     builder.appendLine("${indent}attribute(\"${this.name.trim()}\").setValue(${values})");
 }
 
-fun <T> shortenPrintArray(arrayValues : dev.cdm.array.Array<T>, len : Int) : String {
+fun <T> shortenPrintArray(arrayValues: dev.cdm.array.Array<T>, len: Int): String {
     val out = Formatter()
     printArray(out, arrayValues, null, Indent(0))
-    var values = out.toString().replace("\n","")
+    var values = out.toString().replace("\n", "")
     if (values.length > len) values = values.take(len) + "...\""
     return values
 }
@@ -63,7 +77,7 @@ fun Dimension.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}dimension(\"${this.shortName}\", ${this.getLength()})")
 }
 
-fun Variable.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatasetCS? = null) {
+fun Variable.writeDsl(builder: StringBuilder, indent: Indent, dataset: CdmDatasetCS? = null) {
     builder.appendLine("${indent}variable(\"${this.getShortName()}\") {")
     indent.incr()
     builder.appendLine("${indent}setType(\"${this.arrayType.name}\")")
@@ -78,7 +92,7 @@ fun Variable.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatas
     builder.appendLine("${indent}}");
 }
 
-fun Group.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatasetCS? = null) {
+fun Group.writeDsl(builder: StringBuilder, indent: Indent, dataset: CdmDatasetCS? = null) {
     builder.appendLine("${indent}group(\"${this.getShortName()}\") {")
     indent.incr()
 
@@ -93,7 +107,7 @@ fun Group.writeDsl(builder: StringBuilder, indent: Indent, dataset : CdmDatasetC
     }
 
     if (!this.variables.isEmpty()) {
-        this.variables.filter {it !is CoordinateAxis}.forEach { it.writeDsl(builder, indent.incrNew(), dataset) }
+        this.variables.filter { it !is CoordinateAxis }.forEach { it.writeDsl(builder, indent.incrNew(), dataset) }
         builder.appendLine()
     }
 
@@ -121,6 +135,7 @@ fun CoordinateSystem.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}coordSystem(\"${this.name}\") {")
     indent.incr()
     builder.appendLine("${indent}setAxes(\"${this.axesName}\")")
+    builder.appendLine("${indent}setTransforms(\"${this.coordinateTransforms.map { it.name }}\")")
     if (this.projection != null) {
         builder.appendLine("${indent}setProjection(\"${this.projection!!.name}\")")
     }
@@ -128,10 +143,9 @@ fun CoordinateSystem.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}}");
 }
 
-// LOOK ProjectionCTV includes vert transforms wtf?
-fun ProjectionCTV.writeDsl(builder: StringBuilder, indent: Indent) {
+fun CoordinateTransform.writeDsl(builder: StringBuilder, indent: Indent) {
     builder.appendLine("${indent}transform(${this.name}) {")
-    this.ctvAttributes.forEach { it.writeDsl(builder, indent.incrNew()) }
+    this.metadata.forEach { it.writeDsl(builder, indent.incrNew()) }
     builder.appendLine("${indent}}");
 }
 

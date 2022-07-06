@@ -1,13 +1,12 @@
 package dev.cdm.dataset.coordsysbuild
 
-import dev.cdm.core.api.Attribute
+import dev.cdm.core.api.AttributeContainerMutable
 import dev.cdm.core.constants.AxisType
-import dev.cdm.core.constants.CDM
-import dev.cdm.core.constants._Coordinate
+import dev.cdm.core.constants.CF
 import dev.cdm.dataset.api.*
 import dev.cdm.dataset.transform.vertical.WrfEta
 
-class WrfConventions() : CoordSysBuilder("WrfConventions") {
+class WrfConventions() : CoordinatesBuilder("WrfConventions") {
 
     var augmenter: WrfAugment? = null
     override fun augment(orgDataset: CdmDataset): CdmDataset {
@@ -44,34 +43,47 @@ class WrfConventions() : CoordSysBuilder("WrfConventions") {
         return null
     }
 
+    /** Identify coordinate systems for a variable, using "coordinates" attribute.  */
+    override fun identifyCoordinateSystems() {
+        // A Variable is made into a Coordinate Axis if listed in a coordinates attribute from any variable
+        varList.forEach { vp ->
+            val coordinates = vp.vds.findAttributeString(CF.COORDINATES, null)
+            if (coordinates != null) {
+                vp.setPartialCoordinates(coordinates)
+            }
+        }
+        super.identifyCoordinateSystems()
+    }
+
+
+    override fun makeCoordinateTransforms() {
+        val projCT = augmenter?.projCT
+        if (projCT != null) {
+            val horizTransform = CoordinateTransform(projCT)
+            coords.addCoordinateTransform(horizTransform)
+        }
+
+        // experimental. it appears we done need any attributes, its all handled in WrfEta
+        val vertTransform = CoordinateTransform(WrfEta.WRF_ETA_COORDINATE, AttributeContainerMutable.of(), false)
+        coords.addCoordinateTransform(vertTransform)
+
+        super.makeCoordinateTransforms()
+    }
+
     override fun assignCoordinateTransforms() {
         super.assignCoordinateTransforms()
 
-        // public Optional<CoordinateAxis.Builder> findZAxis(CoordinateSystem.Builder csys) {
-        // any cs with a vertical coordinate with no units gets one
+        // any cs with a GeoZ gets assigned WrfEta.WRF_ETA_COORDINATE transform
         coords.coordSys.forEach { cs ->
             val axis = coords.findAxisByType(cs, AxisType.GeoZ)
             if (axis != null) {
                 val units = axis.units
                 if (units == null || units.trim { it <= ' ' }.isEmpty()) {
-                    info.appendLine("Added WRF_ETA_COORDINATE to '${cs.coordAxesNames}'")
-                    axis.addAttribute(Attribute(_Coordinate.TransformType, "Vertical"))
-                    axis.addAttribute(Attribute(CDM.TRANSFORM_NAME, WrfEta.WRF_ETA_COORDINATE))
+                    coords.addTransformTo(WrfEta.WRF_ETA_COORDINATE, cs.name)
+                    info.appendLine("Assign coordTransform '${WrfEta.WRF_ETA_COORDINATE}' to CoordSys '${cs.name}'")
                 }
             }
         }
-    }
-
-    override fun makeCoordinateTransforms() {
-        val projCT = augmenter?.projCT
-        if (projCT != null) {
-            val vp = findVarProcess(projCT.getName(), null)
-            if (vp != null) {
-                vp.isCoordinateTransform = true
-                vp.ctv = projCT
-            }
-        }
-        super.makeCoordinateTransforms()
     }
 }
 

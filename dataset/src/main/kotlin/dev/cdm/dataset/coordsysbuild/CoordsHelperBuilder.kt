@@ -6,16 +6,16 @@ import dev.cdm.core.api.Dimension
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.CoordinateAxis
 import dev.cdm.dataset.api.CoordinateSystem
+import dev.cdm.dataset.api.CoordinateTransform
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.internal.CoordinatesHelper
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.util.*
 import java.util.function.Consumer
 
 class CoordsHelperBuilder(val conventionName : String) {
     val coordAxes = mutableListOf<CoordinateAxis.Builder<*>>()
     val coordSys = mutableListOf<CoordinateSystem.Builder<*>>()
-    val coordTransforms = mutableListOf<ProjectionCTV>()
+    val coordTransforms = mutableListOf<CoordinateTransform>()
     val coordSysForVar = mutableMapOf<String, List<String>>()
     private var built = false
 
@@ -23,9 +23,16 @@ class CoordsHelperBuilder(val conventionName : String) {
         return coordSysForVar.toMap()
     }
 
-    fun setCoordinateSystemFor(varName : String, coordSys : List<String>): CoordsHelperBuilder {
+    // set a variable's list of coordSys
+    fun setCoordinateSystemForVariable(varName : String, coordSys : List<String>): CoordsHelperBuilder {
         Preconditions.checkNotNull(varName)
         coordSysForVar[varName] = coordSys
+        return this
+    }
+
+    // For every coordsys that uses the named axis, add the CoordinateTransform to it
+    fun setCoordinateTransformFor(ctvName : String, axisName: String): CoordsHelperBuilder {
+        coordSys.filter { it.coordAxesNames.contains(axisName)}.forEach { it.addTransformName(ctvName)}
         return this
     }
 
@@ -44,6 +51,15 @@ class CoordsHelperBuilder(val conventionName : String) {
     fun findAxisByType(csys: CoordinateSystem.Builder<*>, type: AxisType): CoordinateAxis.Builder<*>? {
         for (axis in getAxesForSystem(csys)) {
             if (axis.axisType == type) {
+                return axis
+            }
+        }
+        return null
+    }
+
+    fun findVertAxis(csys: CoordinateSystem.Builder<*>): CoordinateAxis.Builder<*>? {
+        for (axis in getAxesForSystem(csys)) {
+            if (axis.axisType != null && axis.axisType.isVert) {
                 return axis
             }
         }
@@ -71,22 +87,19 @@ class CoordsHelperBuilder(val conventionName : String) {
         return coordSys.find { it.coordAxesNames == coordAxesNames }
     }
 
-    fun addCoordinateTransform(ct: ProjectionCTV): CoordsHelperBuilder {
+    fun addCoordinateTransform(ct: CoordinateTransform): CoordsHelperBuilder {
         Preconditions.checkNotNull(ct)
-        if (coordTransforms.stream().noneMatch { old: ProjectionCTV -> old.name == ct.name }) {
+        if (coordTransforms.stream().noneMatch { old -> old.name == ct.name }) {
             coordTransforms.add(ct)
         }
         return this
     }
 
-    fun replaceCoordinateTransform(ct: ProjectionCTV) {
-        coordTransforms.stream().filter { t: ProjectionCTV -> t.name == ct.name }.findFirst()
-            .ifPresent { o: ProjectionCTV ->
-                coordTransforms.remove(
-                    o
-                )
-            }
-        addCoordinateTransform(ct)
+    fun addTransformTo(coordTransName : String, coordSysName : String) {
+        val cs = findCoordinateSystem(coordSysName)
+        if (cs != null) {
+            cs.addTransformName(coordTransName)
+        }
     }
 
     private fun getAxesForSystem(cs: CoordinateSystem.Builder<*>): List<CoordinateAxis.Builder<*>> {
@@ -114,7 +127,7 @@ class CoordsHelperBuilder(val conventionName : String) {
             if (vbOpt != null) {
                 axes.add(vbOpt)
             } else {
-                throw IllegalArgumentException("Cant find axis $vname")
+                throw IllegalArgumentException("Cant find axis '$vname'")
             }
         }
         return CoordinatesHelper.makeCanonicalName(axes)
@@ -177,7 +190,7 @@ class CoordsHelperBuilder(val conventionName : String) {
         return axes.find { it.axisType == want} != null
     }
 
-    fun build(cdmFile : CdmFile) : CoordinatesHelper? {
+    fun build(cdmFile : CdmFile) : CoordinatesHelper {
         check(!built) { "already built" }
         built = true
         return CoordinatesHelper(this, this.coordAxes.map{ it ->

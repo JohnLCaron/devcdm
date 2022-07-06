@@ -15,7 +15,7 @@ import java.util.*
 
 private const val earthRadius = 6370.000 // km
 
-open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
+open class M3ioConventions(name: String = "M3IO") : CoordinatesBuilder(name) {
     var projCT: ProjectionCTV? = null
     var globalAtts : AttributeContainer? = null
 
@@ -69,6 +69,7 @@ open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
         val coordVar: CoordinateAxis.Builder<*> = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(datasetBuilder.rootGroup).setDimensionsByName(dimName).setUnits(unitName)
             .setDesc("synthesized coordinate from $startName $incrName global attributes")
+        coordVar.addAttribute(Attribute(_Coordinate.AliasForDimension, dimName))
         coordVar.setAutoGen(start, incr)
         datasetBuilder.replaceCoordinateAxis(datasetBuilder.rootGroup, coordVar)
     }
@@ -86,6 +87,7 @@ open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
         val coordVar: CoordinateAxis.Builder<*> = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(datasetBuilder.rootGroup).setDimensionsByName(dimName).setUnits(unitName)
             .setDesc("synthesized coordinate from $startName $incrName global attributes")
+        coordVar.addAttribute(Attribute(_Coordinate.AliasForDimension, dimName))
         coordVar.setAutoGen(start, incr)
         datasetBuilder.replaceCoordinateAxis(datasetBuilder.rootGroup, coordVar)
     }
@@ -123,6 +125,7 @@ open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
         v.setSourceData(Arrays.factory<Any>(ArrayType.DOUBLE, intArrayOf(nz), dataLev))
         v.addAttribute(Attribute("positive", "down"))
         v.addAttribute(Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()))
+        v.addAttribute(Attribute(_Coordinate.AliasForDimension, dimName))
 
         // layer edges
         val edge_name = "layer"
@@ -148,6 +151,7 @@ open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
         start_time = start_time % 10000
         var min = start_time / 100
         var sec = start_time % 100
+        // TODO replace
         val cal: Calendar = GregorianCalendar(SimpleTimeZone(0, "GMT"))
         cal.clear()
         cal[Calendar.YEAR] = year
@@ -172,6 +176,7 @@ open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
             .setDesc("synthesized time coordinate from SDATE, STIME, STEP global attributes")
         timeCoord.setAutoGen(0.0, time_step.toDouble())
         timeCoord.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Time.toString()))
+        timeCoord.addAttribute(Attribute(_Coordinate.AliasForDimension, "TSTEP"))
         datasetBuilder.replaceCoordinateAxis(datasetBuilder.rootGroup, timeCoord)
     }
 
@@ -282,7 +287,8 @@ open class M3ioConventions(name: String = "M3IO") : CoordSysBuilder(name) {
         if (projCT != null) {
             val vp = findVarProcess(projCT!!.getName(), null)
             vp!!.isCoordinateTransform = true
-            vp.ctv = projCT
+            vp.ctv = CoordinateTransform(projCT!!.getName(), projCT!!.ctvAttributes, true)
+
         }
         super.makeCoordinateTransforms()
     }

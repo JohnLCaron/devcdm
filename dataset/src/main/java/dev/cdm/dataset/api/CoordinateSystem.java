@@ -8,12 +8,12 @@ import com.google.common.collect.ImmutableList;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.AxisType;
-import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 import dev.cdm.dataset.geoloc.Projection;
 import dev.cdm.dataset.geoloc.LatLonProjection;
 import dev.cdm.core.util.StringUtil2;
 
+import dev.cdm.dataset.transform.vertical.VerticalTransform;
 import org.jetbrains.annotations.Nullable;
 import dev.cdm.array.Immutable;
 import java.util.ArrayList;
@@ -75,12 +75,17 @@ public class CoordinateSystem {
     return coordAxes;
   }
 
+  public List<CoordinateTransform> getCoordinateTransforms() {
+    return coordTransforms;
+  }
+
+
   /** Get the name of the Coordinate System */
   public String getName() {
     return name;
   }
 
-  /** Get the name of the Coordinate System */
+  /** Get the canonical name of the Coordinate System */
   public String getAxesName() {
     return makeName(this.coordAxes);
   }
@@ -132,15 +137,19 @@ public class CoordinateSystem {
     return null;
   }
 
-  /**
-   * Get the Projection for this coordinate system.
-   */
+  /** Get the Projection for this coordinate system. */
   @Nullable
   public Projection getProjection() {
-    if (projection == null && projectionCTV != null) {
-      this.projection = ProjectionFactory.makeProjection(this.projectionCTV, new Formatter());
+    if (projection == null) {
+      this.coordTransforms.stream().filter( it -> it.isProjection()).findFirst().ifPresent( ctv ->
+      this.projection = ProjectionFactory.makeProjection(ctv, new Formatter()));
     }
     return projection;
+  }
+
+  @Nullable
+  public CoordinateTransform getVerticalTransform() {
+      return this.coordTransforms.stream().filter( it -> !it.isProjection()).findFirst().orElse(null);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -218,14 +227,6 @@ public class CoordinateSystem {
   }
 
   /**
-   * Implicit Coordinate System are constructed based on which Coordinate Variables exist for the Dimensions of the
-   * Variable. This is in contrast to a Coordinate System that is explicitly specified in the file.
-   */
-  public boolean isImplicit() {
-    return isImplicit;
-  }
-
-  /**
    * Do we have the named axis?
    * 
    * @param axisName name of axis: check short then full name
@@ -243,22 +244,17 @@ public class CoordinateSystem {
     return false;
   }
 
-  ////////////////////////////////////////////////////////////////////////////
-
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
     CoordinateSystem that = (CoordinateSystem) o;
-    return coordAxes.equals(that.coordAxes) && Objects.equals(projectionCTV, that.projectionCTV)
-        && name.equals(that.name);
+    return coordAxes.equals(that.coordAxes) && coordTransforms.equals(that.coordTransforms) && name.equals(that.name) && domain.equals(that.domain);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(coordAxes, projectionCTV, name);
+    return Objects.hash(coordAxes, coordTransforms, name, domain);
   }
 
   @Override
@@ -268,9 +264,10 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final ImmutableList<CoordinateAxis> coordAxes;
+  private final List<CoordinateTransform> coordTransforms;
   private final boolean isImplicit;
-  private final ProjectionCTV projectionCTV;
   private Projection projection; // lazy
+  private VerticalTransform verticalTransform; // lazy
 
   // these are calculated
   private final String name;
@@ -278,7 +275,7 @@ public class CoordinateSystem {
   private final CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
   private final CoordinateAxis aziAxis, elevAxis, radialAxis;
 
-  protected CoordinateSystem(Builder<?> builder, List<CoordinateAxis> axesAll, List<ProjectionCTV> allProjections) {
+  protected CoordinateSystem(Builder<?> builder, List<CoordinateAxis> axesAll, List<CoordinateTransform> allTransforms) {
     this.isImplicit = builder.isImplicit;
 
     // find referenced coordinate axes
@@ -352,11 +349,16 @@ public class CoordinateSystem {
     this.radialAxis = radialAxis;
 
     // Find the named coordinate transforms in allTransforms.
-    ProjectionCTV proj = null;
+    this.coordTransforms = allTransforms.stream().filter( ct -> builder.transformNames.contains(ct.name())).toList();
+    /*
+
+    List<CoordinateTransform> cts = new ArrayList<>();
+    allTransforms.stream().filter( ct -> builder.transformNames.contains(ct.name())).forEach(it -> cts.add(it));
+    // add the projection
     if (builder.projName != null) {
-      proj = allProjections.stream().filter(ct -> builder.projName.equals(ct.getName())).findFirst().orElse(null);
+      allTransforms.stream().filter(ct -> builder.projName.equals(ct.name())).findFirst().ifPresent( it -> cts.add(it));
     }
-    this.projectionCTV = proj;
+    this.coordTransforms = ImmutableList.copyOf(cts); */
   }
 
   /** Convert to a mutable Builder. */
@@ -367,9 +369,7 @@ public class CoordinateSystem {
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     b.setImplicit(this.isImplicit).setCoordAxesNames(this.name);
-    if (this.projectionCTV != null) {
-      b.setProjectionName(this.projectionCTV.getName());
-    }
+    this.coordTransforms.stream().forEach( it -> b.addTransformName(it.name()));
     return b;
   }
 
@@ -388,8 +388,8 @@ public class CoordinateSystem {
   public static abstract class Builder<T extends Builder<T>> {
     public String name;
     public String coordAxesNames = "";
-    public String projName;
-    private List<String> transforms = new ArrayList<>();
+    private String projName;
+    private List<String> transformNames = new ArrayList<>();
     private boolean isImplicit;
     private boolean built;
 
@@ -411,9 +411,14 @@ public class CoordinateSystem {
       return self();
     }
 
-    public T addTransformName(String ct) {
-      transforms.add(ct);
-      return self();
+    // return true if didnt already have this name
+    public boolean addTransformName(String ct) {
+      if (transformNames.contains(ct)) {
+        return false;
+      } else {
+        transformNames.add(ct);
+        return true;
+      }
     }
 
     public T setImplicit(boolean isImplicit) {
@@ -427,7 +432,7 @@ public class CoordinateSystem {
      * @param axes Must contain all axes that are named in coordAxesNames
      * @param transforms Must contain any transforms that are named by setCoordinateTransformName
      */
-    public CoordinateSystem build(List<CoordinateAxis> axes, List<ProjectionCTV> transforms) {
+    public CoordinateSystem build(List<CoordinateAxis> axes, List<CoordinateTransform> transforms) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;

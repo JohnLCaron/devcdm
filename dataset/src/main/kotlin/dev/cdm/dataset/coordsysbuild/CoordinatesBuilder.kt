@@ -1,7 +1,7 @@
 package dev.cdm.dataset.coordsysbuild
 
-import com.google.common.collect.ArrayListMultimap
-import com.google.common.collect.Multimap
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
 import dev.cdm.array.ArrayType
 import dev.cdm.array.Arrays
 import dev.cdm.core.api.Attribute
@@ -11,19 +11,17 @@ import dev.cdm.core.api.Variable
 import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CF
 import dev.cdm.core.constants._Coordinate
-import dev.cdm.dataset.api.CdmDataset
-import dev.cdm.dataset.api.CoordinateAxis
-import dev.cdm.dataset.api.CoordinateSystem
-import dev.cdm.dataset.api.VariableDS
+import dev.cdm.dataset.api.*
 import dev.cdm.dataset.internal.CoordinatesHelper
 import dev.cdm.dataset.transform.horiz.ProjectionCTV
+import dev.cdm.dataset.transform.vertical.VerticalTransformFactory
 
 private val useMaximalCoordSys = true
 private val requireCompleteCoordSys = true
 
-open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) {
+open class CoordinatesBuilder(val conventionName: String = _Coordinate.Convention) {
     internal val varList = mutableListOf<VarProcess>()
-    internal val coordVarsForDimension: Multimap<DimensionWithGroup, VarProcess> = ArrayListMultimap.create()
+    internal val coordVarsForDimension: BiMap<DimensionWithGroup, VarProcess> = HashBiMap.create();
 
     internal val coords = CoordsHelperBuilder(conventionName)
     internal val info = StringBuilder()
@@ -59,10 +57,10 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
         // assign explicit CoordinateSystem objects to variables
         assignCoordinateSystemsExplicit()
 
-        // assign implicit CoordinateSystem objects to variables
+        // make and assign implicit CoordinateSystem objects to variables
         makeCoordinateSystemsImplicit()
 
-        // optionally assign implicit CoordinateSystem objects to variables that dont have one yet
+        // make and assign implicit CoordinateSystem objects to variables that dont have one yet
         if (useMaximalCoordSys) {
             makeCoordinateSystemsMaximal()
         }
@@ -75,7 +73,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
 
         // set the coordinate systems for variables
         varList.forEach { vp ->
-            coords.setCoordinateSystemFor(vp.vds.fullName, vp.coordSysNames)
+            coords.setCoordinateSystemForVariable(vp.vds.fullName, vp.coordSysNames)
         }
 
         return coords
@@ -133,12 +131,12 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
         }
     }
 
-    /** Identify coordinate systems, using _Coordinate.Systems attribute.  */
+    /** Identify coordinate systems.  */
     open fun identifyCoordinateSystems() {
         helper.identifyCoordinateSystems()
     }
 
-    /** Identify coordinate transforms, using _CoordinateTransforms attribute.  */
+    /** Identify coordinate transforms.  */
     open fun identifyCoordinateTransforms() {
         helper.identifyCoordinateTransforms()
     }
@@ -172,9 +170,25 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
     }
 
     open fun makeCoordinateSystems() {
+        // explicit identified coordinate systems
         varList.forEach { vp ->
             if (vp.isCoordinateSystem) {
                 vp.makeCoordinateSystem()
+            }
+        }
+
+        // indirectly identified coordinate systems
+        varList.forEach { vp ->
+            if (vp.coordinatesAll != null && vp.isData()) {
+                val coordAxesName = coords.makeCanonicalName(vp.vds, vp.coordinatesAll!!)
+                val cso = coords.findCoordinateSystem(coordAxesName)
+                if (cso != null) {
+                    vp.assignCoordinateSystem(cso.name, "(indirect)")
+                } else {
+                    val csnew = CoordinateSystem.builder(coordAxesName).setCoordAxesNames(coordAxesName)
+                    coords.addCoordinateSystem(csnew)
+                    vp.assignCoordinateSystem(coordAxesName, "(indirect)")
+                }
             }
         }
     }
@@ -182,21 +196,6 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
     /** Assign explicit CoordinateSystem objects to variables. */
     open fun assignCoordinateSystemsExplicit() {
         helper.assignCoordinateSystemsExplicit()
-
-        // look for explicit listings of coordinate axes in _Coordinate.Axes, add to the data variable
-        varList.forEach { vp ->
-            if (vp.coordinatesAll != null && !vp.hasCoordinateSystem() && vp.isData()) {
-                val coordSysName = coords.makeCanonicalName(vp.vds, vp.coordinatesAll!!)
-                val cso = coords.findCoordinateSystem(coordSysName)
-                if (cso != null) {
-                    vp.assignCoordinateSystem(coordSysName, "(explicit)")
-                } else {
-                    val csnew = CoordinateSystem.builder(coordSysName).setCoordAxesNames(coordSysName)
-                    coords.addCoordinateSystem(csnew)
-                    vp.assignCoordinateSystem(coordSysName, "(explicit)")
-                }
-            }
-        }
     }
 
     /**
@@ -211,18 +210,18 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
         varList.forEach { vp ->
             if (!vp.hasCoordinateSystem() && vp.maybeData()) {
                 val axesList = vp.findAllCoordinateAxes()
-                if (axesList.size < 2) {
-                    return
-                }
-                val csName = CoordinatesHelper.makeCanonicalName(axesList)
-                val csb = coords.findCoordinateSystem(csName)
-                if (csb != null && coords.isComplete(csb, vp.vds)) {
-                    vp.assignCoordinateSystem(csName, "(implicit)")
-                } else {
-                    val csnew = CoordinateSystem.builder(csName).setCoordAxesNames(csName).setImplicit(true)
-                    if (coords.isComplete(csnew, vp.vds)) {
-                        vp.assignCoordinateSystem(csName, "(implicit)")
-                        coords.addCoordinateSystem(csnew)
+                if (axesList.size >= 2) {
+                    val coordAxesName = CoordinatesHelper.makeCanonicalName(axesList)
+                    val csb = coords.findCoordinateSystem(coordAxesName)
+                    if (csb != null && coords.isComplete(csb, vp.vds)) {
+                        vp.assignCoordinateSystem(csb.name, "(implicit)")
+                    } else {
+                        val csnew =
+                            CoordinateSystem.builder(coordAxesName).setCoordAxesNames(coordAxesName).setImplicit(true)
+                        if (coords.isComplete(csnew, vp.vds)) {
+                            vp.assignCoordinateSystem(coordAxesName, "(implicit)")
+                            coords.addCoordinateSystem(csnew)
+                        }
                     }
                 }
             }
@@ -252,8 +251,8 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
             if (axisList.size < 2) {
                 return
             }
-            val csName = CoordinatesHelper.makeCanonicalName(axisList)
-            val csb = coords.findCoordinateSystem(csName)
+            val coordAxesName = CoordinatesHelper.makeCanonicalName(axisList)
+            val csb = coords.findCoordinateSystem(coordAxesName)
             var okToBuild = false
 
             // do coordinate systems need to be complete?
@@ -266,41 +265,76 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
                 okToBuild = true
             }
             if (csb != null && okToBuild) {
-                vp.assignCoordinateSystem(csName, "(maximal)")
+                vp.assignCoordinateSystem(csb.name, "(maximal)")
             } else {
-                val csnew = CoordinateSystem.builder(csName).setCoordAxesNames(csName)
+                val csnew = CoordinateSystem.builder(coordAxesName).setCoordAxesNames(coordAxesName)
                 if (requireCompleteCoordSys) {
                     okToBuild = coords.isComplete(csnew, vp.vds)
                 }
                 if (okToBuild) {
                     csnew.setImplicit(true)
-                    vp.assignCoordinateSystem(csName, "(maximal)")
+                    vp.assignCoordinateSystem(coordAxesName, "(maximal)")
                     coords.addCoordinateSystem(csnew)
                 }
             }
         }
     }
 
-    /** Take previously identified Coordinate Transforms and create a CoordinateTransform for it */
     open fun makeCoordinateTransforms() {
+        // create CoordinateTransform from variables already identifies as transforms
         varList.forEach { vp ->
             if (vp.isCoordinateTransform && vp.ctv == null) {
-                vp.ctv = makeTransformBuilder(vp.vds)
+                val isProjection = (vp.gridMapping != null) || vp.vds.attributes().hasAttribute(CF.GRID_MAPPING_NAME)
+                vp.ctv = makeTransformBuilder(vp.vds, isProjection) // LOOK
             }
             if (vp.ctv != null) {
                 coords.addCoordinateTransform(vp.ctv!!)
             }
         }
+
+        // look at z axis of existing coordinate systems to see if they are transforms
+        coords.coordSys.forEach { csys ->
+            val vertCoord = coords.findVertAxis(csys);
+            if (vertCoord != null) {
+                val transformName = vertCoord.attributeContainer.findAttributeString("units", "none")!!
+                // is it a vertical transform name?
+                if (VerticalTransformFactory.hasVerticalTransformFor(transformName)) {
+                    coords.addCoordinateTransform(CoordinateTransform(transformName, vertCoord.attributeContainer, false))
+                    csys.addTransformName(transformName)
+                }
+
+            }
+        }
+
     }
 
-    open fun makeTransformBuilder(vb: VariableDS): ProjectionCTV? {
+    open fun makeTransformBuilder(vb: VariableDS, isProjection : Boolean): CoordinateTransform? {
         // at this point dont know if its a Projection or a VerticalTransform
-        return ProjectionCTV(vb.fullName, vb.attributes(), null)
+        return CoordinateTransform(vb.fullName, vb.attributes(), isProjection)
     }
 
     /** Assign CoordinateTransform objects to Variables and Coordinate Systems.  */
     open fun assignCoordinateTransforms() {
         helper.assignCoordinateTransforms()
+
+        // If gridMapping is set, assign that to variable's coordSystems
+        varList.forEach { vp ->
+            if (vp.isData() && vp.gridMapping != null) {
+                vp.coordSysNames.forEach {
+                    coords.addTransformTo(vp.gridMapping!!, it)
+                    info.appendLine("Assign coordTransform '${vp.gridMapping}' to CoordSys '${it}'")
+                }
+            }
+        }
+
+        // If variable is a coordTransform and a coordVariable, assign it to any coordsys that uses the coordVariable
+        varList.forEach { vp ->
+            if (vp.isCoordinateTransform && vp.isCoordinateVariable && vp.ctv != null) {
+                coords.setCoordinateTransformFor(vp.ctv!!.name, vp.vds.shortName)
+                //  look for Coordinate Systems that contain all these axes
+                info.appendLine("Assign CoordinateTransform '${vp.ctv!!.name}' for axis '${vp.vds.shortName}'")
+            }
+        }
 
         // look for already set coordinatesAll, apply to any Coordinate Systems that contain all these axes
         // TODO do we need to do this?
@@ -310,8 +344,9 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
                 varList.forEach { csv ->
                     if (csv.isCoordinateSystem && csv.cs != null) {
                         if (coords.containsAxes(csv.cs!!, vp.coordinatesAll!!)) {
-                            csv.cs!!.addTransformName(vp.ctv!!.name) // TODO
-                            info.appendLine("Assign (implicit coordAxes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                            if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
+                                info.appendLine("Assign (implicit coordAxes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
+                            }
                         }
                     }
                 }
@@ -363,8 +398,8 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
 
         // coord transform
         var isCoordinateTransform: Boolean = false
-        // var transformName: String? = null
-        var ctv: ProjectionCTV? = null
+        var gridMapping: String? = null
+        var ctv: CoordinateTransform? = null // LOOK needed?
 
         /** Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes.  */
         init {
@@ -418,7 +453,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
             axes.addAll(partialCoordinates.split(" "))
             // add missing coord vars
             vds.dimensions.forEach { dim ->
-                coordVarsForDimension.get(DimensionWithGroup(dim, group)).forEach { vp ->
+                coordVarsForDimension.get(DimensionWithGroup(dim, group))?.let { vp ->
                     val axis = vp.vds.shortName
                     if (axis != vds.shortName && !axes.contains(axis)) {
                         axes.add(axis)
@@ -446,10 +481,7 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
                     val positive = identifyZIsPositive(vds)
                     if (positive != null) {
                         axis.addAttribute(
-                            Attribute(
-                                _Coordinate.ZisPositive,
-                                if (positive) CF.POSITIVE_UP else CF.POSITIVE_DOWN
-                            )
+                            Attribute(_Coordinate.ZisPositive, if (positive) CF.POSITIVE_UP else CF.POSITIVE_DOWN)
                         )
                     }
                 }
@@ -479,9 +511,9 @@ open class CoordSysBuilder(val conventionName: String = _Coordinate.Convention) 
             if (coordinatesAll != null) {
                 val coordNames: String = coords.makeCanonicalName(vds, coordinatesAll!!)
                 val cs = CoordinateSystem.builder(vds.shortName).setCoordAxesNames(coordNames)
-                info.appendLine("Made Coordinate System '${vds.shortName}' on axes '${coordNames}'")
                 coords.addCoordinateSystem(cs)
                 this.cs = cs
+                info.appendLine("Made Coordinate System '${vds.shortName}' on axes '${coordNames}'")
             }
         }
 

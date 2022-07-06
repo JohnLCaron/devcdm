@@ -6,7 +6,7 @@ import dev.cdm.core.constants.CF
 import dev.cdm.dataset.api.SimpleUnit
 import dev.cdm.dataset.api.VariableDS
 
-open class DefaultConventions(name: String = "DefaultConventions") : CoordSysBuilder(name) {
+open class DefaultConventions(name: String = "DefaultConventions") : CoordinatesBuilder(name) {
 
     override fun identifyAxisType(vds: VariableDS): AxisType? {
         defaultAxisType(vds)?.let { return it }

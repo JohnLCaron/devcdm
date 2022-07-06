@@ -3,10 +3,11 @@ package dev.cdm.dataset.coordsysbuild
 import dev.cdm.core.api.CdmFile
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.CdmDataset
+import dev.cdm.dataset.api.CoordinateTransform
 import dev.cdm.dataset.api.SimpleUnit
 import dev.cdm.dataset.api.VariableDS
 
-open class AwipsConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
+open class AwipsConventions(name: String = "AWIPS") : CoordinatesBuilder(name) {
 
     var augmenter: AwipsAugment? = null
     override fun augment(orgDataset: CdmDataset): CdmDataset {
@@ -20,7 +21,7 @@ open class AwipsConventions(name: String = "AWIPS") : CoordSysBuilder(name) {
             val vp = findVarProcess(projCT.name, null)
             if (vp != null) {
                 vp.isCoordinateTransform = true
-                vp.ctv = projCT
+                vp.ctv = CoordinateTransform(projCT)
             }
         }
         super.makeCoordinateTransforms()

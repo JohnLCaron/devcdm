@@ -9,6 +9,8 @@ import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.CdmDataset;
+import dev.cdm.dataset.api.CoordinateTransform;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class VerticalTransformFactory {
 
     // CSM
     registerTransform(CsmHybridSigmaBuilder.transform_name, CsmHybridSigmaBuilder.class);
+    registerTransform("hybrid_sigma_pressure", CsmHybridSigmaBuilder.class); // alias
 
     // WRF
     registerTransform(WrfEta.WRF_ETA_COORDINATE, WrfEta.Builder.class);
@@ -93,10 +96,14 @@ public class VerticalTransformFactory {
     }
   }
 
-  /**
-   * Does this AttributeContainer contain metadata we can make a VerticalTransform from?
-   * Return empty if not, else return transform name.
-   */
+  public static boolean hasVerticalTransformFor(String transformName) {
+    return transformList.stream().anyMatch(it -> it.transName.equals(transformName));
+  }
+
+    /**
+     * Does this AttributeContainer contain metadata we can make a VerticalTransform from?
+     * Return empty if not, else return transform name.
+     */
   public static Optional<String> hasVerticalTransformFor(AttributeContainer ctv) {
     // standard name
     String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
@@ -133,6 +140,7 @@ public class VerticalTransformFactory {
   }
 
   /**
+   * LOOK remove
    * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
    * registered CoordTransBuilder.
    * 
@@ -183,6 +191,54 @@ public class VerticalTransformFactory {
     }
 
     return vt;
+  }
+
+  /**
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable,
+   *
+   * @param vertCtv the Coordinate Transform Variable - container for the transform parameters
+   * @return CoordinateTransform, or null if failure.
+   */
+  @Nullable
+  public static VerticalTransform makeTransform(CdmDataset ds, CoordinateSystem csys, CoordinateTransform vertCtv) {
+
+    Class<?> builderClass = null;
+    for (Transform transform : transformList) {
+      if (transform.transName.equals(vertCtv.name())) {
+        builderClass = transform.transClass;
+        break;
+      }
+    }
+    if (null == builderClass) {
+      return null;
+    }
+
+    // get an instance of that class
+    Object builderObject;
+    try {
+      builderObject = builderClass.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+      log.error("Cant create new instance " + builderClass.getName(), e);
+      return null;
+    }
+
+    Formatter errlog = new Formatter();
+    Optional<VerticalTransform> vt;
+    if (builderObject instanceof VerticalTransform.Builder) {
+      VerticalTransform.Builder vertBuilder = (VerticalTransform.Builder) builderObject;
+      vt = vertBuilder.create(ds, csys, vertCtv.metadata(), errlog);
+    } else {
+      log.error("Not instanceof VerticalTransform.Builder: {}", builderClass.getName());
+      return null;
+    }
+
+    if (vt.isEmpty()) {
+      log.error(" Failed to make Coordinate transform from ctv {} {} errs = {}", vertCtv,
+              builderObject.getClass().getName(), errlog);
+      return null;
+    }
+
+    return vt.get();
   }
 
 }

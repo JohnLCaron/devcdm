@@ -11,7 +11,7 @@ import dev.cdm.dataset.cdmdsl.CdmdslDataset
 import dev.cdm.dataset.cdmdsl.build
 import dev.cdm.dataset.cdmdsl.cdmdsl
 
-open class GiefConventions(name: String = "GIEF") : CoordSysBuilder(name) {
+open class GiefConventions(name: String = "GIEF") : CoordinatesBuilder(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val globalAtts = orgDataset.attributes()

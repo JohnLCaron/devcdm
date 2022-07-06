@@ -37,7 +37,7 @@ import java.util.Optional;
  * @see "https://lpdaac.usgs.gov/products/modis_overview"
  */
 public class HdfEosModisConvention extends CoordSystemBuilderOld {
-  private static final String CRS = "Projection";
+  private static final String CRS = "sinusoidal";
   private static final String DATA_GROUP = "Data_Fields";
   private static final String DIMX_NAME = "XDim";
   private static final String DIMY_NAME = "YDim";
