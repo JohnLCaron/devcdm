@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.dataset.conv;
+package dev.cdm.dataset.internal;
 
 import dev.cdm.core.api.Attribute;
 import dev.cdm.dataset.api.CdmDatasetCS;
@@ -30,7 +30,6 @@ public class TestDefaultCalendars {
 
   private final String coardsConvention = "COARDS";
   private final String cfConvention = "CF-1.X";
-
 
   @Test
   public void testCfDefaultCalendar() throws IOException {

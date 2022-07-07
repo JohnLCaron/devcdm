@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.dataset.conv;
+package dev.cdm.dataset.internal;
 
 import dev.cdm.dataset.api.CdmDatasetCS;
 import dev.cdm.dataset.api.TestCdmDatasets;
