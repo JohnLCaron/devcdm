@@ -116,7 +116,8 @@ class CoordsHelperBuilder(val conventionName : String) {
         return axes
     }
 
-    fun makeCanonicalName(vb: VariableDS, axesNames : String) : String {
+    // return null if axie
+    fun makeCanonicalName(vb: VariableDS, axesNames : String) : String? {
         Preconditions.checkNotNull(axesNames)
         val axes = mutableListOf<CoordinateAxis.Builder<*>>()
         axesNames.trim().split(" ").forEach { vname ->
@@ -127,7 +128,7 @@ class CoordsHelperBuilder(val conventionName : String) {
             if (vbOpt != null) {
                 axes.add(vbOpt)
             } else {
-                throw IllegalArgumentException("Cant find axis '$vname'")
+                return null
             }
         }
         return CoordinatesHelper.makeCanonicalName(axes)

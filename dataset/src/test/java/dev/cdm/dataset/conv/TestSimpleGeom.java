@@ -23,7 +23,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static java.lang.String.format;
 
 public class TestSimpleGeom {
-  private static final String cfConvention = "CF-1.X";
+  private static final String cfConvention = "CFConventions";
 
   @Test
   public void testLine() throws IOException {
@@ -31,7 +31,7 @@ public class TestSimpleGeom {
     boolean testCond;
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
 
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       // make sure this dataset used the cfConvention
       expected = cfConvention;
       found = ncd.getConventionBuilder();
@@ -59,7 +59,7 @@ public class TestSimpleGeom {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
-    try(CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
+    try(CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
 
       // make sure this dataset used the cfConvention
       expected = cfConvention;
@@ -84,7 +84,7 @@ public class TestSimpleGeom {
   public void testCoordinateVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();
@@ -97,7 +97,7 @@ public class TestSimpleGeom {
   public void testVarLenDataVariable() throws IOException {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array<?> data = axis.readArray();

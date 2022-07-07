@@ -120,6 +120,10 @@ public class CdmDatasetCS extends CdmDataset {
     return super.sendIospMessage(message);
   }
 
+  public String getConventionName() {
+    return coords.getConventionName();
+  }
+
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final Coordinates coords;

@@ -17,10 +17,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 
 public class TestVertical {
 
@@ -35,7 +33,7 @@ public class TestVertical {
     System.out.printf("compare %s %s%n", filename, gridName);
 
     Formatter errlog = new Formatter();
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       assertThat(ds).isNotNull();
 
       VariableDS grid = (VariableDS) ds.findVariable(gridName);

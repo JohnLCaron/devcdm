@@ -3,7 +3,7 @@ package dev.cdm.dataset.coordsysbuild
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.*
 
-open class NuwgConventions(name: String = "AWIPS") : CoordinatesBuilder(name) {
+open class NuwgConventions(name: String = "NUWGConventions") : CoordinatesBuilder(name) {
 
     var nuwg: NuwgAugment? = null
     override fun augment(orgDataset: CdmDataset): CdmDataset {

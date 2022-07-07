@@ -16,7 +16,7 @@ private val attsOnly = true
 fun CdmdslDataset.build(): CdmDatasetCS {
     // TODO open as dataset or file? with enhanced metadata or not?
     if (this.location != null) {
-        val orgDataset = CdmDatasets.openDatasetCS(this.location, this.enhance)
+        val orgDataset = CdmDatasets.openDataset(this.location, this.enhance, null)
         return build(orgDataset)
     }
     return build(null)

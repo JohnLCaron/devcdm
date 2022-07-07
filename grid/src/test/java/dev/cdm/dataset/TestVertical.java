@@ -99,7 +99,7 @@ public class TestVertical {
     System.out.printf("compare %s %s%n", filename, gridName);
 
     Formatter errlog = new Formatter();
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
       GridNetcdfDataset gridNetcdfDataset = grido.get();

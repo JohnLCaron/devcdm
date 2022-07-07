@@ -45,7 +45,7 @@ public class TestOpenCdmDatasets {
   public void compareNoEnhance(String filename) throws Exception {
     System.out.printf("TestCdmDatasets %s%n", filename);
     try (CdmDataset ncd = CdmDatasets.openDataset(filename, false, null);
-         CdmDatasetCS ncdc = CdmDatasets.openDatasetCS(filename, false)) {
+         CdmDatasetCS ncdc = CdmDatasets.openDatasetWithCS(filename, false)) {
 
       boolean ok = new CompareCdmDataset().compare(ncd, ncdc, new LocalFilter());
       assertThat(ok).isTrue();
@@ -70,7 +70,7 @@ public class TestOpenCdmDatasets {
   public void compareEnhance(String filename) throws Exception {
     System.out.printf("TestCdmDatasets enhance %s%n", filename);
     try (CdmDataset ncd = CdmDatasets.openDataset(filename, true, null);
-         CdmDatasetCS ncdc = CdmDatasets.openDatasetCS(filename, true)) {
+         CdmDatasetCS ncdc = CdmDatasets.openDatasetWithCS(filename, true)) {
 
       // does not compare coordinate systems
       boolean ok = new CompareCdmDataset().compare(ncd, ncdc, new LocalFilter());

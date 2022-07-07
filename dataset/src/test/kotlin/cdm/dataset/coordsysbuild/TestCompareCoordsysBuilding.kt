@@ -10,6 +10,7 @@ import dev.cdm.dataset.cdmdsl.writeDsl
 import dev.cdm.dataset.coordsysbuild.findCoordSysBuilder
 import dev.cdm.dataset.util.CdmObjFilter
 import dev.cdm.dataset.util.CompareCdmDataset
+import dev.cdm.test.util.extraTestDir
 import dev.cdm.test.util.oldTestDir
 import dev.cdm.test.util.testFilesIn
 import org.junit.jupiter.params.ParameterizedTest
@@ -39,7 +40,7 @@ class TestCompareCoordsysBuilding {
 
              */
 
-            return testFilesIn(oldTestDir + "formats/hdf4")
+            return testFilesIn(extraTestDir)
                 .addNameFilter { !it.startsWith("WrfNoTimeVar") }
                 .withPathFilter{ it ->
                     val pname = it.toString()
@@ -86,8 +87,8 @@ fun compareCoordinateSystems(filename: String) {
     CdmDatasets.openDatasetCS(filename, true).use { ncdc ->
         openNewCoordSys(filename, true).use { withcs ->
             println("Conv = ${withcs.conventionBuilder}")
-            //val ok = CompareCdmDataset().compare(ncdc, withcs, LocalFilter())
-            //assertThat(ok).isTrue()
+            val ok = CompareCdmDataset().compare(ncdc, withcs, LocalFilter())
+            assertThat(ok).isTrue()
         }
     }
 }
