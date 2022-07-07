@@ -20,7 +20,6 @@ import dev.cdm.dataset.geoloc.projection.FlatEarth
 import dev.cdm.dataset.geoloc.projection.LambertConformal
 import dev.cdm.dataset.geoloc.projection.Mercator
 import dev.cdm.dataset.geoloc.projection.Stereographic
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.io.IOException
 import java.util.*
 import java.util.regex.Pattern
@@ -32,7 +31,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
 
     val gridE: Boolean
     val projType: Int
-    val projCT: ProjectionCTV?
+    val projCT: CoordinateTransform?
     var isLatLon = false
     var centerX = 0.0
     var centerY = 0.0
@@ -55,7 +54,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
             0 -> {
                 // for diagnostic runs with no georeferencing
                 proj = FlatEarth()
-                projCT = ProjectionCTV("flat_earth", proj)
+                projCT = CoordinateTransform(CDM.FlatEarth, proj.projectionAttributes, true)
             }
             1 -> {
                 // TODO what should be the correct value when STAND_LON and MOAD_CEN_LAT is missing ??
@@ -63,7 +62,7 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
                 val lon0 = if (java.lang.Double.isNaN(standardLon)) centralLon else standardLon
                 val lat0 = if (java.lang.Double.isNaN(standardLat)) lat2 else standardLat
                 proj = LambertConformal(lat0, lon0, lat1, lat2, 0.0, 0.0, 6370.0)
-                projCT = ProjectionCTV("Lambert", proj)
+                projCT = CoordinateTransform("Lambert", proj.projectionAttributes, true)
             }
             2 -> {
                 // Thanks to Heiko Klein for figuring out WRF Stereographic
@@ -71,12 +70,12 @@ class WrfAugment(val dataset: CdmDataset, val info : StringBuilder) {
                 val lat0 = if (java.lang.Double.isNaN(centralLat)) lat2 else centralLat // ?? 7/20/2010
                 val scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.0 // R Schmunk 9/10/07
                 proj = Stereographic(lat0, lon0, scaleFactor, 0.0, 0.0, 6370.0)
-                projCT = ProjectionCTV("Stereographic", proj)
+                projCT = CoordinateTransform("Stereographic", proj.projectionAttributes, true)
             }
             3 -> {
                 // thanks to Robert Schmunk with edits for non-MOAD grids
                 proj = Mercator(standardLon, lat1, 0.0, 0.0, 6370.0)
-                projCT = ProjectionCTV("Mercator", proj)
+                projCT = CoordinateTransform("Mercator", proj.projectionAttributes, true)
             }
             6 -> {
                 // version 3 "lat-lon", including global

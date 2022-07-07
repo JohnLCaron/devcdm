@@ -8,12 +8,11 @@ import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.CdmDataset
 import dev.cdm.dataset.api.CoordinateAxis
 import dev.cdm.dataset.api.CoordinateAxis1D
+import dev.cdm.dataset.api.CoordinateTransform
 import dev.cdm.dataset.geoloc.LatLonPoint
-import dev.cdm.dataset.geoloc.ProjectionPoint
 import dev.cdm.dataset.geoloc.projection.EquidistantCylindrical
 import dev.cdm.dataset.geoloc.projection.LambertConformal
 import dev.cdm.dataset.geoloc.projection.Mercator
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 
 class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugment(orgDataset, info) {
 
@@ -28,9 +27,9 @@ class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugme
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeLonCoordAxis(nx,"lat"))
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeLatCoordAxis(ny,"lon"))
         } else {
-            if (projName.equals("CYLINDRICAL_EQUIDISTANT", ignoreCase = true)) projCT = makeCEProjection(projName, nx, ny)
-            if (projName.equals("LAMBERT_CONFORMAL", ignoreCase = true)) projCT = makeLCProjection(projName, nx, ny)
-            if (projName.equals("MERCATOR", ignoreCase = true)) projCT = makeMercatorProjection(projName, nx, ny)
+            if (projName.equals("CYLINDRICAL_EQUIDISTANT", ignoreCase = true)) projCT = makeCEProjection(nx, ny)
+            if (projName.equals("LAMBERT_CONFORMAL", ignoreCase = true)) projCT = makeLCProjection(nx, ny)
+            if (projName.equals("MERCATOR", ignoreCase = true)) projCT = makeMercatorProjection(nx, ny)
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeXCoordAxis("x"))
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeYCoordAxis("y"))
         }
@@ -52,11 +51,6 @@ class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugme
         datav.addAttribute(
             Attribute.builder(CDM.MISSING_VALUE).setArrayType(ArrayType.BYTE).setValues(listOf<Byte>(0, -127), false).build()
         )
-        if (projCT != null) {
-            val v = makeCoordinateTransformVariable(projCT!!)
-            v.addAttribute(Attribute(_Coordinate.Axes, "x y"))
-            rootBuilder.addVariable(v)
-        }
 
         return datasetBuilder.build()
     }
@@ -76,7 +70,7 @@ class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugme
     }
 
     // see TestEquidistantCylindrical
-    private fun makeCEProjection(name: String, nx: Int, ny: Int): ProjectionCTV {
+    private fun makeCEProjection(nx: Int, ny: Int): CoordinateTransform {
         val centralLat = findAttributeDouble("centralLat")
         val centralLon = findAttributeDouble("centralLon")
 
@@ -99,10 +93,10 @@ class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugme
         this.dx = (endx - startx) / (nx - 1)
         this.dy = (endy - starty) / (ny - 1)
 
-        return ProjectionCTV(name, proj)
+        return CoordinateTransform(proj.name, proj.projectionAttributes, true)
     }
 
-    private fun makeLCProjection(name: String, nx: Int, ny: Int): ProjectionCTV {
+    private fun makeLCProjection(nx: Int, ny: Int): CoordinateTransform {
         val centralLat = findAttributeDouble("centralLat")
         val centralLon = findAttributeDouble("centralLon")
         val rotation = findAttributeDouble("rotation")
@@ -131,11 +125,11 @@ class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugme
             info.appendLine("  makeProjectionLC calc dx= $dx file_dx= $fdx")
             info.appendLine("  makeProjectionLC calc dy= $dy file_dy= $fdy")
         }
-        return ProjectionCTV(name, proj)
+        return CoordinateTransform(proj.name, proj.projectionAttributes, true)
     }
 
     @Throws(NoSuchElementException::class)
-    private fun makeMercatorProjection(name: String, nx: Int, ny: Int): ProjectionCTV? {
+    private fun makeMercatorProjection(nx: Int, ny: Int): CoordinateTransform {
         // double centralLat = findAttributeDouble( ds, "centralLat");
         // Center longitude for the mercator projection, where the mercator projection is parallel to the Earth's surface.
         // from this, i guess is actually transverse mercator
@@ -169,7 +163,7 @@ class AwipsSatAugment(orgDataset: CdmDataset, info : StringBuilder) : AwipsAugme
             info.appendLine("  makeProjectionMercator calc dx= $dx file_dx= $fdx")
             info.appendLine("  makeProjectionMercator calc dy= $dy file_dy= $fdy")
         }
-        return ProjectionCTV(name, proj)
+        return CoordinateTransform(proj.name, proj.projectionAttributes, true)
     }
 
     private fun makeLonCoordAxis(xname: String): CoordinateAxis.Builder<*>? {

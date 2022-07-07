@@ -13,11 +13,10 @@ import dev.cdm.dataset.geoloc.Projection
 import dev.cdm.dataset.geoloc.projection.LambertConformal
 import dev.cdm.dataset.geoloc.projection.Stereographic
 import dev.cdm.dataset.geoloc.projection.TransverseMercator
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.util.*
 
 open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
-    var projCT : ProjectionCTV? = null
+    var projCT : CoordinateTransform? = null
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         projCT = makeProjectionCT(orgDataset.rootGroup)
@@ -32,7 +31,7 @@ open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
         return orgDataset
     }
 
-    private fun makeProjectionCT(rootGroup : Group): ProjectionCTV? {
+    private fun makeProjectionCT(rootGroup : Group): CoordinateTransform? {
         // look for projection in global attribute
         val projection = rootGroup.findAttributeString("projection", null)
         if (null == projection) {
@@ -77,7 +76,7 @@ open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
             return null
         }
         info.appendLine("GDV Conventions add projection $projection")
-        return ProjectionCTV(proj.className, proj)
+        return CoordinateTransform(proj.name, proj.projectionAttributes, true)
     }
 
     /*
@@ -183,11 +182,7 @@ open class GdvConventions(name: String = "GDV") : DefaultConventions(name) {
 
     override fun makeCoordinateTransforms() {
         if (projCT != null) {
-            val vp = findVarProcess(projCT!!.getName(), null)
-            if (vp != null) {
-                vp.isCoordinateTransform = true
-                vp.ctv = CoordinateTransform(projCT!!)
-            }
+            coords.addCoordinateTransform(projCT!!)
         }
         super.makeCoordinateTransforms()
     }

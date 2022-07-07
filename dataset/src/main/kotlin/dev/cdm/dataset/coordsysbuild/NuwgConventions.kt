@@ -12,13 +12,9 @@ open class NuwgConventions(name: String = "NUWGConventions") : CoordinatesBuilde
     }
 
     override fun makeCoordinateTransforms() {
-        val projCTV = nuwg!!.getProjectionCTV()
+        val projCTV = nuwg!!.getProjectionCT()
         if (projCTV != null) {
-            val vp = findVarProcess(projCTV.name, null)
-            if (vp != null) {
-                vp.isCoordinateTransform = true
-                vp.ctv = CoordinateTransform(projCTV)
-            }
+            coords.addCoordinateTransform(projCTV)
         }
         super.makeCoordinateTransforms()
     }

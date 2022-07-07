@@ -89,7 +89,7 @@ public class AlbersEqualArea extends AbstractProjection {
    */
   public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing,
       double earth_radius) {
-    super("AlbersEqualArea", false);
+    super(CF.ALBERS_CONICAL_EQUAL_AREA, false);
 
     this._lat0 = lat0;
     this._lon0 = lon0;

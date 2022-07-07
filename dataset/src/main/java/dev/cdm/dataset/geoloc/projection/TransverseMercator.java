@@ -63,7 +63,7 @@ public class TransverseMercator extends AbstractProjection {
    * @param radius earth radius in km
    */
   public TransverseMercator(double lat0, double tangentLon, double scale, double east, double north, double radius) {
-    super("TransverseMercator", false);
+    super(CF.TRANSVERSE_MERCATOR, false);
 
     this._lon0 = tangentLon;
     this._lat0 = lat0;

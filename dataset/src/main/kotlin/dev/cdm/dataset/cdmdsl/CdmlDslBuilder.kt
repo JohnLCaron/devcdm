@@ -4,8 +4,6 @@ import dev.cdm.array.ArrayType
 import dev.cdm.core.api.*
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.*
-import dev.cdm.dataset.api.CdmDataset.IOSP_MESSAGE_GET_COORDS_HELPER
-import dev.cdm.dataset.internal.CoordinatesHelper
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -28,13 +26,13 @@ fun CdmdslDataset.build(orgDataset : CdmDataset?): CdmDatasetCS {
 
     // pull in all the non-coord changes and build so we have finished variables
     buildGroup(this.root, builder.rootGroup)
-    if (attsOnly) {
+    // if (attsOnly) {
         this.coordSystems.forEach {
             buildCoordSystem(it.value, builder.rootGroup)
         }
 
         return builder.build()
-    } else {
+    /* } else {
         val result = builder.build()
 
         // make new changes to helperb
@@ -53,7 +51,7 @@ fun CdmdslDataset.build(orgDataset : CdmDataset?): CdmDatasetCS {
         // result.setCoordinatesHelper(helperb.build(axes))
 
         return builder.build()
-    }
+    } */
 }
 
 // TODO rearrange the group heirarchy? Cant use absolute paths
@@ -199,13 +197,13 @@ fun buildCoordSystem(csys: CdmdslCoordSystem, groupb : Group.Builder) : Variable
     return orgv
 }
 
+/*
 fun buildCoordSystem(
     csys: CdmdslCoordSystem,
     helper: CoordinatesHelper.Builder,
     orgDataset: CdmDatasetCS.Builder<*>,
     result: CdmDataset
 ) {
-    /*
     val orgHelper: CoordinatesHelper.Builder = orgDataset.coords
     val orgs: ArrayList<CoordinateSystem.Builder<*>> = orgHelper.coordSys
     val org = orgs.find { it.coordAxesNames == csys.name }
@@ -217,8 +215,6 @@ fun buildCoordSystem(
         }
         csys.rename?.let { org.setCoordAxesNames(csys.rename) }
     }
-
-     */
 }
 
 
@@ -228,7 +224,7 @@ fun buildCoordTransform(
     orgDataset: CdmDatasetCS.Builder<*>,
     result: CdmDataset
 ) {
-    /*
+
     val coordHelper: CoordinatesHelper.Builder = orgDataset.coords
     val orgs = coordHelper.coordTransforms
     val org = orgs.find { it.name == ctrans.name }
@@ -252,5 +248,4 @@ fun buildCoordTransform(
         coordb.replaceCoordinateTransform(ProjectionCTV(name, atts, org.geounits))
     }
 
-     */
-}
+} */

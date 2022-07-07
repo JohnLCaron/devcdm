@@ -28,12 +28,12 @@
   </variable>
 
   <variable name="VREL">
-    <attribute name="grid_mapping" value="flat_earth" />
+    <attribute name="grid_mapping" value="FlatEarth" />
     <attribute name="_CoordinateAxes" value="time z y x" />
   </variable>
 
   <variable name="Projection" type="char">
-    <attribute name="grid_mapping_name" value="flat_earth" />
+    <attribute name="grid_mapping_name" value="FlatEarth" />
     <attribute name="_CoordinateTransformType " value="Projection" />
     <attribute name="_CoordinateAxisTypes  " value="GeoX GeoY" />
   </variable>

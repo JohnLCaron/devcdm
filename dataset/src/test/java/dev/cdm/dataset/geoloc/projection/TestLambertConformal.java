@@ -33,7 +33,7 @@ public class TestLambertConformal {
   public void testMisc() {
     LambertConformal lc = new LambertConformal(-90., 0., 45., 45.);
     assertThat(lc.toWKS()).contains(
-        "PROJCS[\"LambertConformal\",GEOGCS[\"Normal Sphere (r=6371007)\",DATUM[\"unknown\",SPHEROID[\"sphere\",6371007,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Lambert_Conformal_Conic_1SP\"],PARAMETER[\"latitude_of_origin\",-90.0],PARAMETER[\"central_meridian\",0.0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0.0],PARAMETER[\"false_northing\",0.0]");
+        "PROJCS[\"lambert_conformal_conic\",GEOGCS[\"Normal Sphere (r=6371007)\",DATUM[\"unknown\",SPHEROID[\"sphere\",6371007,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Lambert_Conformal_Conic_1SP\"],PARAMETER[\"latitude_of_origin\",-90.0],PARAMETER[\"central_meridian\",0.0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0.0],PARAMETER[\"false_northing\",0.0]");
 
     assertThat(lc.crossSeam(ProjectionPoint.create(50, 50), ProjectionPoint.create(550, 550))).isFalse();
     assertThat(lc.crossSeam(ProjectionPoint.create(-50000, -50000), ProjectionPoint.create(50000, 50000))).isTrue();

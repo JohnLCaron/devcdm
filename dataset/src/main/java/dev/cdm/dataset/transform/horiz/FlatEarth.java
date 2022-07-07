@@ -6,6 +6,7 @@
 package dev.cdm.dataset.transform.horiz;
 
 import dev.cdm.core.api.AttributeContainer;
+import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.Projection;
 
@@ -13,7 +14,7 @@ import dev.cdm.dataset.geoloc.Projection;
 public class FlatEarth extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
-    return "flat_earth";
+    return CDM.FlatEarth;
   }
 
   public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {

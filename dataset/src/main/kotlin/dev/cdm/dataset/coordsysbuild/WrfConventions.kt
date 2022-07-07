@@ -59,8 +59,7 @@ class WrfConventions() : CoordinatesBuilder("WrfConventions") {
     override fun makeCoordinateTransforms() {
         val projCT = augmenter?.projCT
         if (projCT != null) {
-            val horizTransform = CoordinateTransform(projCT)
-            coords.addCoordinateTransform(horizTransform)
+            coords.addCoordinateTransform(projCT)
         }
 
         // experimental. it appears we done need any attributes, its all handled in WrfEta

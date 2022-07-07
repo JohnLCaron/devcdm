@@ -18,11 +18,8 @@ open class AwipsConventions(name: String = "AWIPS") : CoordinatesBuilder(name) {
     override fun makeCoordinateTransforms() {
         val projCT = augmenter?.projCT
         if (projCT != null) {
-            val vp = findVarProcess(projCT.name, null)
-            if (vp != null) {
-                vp.isCoordinateTransform = true
-                vp.ctv = CoordinateTransform(projCT)
-            }
+            coords.addCoordinateTransform(projCT)
+            coords.setCoordinateTransformFor(projCT.name, listOf("x", "y"));
         }
         super.makeCoordinateTransforms()
     }

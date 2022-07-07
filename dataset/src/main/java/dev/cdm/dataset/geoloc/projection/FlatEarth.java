@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.geoloc.projection;
 
+import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
@@ -62,7 +63,7 @@ public class FlatEarth extends AbstractProjection {
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
   public FlatEarth(double lat0, double lon0, double rotAngle, double radius) {
-    super("FlatEarth", false);
+    super(CDM.FlatEarth, false);
 
     this._lat0 = lat0;
     this._lon0 = lon0;
@@ -75,7 +76,7 @@ public class FlatEarth extends AbstractProjection {
     this.sinRot = Math.sin(this.rotAngle);
     this.cosRot = Math.cos(this.rotAngle);
 
-    addParameter(CF.GRID_MAPPING_NAME, "flat_earth");
+    addParameter(CF.GRID_MAPPING_NAME, CDM.FlatEarth);
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, lon0);
     addParameter(ROTATIONANGLE, rotAngle);

@@ -31,8 +31,8 @@ class CoordsHelperBuilder(val conventionName : String) {
     }
 
     // For every coordsys that uses the named axis, add the CoordinateTransform to it
-    fun setCoordinateTransformFor(ctvName : String, axisName: String): CoordsHelperBuilder {
-        coordSys.filter { it.coordAxesNames.contains(axisName)}.forEach { it.addTransformName(ctvName)}
+    fun setCoordinateTransformFor(ctvName : String, axisNames: List<String>): CoordsHelperBuilder {
+        coordSys.filter { it.containsAxes(axisNames)}.forEach { it.addTransformName(ctvName)}
         return this
     }
 

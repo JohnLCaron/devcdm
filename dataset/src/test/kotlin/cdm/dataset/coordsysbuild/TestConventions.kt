@@ -4,9 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import dev.cdm.array.Indent
 import dev.cdm.core.constants.AxisType
+import dev.cdm.core.constants.CDM
+import dev.cdm.core.constants.CF
 import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets.openDatasetWithCS
-import dev.cdm.dataset.api.TestCdmDatasets
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.cdmdsl.writeCSDsl
 import dev.cdm.dataset.cdmdsl.writeDsl
@@ -42,7 +43,7 @@ class TestConventions {
 
             assertThat(tempCs.coordinateTransforms).hasSize(1)
             assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+            assertThat(tempCs.projection!!.name).isEqualTo(CF.LAMBERT_CONFORMAL_CONIC)
             assertThat(tempCs.verticalTransform).isNull()
         }
     }
@@ -53,6 +54,8 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/awips/20150602_0830_sport_imerg_noHemis_rr.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            println("${ncd.writeCSDsl()}")
+
             assertThat(ncd.conventionName).isEqualTo("AWIPS-Sat")
             assertThat(ncd.coordinateAxes).hasSize(2)
             assertThat(ncd.coordinateSystems).hasSize(1)
@@ -72,7 +75,7 @@ class TestConventions {
 
             assertThat(tempCs.coordinateTransforms).hasSize(1)
             assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("Mercator")
+            assertThat(tempCs.projection!!.name).isEqualTo(CDM.EquidistantCylindrical)
             assertThat(tempCs.verticalTransform).isNull()
         }
     }
@@ -350,7 +353,7 @@ class TestConventions {
 
             assertThat(tempCs.coordinateTransforms).hasSize(1)
             assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("Stereographic")
+            assertThat(tempCs.projection!!.name).isEqualTo(CF.STEREOGRAPHIC)
             assertThat(tempCs.verticalTransform).isNull()
         }
     }
@@ -548,7 +551,7 @@ class TestConventions {
 
             assertThat(tempCs.coordinateTransforms).hasSize(1)
             assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+            assertThat(tempCs.projection!!.name).isEqualTo(CF.LAMBERT_CONFORMAL_CONIC)
             assertThat(tempCs.verticalTransform).isNull()
         }
     }
@@ -586,7 +589,7 @@ class TestConventions {
 
             assertThat(tempCs.coordinateTransforms).hasSize(1)
             assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+            assertThat(tempCs.projection!!.name).isEqualTo(CF.LAMBERT_CONFORMAL_CONIC)
             assertThat(tempCs.verticalTransform).isNull()
         }
     }
@@ -621,7 +624,7 @@ class TestConventions {
 
             assertThat(tempCs.coordinateTransforms).hasSize(2)
             assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+            assertThat(tempCs.projection!!.name).isEqualTo(CF.LAMBERT_CONFORMAL_CONIC)
             assertThat(tempCs.verticalTransform).isNotNull()
             assertThat(tempCs.verticalTransform!!.name).isEqualTo("wrf_eta_coordinate")
         }
@@ -698,7 +701,7 @@ class TestConventions {
             assertThat(tempCs.coordinateTransforms).hasSize(1)
             assertThat(tempCs.projection).isNotNull()
             assertThat(tempCs.verticalTransform).isNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+            assertThat(tempCs.projection!!.name).isEqualTo(CF.LAMBERT_CONFORMAL_CONIC)
         }
     }
 

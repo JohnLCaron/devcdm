@@ -6,13 +6,14 @@
 package dev.cdm.dataset.transform.horiz;
 
 import dev.cdm.core.api.AttributeContainer;
+import dev.cdm.core.constants.CDM;
 import dev.cdm.dataset.geoloc.Projection;
 
-/** Create a Rotated LatLon Projection from the information in the Coordinate Transform Variable. */
-public class RotatedLatLon extends AbstractProjectionCT implements ProjectionBuilder {
+/** Create a Grib Rotated LatLon Projection from the information in the Coordinate Transform Variable. */
+public class GribRotatedLatLon extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
-    return dev.cdm.dataset.geoloc.projection.RotatedLatLon.GRID_MAPPING_NAME;
+    return CDM.GribRotatedLatLon;
   }
 
   public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {

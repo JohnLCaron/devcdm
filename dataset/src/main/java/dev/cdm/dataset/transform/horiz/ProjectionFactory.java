@@ -27,24 +27,24 @@ public class ProjectionFactory {
   static {
     registerTransform(CF.ALBERS_CONICAL_EQUAL_AREA, AlbersEqualArea.class);
     registerTransform(CF.AZIMUTHAL_EQUIDISTANT, AzimuthalEquidistant.class);
-    registerTransform("flat_earth", FlatEarth.class);
+    registerTransform(CDM.FlatEarth, FlatEarth.class);
+    registerTransform(CDM.EquidistantCylindrical, EquidistantCylindrical.class);
     registerTransform(CF.GEOSTATIONARY, Geostationary.class);
     registerTransform(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, LambertAzimuthal.class);
     registerTransform(CF.LAMBERT_CONFORMAL_CONIC, LambertConformalConic.class);
     registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA, LambertCylindricalEqualArea.class);
     registerTransform(CF.LATITUDE_LONGITUDE, LatLon.class);
-    // optional - needs visad.jar
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
     registerTransform(CF.POLAR_STEREOGRAPHIC, PolarStereographic.class);
     registerTransform("polyconic", PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012
     registerTransform(CF.ROTATED_LATITUDE_LONGITUDE, RotatedPole.class);
-    registerTransform("rotated_latlon_grib", RotatedLatLon.class);
+    registerTransform(CDM.GribRotatedLatLon, GribRotatedLatLon.class);
     registerTransform(CF.SINUSOIDAL, Sinusoidal.class);
     registerTransform(CF.STEREOGRAPHIC, Stereographic.class);
     registerTransform(CF.TRANSVERSE_MERCATOR, TransverseMercator.class);
-    registerTransform("UTM", UTM.class);
+    registerTransform(CDM.UniversalTransverseMercator, UTM.class);
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
     // further calls to registerTransform are by the user

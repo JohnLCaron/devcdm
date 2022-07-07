@@ -92,7 +92,7 @@ public class Stereographic extends AbstractProjection {
    * @param north true if north pole, false if south pole
    */
   public Stereographic(double lat_ts_deg, double latt_deg, double lont_deg, boolean north) {
-    super("PolarStereographic", false);
+    super(CF.POLAR_STEREOGRAPHIC, false);
 
     this._latts = lat_ts_deg;
     this._latt = latt_deg;
@@ -114,7 +114,7 @@ public class Stereographic extends AbstractProjection {
     double scaleFactor = (lat_ts_deg == 90 || lat_ts_deg == -90) ? 1.0 : getScaleFactor(latts, north);
     this.scale = scaleFactor * earthRadius;
 
-    addParameter(CF.GRID_MAPPING_NAME, "polar_stereographic");
+    addParameter(CF.GRID_MAPPING_NAME, CF.POLAR_STEREOGRAPHIC);
     addParameter("longitude_of_projection_origin", lont_deg);
     addParameter("latitude_of_projection_origin", latt_deg);
     addParameter("scale_factor_at_projection_origin", scaleFactor);
@@ -132,7 +132,7 @@ public class Stereographic extends AbstractProjection {
    */
   public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing,
       double radius) {
-    super("Stereographic", false);
+    super(CF.STEREOGRAPHIC, false);
 
     // defaults
     this.latts = 0;

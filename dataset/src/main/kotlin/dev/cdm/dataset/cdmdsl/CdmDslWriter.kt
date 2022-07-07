@@ -4,7 +4,6 @@ import dev.cdm.array.Indent
 import dev.cdm.array.PrintArray.printArray
 import dev.cdm.core.api.*
 import dev.cdm.dataset.api.*
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.util.*
 
 fun CdmDataset.writeDsl(): String {
@@ -144,7 +143,7 @@ fun CoordinateSystem.writeDsl(builder: StringBuilder, indent: Indent) {
 }
 
 fun CoordinateTransform.writeDsl(builder: StringBuilder, indent: Indent) {
-    builder.appendLine("${indent}transform(${this.name}) {")
+    builder.appendLine("${indent}transform(\"${this.name}\") {")
     this.metadata.forEach { it.writeDsl(builder, indent.incrNew()) }
     builder.appendLine("${indent}}");
 }

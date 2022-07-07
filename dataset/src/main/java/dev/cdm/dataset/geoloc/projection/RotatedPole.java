@@ -50,7 +50,7 @@ public class RotatedPole extends AbstractProjection {
   }
 
   public RotatedPole(double northPoleLat, double northPoleLon) {
-    super("RotatedPole", false);
+    super(CF.ROTATED_LATITUDE_LONGITUDE, false);
 
     northPole = ProjectionPoint.create(northPoleLon, northPoleLat);
     buildRotationMatrices();

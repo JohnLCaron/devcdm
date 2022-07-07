@@ -7,59 +7,23 @@ package dev.cdm.dataset.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.api.Dimension;
-import dev.cdm.core.api.Group;
-import dev.cdm.core.api.Structure;
-import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
-import dev.cdm.dataset.transform.horiz.ProjectionFactory;
 
 import dev.cdm.array.Immutable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 /** An immutable helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
 public class CoordinatesHelper implements Coordinates {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
-
-  public static List<CoordinateAxis> makeAxes(CdmDataset ncd) {
-    List<CoordinateAxis> axes = new ArrayList<>();
-    addAxes(ncd.getRootGroup(), axes);
-    return ImmutableList.copyOf(axes);
-  }
-
-  // TODO this assumes that the CoordinateAxis have been added to the NetcdfDataset
-  // and appears to ignore builder.axes
-  private static void addAxes(Group group, List<CoordinateAxis> axes) {
-    for (Variable v : group.getVariables()) {
-      if (v instanceof CoordinateAxis) {
-        axes.add((CoordinateAxis) v);
-      }
-      if (v instanceof Structure) {
-        Structure s = (Structure) v;
-        for (Variable nested : s.getVariables()) {
-          if (nested instanceof CoordinateAxis) {
-            axes.add((CoordinateAxis) nested);
-          }
-        }
-      }
-    }
-    for (Group nestedGroup : group.getGroups()) {
-      addAxes(nestedGroup, axes);
-    }
-  }
 
   /** Make canonical name for this list of axes. */
   public static String makeCanonicalName(List<CoordinateAxis.Builder<?>> axes) {
@@ -146,200 +110,6 @@ public class CoordinatesHelper implements Coordinates {
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
 
     this.coordSysForVar = builder.getCoordinateSystemFor();
-  }
-
-  private CoordinatesHelper(Builder builder, List<CoordinateAxis> axes) {
-    this.conventionName = builder.conventionName;
-    this.coordAxes = ImmutableList.copyOf(axes);
-
-    ImmutableList.Builder<CoordinateTransform> ctBuilders = ImmutableList.builder();
-    ctBuilders.addAll(builder.coordTransforms.stream().filter(Objects::nonNull).collect(Collectors.toList()));
-    coordTransforms = ctBuilders.build();
-
-    List<CoordinateTransform> allProjections =
-            coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
-
-    // TODO remove coordSys not used by a variable....
-    this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(this.coordAxes, allProjections))
-            .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
-
-    this.coordSysForVar = Map.of();
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public CoordinatesHelper.Builder toBuilder() {
-    return addLocalFieldsToBuilder(builder(this.conventionName));
-  }
-
-  private CoordinatesHelper.Builder addLocalFieldsToBuilder(CoordinatesHelper.Builder b) {
-    this.coordAxes.forEach(axis -> b.addCoordinateAxis(axis.toBuilder()));
-    this.coordSystems.forEach(sys -> b.addCoordinateSystem(sys.toBuilder()));
-    this.coordTransforms.forEach(ct -> b.addCoordinateTransform(ct));
-    return b;
-  }
-
-  public static Builder builder(String conventionName) {
-    return new Builder().setConventionName(conventionName);
-  }
-
-  public static class Builder {
-    String conventionName = "none";
-    public final ArrayList<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>(); // we dont use these
-    public final ArrayList<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
-    public final ArrayList<CoordinateTransform> coordTransforms = new ArrayList<>();
-    private boolean built;
-
-    public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
-      if (axis == null) {
-        return this;
-      }
-      coordAxes.add(axis);
-      return this;
-    }
-
-    public Builder setConventionName(String conventionName) {
-      this.conventionName = conventionName;
-      return this;
-    }
-
-    public Builder addCoordinateAxes(Collection<CoordinateAxis.Builder<?>> axes) {
-      Preconditions.checkNotNull(axes);
-      axes.forEach(this::addCoordinateAxis);
-      return this;
-    }
-
-    private Optional<CoordinateAxis.Builder<?>> findAxisByVerticalSearch(Variable.Builder<?> vb, String shortName) {
-      Optional<Variable.Builder<?>> axis = vb.getParentGroupBuilder().findVariableOrInParent(shortName);
-      if (axis.isPresent()) {
-        if (axis.get() instanceof CoordinateAxis.Builder) {
-          return Optional.of((CoordinateAxis.Builder<?>) axis.get());
-        }
-      }
-      return Optional.empty();
-    }
-
-    private Optional<CoordinateAxis.Builder<?>> findAxisByFullName(String fullName) {
-      return coordAxes.stream().filter(axis -> axis.getFullName().equals(fullName)).findFirst();
-    }
-
-    public Optional<CoordinateAxis.Builder<?>> findAxisByType(CoordinateSystem.Builder<?> csys, AxisType type) {
-      for (CoordinateAxis.Builder<?> axis : getAxesForSystem(csys)) {
-        if (axis.axisType == type) {
-          return Optional.of(axis);
-        }
-      }
-      return Optional.empty();
-    }
-
-    public boolean replaceCoordinateAxis(CoordinateAxis.Builder<?> axis) {
-      Optional<CoordinateAxis.Builder<?>> want = findAxisByFullName(axis.getFullName());
-      want.ifPresent(v -> coordAxes.remove(v));
-      addCoordinateAxis(axis);
-      return want.isPresent();
-    }
-
-    public Builder addCoordinateSystem(CoordinateSystem.Builder<?> cs) {
-      Preconditions.checkNotNull(cs);
-      if (!coordSys.contains(cs)) {
-        coordSys.add(cs);
-      }
-      return this;
-    }
-
-    Optional<CoordinateSystem.Builder<?>> findCoordinateSystem(String coordAxesNames) {
-      Preconditions.checkNotNull(coordAxesNames);
-      return coordSys.stream().filter(cs -> cs.coordAxesNames.equals(coordAxesNames)).findFirst();
-    }
-
-    // this is used when making a copy, we've thrown away the TransformBuilder
-    public Builder addCoordinateTransform(CoordinateTransform ct) {
-      Preconditions.checkNotNull(ct);
-      if (coordTransforms.stream().noneMatch(old -> old.name().equals(ct.name()))) {
-        coordTransforms.add(ct);
-      }
-      return this;
-    }
-
-    private List<CoordinateAxis.Builder<?>> getAxesForSystem(CoordinateSystem.Builder<?> cs) {
-      Preconditions.checkNotNull(cs);
-      List<CoordinateAxis.Builder<?>> axes = new ArrayList<>();
-      StringTokenizer stoker = new StringTokenizer(cs.coordAxesNames);
-      while (stoker.hasMoreTokens()) {
-        String vname = stoker.nextToken();
-        Optional<CoordinateAxis.Builder<?>> vbOpt = findAxisByFullName(vname);
-        if (vbOpt.isPresent()) {
-          axes.add(vbOpt.get());
-        } else {
-          throw new IllegalArgumentException("Cant find axis " + vname);
-        }
-      }
-      return axes;
-    }
-
-    String makeCanonicalName(Variable.Builder<?> vb, String axesNames) {
-      Preconditions.checkNotNull(axesNames);
-      List<CoordinateAxis.Builder<?>> axes = new ArrayList<>();
-      StringTokenizer stoker = new StringTokenizer(axesNames);
-      while (stoker.hasMoreTokens()) {
-        String vname = stoker.nextToken();
-        Optional<CoordinateAxis.Builder<?>> vbOpt = findAxisByFullName(vname);
-        if (vbOpt.isEmpty()) {
-          vbOpt = findAxisByVerticalSearch(vb, vname);
-        }
-        if (vbOpt.isPresent()) {
-          axes.add(vbOpt.get());
-        } else {
-          log.warn("No axis named {}", vname);
-          throw new IllegalArgumentException("Cant find axis " + vname);
-        }
-      }
-      return CoordinatesHelper.makeCanonicalName(axes);
-    }
-
-    // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
-    public boolean isComplete(CoordinateSystem.Builder<?> cs, Variable.Builder<?> vb) {
-      Preconditions.checkNotNull(cs);
-      Preconditions.checkNotNull(vb);
-      HashSet<Dimension> csDomain = new HashSet<>();
-      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.getDimensions()));
-      return CoordinateSystem.isComplete(vb.getDimensions(), csDomain);
-    }
-
-    public boolean containsAxes(CoordinateSystem.Builder<?> cs, List<CoordinateAxis.Builder<?>> dataAxes) {
-      Preconditions.checkNotNull(cs);
-      Preconditions.checkNotNull(dataAxes);
-      List<CoordinateAxis.Builder<?>> csAxes = getAxesForSystem(cs);
-      return csAxes.containsAll(dataAxes);
-    }
-
-    public boolean containsAxisTypes(CoordinateSystem.Builder<?> cs, List<AxisType> axisTypes) {
-      Preconditions.checkNotNull(cs);
-      Preconditions.checkNotNull(axisTypes);
-      List<CoordinateAxis.Builder<?>> csAxes = getAxesForSystem(cs);
-      for (AxisType axisType : axisTypes) {
-        if (!containsAxisTypes(csAxes, axisType))
-          return false;
-      }
-      return true;
-    }
-
-    private boolean containsAxisTypes(List<CoordinateAxis.Builder<?>> axes, AxisType want) {
-      for (CoordinateAxis.Builder<?> axis : axes) {
-        if (axis.axisType == want)
-          return true;
-      }
-      return false;
-    }
-
-    public CoordinatesHelper build(List<CoordinateAxis> coordAxes ) {
-      if (built) {
-        throw new IllegalStateException("already built");
-      }
-      built = true;
-
-      return new CoordinatesHelper(this, coordAxes);
-    }
   }
 
 }

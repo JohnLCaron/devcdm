@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.geoloc.projection;
 
+import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
@@ -23,7 +24,6 @@ import dev.cdm.array.Immutable;
  */
 @Immutable
 public class UtmProjection extends AbstractProjection {
-  public static final String GRID_MAPPING_NAME = "universal_transverse_mercator";
   public static final String UTM_ZONE1 = "utm_zone_number";
   public static final String UTM_ZONE2 = "UTM_zone";
 
@@ -54,7 +54,7 @@ public class UtmProjection extends AbstractProjection {
    * @param isNorth true if the UTM coordinate is in the northern hemisphere
    */
   public UtmProjection(int zone, boolean isNorth) {
-    super("UtmProjection", false);
+    super(CDM.UniversalTransverseMercator, false);
     convert2latlon = new Utm_To_Gdc_Converter(zone, isNorth);
     convert2xy = new Gdc_To_Utm_Converter(zone, isNorth);
 
@@ -63,7 +63,7 @@ public class UtmProjection extends AbstractProjection {
     this.zone = zone;
     this.isNorth = isNorth;
 
-    addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
+    addParameter(CF.GRID_MAPPING_NAME, CDM.UniversalTransverseMercator);
     addParameter(CF.SEMI_MAJOR_AXIS, convert2latlon.getA());
     addParameter(CF.INVERSE_FLATTENING, convert2latlon.getF());
     addParameter(UTM_ZONE1, zone);
@@ -87,7 +87,7 @@ public class UtmProjection extends AbstractProjection {
     convert2latlon = new Utm_To_Gdc_Converter(a, f, zone, isNorth);
     convert2xy = new Gdc_To_Utm_Converter(a, f, zone, isNorth);
 
-    addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
+    addParameter(CF.GRID_MAPPING_NAME, CDM.UniversalTransverseMercator);
     addParameter(CF.SEMI_MAJOR_AXIS, a);
     addParameter(CF.INVERSE_FLATTENING, f);
     addParameter(UTM_ZONE1, zone);

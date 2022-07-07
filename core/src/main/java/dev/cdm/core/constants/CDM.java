@@ -41,23 +41,31 @@ public class CDM {
 
   // staggering for _Coordinate.Stagger
   public static final String ARAKAWA_E = "Arakawa-E";
-  public static final String CurvilinearOrthogonal = "Curvilinear_Orthogonal";
   public static final String StaggerType = "stagger_type";
 
   // misc
   public static final String CF_EXTENDED = "CDM-Extended-CF";
   public static final String FILE_FORMAT = "file_format";
-  public static final String GAUSSIAN = "gaussian_lats";
-  public static final String GeoCoordinateUnits = "geoCoordinateUnits";
-  public static final String LAT_UNITS = "degrees_north";
-  public static final String LON_UNITS = "degrees_east";
-  public static final String RLATLON_UNITS = "degrees";
   public static final String RUNTIME_COORDINATE = "runtimeCoordinate";
   public static final String TIME_OFFSET = "time offset from runtime";
   public static final String TIME_OFFSET_MINUTES = "minutesFrom0z";
   public static final String TRANSFORM_NAME = "transform_name";
   public static final String Projection = "Projection";
   public static final String Vertical = "Vertical";
+
+  // geolocation
+  public static final String CurvilinearOrthogonal = "Curvilinear_Orthogonal";
+  public static final String EquidistantCylindrical = "EquidistantCylindrical";
+  public static final String FlatEarth = "FlatEarth";
+  public static final String GAUSSIAN = "gaussian_lats";
+  public static final String GeoCoordinateUnits = "geoCoordinateUnits";
+  public static final String GribRotatedLatLon = "GribRotatedLatLon";
+  public static final String LatitudeOfCentralMeridian = "latitude_of_central_meridian";
+  public static final String LAT_UNITS = "degrees_north";
+  public static final String LON_UNITS = "degrees_east";
+  public static final String RLATLON_UNITS = "degrees";
+  public static final String UniversalTransverseMercator = "UniversalTransverseMercator";
+
 
   // Special Attribute Names added by the Netcdf C library (apparently).
   public static final String NCPROPERTIES = "_NCProperties";

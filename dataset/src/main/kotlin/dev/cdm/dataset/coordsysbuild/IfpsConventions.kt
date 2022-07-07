@@ -6,14 +6,10 @@ import dev.cdm.core.api.*
 import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CDM
 import dev.cdm.core.constants._Coordinate
-import dev.cdm.dataset.api.CdmDataset
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.CoordinateAxis1D
-import dev.cdm.dataset.api.VariableDS
+import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.LatLonPoint
 import dev.cdm.dataset.geoloc.Projection
 import dev.cdm.dataset.geoloc.projection.LambertConformal
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.io.IOException
 
 /**
@@ -21,6 +17,7 @@ import java.io.IOException
  * @author Burks
  */
 open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
+    var projCT: CoordinateTransform? = null
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
@@ -139,10 +136,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         val lc = LambertConformal(centralLat, centralLon, par1, par2)
 
         // make Coordinate Transform Variable
-        val ct = ProjectionCTV("lambertConformalProjection", lc)
-        val ctVar = makeCoordinateTransformVariable(ct)
-        ctVar.addAttribute(Attribute(_Coordinate.Axes, "xCoord yCoord"))
-        rootBuilder.addVariable(ctVar)
+        this.projCT = CoordinateTransform("lambertConformalProjection", lc.projectionAttributes, true)
         return lc
     }
 
@@ -195,6 +189,13 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
     }
 
     //////////////////////////////////////////////////////////////////////////////
+
+    override fun makeCoordinateTransforms() {
+        if (projCT != null) {
+            coords.addCoordinateTransform(projCT!!)
+        }
+        super.makeCoordinateTransforms()
+    }
 
     override fun identifyZIsPositive(vds: VariableDS): Boolean {
         return true

@@ -75,7 +75,7 @@ public class Mercator extends AbstractProjection {
    * @param radius earth radius in km
    */
   public Mercator(double lon0, double par, double false_easting, double false_northing, double radius) {
-    super("Mercator", false);
+    super(CF.MERCATOR, false);
 
     this.lon0 = lon0;
     this.par = par;

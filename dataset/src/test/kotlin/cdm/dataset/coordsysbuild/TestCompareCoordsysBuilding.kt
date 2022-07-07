@@ -41,7 +41,8 @@ class TestCompareCoordsysBuilding {
              */
 
             return testFilesIn(extraTestDir)
-                .addNameFilter { !it.startsWith("WrfNoTimeVar") }
+                .addNameFilter { !it.startsWith("WrfNoTimeVar") &&
+                        !it.contains("grib")}
                 .withPathFilter{ it ->
                     val pname = it.toString()
                     !pname.contains("exclude") && !pname.contains("npoess")}
@@ -84,6 +85,7 @@ private class LocalFilter : CdmObjFilter() {
 }
 
 fun compareCoordinateSystems(filename: String) {
+    // TODO these are the same now
     CdmDatasets.openDatasetCS(filename, true).use { ncdc ->
         openNewCoordSys(filename, true).use { withcs ->
             println("Conv = ${withcs.conventionBuilder}")

@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.geoloc.projection;
 
+import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
@@ -70,7 +71,6 @@ import dev.cdm.dataset.geoloc.*;
  */
 
 public class RotatedLatLon extends AbstractProjection {
-  public static final String GRID_MAPPING_NAME = "rotated_latlon_grib";
   public static final String GRID_SOUTH_POLE_LONGITUDE = "grid_south_pole_longitude";
   public static final String GRID_SOUTH_POLE_LATITUDE = "grid_south_pole_latitude";
   public static final String GRID_SOUTH_POLE_ANGLE = "grid_south_pole_angle";
@@ -99,7 +99,7 @@ public class RotatedLatLon extends AbstractProjection {
    * @param southPoleAngle in degrees
    */
   public RotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
-    super("RotatedLatLon", false);
+    super(CDM.GribRotatedLatLon, false);
 
     /*
      * lonsp = aLonsp;
@@ -116,7 +116,7 @@ public class RotatedLatLon extends AbstractProjection {
     this.sinDlat = Math.sin(dlat_rad);
     this.cosDlat = Math.cos(dlat_rad);
 
-    addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
+    addParameter(CF.GRID_MAPPING_NAME, CDM.GribRotatedLatLon);
     addParameter(GRID_SOUTH_POLE_LATITUDE, southPoleLat);
     addParameter(GRID_SOUTH_POLE_LONGITUDE, southPoleLon);
     addParameter(GRID_SOUTH_POLE_ANGLE, southPoleAngle);
