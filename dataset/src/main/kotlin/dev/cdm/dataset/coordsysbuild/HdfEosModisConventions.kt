@@ -217,9 +217,7 @@ private fun checkGroup(g: Group): Boolean {
         val att = crs.findAttributeString(IospUtils.HDFEOS_CRS_Projection, null) ?: return false
         return if (att != "GCTP_SNSOID" && att != "GCTP_GEO") {
             false
-        } else !(dataG.findDimensionLocal(DIMX_NAME) == null || dataG.findDimensionLocal(
-            DIMY_NAME
-        ) == null)
+        } else !(dataG.findDimensionLocal(DIMX_NAME) == null || dataG.findDimensionLocal(DIMY_NAME) == null)
     }
     for (ng in g.groups) {
         if (checkGroup(ng)) {

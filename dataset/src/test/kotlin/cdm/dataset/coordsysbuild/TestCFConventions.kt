@@ -32,7 +32,7 @@ class TestCFConventions {
         println(withcs.write())
 
         assertThat(withcs.conventionBuilder).isEqualTo("CFConventions")
-        assertThat(withcs.coordinateSystems).hasSize(2)
+        assertThat(withcs.coordinateSystems).hasSize(3)
         assertThat(withcs.coordinateAxes).hasSize(5)
         assertThat(withcs.coordinateTransforms).hasSize(2)
 

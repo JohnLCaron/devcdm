@@ -22,7 +22,7 @@ class TestCF {
     @Throws(IOException::class)
     fun testCF() {
         println(cfFile)
-        CdmDatasets.openDatasetCS(cfFile, true).use { ncd ->
+        CdmDatasets.openDatasetWithCS(cfFile, true).use { ncd ->
             println(ncd.write())
             assertThat(ncd.conventionBuilder).startsWith("CF")
             val cs = ncd.findCoordinateSystem("level lat y lon x")

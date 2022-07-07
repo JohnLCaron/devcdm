@@ -181,6 +181,9 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
         varList.forEach { vp ->
             if (vp.coordinatesAll != null && vp.isData()) {
                 val coordAxesName = coords.makeCanonicalName(vp.vds, vp.coordinatesAll!!)
+                if (coordAxesName == null) {
+                    return@forEach
+                }
                 val cso = coords.findCoordinateSystem(coordAxesName)
                 if (cso != null) {
                     vp.assignCoordinateSystem(cso.name, "(indirect)")
@@ -235,21 +238,21 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
     open fun makeCoordinateSystemsMaximal() {
         varList.forEach { vp ->
             if (vp.hasCoordinateSystem() || !vp.isData() || vp.vds.dimensions.isEmpty()) {
-                return
+                return@forEach
             }
 
             // look through all axes that fit
             val axisList = mutableListOf<CoordinateAxis.Builder<*>>()
-            varList.filter { it.axis != null }.forEach { vpAxis ->
+            varList.filter { it.axis != null }.forEach axisloop@ { vpAxis ->
                 if (vpAxis.axis!!.dimensions.isEmpty()) {
-                    return  // scalar coords must be explicitly added.
+                    return@axisloop  // skip scalar coords; must be explicitly added.
                 }
                 if (hasCompatibleDimensions(vp.vds, vpAxis.vds)) {
                     axisList.add(vpAxis.axis!!)
                 }
             }
             if (axisList.size < 2) {
-                return
+                return@forEach
             }
             val coordAxesName = CoordinatesHelper.makeCanonicalName(axisList)
             val csb = coords.findCoordinateSystem(coordAxesName)
@@ -509,11 +512,14 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
         /** For explicit coordinate system variables, make a CoordinateSystem.  */
         fun makeCoordinateSystem() {
             if (coordinatesAll != null) {
-                val coordNames: String = coords.makeCanonicalName(vds, coordinatesAll!!)
-                val cs = CoordinateSystem.builder(vds.shortName).setCoordAxesNames(coordNames)
+                val coordAxesName = coords.makeCanonicalName(vds, coordinatesAll!!)
+                if (coordAxesName == null) {
+                    return
+                }
+                val cs = CoordinateSystem.builder(vds.shortName).setCoordAxesNames(coordAxesName)
                 coords.addCoordinateSystem(cs)
                 this.cs = cs
-                info.appendLine("Made Coordinate System '${vds.shortName}' on axes '${coordNames}'")
+                info.appendLine("Made Coordinate System '${vds.shortName}' on axes '${coordAxesName}'")
             }
         }
 

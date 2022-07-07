@@ -3,20 +3,28 @@ package dev.cdm.dataset.coordsysbuild
 import dev.cdm.core.api.CdmFile
 import dev.cdm.core.constants.*
 import dev.cdm.dataset.api.CdmDataset
-import dev.cdm.dataset.api.CdmDatasetCS
+import dev.cdm.dataset.api.CoordinateSystem
 
-open class HdfEosConventions(name: String = "HdfEos-Aura-Omi") : CoordinatesBuilder(name) {
-
+// Not needed = but leaving it in case
+open class HdfEosConventions(name: String = "HdfEos") : CoordinatesBuilder(name) {
+    var isSwath: Boolean? = false
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val featureType = orgDataset.findAttribute("featureType")
         if (featureType != null && featureType.stringValue == "SWATH") {
-            val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
-
-            return datasetBuilder.build()
+            isSwath = true
         }
         return orgDataset
     }
 
+    /* override fun makeCoordinateSystems() {
+        val coordsys = CoordinateSystem.builder("swath")
+        coordsys.setCoordAxesNames("Latitude Longitude")
+        coords.addCoordinateSystem(coordsys)
+        info.appendLine("HdfEosConventions added swath CoordinateSystems")
+        super.makeCoordinateSystems()
+    }
+
+     */
 }
 
 fun isHdfEos(ncfile: CdmFile): Boolean {

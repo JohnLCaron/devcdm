@@ -51,10 +51,10 @@ fun defaultAxisType(vds: VariableDS): AxisType? {
     }
     val positive = vds.findAttributeString(CF.POSITIVE, null)
     if (positive != null) {
-        if (SimpleUnit.isCompatible("m", unit)) {
-            return AxisType.Height
+        return if (SimpleUnit.isCompatible("m", unit)) {
+            AxisType.Height
         } else {
-            return AxisType.GeoZ
+            AxisType.GeoZ
         }
     }
     return null

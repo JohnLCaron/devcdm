@@ -406,6 +406,7 @@ public class CoordinateSystem {
       return self();
     }
 
+    // LOOK get rid of when old coordsys goes away
     public T setProjectionName(String projName) {
       this.projName = projName;
       return self();

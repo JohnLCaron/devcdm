@@ -138,14 +138,16 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                     } else if (ap.cs == null) {
                         builder.info.appendLine("***Not a Coordinate System variable $vname referenced from var '$vp'")
                     } else {
-                        val sysName = builder.coords.makeCanonicalName(vp.vds, ap.cs!!.coordAxesNames)
-                        vp.assignCoordinateSystem(sysName, "(explicit _Coordinate.Systems)")
+                        val coordAxesNames = builder.coords.makeCanonicalName(vp.vds, ap.cs!!.coordAxesNames)
+                        if (coordAxesNames != null) {
+                            vp.assignCoordinateSystem(coordAxesNames, "(explicit _Coordinate.Systems)")
+                        }
                     }
                 }
             }
         }
 
-        // _CoordinateSystemFor attribute point to dimensions used by data variables
+        // _CoordinateSystemFor attribute points to dimensions used by data variables
         builder.varList.forEach { csysVar ->
             val coordinateSystemsFor: String? = csysVar.vds.findAttributeString(_Coordinate.SystemFor, null)
             if (coordinateSystemsFor != null && csysVar.cs != null) {
@@ -156,7 +158,7 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                         dimSet.add(wantDim.shortName)
                     } else {
                         builder.info.appendLine("***Cant find Dimension '$dname' referenced from '${csysVar.vds}'")
-                        return
+                        return@forEach // continue
                     }
                 }
 
@@ -221,7 +223,6 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                     //  look for Coordinate Systems that contain all these axes
                     builder.coords.coordSys.forEach { coordSys ->
                         if (builder.coords.containsAxes(coordSys, coordAxes)) {
-                            coordSys.setProjectionName(vp.ctv!!.name)
                             if (coordSys.addTransformName(vp.ctv!!.name)) {
                                 builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
                             }
@@ -232,7 +233,6 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                     builder.varList.forEach { csv ->
                         if (csv.isCoordinateSystem && csv.cs != null) {
                             if (builder.coords.containsAxisTypes(csv.cs!!, coordAxes)) {
-                                csv.cs!!.setProjectionName(vp.ctv!!.name)
                                 if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
                                     builder.info.appendLine("Assign (_Coordinate.Axes) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                                 }
@@ -250,7 +250,6 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                     //  look for Coordinate Systems that contain all these axes
                     builder.coords.coordSys.forEach { coordSys ->
                         if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
-                            coordSys.setProjectionName(vp.ctv!!.name)
                             if (coordSys.addTransformName(vp.ctv!!.name)) {
                                 builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
                             }
@@ -261,7 +260,6 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                     builder.varList.forEach { csv ->
                         if (csv.isCoordinateSystem && csv.cs != null) {
                             if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
-                                csv.cs!!.setProjectionName(vp.ctv!!.name)
                                 if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
                                     builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                                 }

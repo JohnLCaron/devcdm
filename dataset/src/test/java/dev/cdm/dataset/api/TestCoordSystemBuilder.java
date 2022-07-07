@@ -37,7 +37,7 @@ public class TestCoordSystemBuilder {
     List<CoordinateTransform> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> builder =
-        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
+        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname");
     builder.addTransformName("flat_earth");
     CoordinateSystem coordSys = builder.build(axes, allProjs);
 

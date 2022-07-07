@@ -7,6 +7,10 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.stream.Stream
 
+const val datasetLocalDir = "../dataset/src/test/data/"
+const val datasetLocalNcmlDir = "../dataset/src/test/data/ncml/"
+const val coreLocalDir = "../core/src/test/data/netcdf3/"
+const val extraTestDir = "/home/snake/tmp/testData/"
 const val oldTestDir = "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/"
 
 fun testFilesIn(dirPath: String): TestFiles.StreamBuilder {

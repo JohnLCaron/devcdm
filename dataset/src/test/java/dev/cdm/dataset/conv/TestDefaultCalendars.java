@@ -102,14 +102,12 @@ public class TestDefaultCalendars {
     String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/coardsMissingCalendarAttr.nc";
 
     // open the test file
-    try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
+    try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       System.out.printf("testCoardsDefaultCalendar %s%n", ncd.getLocation());
       // make sure this dataset used the coardsConvention
       found = ncd.getConventionBuilder();
-      expected = coardsConvention;
-      testCond = found.equals(expected);
-      failMessage =
-              format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
+      testCond = found.equals("DefaultConventions");
+      failMessage = format("This dataset used the %s convention, but should have used theDefaultConventions.", found);
       assertWithMessage(failMessage).that(testCond).isTrue();
 
       // get the Time Coordinate Axis and read the values

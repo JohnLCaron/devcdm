@@ -178,7 +178,7 @@ public class TestReadGridCurvilinear {
 
   private void testClassifier(String filename) throws IOException {
     System.out.printf("testClassifier: %s%n", filename);
-    try (CdmDatasetCS ds = CdmDatasets.openDatasetCS(filename, true)) {
+    try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
       DatasetClassifier.CoordSysClassifier classifier =

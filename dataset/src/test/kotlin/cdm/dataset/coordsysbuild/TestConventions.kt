@@ -6,9 +6,11 @@ import dev.cdm.array.Indent
 import dev.cdm.core.constants.AxisType
 import dev.cdm.dataset.api.CdmDatasetCS
 import dev.cdm.dataset.api.CdmDatasets.openDatasetWithCS
+import dev.cdm.dataset.api.TestCdmDatasets
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.cdmdsl.writeCSDsl
 import dev.cdm.dataset.cdmdsl.writeDsl
+import dev.cdm.test.util.datasetLocalDir
 import org.junit.jupiter.api.Test
 
 class TestConventions {
@@ -21,6 +23,7 @@ class TestConventions {
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
             println("${ncd.writeCSDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("AWIPS")
             assertThat(ncd.coordinateAxes).hasSize(12)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -50,6 +53,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/awips/20150602_0830_sport_imerg_noHemis_rr.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("AWIPS-Sat")
             assertThat(ncd.coordinateAxes).hasSize(2)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -79,6 +83,7 @@ class TestConventions {
             " /media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/cedric/fort.54"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("CEDRICRadar")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -112,16 +117,17 @@ class TestConventions {
     @Test
     fun testCF() {
         val location =
-            "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/cf/temperature.nc"
+            "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/cf/ipcc/hfogo_O1.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            assertThat(ncd.coordinateAxes).hasSize(5)
-            assertThat(ncd.coordinateSystems).hasSize(3)
+            assertThat(ncd.conventionName).isEqualTo("CFConventions")
+            assertThat(ncd.coordinateAxes).hasSize(3)
+            assertThat(ncd.coordinateSystems).hasSize(1)
 
-            ncd.testCss("PS", "lat y lon x")
-            ncd.testCss("Temperature", "level lat y lon x")
+            // ncd.testCss("PS", "lat y lon x")
+            // ncd.testCss("Temperature", "level lat y lon x")
 
-            val temp = ncd.findVariable("Temperature") as VariableDS
+            val temp = ncd.findVariable("hfogo") as VariableDS
             assertThat(temp).isNotNull()
             val tempCss = ncd.makeCoordinateSystemsFor(temp)
             assertThat(tempCss).isNotNull()
@@ -132,23 +138,88 @@ class TestConventions {
             tempCs.writeDsl(out, Indent(2))
             println("$out")
 
-            assertThat(tempCs.name).isEqualTo("level lat y lon x")
-            assertThat(tempCs.axesName).isEqualTo("level lat y lon x")
+            assertThat(tempCs.name).isEqualTo("geo_region time lat")
+            assertThat(tempCs.axesName).isEqualTo("geo_region time lat")
+            assertThat(tempCs.coordinateAxes).hasSize(3)
+            assertThat(tempCs.findAxis(AxisType.Lat)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.Time)).isNotNull()
+
+            assertThat(tempCs.coordinateTransforms).hasSize(0)
+            assertThat(tempCs.projection).isNull()
+            assertThat(tempCs.verticalTransform).isNull()
+        }
+    }
+
+    @Test
+    fun testCFCurvilinear() {
+        val location =
+            "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/cf/signell/signell_bathy_fixed.nc"
+        openDatasetWithCS(location, true).use { ncd ->
+            assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("CFConventions")
+            assertThat(ncd.coordinateAxes).hasSize(2)
+            assertThat(ncd.coordinateSystems).hasSize(1)
+
+            val temp = ncd.findVariable("h") as VariableDS
+            assertThat(temp).isNotNull()
+            val tempCss = ncd.makeCoordinateSystemsFor(temp)
+            assertThat(tempCss).isNotNull()
+            assertThat(tempCss).hasSize(1)
+            val tempCs = tempCss[0]
+
+            val out = StringBuilder()
+            tempCs.writeDsl(out, Indent(2))
+            println("$out")
+
+            assertThat(tempCs.name).isEqualTo("latitude longitude")
+            assertThat(tempCs.axesName).isEqualTo("latitude longitude")
+            assertThat(tempCs.coordinateAxes).hasSize(2)
+            assertThat(tempCs.findAxis(AxisType.Lat)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.Lon)).isNotNull()
+
+            assertThat(tempCs.coordinateTransforms).hasSize(0)
+            assertThat(tempCs.projection).isNull()
+            assertThat(tempCs.verticalTransform).isNull()
+        }
+    }
+
+    @Test
+    fun testCFCurvilinear2() {
+        val location = "/home/snake/tmp/testData/coords/ukmo.nc"
+        openDatasetWithCS(location, true).use { ncd ->
+            assertThat(ncd).isNotNull()
+            println(ncd.writeDsl())
+            assertThat(ncd.conventionName).isEqualTo("CFConventions")
+            assertThat(ncd.coordinateAxes).hasSize(5)
+            assertThat(ncd.coordinateSystems).hasSize(1)
+
+            val temp = ncd.findVariable("temperature_2m") as VariableDS
+            assertThat(temp).isNotNull()
+            val tempCss = ncd.makeCoordinateSystemsFor(temp)
+            assertThat(tempCss).isNotNull()
+            assertThat(tempCss).hasSize(1)
+            val tempCs = tempCss[0]
+
+            val out = StringBuilder()
+            tempCs.writeDsl(out, Indent(2))
+            println("$out")
+
+            assertThat(tempCs.name).isEqualTo("basetime forecast level latitude longitude")
+            assertThat(tempCs.axesName).isEqualTo("basetime forecast level latitude longitude")
             assertThat(tempCs.coordinateAxes).hasSize(5)
             assertThat(tempCs.findAxis(AxisType.Lat)).isNotNull()
             assertThat(tempCs.findAxis(AxisType.Lon)).isNotNull()
-            assertThat(tempCs.findAxis(AxisType.GeoX)).isNotNull()
-            assertThat(tempCs.findAxis(AxisType.GeoY)).isNotNull()
-            assertThat(tempCs.findAxis(AxisType.GeoZ)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.Height)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.RunTime)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.TimeOffset)).isNotNull()
 
-            assertThat(tempCs.coordinateTransforms).hasSize(2)
-            assertThat(tempCs.projection).isNotNull()
-            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
-
-            assertThat(tempCs.verticalTransform).isNotNull()
-            assertThat(tempCs.verticalTransform!!.name).isEqualTo("level")
+            assertThat(tempCs.coordinateTransforms).hasSize(0)
+            assertThat(tempCs.projection).isNull()
+            assertThat(tempCs.verticalTransform).isNull()
         }
     }
+
+    //
 
     @Test
     fun testCoards() {
@@ -156,6 +227,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/coards/air.2001.ncml"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("DefaultConventions")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -190,6 +262,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/csm/atmos.tuv.monthly.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("DefaultConventions")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -225,6 +298,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/gief/coamps.wind_uv.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("GIEF")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -256,6 +330,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/gdv/testGDV.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("GDV")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -300,6 +375,7 @@ class TestConventions {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf5/aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("_Coordinates")
             assertThat(ncd.coordinateAxes).hasSize(7)
             assertThat(ncd.coordinateSystems).hasSize(2)
 
@@ -329,6 +405,7 @@ class TestConventions {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf4/ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("HDF4-EOS-MODIS")
             assertThat(ncd.coordinateAxes).hasSize(2)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -357,6 +434,7 @@ class TestConventions {
         val location ="../core/src/test/data/hdfeos2/MCD43B2.A2007001.h00v08.005.2007043191624.hdf"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("HDF4-EOS-MODIS")
             assertThat(ncd.coordinateAxes).hasSize(2)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -381,11 +459,11 @@ class TestConventions {
     }
 
     @Test
-    fun testHdfEosAmsua() {
+    fun testHdfEos() {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf4/eos/amsua/amsua16_2008.001_37506_0431_0625_WI.eos"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            println("${ncd.writeDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("HdfEos")
             assertThat(ncd.coordinateAxes).hasSize(3)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -396,11 +474,12 @@ class TestConventions {
             assertThat(tempCss).hasSize(1)
             val tempCs = tempCss[0]
 
-            assertThat(tempCs.name).isEqualTo("YDim XDim")
-            assertThat(tempCs.axesName).isEqualTo("YDim XDim")
-            assertThat(tempCs.coordinateAxes).hasSize(2)
-            assertThat(tempCs.findAxis(AxisType.GeoX)).isNotNull()
-            assertThat(tempCs.findAxis(AxisType.GeoY)).isNotNull()
+            assertThat(tempCs.name).isEqualTo("Time Latitude Longitude")
+            assertThat(tempCs.axesName).isEqualTo("Time Latitude Longitude")
+            assertThat(tempCs.coordinateAxes).hasSize(3)
+            assertThat(tempCs.findAxis(AxisType.Lat)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.Lon)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.Time)).isNotNull()
 
             assertThat(tempCs.coordinateTransforms).hasSize(0)
             assertThat(tempCs.projection).isNull()
@@ -414,9 +493,9 @@ class TestConventions {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/ifps/HUNGrids.netcdf"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            println("${ncd.writeDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("IFPS")
             assertThat(ncd.coordinateAxes).hasSize(29)
-            assertThat(ncd.coordinateSystems).hasSize(25)
+            assertThat(ncd.coordinateSystems).hasSize(26)
 
             ncd.variables.filter { it -> ncd.makeCoordinateSystemsFor(it as VariableDS).isNotEmpty()}.forEach {
                 ncd.testCss(it.shortName, "${it.shortName}_timeCoord yCoord xCoord")
@@ -448,7 +527,7 @@ class TestConventions {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/m3io/19L.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            println("${ncd.writeDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("M3IO")
             assertThat(ncd.coordinateAxes).hasSize(5)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -479,7 +558,7 @@ class TestConventions {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/nuwg/ruc.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            println("${ncd.writeDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("NUWGConventions")
             assertThat(ncd.coordinateAxes).hasSize(6)
             assertThat(ncd.coordinateSystems).hasSize(5)
 
@@ -512,13 +591,48 @@ class TestConventions {
         }
     }
 
+    @Test
+    fun testWrf2() {
+        val location ="/home/snake/tmp/testData/transforms/wrfout_v2_Lambert.nc"
+        openDatasetWithCS(location, true).use { ncd ->
+            assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("WrfConventions")
+            assertThat(ncd.coordinateAxes).hasSize(8)
+
+            ncd.testCss("W", "Time z_stag y x")
+            ncd.testCss("U", "Time z y x_stag")
+            ncd.testCss("V", "Time z y_stag x")
+            ncd.testCss("T", "Time z y x")
+
+            val temp = ncd.findVariable("U") as VariableDS
+            assertThat(temp).isNotNull()
+            val tempCss = ncd.makeCoordinateSystemsFor(temp)
+            assertThat(tempCss).isNotNull()
+            assertThat(tempCss).hasSize(1)
+            val tempCs = tempCss[0]
+
+            assertThat(tempCs.name).isEqualTo("Time z y x_stag")
+            assertThat(tempCs.axesName).isEqualTo("Time z y x_stag")
+            assertThat(tempCs.coordinateAxes).hasSize(4)
+            assertThat(tempCs.findAxis(AxisType.GeoX)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.GeoY)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.Time)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.GeoZ)).isNotNull()
+
+            assertThat(tempCs.coordinateTransforms).hasSize(2)
+            assertThat(tempCs.projection).isNotNull()
+            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+            assertThat(tempCs.verticalTransform).isNotNull()
+            assertThat(tempCs.verticalTransform!!.name).isEqualTo("wrf_eta_coordinate")
+        }
+    }
 
     @Test
     fun testWrf() {
         val location ="/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/wrf/global.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            println("${ncd.writeDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("WrfConventions")
             assertThat(ncd.coordinateAxes).hasSize(10)
             assertThat(ncd.coordinateSystems).hasSize(13)
 
@@ -558,6 +672,35 @@ class TestConventions {
         }
     }
 
+    @Test
+    fun testWrfNoTime() {
+        val location = "/home/snake/dev/github/devcdm/dataset/src/test/data/dataset/WrfNoTimeVar.nc"
+
+        openDatasetWithCS(location, true).use { ncd ->
+            assertThat(ncd).isNotNull()
+            assertThat(ncd.conventionName).isEqualTo("WrfConventions")
+            assertThat(ncd.coordinateAxes).hasSize(2)
+            assertThat(ncd.coordinateSystems).hasSize(1)
+
+            val temp = ncd.findVariable("T2") as VariableDS
+            assertThat(temp).isNotNull()
+            val tempCss = ncd.makeCoordinateSystemsFor(temp)
+            assertThat(tempCss).isNotNull()
+            assertThat(tempCss).hasSize(1)
+            val tempCs = tempCss[0]
+
+            assertThat(tempCs.name).isEqualTo("y x")
+            assertThat(tempCs.axesName).isEqualTo("y x")
+            assertThat(tempCs.coordinateAxes).hasSize(2)
+            assertThat(tempCs.findAxis(AxisType.GeoX)).isNotNull()
+            assertThat(tempCs.findAxis(AxisType.GeoY)).isNotNull()
+
+            assertThat(tempCs.coordinateTransforms).hasSize(1)
+            assertThat(tempCs.projection).isNotNull()
+            assertThat(tempCs.verticalTransform).isNull()
+            assertThat(tempCs.projection!!.name).isEqualTo("LambertConformal")
+        }
+    }
 
     @Test
     fun testZebra() {
@@ -565,7 +708,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/zebra/SPOL_3Volumes.nc"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            println("${ncd.writeCSDsl()}")
+            assertThat(ncd.conventionName).isEqualTo("Zebra")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 
@@ -589,7 +732,6 @@ class TestConventions {
             assertThat(tempCs.verticalTransform).isNull()
         }
     }
-
 
     fun CdmDatasetCS.testCss(varname : String, expectCss : String) {
         val v = this.findVariable(varname) as VariableDS
