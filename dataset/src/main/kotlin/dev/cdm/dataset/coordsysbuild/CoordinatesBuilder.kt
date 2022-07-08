@@ -12,7 +12,6 @@ import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CF
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.*
-import dev.cdm.dataset.internal.CoordinatesHelper
 import dev.cdm.dataset.transform.vertical.VerticalTransformFactory
 
 private val useMaximalCoordSys = true
@@ -324,9 +323,9 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
             }
         }
 
-        // If variable is a coordTransform and a coordVariable, assign it to any coordsys that uses the coordVariable
+        // If variable is a coordTransform and a coordVariable or Axis, assign it to any coordsys that uses the coordVariable
         varList.forEach { vp ->
-            if (vp.isCoordinateTransform && vp.isCoordinateVariable && vp.ctv != null) {
+            if (vp.isCoordinateTransform && (vp.isCoordinateVariable || vp.isCoordinateAxis) && vp.ctv != null) {
                 coords.setCoordinateTransformFor(vp.ctv!!.name, listOf(vp.vds.shortName))
                 //  look for Coordinate Systems that contain all these axes
                 info.appendLine("Assign CoordinateTransform '${vp.ctv!!.name}' for axis '${vp.vds.shortName}'")

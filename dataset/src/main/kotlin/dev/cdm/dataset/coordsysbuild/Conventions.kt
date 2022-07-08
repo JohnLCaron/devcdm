@@ -41,7 +41,6 @@ fun openDatasetWithCoordSys(location : String, enhance : Boolean) : CdmDatasetCS
 fun openDatasetWithCoordSys(orgDataset: CdmDataset) : CdmDatasetCS {
     val coordSysBuilder = findCoordSysBuilder(orgDataset)
     val augmentedDataset = coordSysBuilder.augment(orgDataset)
-    println(augmentedDataset.writeDsl())
 
     val coords = coordSysBuilder.buildCoordinateSystems(augmentedDataset)
     val withcs = CdmDatasetCS.builder().copyFrom(augmentedDataset)
@@ -49,6 +48,7 @@ fun openDatasetWithCoordSys(orgDataset: CdmDataset) : CdmDatasetCS {
         .setConventionUsed(coordSysBuilder.conventionName)
         .build()
     println(coordSysBuilder.info)
+    println(withcs.writeDsl())
 
     return withcs
 }

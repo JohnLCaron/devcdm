@@ -37,10 +37,10 @@ tasks.getByName<Test>("test") {
 tasks.jar {
     manifest {
         attributes(mapOf(
-            "Implementation-Title" to "cdmdev array library",
+            "Implementation-Title" to "UCDM (next generation) array library",
             "Implementation-Version" to project.version))
     }
-    archiveBaseName.set("cdmng-array")
+    archiveBaseName.set("ucdm-array")
 }
 
 tasks.test {

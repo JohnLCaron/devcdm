@@ -44,7 +44,7 @@ public class TestGridNetcdfCSBuilder {
     List<CoordinateTransform> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> csb =
-        CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
+        CoordinateSystem.builder("csysName").setCoordAxesNames("xname yname").setProjectionName("horiz");
     csb.addTransformName(CDM.FlatEarth);
     CoordinateSystem coordSys = csb.build(axes, allProjs);
 
@@ -60,7 +60,7 @@ public class TestGridNetcdfCSBuilder {
     }
 
     GridCoordinateSystem subject = builder.build();
-    assertThat(subject.getName()).isEqualTo(coordSys.getName());
+    assertThat(subject.getName()).isEqualTo(coordSys.getAxesName());
     assertThat(subject.getHorizCoordinateSystem().getProjection()).isEqualTo(coordSys.getProjection());
 
     GridAxis<?> gridAxisX = subject.findAxis("xname").orElseThrow();

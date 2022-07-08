@@ -40,8 +40,8 @@ tasks.jar {
     manifest {
         attributes(mapOf(
             "Main-Class" to "dev.cdm.main",
-            "Implementation-Title" to "CDM (next generation) core library",
+            "Implementation-Title" to "UCDM (next generation) core library",
             "Implementation-Version" to project.version))
     }
-    archiveBaseName.set("cdmng-core")
+    archiveBaseName.set("ucdm-core")
 }

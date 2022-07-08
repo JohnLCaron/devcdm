@@ -198,6 +198,42 @@ public class VerticalTransformFactory {
       }
     }
     if (null == builderClass) {
+      AttributeContainer ctv = vertCtv.metadata();
+        // standard name
+        String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
+        if (null == transform_name) {
+          transform_name = ctv.findAttributeString("Projection_Name", null);
+        }
+
+        // these names are from CF - dont want to have to duplicate
+        if (null == transform_name) {
+          transform_name = ctv.findAttributeString(CF.GRID_MAPPING_NAME, null);
+        }
+        if (null == transform_name) {
+          transform_name = ctv.findAttributeString(CF.STANDARD_NAME, null);
+        }
+
+        // Finally check the units
+        if (null == transform_name) {
+          transform_name = ctv.findAttributeString(CDM.UNITS, null);
+        }
+
+        if (null == transform_name) {
+          return null;
+        }
+
+        transform_name = transform_name.trim();
+
+        // do we have a transform registered for this ?
+        for (Transform transform : transformList) {
+          if (transform.transName.equalsIgnoreCase(transform_name)) {
+            builderClass = transform.transClass;
+            break;
+          }
+        }
+    }
+
+    if (null == builderClass) {
       return null;
     }
 
