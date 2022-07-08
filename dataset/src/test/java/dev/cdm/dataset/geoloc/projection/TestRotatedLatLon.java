@@ -11,7 +11,7 @@ import java.util.Arrays;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Tests for {@link RotatedLatLon}.
+ * Tests for {@link GribRotatedLatLon}.
  * 
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
@@ -21,7 +21,7 @@ public class TestRotatedLatLon {
   private static final double TOLERANCE = 1e-6;
 
   /** A rotated lat/lon projection with origin at 54 degrees North, 254 degrees East. */
-  private Projection proj = new RotatedLatLon(-36, 254, 0);
+  private Projection proj = new GribRotatedLatLon(-36, 254, 0);
 
   /** Test that the unrotated centre lat/lon is the origin of the rotated projection. */
   @Test
@@ -42,11 +42,11 @@ public class TestRotatedLatLon {
   }
 
   private static class Testing {
-    RotatedLatLon rll;
+    GribRotatedLatLon rll;
     static PrintStream ps = System.out;
 
     public Testing(double lo, double la, double rot) {
-      rll = new RotatedLatLon(la, lo, rot);
+      rll = new GribRotatedLatLon(la, lo, rot);
     }
 
     void pr(double[] pos, double[] pos2, double[] pos3) {
@@ -93,7 +93,7 @@ public class TestRotatedLatLon {
     t.test(0, 0);
     t.test(90, 0);
     t.test(0, 30);
-    RotatedLatLon rll = new RotatedLatLon(-50, 10, 20);
+    GribRotatedLatLon rll = new GribRotatedLatLon(-50, 10, 20);
     long t0 = System.currentTimeMillis();
     long dt = 0;
     double[] p = {12., 60.};

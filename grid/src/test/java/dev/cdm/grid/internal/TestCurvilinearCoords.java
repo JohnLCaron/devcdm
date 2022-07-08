@@ -49,8 +49,8 @@ public class TestCurvilinearCoords {
   @Test
   public void testEdges() {
     make(10, 10, (y, x) -> y, (y, x) -> x);
-    System.out.printf("%s%n", printArray(lat2d, "test lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     CurvilinearCoords cc = new CurvilinearCoords("test edges", lat2d, lon2d);
     cc.showEdges();
     cc.check();
@@ -74,8 +74,8 @@ public class TestCurvilinearCoords {
     double xoff = 100;
     double yoff = 200;
     make(10, 10, (y, x) -> yoff + y, (y, x) -> xoff + x);
-    System.out.printf("%s%n", printArray(lat2d, "test lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     CurvilinearCoords hcs = new CurvilinearCoords("test edges", lat2d, lon2d);
     hcs.showEdges();
     hcs.check();
@@ -92,8 +92,8 @@ public class TestCurvilinearCoords {
   @Test
   public void testEdges2() {
     make(10, 10, (y, x) -> 1.1 * y, (y, x) -> 1.2 * x);
-    System.out.printf("%s%n", printArray(lat2d, "test lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     CurvilinearCoords hcs = new CurvilinearCoords("test edges", lat2d, lon2d);
     hcs.showEdges();
     hcs.check();
@@ -114,8 +114,8 @@ public class TestCurvilinearCoords {
     double xoff = 100;
     double yoff = 200;
     make(10, 10, (y, x) -> yoff + 1.1 * y, (y, x) -> xoff + 1.2 * x);
-    System.out.printf("%s%n", printArray(lat2d, "test lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     CurvilinearCoords hcs = new CurvilinearCoords("test edges", lat2d, lon2d);
     hcs.showEdges();
     hcs.check();
@@ -134,8 +134,8 @@ public class TestCurvilinearCoords {
   @Test
   public void testEdges3() {
     make(10, 10, (y, x) -> 1.1 * y + 1.02 * x, (y, x) -> 1.2 * x + 1.01 * y);
-    System.out.printf("%s%n", printArray(lat2d, "test lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     CurvilinearCoords hcs = new CurvilinearCoords("test edges", lat2d, lon2d);
     hcs.showEdges();
     hcs.check();
@@ -155,8 +155,8 @@ public class TestCurvilinearCoords {
   @Test
   public void testColinearPoints() {
     make(10, 10, (y, x) -> 1.01 * (y + x), (y, x) -> 1.02 * (y + x));
-    System.out.printf("%s%n", printArray(lat2d, "test2 lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test2 lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     CurvilinearCoords hcs = new CurvilinearCoords("test2 edges", lat2d, lon2d);
     hcs.showEdges();
     hcs.check();

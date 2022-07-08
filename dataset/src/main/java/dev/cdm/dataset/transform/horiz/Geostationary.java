@@ -146,4 +146,8 @@ public class Geostationary extends AbstractProjectionCT implements ProjectionBui
         semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaleFactor);
   }
 
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.sat.Geostationary.class;
+  }
+
 }

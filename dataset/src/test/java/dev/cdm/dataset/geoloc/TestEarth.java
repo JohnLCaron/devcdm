@@ -41,7 +41,7 @@ public class TestEarth {
 
     assertThat(earth.getEpsgId()).isEqualTo(7030);
     assertThat(earth.getName()).isEqualTo("WGS84");
-    assertThat(earth.toString()).isEqualTo("WGS84");
+    assertThat(earth.toString()).startsWith("WGS84");
     assertThat(earth.getEquatorRadius()).isEqualTo(6378137.0);
 
     double flattening = 1.0 / 298.257223563;
@@ -56,12 +56,12 @@ public class TestEarth {
   public void testEllipticalEarthEquals() {
     EarthEllipsoid earth = new EarthEllipsoid("test", 99, 3000.0, 4000.0, 0.0);
     EarthEllipsoid earth2 = new EarthEllipsoid("test", 999, 30900.0, 40900.0, 0.0);
-    assertThat(earth).isEqualTo(earth2);
-    assertThat(earth.hashCode()).isEqualTo(earth2.hashCode());
+    assertThat(earth).isNotEqualTo(earth2);
+    assertThat(earth.hashCode()).isNotEqualTo(earth2.hashCode());
 
-    EarthEllipsoid earth3 = new EarthEllipsoid("test3", 99, 3000.0, 4000.0, 0.0);
-    assertThat(earth).isNotEqualTo(earth3);
-    assertThat(earth.hashCode()).isNotEqualTo(earth3.hashCode());
+    EarthEllipsoid earth3 = new EarthEllipsoid("test", 99, 3000.0, 4000.0, 0.0);
+    assertThat(earth).isEqualTo(earth3);
+    assertThat(earth.hashCode()).isEqualTo(earth3.hashCode());
   }
 
 }

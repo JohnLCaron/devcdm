@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.geoloc.projection;
 
+import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.*;
 
@@ -69,8 +70,7 @@ import dev.cdm.dataset.geoloc.*;
  * 
  */
 
-public class RotatedLatLon extends AbstractProjection {
-  public static final String GRID_MAPPING_NAME = "rotated_latlon_grib";
+public class GribRotatedLatLon extends AbstractProjection {
   public static final String GRID_SOUTH_POLE_LONGITUDE = "grid_south_pole_longitude";
   public static final String GRID_SOUTH_POLE_LATITUDE = "grid_south_pole_latitude";
   public static final String GRID_SOUTH_POLE_ANGLE = "grid_south_pole_angle";
@@ -87,7 +87,7 @@ public class RotatedLatLon extends AbstractProjection {
   /**
    * Default Constructor, needed for beans.
    */
-  public RotatedLatLon() {
+  public GribRotatedLatLon() {
     this(0.0, 0.0, 0.0);
   }
 
@@ -98,8 +98,8 @@ public class RotatedLatLon extends AbstractProjection {
    * @param southPoleLon in degrees
    * @param southPoleAngle in degrees
    */
-  public RotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
-    super("RotatedLatLon", false);
+  public GribRotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
+    super(CDM.GribRotatedLatLon, false);
 
     /*
      * lonsp = aLonsp;
@@ -116,7 +116,7 @@ public class RotatedLatLon extends AbstractProjection {
     this.sinDlat = Math.sin(dlat_rad);
     this.cosDlat = Math.cos(dlat_rad);
 
-    addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
+    addParameter(CF.GRID_MAPPING_NAME, CDM.GribRotatedLatLon);
     addParameter(GRID_SOUTH_POLE_LATITUDE, southPoleLat);
     addParameter(GRID_SOUTH_POLE_LONGITUDE, southPoleLon);
     addParameter(GRID_SOUTH_POLE_ANGLE, southPoleAngle);
@@ -136,7 +136,7 @@ public class RotatedLatLon extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new RotatedLatLon(latpole, lonpole, polerotate);
+    return new GribRotatedLatLon(latpole, lonpole, polerotate);
   }
 
   /**
@@ -221,6 +221,10 @@ public class RotatedLatLon extends AbstractProjection {
   public String toString() {
     return "RotatedLatLon{" + "lonpole=" + lonpole + ", latpole=" + latpole + ", polerotate=" + polerotate + '}';
   }
+  @Override
+  public String projectionCoordUnits() {
+    return "rad"; // TODO ??
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -229,7 +233,7 @@ public class RotatedLatLon extends AbstractProjection {
     if (o == null || getClass() != o.getClass())
       return false;
 
-    RotatedLatLon that = (RotatedLatLon) o;
+    GribRotatedLatLon that = (GribRotatedLatLon) o;
 
     if (Double.compare(that.latpole, latpole) != 0)
       return false;

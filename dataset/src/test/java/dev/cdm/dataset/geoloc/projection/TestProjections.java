@@ -35,21 +35,9 @@ public class TestProjections {
   private static final double tolerence = 5.0e-4;
 
   @Test
-  // java.lang.AssertionError: .072111263S 165.00490E expected:<-0.07211126381547306> but was:<39.99999999999999>
-  public void testTMproblem() {
-    double lat = -.072111263;
-    double lon = 165.00490;
-    LatLonPoint endL = doOne(new TransverseMercator(), lat, lon, true);
-    if (endL.equals(LatLonPoint.INVALID))
-      return;
-    assertThat(lat).isWithin(tolerence).of(endL.latitude());
-    assertThat(lon).isWithin(tolerence).of(endL.longitude());
-  }
-
-  @Test
-  public void testLC() {
-    testProjection(new LambertConformal());
-    LambertConformal p = new LambertConformal();
+  public void testAlbersEqualArea() {
+    testProjection(new AlbersEqualArea());
+    AlbersEqualArea p = new AlbersEqualArea();
     testEquals(p);
   }
 
@@ -57,6 +45,46 @@ public class TestProjections {
   public void testCurvilinear() {
     testProjectionLatLonMax(new CurvilinearProjection(), 180, 90, false);
     CurvilinearProjection p = new CurvilinearProjection();
+    testEquals(p);
+  }
+
+  @Test
+  public void testEquidistantAzimuthalProjection() {
+    testProjection(new EquidistantAzimuthalProjection());
+    EquidistantAzimuthalProjection p = new EquidistantAzimuthalProjection();
+    testEquals(p);
+  }
+
+  @Test
+  public void testFlatEarth() {
+    testProjectionProjMax(new FlatEarth(), 5000, 5000);
+    FlatEarth p = new FlatEarth();
+    testEquals(p);
+  }
+
+  /*
+   * grid_south_pole_latitude = -30.000001907348633
+   * grid_south_pole_longitude = -15.000000953674316
+   * grid_south_pole_angle = 0.0
+   */
+  @Test
+  public void testRotatedLatLon() {
+    testProjectionLatLonMax(new GribRotatedLatLon(-30, -15, 0), 360, 88, false);
+    GribRotatedLatLon p = new GribRotatedLatLon();
+    testEquals(p);
+  }
+
+  @Test
+  public void testLambertAzimuthalEqualArea() {
+    testProjection(new LambertAzimuthalEqualArea());
+    LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea();
+    testEquals(p);
+  }
+
+  @Test
+  public void testLambertConformal() {
+    testProjection(new LambertConformal());
+    LambertConformal p = new LambertConformal();
     testEquals(p);
   }
 
@@ -74,103 +102,17 @@ public class TestProjections {
   }
 
   @Test
-  public void testTM() {
-    testProjection(new TransverseMercator());
-    TransverseMercator p = new TransverseMercator();
-    testEquals(p);
-  }
-
-  @Test
-  public void testStereo() {
-    testProjection(new Stereographic());
-    Stereographic p = new Stereographic();
-    testEquals(p);
-  }
-
-  @Test
-  public void testLA() {
-    testProjection(new LambertAzimuthalEqualArea());
-    LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea();
-    testEquals(p);
-  }
-
-  @Test
-  public void testOrtho() {
-    testProjectionLatLonMax(new Orthographic(), 10, 10, false);
-    Orthographic p = new Orthographic();
-    testEquals(p);
-  }
-
-  @Test
-  public void testAEA() {
-    testProjection(new AlbersEqualArea());
-    AlbersEqualArea p = new AlbersEqualArea();
-    testEquals(p);
-  }
-
-  @Test
-  public void testCEA() {
-    testProjection(new CylindricalEqualAreaProjection());
-    CylindricalEqualAreaProjection p = new CylindricalEqualAreaProjection();
-    testEquals(p);
-  }
-
-  @Test
-  public void testEAP() {
-    testProjection(new EquidistantAzimuthalProjection());
-    EquidistantAzimuthalProjection p = new EquidistantAzimuthalProjection();
-    testEquals(p);
-  }
-
-  @Test
-  @Disabled("fails")
-  public void testAEAE() {
-    testProjectionLatLonMax(new AlbersEqualAreaEllipse(), 180, 80, true);
-    AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
-    testEquals(p);
-  }
-
-  @Test
-  @Disabled("fails")
-  public void testLCCE() {
-    testProjectionLatLonMax(new LambertConformalConicEllipse(), 360, 80, true);
-    LambertConformalConicEllipse p = new LambertConformalConicEllipse();
-    testEquals(p);
-  }
-
-  @Test
-  public void testFlatEarth() {
-    testProjectionProjMax(new FlatEarth(), 5000, 5000);
-    FlatEarth p = new FlatEarth();
-    testEquals(p);
-  }
-
-  @Test
   public void testMercator() {
     testProjection(new Mercator());
     Mercator p = new Mercator();
     testEquals(p);
   }
 
-  private void showProjVal(Projection proj, double lat, double lon) {
-    LatLonPoint startL = new LatLonPoint(lat, lon);
-    ProjectionPoint p = proj.latLonToProj(startL);
-    if (show)
-      System.out.printf("lat,lon= (%f, %f) x, y= (%f, %f) %n", lat, lon, p.getX(), p.getY());
-  }
-
   @Test
-  public void testMSG() {
-    doOne(new MSGnavigation(), 60, 60, true);
-    testProjection(new MSGnavigation());
-    testEquals(new MSGnavigation());
-
-    MSGnavigation m = new MSGnavigation();
-    showProjVal(m, 0, 0);
-    showProjVal(m, 60, 0);
-    showProjVal(m, -60, 0);
-    showProjVal(m, 0, 60);
-    showProjVal(m, 0, -60);
+  public void testOrthographic() {
+    testProjectionLatLonMax(new Orthographic(), 10, 10, false);
+    Orthographic p = new Orthographic();
+    testEquals(p);
   }
 
   @Test
@@ -180,24 +122,38 @@ public class TestProjections {
     testEquals(p);
   }
 
-  /*
-   * grid_south_pole_latitude = -30.000001907348633
-   * grid_south_pole_longitude = -15.000000953674316
-   * grid_south_pole_angle = 0.0
-   */
-  @Test
-  public void testRotatedLatLon() {
-    testProjectionLatLonMax(new RotatedLatLon(-30, -15, 0), 360, 88, false);
-    RotatedLatLon p = new RotatedLatLon();
-    testEquals(p);
-  }
-
   @Test
   public void testSinusoidal() {
     doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40, true);
     testProjection(new Sinusoidal(0, 0, 0, 6371.007));
     Sinusoidal p = new Sinusoidal();
     testEquals(p);
+  }
+
+  @Test
+  public void testStereographic() {
+    testProjection(new Stereographic());
+    Stereographic p = new Stereographic();
+    testEquals(p);
+  }
+
+  @Test
+  public void testTransverseMercator() {
+    testProjection(new TransverseMercator());
+    TransverseMercator p = new TransverseMercator();
+    testEquals(p);
+  }
+
+  @Test
+  // java.lang.AssertionError: .072111263S 165.00490E expected:<-0.07211126381547306> but was:<39.99999999999999>
+  public void testTMproblem() {
+    double lat = -.072111263;
+    double lon = 165.00490;
+    LatLonPoint endL = doOne(new TransverseMercator(), lat, lon, true);
+    if (endL.equals(LatLonPoint.INVALID))
+      return;
+    assertThat(lat).isWithin(tolerence).of(endL.latitude());
+    assertThat(lon).isWithin(tolerence).of(endL.longitude());
   }
 
   @Test
@@ -211,6 +167,85 @@ public class TestProjections {
     testProjectionUTM(NTRIALS);
 
     UtmProjection p = new UtmProjection();
+    testEquals(p);
+  }
+
+ /////////////////////////////////////////////////////////////////////////
+ // proj4
+
+  @Test
+  // @Disabled("fails")
+  public void testAlbersEqualAreaEllipse() {
+    testProjectionLatLonMax(new AlbersEqualAreaEllipse(), 180, 80, true);
+    AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
+    testEquals(p);
+  }
+
+
+  @Test
+  public void testCylindricalEqualAreaProjection() {
+    testProjection(new CylindricalEqualAreaProjection());
+    CylindricalEqualAreaProjection p = new CylindricalEqualAreaProjection();
+    testEquals(p);
+  }
+
+  @Test
+  // @Disabled("fails")
+  public void testLambertConformalConicEllipse() {
+    testProjectionLatLonMax(new LambertConformalConicEllipse(), 360, 80, true);
+    LambertConformalConicEllipse p = new LambertConformalConicEllipse();
+    testEquals(p);
+  }
+
+  @Test
+  public void testPolyconicProjection() {
+    testProjection(new PolyconicProjection());
+    PolyconicProjection p = new PolyconicProjection();
+    testEquals(p);
+  }
+
+  @Test
+  public void testStereographicAzimuthalProjection() {
+    testProjection(new StereographicAzimuthalProjection());
+    StereographicAzimuthalProjection p = new StereographicAzimuthalProjection();
+    testEquals(p);
+  }
+
+  @Test
+  public void testTransverseMercatorProjection() {
+    testProjection(new TransverseMercatorProjection());
+    TransverseMercatorProjection p = new TransverseMercatorProjection();
+    testEquals(p);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  // sat
+
+  @Test
+  public void testGeostationary() {
+    testProjection(new Geostationary());
+    Geostationary p = new Geostationary();
+    testEquals(p);
+  }
+
+  @Test
+  public void testMSGnavigation() {
+    doOne(new MSGnavigation(), 60, 60, true);
+    testProjection(new MSGnavigation());
+    testEquals(new MSGnavigation());
+
+    MSGnavigation m = new MSGnavigation();
+    showProjVal(m, 0, 0);
+    showProjVal(m, 60, 0);
+    showProjVal(m, -60, 0);
+    showProjVal(m, 0, 60);
+    showProjVal(m, 0, -60);
+  }
+
+  @Test
+  public void testVerticalPerspectiveView() {
+    testProjection(new VerticalPerspectiveView());
+    VerticalPerspectiveView p = new VerticalPerspectiveView();
     testEquals(p);
   }
 
@@ -440,7 +475,7 @@ public class TestProjections {
     test(orth, ppt, new LatLonPoint(-18.29509511, -41.39503231));
     test(orth, lpt, ProjectionPoint.create(-2342.85390, 1215.68780));
 
-    RotatedLatLon rll = new RotatedLatLon();
+    GribRotatedLatLon rll = new GribRotatedLatLon();
     test(rll, ppt, new LatLonPoint(-46.04179300, 119.52015163));
     test(rll, lpt, ProjectionPoint.create(-62.5755691, -65.5259331));
 
@@ -597,5 +632,11 @@ public class TestProjections {
     assertThat(p.toString()).isEqualTo(p2.toString());
   }
 
+  private void showProjVal(Projection proj, double lat, double lon) {
+    LatLonPoint startL = new LatLonPoint(lat, lon);
+    ProjectionPoint p = proj.latLonToProj(startL);
+    if (show)
+      System.out.printf("lat,lon= (%f, %f) x, y= (%f, %f) %n", lat, lon, p.getX(), p.getY());
+  }
 
 }

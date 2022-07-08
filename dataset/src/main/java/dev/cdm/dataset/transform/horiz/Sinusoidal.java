@@ -20,14 +20,18 @@ public class Sinusoidal extends AbstractProjectionCT implements ProjectionBuilde
     double centralMeridian = ctv.findAttributeDouble(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
     double false_easting = ctv.findAttributeDouble(CF.FALSE_EASTING, 0.0);
     double false_northing = ctv.findAttributeDouble(CF.FALSE_NORTHING, 0.0);
-    double earth_radius = TransformBuilders.getEarthRadiusInKm(ctv);
+    double earth_radius = ProjectionBuilders.getEarthRadiusInKm(ctv);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = TransformBuilders.getFalseEastingScaleFactor(geoCoordinateUnits);
+      double scalef = ProjectionBuilders.getFalseEastingScaleFactor(geoCoordinateUnits);
       false_easting *= scalef;
       false_northing *= scalef;
     }
 
     return new dev.cdm.dataset.geoloc.projection.Sinusoidal(centralMeridian, false_easting, false_northing, earth_radius);
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.Sinusoidal.class;
   }
 }

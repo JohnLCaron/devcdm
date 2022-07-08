@@ -6,6 +6,7 @@
 package dev.cdm.dataset.transform.horiz;
 
 import dev.cdm.core.api.AttributeContainer;
+import dev.cdm.core.constants.CDM;
 import dev.cdm.dataset.geoloc.Projection;
 import dev.cdm.dataset.geoloc.projection.UtmProjection;
 
@@ -13,7 +14,7 @@ import dev.cdm.dataset.geoloc.projection.UtmProjection;
 public class UTM extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
-    return UtmProjection.GRID_MAPPING_NAME;
+    return CDM.UniversalTransverseMercator;
   }
 
   public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
@@ -32,5 +33,9 @@ public class UTM extends AbstractProjectionCT implements ProjectionBuilder {
 
     // double a, double f, int zone, boolean isNorth
     return (axis != 0.0) ? new UtmProjection(axis, f, zone, isNorth) : new UtmProjection(zone, isNorth);
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.UtmProjection.class;
   }
 }

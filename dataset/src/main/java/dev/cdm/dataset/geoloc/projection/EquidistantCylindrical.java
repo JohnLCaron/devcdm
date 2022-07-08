@@ -59,7 +59,7 @@ public class EquidistantCylindrical extends AbstractProjection {
    * @param radius earth radius in km
    */
   public EquidistantCylindrical(double centralLat, double centralLon, double standardParellel, double falseEasting, double falseNorthing, double radius) {
-    super("EquidistantCylindrical", false);
+    super(CDM.EquidistantCylindrical, false);
 
     this.centralLat = centralLat;
     this.centralLon = centralLon;
@@ -71,8 +71,8 @@ public class EquidistantCylindrical extends AbstractProjection {
     // standard parallel in radians
     this.A = earthRadius * Math.cos(Math.toRadians(standardParellel)); // incorporates the scale factor at par
 
-    addParameter(CF.GRID_MAPPING_NAME, CF.MERCATOR);
-    addParameter("latitude_of_central_meridian", centralLat);
+    addParameter(CF.GRID_MAPPING_NAME, CDM.EquidistantCylindrical);
+    addParameter(CDM.LatitudeOfCentralMeridian, centralLat);
     addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, centralLon);
     addParameter(CF.STANDARD_PARALLEL, standardParellel);
     addParameter(CF.EARTH_RADIUS, earthRadius * 1000);

@@ -141,8 +141,10 @@ public class CoordinateSystem {
   @Nullable
   public Projection getProjection() {
     if (projection == null) {
-      this.coordTransforms.stream().filter( it -> it.isProjection()).findFirst().ifPresent( ctv ->
-      this.projection = ProjectionFactory.makeProjection(ctv, new Formatter()));
+      this.coordTransforms.stream()
+              .filter( it -> it.isProjection())
+              .findFirst()
+              .ifPresent( ctv -> this.projection = ProjectionFactory.makeProjection(ctv, new Formatter()));
     }
     return projection;
   }
@@ -425,6 +427,10 @@ public class CoordinateSystem {
     public T setImplicit(boolean isImplicit) {
       this.isImplicit = isImplicit;
       return self();
+    }
+
+    public boolean containsAxes(List<String> axes) {
+      return axes.stream().allMatch(it -> coordAxesNames.contains(it));
     }
 
     /**

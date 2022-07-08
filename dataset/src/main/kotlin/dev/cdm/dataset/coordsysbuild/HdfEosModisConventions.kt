@@ -7,7 +7,6 @@ import dev.cdm.core.constants.*
 import dev.cdm.core.iosp.IospUtils
 import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.projection.Sinusoidal
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 
 private  val  CRS = "sinusoidal"
 private  val  DATA_GROUP = "Data_Fields"
@@ -18,7 +17,7 @@ private  val  CONVENTION_NAME = "HDF4-EOS-MODIS"
 
 open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConventions(name) {
     private var addTimeCoord : Boolean = false
-    private var projCTV : ProjectionCTV? = null
+    private var projCTV : CoordinateTransform? = null
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
@@ -184,20 +183,15 @@ open class HdfEosModisConventions(name: String = CONVENTION_NAME) : CFConvention
         return v
     }
 
-    private fun makeSinusoidalProjection(name: String, projParams: Attribute): ProjectionCTV {
+    private fun makeSinusoidalProjection(name: String, projParams: Attribute): CoordinateTransform {
         val radius = projParams.getNumericValue(0)!!.toDouble()
         val centMer = projParams.getNumericValue(4)!!.toDouble()
         val falseEast = projParams.getNumericValue(6)!!.toDouble()
         val falseNorth = projParams.getNumericValue(7)!!.toDouble()
         val proj = Sinusoidal(centMer, falseEast * .001, falseNorth * .001, radius * .001)
-        return ProjectionCTV(name, proj)
+        return CoordinateTransform(name, proj.projectionAttributes, true)
     }
 
-    ///////////////////////////////////////////
-
-    override fun makeTransformBuilder(vb: VariableDS, isProjection : Boolean): CoordinateTransform? {
-        return CoordinateTransform(projCTV!!)
-    }
 }
 
 fun isHdfEosModis(ncfile: CdmFile): Boolean {

@@ -205,7 +205,6 @@ public abstract class AbstractProjection implements Projection {
     double midpoint = (lon1 + lon2) / 2;
     lon1 = LatLonPoints.lonNormal(lon1, midpoint);
     lon2 = LatLonPoints.lonNormal(lon2, midpoint);
-
     return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
   }
 

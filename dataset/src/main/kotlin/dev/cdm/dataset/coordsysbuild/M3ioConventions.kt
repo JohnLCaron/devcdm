@@ -9,14 +9,13 @@ import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.LatLonProjection
 import dev.cdm.dataset.geoloc.projection.*
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.text.SimpleDateFormat
 import java.util.*
 
 private const val earthRadius = 6370.000 // km
 
 open class M3ioConventions(name: String = "M3IO") : CoordinatesBuilder(name) {
-    var projCT: ProjectionCTV? = null
+    var projCT: CoordinateTransform? = null
     var globalAtts : AttributeContainer? = null
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
@@ -180,86 +179,86 @@ open class M3ioConventions(name: String = "M3IO") : CoordinatesBuilder(name) {
         datasetBuilder.replaceCoordinateAxis(datasetBuilder.rootGroup, timeCoord)
     }
 
-    private fun makeLatLongProjection(): ProjectionCTV {
+    private fun makeLatLongProjection(): CoordinateTransform {
         // Get lower left and upper right corners of domain in lat/lon
         val x1: Double = findAttributeDouble("XORIG")
         val x2: Double = x1 + findAttributeDouble("XCELL") * findAttributeDouble("NCOLS")
         val ll = LatLonProjection("LatitudeLongitudeProjection", null, (x1 + x2) / 2)
-        return ProjectionCTV("LatitudeLongitudeProjection", ll)
+        return CoordinateTransform(ll.name, ll.projectionAttributes, true)
     }
 
-    private fun makeLCProjection(): ProjectionCTV {
+    private fun makeLCProjection(): CoordinateTransform {
         val par1: Double = findAttributeDouble("P_ALP")
         val par2: Double = findAttributeDouble("P_BET")
         val lon0: Double = findAttributeDouble("XCENT")
         val lat0: Double = findAttributeDouble("YCENT")
         val lc = LambertConformal(lat0, lon0, par1, par2, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("LambertConformalProjection", lc)
+        return CoordinateTransform(lc.name, lc.projectionAttributes, true)
     }
 
-    private fun makePolarStereographicProjection(): ProjectionCTV {
+    private fun makePolarStereographicProjection(): CoordinateTransform {
         val lon0: Double = findAttributeDouble("XCENT")
         val lat0: Double = findAttributeDouble("YCENT")
         val latts: Double = findAttributeDouble("P_BET")
         val sg = Stereographic(latts, lat0, lon0, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("PolarStereographic", sg)
+        return CoordinateTransform(sg.name, sg.projectionAttributes, true)
     }
 
-    private fun makeEquitorialMercatorProjection(): ProjectionCTV {
+    private fun makeEquitorialMercatorProjection(): CoordinateTransform {
         val lon0: Double = findAttributeDouble("XCENT")
         val par: Double = findAttributeDouble("P_ALP")
         val p = Mercator(lon0, par, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("EquitorialMercator", p)
+        return CoordinateTransform(p.name, p.projectionAttributes, true)
     }
 
-    private fun makeTransverseMercatorProjection(): ProjectionCTV {
+    private fun makeTransverseMercatorProjection(): CoordinateTransform {
         val lat0: Double = findAttributeDouble("P_ALP")
         val tangentLon: Double = findAttributeDouble("P_GAM")
         val p = TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("TransverseMercator", p)
+        return CoordinateTransform(p.name, p.projectionAttributes, true)
     }
 
-    private fun makeAlbersProjection(): ProjectionCTV {
+    private fun makeAlbersProjection(): CoordinateTransform {
         val lat0: Double = findAttributeDouble("YCENT")
         val lon0: Double = findAttributeDouble("XCENT")
         val par1: Double = findAttributeDouble("P_ALP")
         val par2: Double = findAttributeDouble("P_BET")
         val p = AlbersEqualArea(lat0, lon0, par1, par2, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("Albers", p)
+        return CoordinateTransform(p.name, p.projectionAttributes, true)
     }
 
-    private fun makeLambertAzimuthalProjection(): ProjectionCTV {
+    private fun makeLambertAzimuthalProjection(): CoordinateTransform {
         val lat0: Double = findAttributeDouble("YCENT")
         val lon0: Double = findAttributeDouble("XCENT")
         val p = LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("LambertAzimuthal", p)
+        return CoordinateTransform(p.name, p.projectionAttributes, true)
     }
 
-    private fun makeSTProjection(): ProjectionCTV {
+    private fun makeSTProjection(): CoordinateTransform {
         var latt: Double = findAttributeDouble("PROJ_ALPHA")
         if (java.lang.Double.isNaN(latt)) latt = findAttributeDouble("P_ALP")
         var lont: Double = findAttributeDouble("PROJ_BETA")
         if (java.lang.Double.isNaN(lont)) lont = findAttributeDouble("P_BET")
         val st = Stereographic(latt, lont, 1.0, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("StereographicProjection", st)
+        return CoordinateTransform(st.name, st.projectionAttributes, true)
     }
 
-    private fun makeTMProjection(): ProjectionCTV {
+    private fun makeTMProjection(): CoordinateTransform {
         var lat0: Double = findAttributeDouble("PROJ_ALPHA")
         if (java.lang.Double.isNaN(lat0)) lat0 = findAttributeDouble("P_ALP")
         var tangentLon: Double = findAttributeDouble("PROJ_BETA")
         if (java.lang.Double.isNaN(tangentLon)) tangentLon = findAttributeDouble("P_BET")
         val tm = TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius)
-        return ProjectionCTV("MercatorProjection", tm)
+        return CoordinateTransform(tm.name, tm.projectionAttributes, true)
     }
 
-    private fun makeUTMProjection(): ProjectionCTV {
+    private fun makeUTMProjection(): CoordinateTransform {
         val zone: Int = findAttributeDouble("P_ALP").toInt()
         val ycent: Double = findAttributeDouble("YCENT")
         var isNorth = true
         if (ycent < 0) isNorth = false
         val utm = UtmProjection(zone, isNorth)
-        return ProjectionCTV("UTM", utm)
+        return CoordinateTransform(utm.name, utm.projectionAttributes, true)
     }
 
     private fun findAttributeDouble(attname: String): Double {
@@ -285,10 +284,7 @@ open class M3ioConventions(name: String = "M3IO") : CoordinatesBuilder(name) {
 
     override fun makeCoordinateTransforms() {
         if (projCT != null) {
-            val vp = findVarProcess(projCT!!.getName(), null)
-            vp!!.isCoordinateTransform = true
-            vp.ctv = CoordinateTransform(projCT!!.getName(), projCT!!.ctvAttributes, true)
-
+            coords.addCoordinateTransform(projCT!!)
         }
         super.makeCoordinateTransforms()
     }

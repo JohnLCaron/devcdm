@@ -194,6 +194,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
+    @Nullable
     public AxisType axisType;
     protected String boundaryRef;
     private boolean built;

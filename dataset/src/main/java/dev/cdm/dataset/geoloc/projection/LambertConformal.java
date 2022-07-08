@@ -77,7 +77,6 @@ public class LambertConformal extends AbstractProjection {
   public LambertConformal(double lat0, double lon0, double par1, double par2, double false_easting,
       double false_northing) {
     this(lat0, lon0, par1, par2, false_easting, false_northing, EARTH_RADIUS);
-
   }
 
   /**
@@ -96,7 +95,7 @@ public class LambertConformal extends AbstractProjection {
   public LambertConformal(double lat0, double lon0, double par1, double par2, double false_easting,
       double false_northing, double earth_radius) {
 
-    super("LambertConformal", false);
+    super(CF.LAMBERT_CONFORMAL_CONIC, false);
 
     this._lat0 = lat0;
     this._lon0 = lon0;

@@ -27,12 +27,6 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
             }
         }
 
-        // standard unit check
-        val at: AxisType? = super.identifyAxisType(vds)
-        if (at != null) {
-            return at
-        }
-
         // standard names for X, Y : bug in CDO putting wrong standard name, so check units first (!)
         if (stdName != null) {
             if (stdName.equals(CF.ENSEMBLE, ignoreCase = true)) {
@@ -83,6 +77,13 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
                     AxisType.GeoZ
                 }
             }
+        }
+
+
+        // standard unit check
+        val at: AxisType? = super.identifyAxisType(vds)
+        if (at != null) {
+            return at
         }
 
         // Check time units

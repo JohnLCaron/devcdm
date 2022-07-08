@@ -33,12 +33,12 @@ public class TestCoordSystemBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(CdmDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    CoordinateTransform projct = new CoordinateTransform("flat_earth", AttributeContainerMutable.of(), true);
+    CoordinateTransform projct = new CoordinateTransform(CDM.FlatEarth, AttributeContainerMutable.of(), true);
     List<CoordinateTransform> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> builder =
         CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname");
-    builder.addTransformName("flat_earth");
+    builder.addTransformName(CDM.FlatEarth);
     CoordinateSystem coordSys = builder.build(axes, allProjs);
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);

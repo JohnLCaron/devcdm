@@ -6,14 +6,10 @@ import dev.cdm.core.api.*
 import dev.cdm.core.constants.AxisType
 import dev.cdm.core.constants.CDM
 import dev.cdm.core.constants._Coordinate
-import dev.cdm.dataset.api.CdmDataset
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.CoordinateAxis1D
-import dev.cdm.dataset.api.VariableDS
+import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.LatLonPoint
 import dev.cdm.dataset.geoloc.Projection
 import dev.cdm.dataset.geoloc.projection.LambertConformal
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.io.IOException
 
 /**
@@ -21,19 +17,18 @@ import java.io.IOException
  * @author Burks
  */
 open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
+    var projCT: CoordinateTransform? = null
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
         val datasetBuilder = CdmDatasetCS.builder().copyFrom(orgDataset)
         val rootBuilder = datasetBuilder.rootGroup
 
         // Figure out projection info. Assume the same for all variables
-        val lonVar = rootBuilder.findVariable("longitude")
-            .orElseThrow { IllegalStateException("Cant find variable longitude") } as VariableDS.Builder<*>
+        val lonVar = rootBuilder.vbuilders.find {it.shortName == "longitude"} as VariableDS.Builder
         lonVar.setUnits(CDM.LON_UNITS)
         lonVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lon.toString()))
 
-        val latVar = rootBuilder.findVariableLocal("latitude")
-            .orElseThrow { IllegalStateException("Cant find variable latitude") } as VariableDS.Builder<*>
+        val latVar = rootBuilder.vbuilders.find {it.shortName == "latitude"} as VariableDS.Builder<*>
         latVar.setUnits(CDM.LAT_UNITS)
         latVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lat.toString()))
 
@@ -72,7 +67,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         // get the times values
         val timesAtt = timeVar.attributeContainer.findAttribute("validTimes")
         if (timesAtt == null || timesAtt.arrayValues == null) {
-            info.appendLine("*** attribute validTimes doesnt exist for time variable ${timeVar.fullName}")
+            info.appendLine("*** attribute validTimes doesnt exist for time variable ${timeVar.shortName}")
             return null
         }
         var timesArray = timesAtt.arrayValues
@@ -95,7 +90,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         val dimTime = timeVar.orgVar.getDimension(0)
         val nTimesDim = dimTime.length
         if (nTimesDim != nTimesAtt) {
-            info.appendLine("*** ntimes in attribute ($nTimesAtt) doesnt match dimension length ($nTimesDim) for variable ${timeVar.fullName}")
+            info.appendLine("*** ntimes in attribute ($nTimesAtt) doesnt match dimension length ($nTimesDim) for variable ${timeVar.shortName}")
             return null
         }
 
@@ -139,10 +134,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         val lc = LambertConformal(centralLat, centralLon, par1, par2)
 
         // make Coordinate Transform Variable
-        val ct = ProjectionCTV("lambertConformalProjection", lc)
-        val ctVar = makeCoordinateTransformVariable(ct)
-        ctVar.addAttribute(Attribute(_Coordinate.Axes, "xCoord yCoord"))
-        rootBuilder.addVariable(ctVar)
+        this.projCT = CoordinateTransform("lambertConformalProjection", lc.projectionAttributes, true)
         return lc
     }
 
@@ -195,6 +187,13 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
     }
 
     //////////////////////////////////////////////////////////////////////////////
+
+    override fun makeCoordinateTransforms() {
+        if (projCT != null) {
+            coords.addCoordinateTransform(projCT!!)
+        }
+        super.makeCoordinateTransforms()
+    }
 
     override fun identifyZIsPositive(vds: VariableDS): Boolean {
         return true

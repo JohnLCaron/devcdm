@@ -64,7 +64,7 @@ public class VerticalPerspectiveView extends AbstractProjection {
   public VerticalPerspectiveView(double lat0, double lon0, double earthRadius, double distance, double false_easting,
       double false_northing) {
 
-    super("VerticalPerspectiveView", false);
+    super(CF.VERTICAL_PERSPECTIVE, false);
 
     this.lon0Degrees = lon0;
     this.lat0 = Math.toRadians(lat0);

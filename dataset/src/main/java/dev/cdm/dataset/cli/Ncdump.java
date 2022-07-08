@@ -240,14 +240,17 @@ public class Ncdump {
 
         if (wantValues == WantValues.all) { // dump all data
           for (Variable v : ncfile.getVariables()) {
-            printArray(out, v.readArray(), v.getFullName(), indent);
+            out.format("%s%s = ", indent, v.getFullName());
+            printArray(out, v.readArray(), indent);
             if (cancelTask != null && cancelTask.isCancel())
               return out.toString();
           }
         } else if (wantValues == WantValues.coordsOnly) { // dump coordVars
           for (Variable v : ncfile.getVariables()) {
-            if (v.isCoordinateVariable())
-              printArray(out, v.readArray(), v.getFullName(), indent);
+            if (v.isCoordinateVariable()) {
+              out.format("%s%s = ", indent, v.getFullName());
+              printArray(out, v.readArray(), indent);
+            }
             if (cancelTask != null && cancelTask.isCancel())
               return out.toString();
           }
@@ -260,7 +263,8 @@ public class Ncdump {
 
             if (varSubset.indexOf('(') >= 0) { // has a selector
               Array<?> data = ncfile.readSectionArray(varSubset);
-              printArray(out, data, varSubset, indent);
+              out.format("%s%s = ", indent, varSubset);
+              printArray(out, data, indent);
 
             } else { // do entire variable
               Variable v = ncfile.findVariable(varSubset);
@@ -270,7 +274,8 @@ public class Ncdump {
               }
               // dont print coord vars if they are already printed
               if ((wantValues != WantValues.coordsOnly) || v.isCoordinateVariable())
-                printArray(out, v.readArray(), v.getFullName(), indent);
+                out.format("%s%s = ", indent, v.getFullName());
+              printArray(out, v.readArray(), indent);
             }
             if (cancelTask != null && cancelTask.isCancel())
               return out.toString();
@@ -300,7 +305,8 @@ public class Ncdump {
   public static String printVariableData(Variable v) throws IOException {
     Array<?> data = v.readArray();
     Formatter out = new Formatter();
-    printArray(out, data, v.getFullName(), new Indent(2));
+    out.format("%s = ", v.getFullName());
+    printArray(out, data, new Indent(2));
     return out.toString();
   }
 

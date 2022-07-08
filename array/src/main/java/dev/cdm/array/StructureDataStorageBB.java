@@ -11,6 +11,7 @@ import dev.cdm.array.StructureMembers.Member;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Storage for StructureDataArray with all data in a single ByteBuffer, using member's offsets and ByteOrder,
@@ -71,6 +72,19 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     ByteBuffer bbdest = (ByteBuffer) dest;
     bbdest.position(srcPos);
     bbdest.put(this.bbuffer.array(), destPos, (int) length);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof StructureDataStorageBB that)) return false;
+    return nelems == that.nelems && offset == that.offset && members.equals(that.members) &&
+            bbuffer.equals(that.bbuffer) && heap.equals(that.heap);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(members, bbuffer, nelems, offset, heap);
   }
 
   /** Get the total size of one Structure in bytes. */

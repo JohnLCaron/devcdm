@@ -28,12 +28,12 @@ public class LambertConformalConic extends AbstractProjectionCT implements Proje
     double false_northing = ctv.findAttributeDouble(CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = TransformBuilders.getFalseEastingScaleFactor(geoCoordinateUnits);
+      double scalef = ProjectionBuilders.getFalseEastingScaleFactor(geoCoordinateUnits);
       false_easting *= scalef;
       false_northing *= scalef;
     }
 
-    double earth_radius = TransformBuilders.getEarthRadiusInKm(ctv);
+    double earth_radius = ProjectionBuilders.getEarthRadiusInKm(ctv);
     double semi_major_axis = ctv.findAttributeDouble(CF.SEMI_MAJOR_AXIS, Double.NaN);
     double semi_minor_axis = ctv.findAttributeDouble(CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = ctv.findAttributeDouble(CF.INVERSE_FLATTENING, 0.0);
@@ -52,5 +52,9 @@ public class LambertConformalConic extends AbstractProjectionCT implements Proje
     }
 
     return proj;
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.LambertConformal.class;
   }
 }

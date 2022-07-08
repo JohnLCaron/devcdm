@@ -41,7 +41,7 @@ public class TestLatLonProjection {
     assertThat(ell.getName()).isEqualTo("earth");
     assertThat(ell.getCenterLon()).isEqualTo(15.0);
     assertThat(ell.getEarth()).isEqualTo(EarthEllipsoid.WGS84);
-    assertThat(ell.toString()).isEqualTo("LatLonProjection{centerLon=15.0, earth=WGS84}");
+    assertThat(ell.toString()).startsWith("LatLonProjection{centerLon=15.0, earth=WGS84");
 
     Projection p2 = ell.constructCopy();
     assertThat(p2).isEqualTo(ell);

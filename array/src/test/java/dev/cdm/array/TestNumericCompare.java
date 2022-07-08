@@ -84,4 +84,28 @@ public class TestNumericCompare {
     assertThat(f.toString()).isEqualTo(String.format("compareFloat: length 1=   3 != length 2=  2%n"));
   }
 
+  @Test
+  public void testAbsoluteDifference() {
+    assertThat(NumericCompare.absoluteDifference(100, 100.01)).isWithin(1.0e-8).of(.01);
+    assertThat(NumericCompare.absoluteDifference(100, Double.NaN)).isEqualTo(Double.NaN);
+  }
+
+  @Test
+  public void testRelativeDifference() {
+    assertThat(NumericCompare.relativeDifference(100, 100.01)).isWithin(1.0e-8).of(.01/100.01);
+    assertThat(NumericCompare.relativeDifference(0, 0)).isEqualTo(0);
+    assertThat(NumericCompare.relativeDifference(0, 100)).isEqualTo(1);
+    assertThat(NumericCompare.relativeDifference(100, 0)).isEqualTo(1);
+  }
+
+  @Test
+  public void testRelativeDifferenceFloat() {
+    assertThat(NumericCompare.relativeDifference(0f, 0f)).isEqualTo(0f);
+    assertThat(NumericCompare.relativeDifference(0f, 100f)).isEqualTo(1f);
+    assertThat(NumericCompare.relativeDifference(100f, 0f)).isEqualTo(1f);
+    assertThat(NumericCompare.relativeDifference(100f, 100.01f)).isWithin(1.0e-5f).of((float) (.01/100.01));
+  }
+
+   // TODO more tests
+
 }

@@ -56,7 +56,7 @@ public class Orthographic extends AbstractProjection {
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
   public Orthographic(double lat0, double lon0, double earthRadius) {
-    super("Orthographic", false);
+    super(CF.ORTHOGRAPHIC, false);
 
     this._lat0 = lat0;
     this.lon0Degrees = lon0;

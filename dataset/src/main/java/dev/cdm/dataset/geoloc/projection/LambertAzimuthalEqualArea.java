@@ -56,7 +56,7 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
    */
   public LambertAzimuthalEqualArea(double lat0, double lon0, double false_easting, double false_northing,
       double earthRadius) {
-    super("LambertAzimuthalEqualArea", false);
+    super(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, false);
 
     this._lat0 = lat0;
 

@@ -52,18 +52,6 @@ public class VerticalTransformFactory {
 
   /**
    * Register a class that implements a Coordinate Transform.
-   *
-   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
-   * @param className name of class that implements CoordTransBuilderIF.
-   * @throws ClassNotFoundException if Class.forName( className) fails
-   */
-  public static void registerTransform(String transformName, String className) throws ClassNotFoundException {
-    Class<?> c = Class.forName(className);
-    registerTransform(transformName, c);
-  }
-
-  /**
-   * Register a class that implements a Coordinate Transform.
    * 
    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
    * @param c class that implements CoordTransBuilderIF.
@@ -140,7 +128,7 @@ public class VerticalTransformFactory {
   }
 
   /**
-   * LOOK remove
+   * LOOK can we remove?
    * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
    * registered CoordTransBuilder.
    * 

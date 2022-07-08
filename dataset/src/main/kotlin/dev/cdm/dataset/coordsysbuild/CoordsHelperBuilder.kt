@@ -9,8 +9,8 @@ import dev.cdm.dataset.api.CoordinateSystem
 import dev.cdm.dataset.api.CoordinateTransform
 import dev.cdm.dataset.api.VariableDS
 import dev.cdm.dataset.internal.CoordinatesHelper
-import java.util.*
 import java.util.function.Consumer
+import java.util.stream.Collectors
 
 class CoordsHelperBuilder(val conventionName : String) {
     val coordAxes = mutableListOf<CoordinateAxis.Builder<*>>()
@@ -31,8 +31,8 @@ class CoordsHelperBuilder(val conventionName : String) {
     }
 
     // For every coordsys that uses the named axis, add the CoordinateTransform to it
-    fun setCoordinateTransformFor(ctvName : String, axisName: String): CoordsHelperBuilder {
-        coordSys.filter { it.coordAxesNames.contains(axisName)}.forEach { it.addTransformName(ctvName)}
+    fun setCoordinateTransformFor(ctvName : String, axisNames: List<String>): CoordsHelperBuilder {
+        coordSys.filter { it.containsAxes(axisNames)}.forEach { it.addTransformName(ctvName)}
         return this
     }
 
@@ -59,7 +59,7 @@ class CoordsHelperBuilder(val conventionName : String) {
 
     fun findVertAxis(csys: CoordinateSystem.Builder<*>): CoordinateAxis.Builder<*>? {
         for (axis in getAxesForSystem(csys)) {
-            if (axis.axisType != null && axis.axisType.isVert) {
+            if (axis.axisType != null && axis.axisType!!.isVert) {
                 return axis
             }
         }
@@ -116,7 +116,7 @@ class CoordsHelperBuilder(val conventionName : String) {
         return axes
     }
 
-    // return null if axie
+    // return null if an axis name deosnt exist
     fun makeCanonicalName(vb: VariableDS, axesNames : String) : String? {
         Preconditions.checkNotNull(axesNames)
         val axes = mutableListOf<CoordinateAxis.Builder<*>>()
@@ -131,7 +131,7 @@ class CoordsHelperBuilder(val conventionName : String) {
                 return null
             }
         }
-        return CoordinatesHelper.makeCanonicalName(axes)
+        return makeCoordSysCanonicalName(axes)
     }
 
     // dealing with axes in parent group. should be handled by fullName search ??
@@ -199,5 +199,22 @@ class CoordsHelperBuilder(val conventionName : String) {
             check(useGroup != null)
             it.build(useGroup)
         })
+    }
+}
+
+/** Make canonical name for this list of axes.  */
+fun makeCoordSysCanonicalName(axes: List<CoordinateAxis.Builder<*>>): String {
+    Preconditions.checkNotNull(axes)
+    return axes.stream().sorted(AxisComparator()).map { a: CoordinateAxis.Builder<*> -> a.fullName }
+        .collect(Collectors.joining(" "))
+}
+
+private class AxisComparator : Comparator<CoordinateAxis.Builder<*>> {
+    override fun compare(c1: CoordinateAxis.Builder<*>, c2: CoordinateAxis.Builder<*>): Int {
+        val t1 = c1.axisType
+        val t2 = c2.axisType
+        if (t1 == null && t2 == null) return c1.fullName.compareTo(c2.fullName)
+        if (t1 == null) return -1
+        return if (t2 == null) 1 else t1.axisOrder() - t2.axisOrder()
     }
 }

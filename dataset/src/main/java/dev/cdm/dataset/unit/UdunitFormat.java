@@ -97,7 +97,6 @@ public class UdunitFormat extends SimpleUnitFormat {
   @Override
   protected Unit<?> parse(CharSequence csq, int index) throws IllegalArgumentException {
     return delegate.parse(csq, new ParsePosition(index));
-
   }
 
   @Override
@@ -123,36 +122,4 @@ public class UdunitFormat extends SimpleUnitFormat {
     return delegate.nameFor(unit);
   }
 
-      /*
-    try {
-      arc_degree = du("arc degree", "deg", new ScaledUnit(Math.PI / 180, radian));
-      arc_minute = du("arc minute", "'", new ScaledUnit(1. / 60., arc_degree));
-      arc_second = du("arc second", "\"", new ScaledUnit(1. / 60., arc_minute));
-
-      // exact. However, from 1901 to 1964, 1 liter = 1.000028 dm3
-      metric_ton = du("metric ton", "t", new ScaledUnit(1e3, kilogram));
-
-      nautical_mile = du("nautical mile", "nmi", new ScaledUnit(1852, meter));
-      knot = du("knot", "kt", nautical_mile.divideBy(hour));
-      angstrom = du("angstrom", null, new ScaledUnit(1e-10, meter));
-      are = du("are", "are", new ScaledUnit(10, meter).raiseTo(2));
-      hectare = du("hectare", "ha", new ScaledUnit(100, are));
-      barn = du("barn", "b", new ScaledUnit(1e-28, meter.raiseTo(2)));
-      bar = du("bar", "bar", new ScaledUnit(1e5, pascal));
-      gal = du("gal", "Gal", new ScaledUnit(1e-2, meter).divideBy(second.raiseTo(2)));
-
-      curie = du("curie", "Ci", new ScaledUnit(3.7e10, becquerel));
-      roentgen = du("roentgen", "R", new ScaledUnit(2.58e-4, coulomb.divideBy(kilogram)));
-      rad = du("rad", "rd", new ScaledUnit(1e-2, gray));
-      rem = du("rem", "rem", new ScaledUnit(1e-2, sievert));
-
-    } catch (UnitException e) {
-      String reason = e.getMessage();
-      System.err.printf("Couldn't initialize class SI %s", reason == null ? "" : (": " + reason));
-    }
-
-    db.addAlias("litre", "liter", "l");
-    db.addAlias("tonne", "metric ton");
-    db.addSymbol("tne", "tonne");
-*/
 }

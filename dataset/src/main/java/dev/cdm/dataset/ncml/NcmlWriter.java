@@ -392,7 +392,7 @@ public class NcmlWriter {
         buff.append(sval);
       }
 
-      attElem.setAttribute("value", Parse.cleanCharacterData(buff.toString()));
+      attElem.setAttribute("value", cleanCharacterData(buff.toString()));
       if (attribute.getLength() > 1)
         attElem.setAttribute("separator", "|");
 
@@ -493,5 +493,36 @@ public class NcmlWriter {
     } // not string
 
     return elem;
+  }
+
+  /**
+   * Make sure that text is XML safe
+   *
+   * @param text check this
+   * @return original text if ok, else with bad characters removed
+   */
+  private static String cleanCharacterData(String text) {
+    if (text == null)
+      return null;
+
+    boolean bad = false;
+    for (int i = 0, len = text.length(); i < len; i++) {
+      int ch = text.charAt(i);
+      if (!org.jdom2.Verifier.isXMLCharacter(ch)) {
+        bad = true;
+        break;
+      }
+    }
+
+    if (!bad)
+      return text;
+
+    StringBuilder sbuff = new StringBuilder(text.length());
+    for (int i = 0, len = text.length(); i < len; i++) {
+      int ch = text.charAt(i);
+      if (org.jdom2.Verifier.isXMLCharacter(ch))
+        sbuff.append((char) ch);
+    }
+    return sbuff.toString();
   }
 }

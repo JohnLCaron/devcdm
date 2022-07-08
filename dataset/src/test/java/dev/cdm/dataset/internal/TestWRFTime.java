@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.cdm.dataset.conv;
+package dev.cdm.dataset.internal;
 
 import org.junit.jupiter.api.Test;
 import dev.cdm.array.Array;

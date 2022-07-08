@@ -10,7 +10,6 @@ import dev.cdm.core.util.CancelTask;
 import dev.cdm.dataset.internal.DatasetEnhancer;
 import dev.cdm.dataset.spi.CdmFileProvider;
 import dev.cdm.dataset.api.CdmDataset.Enhance;
-import dev.cdm.dataset.internal.DatasetCSEnhancer;
 import dev.cdm.dataset.ncml.NcmlReader;
 
 import org.jetbrains.annotations.Nullable;
@@ -45,10 +44,10 @@ public class CdmDatasets {
   }
 
   public static CdmDatasetCS openDatasetCS(CdmFile ncfile, boolean enhance) throws IOException {
-    CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().copyFrom(ncfile).setOrgFile(ncfile);
-    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder,
-            enhance ? CdmDataset.getEnhanceAll() : CdmDataset.getEnhanceNone());
-    return enhancer.enhance().build();
+    Set<Enhance> mode = enhance ? CdmDataset.getEnhanceAll() : CdmDataset.getEnhanceNone();
+    CdmDataset cdmd = enhance(ncfile, mode, null);
+    return  openDatasetWithCoordSys(cdmd);
+
   }
 
   /** Uses the kotlin coordsysbuilder package. */
@@ -142,10 +141,8 @@ public class CdmDatasets {
           throws IOException {
     CdmDataset.Builder<?> ncml = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
     CdmDataset ds = ncml.build();
-    CdmDatasetCS.Builder<?> builder = CdmDatasetCS.builder().copyFrom(ds).setOrgFile(ds);
 
-    DatasetCSEnhancer enhancer = new DatasetCSEnhancer(builder, builder.getEnhanceMode());
-    return enhancer.enhance().build();
+    return openDatasetWithCoordSys(ds);
   }
 
   /**

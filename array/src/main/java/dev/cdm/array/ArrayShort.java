@@ -7,6 +7,7 @@ package dev.cdm.array;
 import com.google.common.base.Preconditions;
 
 ;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /** Concrete implementation of Array specialized for Short. */
@@ -118,6 +119,18 @@ final class ArrayShort extends Array<Short> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(storage, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageS shorts)) return false;
+      return Arrays.equals(storage, shorts.storage);
+    }
+
+    @Override
+    public int hashCode() {
+      return Arrays.hashCode(storage);
     }
 
     @Override

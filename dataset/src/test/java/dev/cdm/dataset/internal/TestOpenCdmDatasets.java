@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.cdm.dataset.conv;
+package dev.cdm.dataset.internal;
 
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.constants._Coordinate;

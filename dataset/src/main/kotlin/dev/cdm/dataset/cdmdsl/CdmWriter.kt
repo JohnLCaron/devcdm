@@ -1,11 +1,8 @@
 package dev.cdm.dataset.cdmdsl
 
 import dev.cdm.array.Indent
-import dev.cdm.array.PrintArray.printArray
 import dev.cdm.core.api.*
 import dev.cdm.dataset.api.*
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
-import java.util.*
 
 fun CdmDataset.write(): String {
     val out = StringBuilder()

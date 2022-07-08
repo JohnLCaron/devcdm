@@ -314,25 +314,6 @@ public class Group {
   //////////////////////////////////////////////////////////////////////////////////////
 
 
-  /**
-   * Get String with name and attributes. Used in short descriptions like tooltips.
-   *
-   * @return name and attributes String.
-   */
-  public String getNameAndAttributes() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("Group ");
-    sbuff.append(getShortName());
-    sbuff.append("\n");
-    for (Attribute att : attributes) {
-      sbuff.append("  ").append(getShortName()).append(":");
-      sbuff.append(att);
-      sbuff.append(";");
-      sbuff.append("\n");
-    }
-    return sbuff.toString();
-  }
-
   void writeCDL(Formatter out, Indent indent, boolean strict) {
     boolean hasE = (!enumTypedefs.isEmpty());
     boolean hasD = (!dimensions.isEmpty());
@@ -585,18 +566,6 @@ public class Group {
     }
 
     /** Find Dimension in this Group or a parent Group */
-    public boolean contains(Dimension want) {
-      Dimension have = dimensions.stream().filter(d -> d.equals(want)).findFirst().orElse(null);
-      if (have != null) {
-        return true;
-      }
-      if (this.parentGroup != null) {
-        return this.parentGroup.contains(want);
-      }
-      return false;
-    }
-
-    /** Find Dimension in this Group or a parent Group */
     public Optional<Dimension> findDimension(String name) {
       if (name == null) {
         return Optional.empty();
@@ -610,27 +579,6 @@ public class Group {
       }
 
       return Optional.empty();
-    }
-
-    // Unmodifiable iterators
-    public Iterable<Attribute> getAttributes() {
-      return ImmutableList.copyOf(getAttributeContainer());
-    }
-
-    public Iterable<Dimension> getDimensions() {
-      return ImmutableList.copyOf(dimensions);
-    }
-
-    public Iterable<EnumTypedef> getEnums() {
-      return ImmutableList.copyOf(enumTypedefs);
-    }
-
-    public Iterable<Variable.Builder> getVariables() {
-      return ImmutableList.copyOf(vbuilders);
-    }
-
-    public Iterable<Group.Builder> getGroups() {
-      return ImmutableList.copyOf(gbuilders);
     }
 
     /** Add a nested Group. */
@@ -810,67 +758,6 @@ public class Group {
       }
 
       return group == null ? Optional.empty() : group.findVariableLocal(varName);
-    }
-
-    /**
-     * LOOK remove?
-     * Find a Variable, with the specified (escaped full) name.
-     * It may possibly be nested in multiple groups and/or structures.
-     * An embedded "." is interpreted as structure.member.
-     * An embedded "/" is interpreted as group/variable.
-     * If the name actually has a ".", you must escape it (call CdmFiles.makeValidPathName(varname))
-     * Any other chars may also be escaped, as they are removed before testing.
-     *
-     * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
-     * @return Optional Variable.Builder
-     *         {@link CdmFile#findVariable(String fullNameEscaped)}
-     */
-    public Optional<Variable.Builder<?>> findVariable(String fullNameEscaped) {
-      if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
-        return Optional.empty();
-      }
-
-      Builder group = this;
-      String vars = fullNameEscaped;
-
-      // break into group/group and var.var
-      int pos = fullNameEscaped.lastIndexOf('/');
-      if (pos >= 0) {
-        String groupNames = fullNameEscaped.substring(0, pos);
-        vars = fullNameEscaped.substring(pos + 1);
-        group = findGroupNested(groupNames).orElse(null);
-      }
-      if (group == null) {
-        return Optional.empty();
-      }
-
-      // heres var.var - tokenize respecting the possible escaped '.'
-      List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
-      if (snames.isEmpty()) {
-        return Optional.empty();
-      }
-
-      String varShortName = CdmFiles.makeNameUnescaped(snames.get(0));
-      Variable.Builder<?> v = group.findVariableLocal(varShortName).orElse(null);
-      if (v == null) {
-        return Optional.empty();
-      }
-
-      int memberCount = 1;
-      while (memberCount < snames.size()) {
-        if (!(v instanceof Structure.Builder<?>)) {
-          return Optional.empty();
-        }
-        Structure.Builder<?> sb = (Structure.Builder<?>) v;
-        String name = CdmFiles.makeNameUnescaped(snames.get(memberCount));
-        v = sb.findMemberVariable(name).orElse(null);
-        if (v == null) {
-          return Optional.empty();
-        }
-        memberCount++;
-      }
-
-      return Optional.of(v);
     }
 
     /**

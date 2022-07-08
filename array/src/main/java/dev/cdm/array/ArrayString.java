@@ -7,6 +7,7 @@ package dev.cdm.array;
 import com.google.common.base.Preconditions;
 
 ;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -119,6 +120,18 @@ final class ArrayString extends Array<String> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(storage, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageS strings)) return false;
+      return Arrays.equals(storage, strings.storage);
+    }
+
+    @Override
+    public int hashCode() {
+      return Arrays.hashCode(storage);
     }
 
     @Override

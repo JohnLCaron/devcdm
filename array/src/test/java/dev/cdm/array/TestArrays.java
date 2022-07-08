@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -424,6 +425,34 @@ public class TestArrays {
     Array<String> sarrays = Arrays.makeStringsFromChar(array2);
     assertThat(sarrays.get(0)).isEqualTo("Wha");
     assertThat(sarrays.get(1)).isEqualTo("ts?");
+  }
+
+  @Test
+  public void testMakeArray() {
+    assertThat(Arrays.makeArray(ArrayType.LONG, List.of("9", Long.toString(Long.MAX_VALUE), Long.toString(Long.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.LONG, new int[] {3}, new long[] {9, Long.MAX_VALUE, Long.MIN_VALUE}));
+    assertThat(Arrays.makeArray(ArrayType.ULONG, List.of("9", Long.toString(Long.MAX_VALUE), Long.toString(Long.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.ULONG, new int[] {3}, new long[] {9, Long.MAX_VALUE, Long.MIN_VALUE}));
+
+    assertThat(Arrays.makeArray(ArrayType.INT, List.of("-9", Integer.toString(Integer.MAX_VALUE), Integer.toString(Integer.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.INT, new int[] {3}, new int[] {-9, Integer.MAX_VALUE, Integer.MIN_VALUE}));
+    assertThat(Arrays.makeArray(ArrayType.UINT, List.of("-9", Integer.toString(Integer.MAX_VALUE), Integer.toString(Integer.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.UINT, new int[] {3}, new int[] {-9, Integer.MAX_VALUE, Integer.MIN_VALUE}));
+
+    assertThat(Arrays.makeArray(ArrayType.SHORT, List.of("-9", Short.toString(Short.MAX_VALUE), Short.toString(Short.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.SHORT, new int[] {3}, new short[] {-9, Short.MAX_VALUE, Short.MIN_VALUE}));
+    assertThat(Arrays.makeArray(ArrayType.USHORT, List.of("-9", Short.toString(Short.MAX_VALUE), Short.toString(Short.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.USHORT, new int[] {3}, new short[] {-9, Short.MAX_VALUE, Short.MIN_VALUE}));
+
+    assertThat(Arrays.makeArray(ArrayType.BYTE, List.of("-9", Byte.toString(Byte.MAX_VALUE), Byte.toString(Byte.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.BYTE, new int[] {3}, new byte[] {-9, Byte.MAX_VALUE, Byte.MIN_VALUE}));
+    assertThat(Arrays.makeArray(ArrayType.UBYTE, List.of("-9", Byte.toString(Byte.MAX_VALUE), Byte.toString(Byte.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.UBYTE, new int[] {3}, new byte[] {-9, Byte.MAX_VALUE, Byte.MIN_VALUE}));
+
+    assertThat(Arrays.makeArray(ArrayType.DOUBLE, List.of(".1", Long.toString(Long.MAX_VALUE), Long.toString(Long.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.DOUBLE, new int[] {3}, new double[] {.1, Long.MAX_VALUE, Long.MIN_VALUE}));
+    assertThat(Arrays.makeArray(ArrayType.FLOAT, List.of(".1", Long.toString(Long.MAX_VALUE), Long.toString(Long.MIN_VALUE))))
+            .isEqualTo(Arrays.factory(ArrayType.FLOAT, new int[] {3}, new float[] {.1f, Long.MAX_VALUE, Long.MIN_VALUE}));
   }
 
 }

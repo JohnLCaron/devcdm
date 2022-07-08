@@ -74,7 +74,7 @@ public class EquidistantAzimuthalProjection extends AbstractProjection {
 
   public EquidistantAzimuthalProjection(double lat0, double lon0, double falseEasting, double falseNorthing,
       Earth earth) {
-    super("EquidistantAzimuthalProjection", false);
+    super(CF.AZIMUTHAL_EQUIDISTANT, false);
 
     Objects.requireNonNull(earth, "Azimuthal equidistant constructor requires non-null Earth");
 

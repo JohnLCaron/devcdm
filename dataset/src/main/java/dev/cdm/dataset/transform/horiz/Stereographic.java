@@ -25,13 +25,13 @@ public class Stereographic extends AbstractProjectionCT implements ProjectionBui
     double false_northing = ctv.findAttributeDouble(CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = TransformBuilders.getFalseEastingScaleFactor(geoCoordinateUnits); // conversion from axis-unit to
+      double scalef = ProjectionBuilders.getFalseEastingScaleFactor(geoCoordinateUnits); // conversion from axis-unit to
                                                                                         // km
       false_easting *= scalef;
       false_northing *= scalef;
     }
 
-    double earth_radius = TransformBuilders.getEarthRadiusInKm(ctv);
+    double earth_radius = ProjectionBuilders.getEarthRadiusInKm(ctv);
     double semi_major_axis = ctv.findAttributeDouble(CF.SEMI_MAJOR_AXIS, Double.NaN); // meters
     double semi_minor_axis = ctv.findAttributeDouble(CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = ctv.findAttributeDouble(CF.INVERSE_FLATTENING, 0.0);
@@ -48,5 +48,9 @@ public class Stereographic extends AbstractProjectionCT implements ProjectionBui
           earth_radius);
     }
     return proj;
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.Stereographic.class;
   }
 }

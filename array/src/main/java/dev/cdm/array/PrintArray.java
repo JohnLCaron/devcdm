@@ -9,34 +9,21 @@ import java.util.Formatter;
 
 public class PrintArray {
 
-  /** Print array to returned String. */
-  public static String printArray(Array<?> ma) {
-    return printArray(ma, "");
-  }
-
   /** Print named array to returned String. */
-  public static String printArray(Array<?> array, String name) {
+  public static String printArray(Array<?> array) {
     Formatter out = new Formatter();
-    printArray(out, array, name, null, new Indent(2));
+    printArray(out, array, new Indent(2));
     return out.toString();
   }
 
-  public static void printArray(Formatter out, Array<?> array, String name, Indent indent) {
-    printArray(out, array, name, null, indent);
-    out.flush();
-  }
-
-  public static void printArray(Formatter out, Array<?> array, String name, String units, Indent ilev) {
-
-    if (name != null) {
-      out.format("%s%s = ", ilev, name);
+  public static Formatter printArray(Formatter out, Array<?> array, Indent ilev) {
+    if (null == out) {
+      out = new Formatter();
     }
-    ilev.incr();
 
     if (array == null) {
-      out.format("null array for %s", name);
-      ilev.decr();
-      return;
+      out.format("null array");
+      return out;
     }
 
     if (array.getArrayType() == ArrayType.CHAR) {
@@ -48,33 +35,18 @@ public class PrintArray {
     } else if (array instanceof StructureDataArray) {
       printStructureDataArray(out, (StructureDataArray) array, ilev);
 
-    } /*
-     * else if (array instanceof ArrayVlen) { // opaque type
-     * ArrayVlen<Byte> vlen = (ArrayVlen<Byte>) array;
-     * int count = 0;
-     * for (Array<Byte> inner : vlen) {
-     * out.format("%s%n", (count == 0) ? "," : ";"); // peek ahead
-     * printByteBuffer(out, Arrays.getByteBuffer(inner), ilev);
-     * if (cancel != null && cancel.isCancel())
-     * return;
-     * count++;
-     * }
-     * }
-     */
+    }
     else if (array instanceof ArrayVlen) {
-      printVariableArray(out, (ArrayVlen<?>) array, ilev);
+      printVlenArray(out, (ArrayVlen<?>) array, ilev);
     } else {
-      printArray(out, array, ilev);
+      printRegularArray(out, array, ilev);
     }
 
-    if (units != null) {
-      out.format(" %s", units);
-    }
-    ilev.decr();
     out.flush();
+    return out;
   }
 
-  public static void printArray(Formatter out, Array<?> ma, Indent indent) {
+  private static void printRegularArray(Formatter out, Array<?> ma, Indent indent) {
     int rank = ma.getRank();
 
     // scalar
@@ -91,17 +63,17 @@ public class PrintArray {
         value = ArrayType.widenNumberIfNegative((Number) value);
       }
 
-      out.format("%s", value);
+      out.format("%s%s", indent, value);
       return;
     }
 
     int[] dims = ma.getShape();
     int last = dims[0];
 
-    out.format("%s[", indent);
     IndexFn indexFn = IndexFn.builder(ma.getShape()).build();
 
     if ((rank == 1) && (ma.getArrayType() != ArrayType.STRUCTURE)) {
+      out.format("%s[", indent);
       for (int ii = 0; ii < last; ii++) {
         Object value = ma.get(indexFn.odometer(ii));
 
@@ -120,6 +92,7 @@ public class PrintArray {
       return;
     }
 
+    out.format("%s[", indent);
     indent.incr();
     for (int ii = 0; ii < last; ii++) {
       Array<?> slice = null;
@@ -129,13 +102,13 @@ public class PrintArray {
         e.printStackTrace();
       }
       if (ii > 0) {
-        out.format(",");
+        out.format(", ");
       }
+      out.format("\n");
       printArray(out, slice, indent);
     }
     indent.decr();
-
-    out.format("%n%s}", indent);
+    out.format("\n%s]", indent);
   }
 
   /**
@@ -152,7 +125,6 @@ public class PrintArray {
     }
     return sw.toString();
   }
-
 
   private static void printCharArray(Formatter out, Array<Byte> ma, Indent indent) {
     int rank = ma.getRank();
@@ -255,7 +227,7 @@ public class PrintArray {
     }
   }
 
-  private static void printVariableArray(Formatter out, ArrayVlen<?> vlen, Indent indent) {
+  private static void printVlenArray(Formatter out, ArrayVlen<?> vlen, Indent indent) {
     out.format("%n%s{", indent);
     indent.incr();
     int count = 0;
@@ -276,7 +248,7 @@ public class PrintArray {
       if (memData.getArrayType() == ArrayType.CHAR) {
         out.format("%s", Arrays.makeStringFromChar((Array<Byte>) memData));
       } else {
-        printArray(out, memData, null, null, new Indent(2));
+        printArray(out, memData, new Indent(2));
       }
       out.format(",");
     }
@@ -287,7 +259,8 @@ public class PrintArray {
     indent.incr();
     for (StructureMembers.Member m : sdata.getStructureMembers()) {
       Array<?> sdataArray = sdata.getMemberData(m);
-      printArray(out, sdataArray, m.getName(), m.getUnitsString(), indent);
+      out.format("%s%s = ", indent, m.getName());
+      printArray(out, sdataArray, indent);
     }
     indent.decr();
   }

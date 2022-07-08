@@ -73,8 +73,8 @@ public class TestGridHorizCurvilinear {
   @Test
   public void testEdges3() {
     make(10, 10, (y, x) -> 1.1 * y + 1.02 * x, (y, x) -> 1.2 * x + 1.01 * y);
-    System.out.printf("%s%n", printArray(lat2d, "test lat2d"));
-    System.out.printf("%s%n", printArray(lon2d, "test lon2d"));
+    System.out.printf("test lat2d = %s%n", printArray(lat2d));
+    System.out.printf("test lon2d = %s%n", printArray(lon2d));
     GridHorizCurvilinear hcs = GridHorizCurvilinear.create(xaxis, yaxis, lat2d, lon2d);
     hcs.showEdges();
     assertThat(hcs.getBoundingBox().nearlyEquals(ProjectionRect.fromSpec("-1.105000, -1.060000, 22.100000, 21.200000")))

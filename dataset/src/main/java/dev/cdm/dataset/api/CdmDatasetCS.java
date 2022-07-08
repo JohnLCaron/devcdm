@@ -5,7 +5,6 @@ import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants._Coordinate;
-import dev.cdm.dataset.internal.CoordinatesHelper;
 import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
 
 import java.util.List;
@@ -132,12 +131,6 @@ public class CdmDatasetCS extends CdmDataset {
     super(builder);
     if (builder.coords != null) {
       this.coords = builder.coords.build(this);
-    } else if (builder.coordsOld != null) {
-      List<CoordinateAxis> coordAxes = this.getVariables().stream()
-              .filter(it -> it instanceof CoordinateAxis)
-              .map(it -> (CoordinateAxis) it)
-              .toList();
-      this.coords = builder.coordsOld.build(coordAxes);
     } else {
       // there are no coordinates
       this.coords = new CoordsHelperBuilder("NoCoords").build(this);
@@ -171,7 +164,6 @@ public class CdmDatasetCS extends CdmDataset {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends CdmDataset.Builder<T> {
-    public CoordinatesHelper.Builder coordsOld;
     public CoordsHelperBuilder coords;
     private boolean built;
 

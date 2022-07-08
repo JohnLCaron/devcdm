@@ -1,11 +1,10 @@
 package dev.cdm.grid.internal;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.api.AttributeContainerMutable;
 import dev.cdm.core.api.Group;
+import dev.cdm.core.constants.CDM;
 import dev.cdm.dataset.api.CoordinateTransform;
-import dev.cdm.dataset.transform.horiz.ProjectionCTV;
 import org.junit.Test;
 import dev.cdm.array.ArrayType;
 import dev.cdm.core.constants.AxisType;
@@ -14,7 +13,6 @@ import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.CdmDataset;
 import dev.cdm.dataset.api.VariableDS;
 import dev.cdm.grid.api.*;
-import dev.cdm.dataset.geoloc.projection.FlatEarth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +40,12 @@ public class TestGridNetcdfCSBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(CdmDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    CoordinateTransform projct = new CoordinateTransform("flat_earth", AttributeContainerMutable.of(), true);
+    CoordinateTransform projct = new CoordinateTransform(CDM.FlatEarth, AttributeContainerMutable.of(), true);
     List<CoordinateTransform> allProjs = ImmutableList.of(projct);
 
     CoordinateSystem.Builder<?> csb =
         CoordinateSystem.builder("xname yname").setCoordAxesNames("xname yname").setProjectionName("horiz");
-    csb.addTransformName("flat_earth");
+    csb.addTransformName(CDM.FlatEarth);
     CoordinateSystem coordSys = csb.build(axes, allProjs);
 
     // GridDataset

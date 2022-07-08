@@ -6,6 +6,7 @@ package dev.cdm.array;
 
 import com.google.common.base.Preconditions;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
@@ -80,37 +81,28 @@ public class Arrays {
    */
   public static <T> Array<T> factoryFill(ArrayType dataType, int[] shape, Number fillValue) {
     switch (dataType) {
-      case BYTE:
-      case CHAR:
-      case ENUM1:
-      case UBYTE: {
+      case BYTE, CHAR, ENUM1, UBYTE -> {
         return (Array<T>) new ArrayByte(dataType, shape, fillValue.byteValue());
       }
-      case DOUBLE: {
+      case DOUBLE -> {
         return (Array<T>) new ArrayDouble(shape, fillValue.doubleValue());
       }
-      case FLOAT: {
+      case FLOAT -> {
         return (Array<T>) new ArrayFloat(shape, fillValue.floatValue());
       }
-      case INT:
-      case ENUM4:
-      case UINT: {
+      case INT, ENUM4, UINT -> {
         return (Array<T>) new ArrayInteger(dataType, shape, fillValue.intValue());
       }
-      case LONG:
-      case ULONG: {
+      case LONG, ULONG -> {
         return (Array<T>) new ArrayLong(dataType, shape, fillValue.longValue());
       }
-      case SHORT:
-      case ENUM2:
-      case USHORT: {
+      case SHORT, ENUM2, USHORT -> {
         return (Array<T>) new ArrayShort(dataType, shape, fillValue.shortValue());
       }
-      case STRING: {
+      case STRING -> {
         return (Array<T>) new ArrayString(shape);
       }
-      default:
-        throw new RuntimeException("Unimplemented ArrayType " + dataType);
+      default -> throw new RuntimeException("Unimplemented ArrayType " + dataType);
     }
   }
 
@@ -142,38 +134,14 @@ public class Arrays {
     Object dstAll;
 
     switch (dataType) {
-      case BYTE:
-      case ENUM1:
-      case UBYTE:
-      case CHAR:
-        dstAll = new byte[(int) size];
-        break;
-      case DOUBLE:
-        dstAll = new double[(int) size];
-        break;
-      case FLOAT:
-        dstAll = new float[(int) size];
-        break;
-      case INT:
-      case ENUM4:
-      case UINT:
-        dstAll = new int[(int) size];
-        break;
-      case LONG:
-      case ULONG:
-        dstAll = new long[(int) size];
-        break;
-      case SHORT:
-      case ENUM2:
-      case USHORT:
-        dstAll = new short[(int) size];
-        break;
-      case STRING:
-        dstAll = new String[(int) size];
-        break;
-
-      case SEQUENCE:
-      case STRUCTURE: {
+      case BYTE, ENUM1, UBYTE, CHAR -> dstAll = new byte[(int) size];
+      case DOUBLE -> dstAll = new double[(int) size];
+      case FLOAT -> dstAll = new float[(int) size];
+      case INT, ENUM4, UINT -> dstAll = new int[(int) size];
+      case LONG, ULONG -> dstAll = new long[(int) size];
+      case SHORT, ENUM2, USHORT -> dstAll = new short[(int) size];
+      case STRING -> dstAll = new String[(int) size];
+      case SEQUENCE, STRUCTURE -> {
         StructureData[] parray = new StructureData[(int) size];
         StructureMembers members = null;
         int count = 0;
@@ -186,11 +154,9 @@ public class Arrays {
             parray[count++] = sdata;
           }
         }
-        return new StructureDataArray(members, new int[] {count}, parray);
+        return new StructureDataArray(members, new int[]{count}, parray);
       }
-
-      default:
-        throw new RuntimeException(" ArrayType " + dataType);
+      default -> throw new RuntimeException(" ArrayType " + dataType);
     }
 
     int start = 0;
@@ -544,65 +510,137 @@ public class Arrays {
 
     Object pvals;
     switch (type) {
-      case ENUM1:
-      case UBYTE:
-      case BYTE: {
+      case ENUM1, UBYTE, BYTE -> {
         byte[] bvals = new byte[npts];
         for (int i = 0; i < npts; i++) {
           bvals[i] = (byte) (start + i * incr);
         }
         pvals = bvals;
-        break;
       }
-      case DOUBLE: {
+      case DOUBLE -> {
         double[] dvals = new double[npts];
         for (int i = 0; i < npts; i++) {
           dvals[i] = (start + i * incr);
         }
         pvals = dvals;
-        break;
       }
-      case FLOAT: {
+      case FLOAT -> {
         float[] fvals = new float[npts];
         for (int i = 0; i < npts; i++) {
           fvals[i] = (float) (start + i * incr);
         }
         pvals = fvals;
-        break;
       }
-      case ENUM4:
-      case UINT:
-      case INT: {
+      case ENUM4, UINT, INT -> {
         int[] ivals = new int[npts];
         for (int i = 0; i < npts; i++) {
           ivals[i] = (int) (start + i * incr);
         }
         pvals = ivals;
-        break;
       }
-      case ENUM2:
-      case USHORT:
-      case SHORT: {
+      case ENUM2, USHORT, SHORT -> {
         short[] svals = new short[npts];
         for (int i = 0; i < npts; i++) {
           svals[i] = (short) (start + i * incr);
         }
         pvals = svals;
-        break;
       }
-      case ULONG:
-      case LONG: {
+      case ULONG, LONG -> {
         long[] lvals = new long[npts];
         for (int i = 0; i < npts; i++) {
           lvals[i] = (long) (start + i * incr);
         }
         pvals = lvals;
-        break;
       }
-      default:
-        throw new IllegalArgumentException("makeArray od type " + type);
+      default -> throw new IllegalArgumentException("makeArray od type " + type);
     }
     return factory(type, shape, pvals);
+  }
+
+  /** Create an Array of the given type from a list of strings. */
+  // TODO unsigned?
+  public static Array<?> makeArray(ArrayType dtype, List<String> svals) throws NumberFormatException {
+    int n = svals.size();
+    int[] shape = new int[] {n};
+    int count = 0;
+
+    switch (dtype) {
+      case STRING -> {
+        return Arrays.factory(dtype, shape, svals.toArray(new String[0]));
+      }
+      case ULONG -> {
+        long[] dataArray = new long[n];
+        for (String s : svals) {
+          BigInteger biggy = new BigInteger(s);
+          dataArray[count++] = biggy.longValue(); // > 63 bits will become "negetive".
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case LONG -> {
+        long[] dataArray = new long[n];
+        for (String s : svals) {
+          dataArray[count++] = Long.parseLong(s);
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case DOUBLE -> {
+        double[] dataArray = new double[n];
+        for (String s : svals) {
+          dataArray[count++] = Double.parseDouble(s);
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case FLOAT -> {
+        float[] dataArray = new float[n];
+        for (String s : svals) {
+          dataArray[count++] = Float.parseFloat(s);
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case UBYTE, ENUM1 -> {
+        byte[] darray = new byte[n];
+        for (String s : svals) {
+          darray[count++] = (byte) Integer.parseInt(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case CHAR, BYTE -> {
+        byte[] darray = new byte[n];
+        for (String s : svals) {
+          darray[count++] = Byte.parseByte(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case UINT, ENUM4 -> {
+        int[] darray = new int[n];
+        for (String s : svals) {
+          darray[count++] = (int) Long.parseLong(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case INT -> {
+        int[] darray = new int[n];
+        for (String s : svals) {
+          darray[count++] = Integer.parseInt(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case USHORT, ENUM2 -> {
+        short[] darray = new short[n];
+        for (String s : svals) {
+          darray[count++] = (short) Integer.parseInt(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case SHORT -> {
+        short[] darray = new short[n];
+        for (String s : svals) {
+          darray[count++] = Short.parseShort(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+    }
+    throw new IllegalArgumentException("Arrays makeArray unsupported dataype " + dtype);
   }
 
   /////////////////////////////////////////////////
@@ -699,39 +737,3 @@ public class Arrays {
     return true;
   }
 }
-
-// TODO consider using this instead of Misc
-// https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
-// bool nearly_equal(
-// float a, float b,
-// float epsilon = 128 * FLT_EPSILON, float abs_th = FLT_MIN)
-// // those defaults are arbitrary and could be removed
-// {
-// assert(std::numeric_limits<float>::epsilon() <= epsilon);
-// assert(epsilon < 1.f);
-//
-// if (a == b) return true;
-//
-// auto diff = std::abs(a-b);
-// auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<float>::max());
-// // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
-// // keeping this commented out until I update figures below
-// return diff < std::max(abs_th, epsilon * norm);
-// }
-/*
- * public static boolean nearlyEqual(float a, float b, float epsilon) {
- * final float absA = Math.abs(a);
- * final float absB = Math.abs(b);
- * final float diff = Math.abs(a - b);
- * 
- * if (a == b) { // shortcut, handles infinities
- * return true;
- * } else if (a == 0 || b == 0 || diff < Float.MIN_NORMAL) {
- * // a or b is zero or both are extremely close to it
- * // relative error is less meaningful here
- * return diff < (epsilon * Float.MIN_NORMAL);
- * } else { // use relative error
- * return diff / (absA + absB) < epsilon;
- * }
- * }
- */

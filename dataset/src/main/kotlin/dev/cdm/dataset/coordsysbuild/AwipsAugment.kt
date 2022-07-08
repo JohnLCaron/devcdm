@@ -17,7 +17,6 @@ import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.LatLonPoint
 import dev.cdm.dataset.geoloc.projection.LambertConformal
 import dev.cdm.dataset.geoloc.projection.Stereographic
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.io.IOException
 import java.util.*
 
@@ -29,7 +28,7 @@ open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
     val rootBuilder = datasetBuilder.rootGroup
     val globalAtts : AttributeContainerMutable = rootBuilder.attributeContainer
     
-    var projCT: ProjectionCTV? = null
+    var projCT: CoordinateTransform? = null
     var startx = 0.0
     var starty  = 0.0
     var dx = 0.0
@@ -45,11 +44,11 @@ open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeLonCoordAxis(nx, "x"))
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeLatCoordAxis(ny, "y"))
         } else if (projName.equals("LAMBERT_CONFORMAL", ignoreCase = true)) {
-            projCT = makeLCProjection(projName)
+            projCT = makeLCProjection()
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeXCoordAxis("x"))
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeYCoordAxis("y"))
         } else if (projName.equals("STEREOGRAPHIC", ignoreCase = true)) {
-            projCT = makeStereoProjection(projName)
+            projCT = makeStereoProjection()
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeXCoordAxis("x"))
             datasetBuilder.replaceCoordinateAxis(rootBuilder, makeYCoordAxis("y"))
         }
@@ -76,11 +75,6 @@ open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
                     info.appendLine("createNewVariables IOException%n")
                 }
             }
-        }
-        if (projCT != null) {
-            val v = makeCoordinateTransformVariable(projCT!!)
-            v.addAttribute(Attribute(_Coordinate.Axes, "x y"))
-            rootBuilder.addVariable(v)
         }
 
         // kludge in fixing the units
@@ -261,7 +255,7 @@ open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
     }
 
     @Throws(NoSuchElementException::class)
-    protected fun makeLCProjection(name: String): ProjectionCTV {
+    protected fun makeLCProjection(): CoordinateTransform {
         val centralLat = findAttributeDouble("centralLat")
         val centralLon = findAttributeDouble("centralLon")
         val rotation = findAttributeDouble("rotation")
@@ -276,11 +270,11 @@ open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         starty = start.y()
         dx = findAttributeDouble("dxKm")
         dy = findAttributeDouble("dyKm")
-        return ProjectionCTV(name, lc)
+        return CoordinateTransform(lc.name, lc.projectionAttributes, true)
     }
 
     @Throws(NoSuchElementException::class)
-    protected fun makeStereoProjection(name: String): ProjectionCTV {
+    protected fun makeStereoProjection(): CoordinateTransform {
         val centralLat = findAttributeDouble("centralLat")
         val centralLon = findAttributeDouble("centralLon")
 
@@ -308,7 +302,7 @@ open class AwipsAugment(val orgDataset: CdmDataset, val info : StringBuilder) {
         val pt = proj.latLonToProj(LatLonPoint(latN, lonN))
         info.appendLine("                        end at proj coord $pt")
         info.appendLine("                        scale $scale")
-        return ProjectionCTV(name, proj)
+        return CoordinateTransform(proj.name, proj.projectionAttributes, true)
     }
 
     protected fun makeXCoordAxis(xname: String?): CoordinateAxis.Builder<*>? {

@@ -33,4 +33,8 @@ public class AzimuthalEquidistant extends AbstractProjectionCT implements Projec
 
     return new EquidistantAzimuthalProjection(lat0, lon0, false_easting, false_northing, earth);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return EquidistantAzimuthalProjection.class;
+  }
 }

@@ -35,4 +35,8 @@ public class LambertCylindricalEqualArea extends AbstractProjectionCT implements
 
     return new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return CylindricalEqualAreaProjection.class;
+  }
 }

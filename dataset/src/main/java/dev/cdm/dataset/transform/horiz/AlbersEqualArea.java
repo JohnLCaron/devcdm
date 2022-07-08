@@ -36,4 +36,8 @@ public class AlbersEqualArea extends AbstractProjectionCT implements ProjectionB
 
     return proj;
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.AlbersEqualArea.class;
+  }
 }

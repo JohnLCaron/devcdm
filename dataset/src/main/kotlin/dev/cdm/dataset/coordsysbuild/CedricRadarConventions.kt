@@ -55,12 +55,12 @@ open class CedricRadarConventions(name: String = "CEDRICRadar") : CFConventions(
             }
 
             variable("VREL") {
-                attribute(CF.GRID_MAPPING).setValue("flat_earth")
+                attribute(CF.GRID_MAPPING).setValue("FlatEarth")
                 attribute(_Coordinate.Axes).setValue("time z y x")
             }
 
             variable("ProjectionCTV") {
-                attribute(CF.GRID_MAPPING_NAME).setValue("flat_earth")
+                attribute(CF.GRID_MAPPING_NAME).setValue(CDM.FlatEarth)
                 attribute(CF.LONGITUDE_OF_PROJECTION_ORIGIN).setValue(lonv)
                 attribute(CF.LATITUDE_OF_PROJECTION_ORIGIN).setValue(latv)
                 attribute(_Coordinate.TransformType).setValue("Projection")

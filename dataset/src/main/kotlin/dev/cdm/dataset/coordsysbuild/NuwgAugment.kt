@@ -15,7 +15,6 @@ import dev.cdm.dataset.api.*
 import dev.cdm.dataset.geoloc.LatLonPoint
 import dev.cdm.dataset.geoloc.projection.LambertConformal
 import dev.cdm.dataset.geoloc.projection.Stereographic
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import java.io.IOException
 import java.util.*
 
@@ -104,7 +103,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
         }
 
         // "referential" variables
-        for (dim in rootBuilder.getDimensions()) {
+        for (dim in rootBuilder.dimensions) {
             val dimName = dim.shortName
             if (rootBuilder.findVariableLocal(dimName).isPresent()) continue  // already has coord axis
             val ncvars = searchAliasedDimension(dim)
@@ -159,7 +158,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
         return datasetBuilder.build()
     }
 
-    fun getProjectionCTV() : ProjectionCTV? {
+    fun getProjectionCT() : CoordinateTransform? {
         return grib?.projectionCT
     }
 
@@ -340,7 +339,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
     // encapsolates GRIB-specific processing
     inner class Grib1(val grid_code: Int) {
         val grid_name = "Projection"
-        var projectionCT: ProjectionCTV? = null
+        var projectionCT: CoordinateTransform? = null
         var nx = 0
         var ny = 0
         var startx = 0.0
@@ -387,7 +386,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
         }
 
         @Throws(NoSuchElementException::class)
-        fun makeLCProjection(): ProjectionCTV {
+        fun makeLCProjection(): CoordinateTransform {
             val latin1: Double = navInfoList.getDouble("Latin1")
             val latin2: Double = navInfoList.getDouble("Latin2")
             val lov: Double = navInfoList.getDouble("Lov")
@@ -403,12 +402,12 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
             ny = navInfoList.getInt("Ny")
             dx = navInfoList.getDouble("Dx") / 1000.0 // TODO need to be km : unit conversion
             dy = navInfoList.getDouble("Dy") / 1000.0
-            return ProjectionCTV(grid_name, lc)
+            return CoordinateTransform(grid_name, lc.projectionAttributes, true)
         }
 
         // polar stereographic
         @Throws(NoSuchElementException::class)
-        fun makePSProjection(): ProjectionCTV {
+        fun makePSProjection(): CoordinateTransform {
             val lov: Double = navInfoList.getDouble("Lov")
             val la1: Double = navInfoList.getDouble("La1")
             val lo1: Double = navInfoList.getDouble("Lo1")
@@ -427,7 +426,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
             ny = navInfoList.getInt("Ny")
             dx = navInfoList.getDouble("Dx") / 1000.0
             dy = navInfoList.getDouble("Dy") / 1000.0
-            return ProjectionCTV(grid_name, ps)
+            return CoordinateTransform(grid_name, ps.projectionAttributes, true)
         }
 
         @Throws(NoSuchElementException::class)

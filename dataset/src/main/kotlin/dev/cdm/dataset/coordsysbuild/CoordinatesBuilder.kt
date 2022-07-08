@@ -13,7 +13,6 @@ import dev.cdm.core.constants.CF
 import dev.cdm.core.constants._Coordinate
 import dev.cdm.dataset.api.*
 import dev.cdm.dataset.internal.CoordinatesHelper
-import dev.cdm.dataset.transform.horiz.ProjectionCTV
 import dev.cdm.dataset.transform.vertical.VerticalTransformFactory
 
 private val useMaximalCoordSys = true
@@ -214,7 +213,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
             if (!vp.hasCoordinateSystem() && vp.maybeData()) {
                 val axesList = vp.findAllCoordinateAxes()
                 if (axesList.size >= 2) {
-                    val coordAxesName = CoordinatesHelper.makeCanonicalName(axesList)
+                    val coordAxesName = makeCoordSysCanonicalName(axesList)
                     val csb = coords.findCoordinateSystem(coordAxesName)
                     if (csb != null && coords.isComplete(csb, vp.vds)) {
                         vp.assignCoordinateSystem(csb.name, "(implicit)")
@@ -254,7 +253,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
             if (axisList.size < 2) {
                 return@forEach
             }
-            val coordAxesName = CoordinatesHelper.makeCanonicalName(axisList)
+            val coordAxesName = makeCoordSysCanonicalName(axisList)
             val csb = coords.findCoordinateSystem(coordAxesName)
             var okToBuild = false
 
@@ -288,7 +287,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
         varList.forEach { vp ->
             if (vp.isCoordinateTransform && vp.ctv == null) {
                 val isProjection = (vp.gridMapping != null) || vp.vds.attributes().hasAttribute(CF.GRID_MAPPING_NAME)
-                vp.ctv = makeTransformBuilder(vp.vds, isProjection) // LOOK
+                vp.ctv = CoordinateTransform(vp.vds.shortName, vp.vds.attributes(), isProjection)
             }
             if (vp.ctv != null) {
                 coords.addCoordinateTransform(vp.ctv!!)
@@ -311,11 +310,6 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
 
     }
 
-    open fun makeTransformBuilder(vb: VariableDS, isProjection : Boolean): CoordinateTransform? {
-        // at this point dont know if its a Projection or a VerticalTransform
-        return CoordinateTransform(vb.fullName, vb.attributes(), isProjection)
-    }
-
     /** Assign CoordinateTransform objects to Variables and Coordinate Systems.  */
     open fun assignCoordinateTransforms() {
         helper.assignCoordinateTransforms()
@@ -333,7 +327,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
         // If variable is a coordTransform and a coordVariable, assign it to any coordsys that uses the coordVariable
         varList.forEach { vp ->
             if (vp.isCoordinateTransform && vp.isCoordinateVariable && vp.ctv != null) {
-                coords.setCoordinateTransformFor(vp.ctv!!.name, vp.vds.shortName)
+                coords.setCoordinateTransformFor(vp.ctv!!.name, listOf(vp.vds.shortName))
                 //  look for Coordinate Systems that contain all these axes
                 info.appendLine("Assign CoordinateTransform '${vp.ctv!!.name}' for axis '${vp.vds.shortName}'")
             }
@@ -467,13 +461,13 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
         }
 
         /** Make a coordinate axis from the variable. */
-        fun makeCoordinateAxis(): CoordinateAxis.Builder<*>? {
+        fun makeCoordinateAxis(): CoordinateAxis.Builder<*> {
             if (this.axis != null) {
-                return this.axis
+                return this.axis!!
             }
 
             // Create a CoordinateAxis out of this variable.
-            val axis = CoordinateAxis.fromVariableDS(vds)
+            val axis = CoordinateAxis.fromVariableDS(vds)!!
             if (axisType == null) {
                 axisType = identifyAxisType(vds)
             }
@@ -527,12 +521,12 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
          * Create a list of coordinate axes for this data variable, from coordinateVariables and names in coordinatesAll
          * @return list of coordinate axes for this data variable.
          */
-        fun findAllCoordinateAxes(): List<CoordinateAxis.Builder<*>?> {
+        fun findAllCoordinateAxes(): List<CoordinateAxis.Builder<*>> {
             if (coordinatesAll == null) {
                 // this will set coordinates to be the coordinate variables
                 setPartialCoordinates("")
             }
-            val axesList: MutableList<CoordinateAxis.Builder<*>?> = ArrayList()
+            val axesList: MutableList<CoordinateAxis.Builder<*>> = ArrayList()
             if (coordinatesAll != null) { // explicit axes
                 coordinatesAll!!.split(" ").forEach { vname ->
                     val ap = findVarProcess(vname, this)
@@ -592,9 +586,9 @@ fun hasCompatibleDimensions(v: Variable, axis: Variable): Boolean {
  * @param ctv ProjectionCTV with Coordinate Transform Variable attributes set.
  * @return the Coordinate Transform Variable. You must add it to the dataset.
  */
-fun makeCoordinateTransformVariable(ctv: ProjectionCTV): VariableDS.Builder<*> {
+fun makeCoordinateTransformVariable(ctv: CoordinateTransform): VariableDS.Builder<*> {
     val v = VariableDS.builder().setName(ctv.name).setArrayType(ArrayType.CHAR)
-    v.addAttributes(ctv.ctvAttributes)
+    v.addAttributes(ctv.metadata)
     v.addAttribute(Attribute(_Coordinate.TransformType, "Projection"))
 
     // fake data
