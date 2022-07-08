@@ -656,7 +656,7 @@ public class NcmlReader {
     if ((sep == null) && (dtype == ArrayType.STRING)) {
       List<String> list = new ArrayList<>();
       list.add(valString);
-      return ArrayHelpers.makeArray(dtype, list);
+      return Arrays.makeArray(dtype, list);
     }
 
     if (sep == null) {
@@ -669,7 +669,7 @@ public class NcmlReader {
       stringValues.add(tokn.nextToken());
     }
 
-    return ArrayHelpers.makeArray(dtype, stringValues);
+    return Arrays.makeArray(dtype, stringValues);
   }
 
   private dev.cdm.core.api.Attribute findAttribute(AttributeContainer atts, String name) {
@@ -1184,7 +1184,7 @@ public class NcmlReader {
 
       } else {
         List<String> valList = getTokens(values, sep);
-        Array<?> data = ArrayHelpers.makeArray(dtype, valList);
+        Array<?> data = Arrays.makeArray(dtype, valList);
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
           data = Arrays.reshape(data, Dimensions.makeShape(v.getDimensions()));
         }

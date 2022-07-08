@@ -492,8 +492,8 @@ public class CurvilinearCoords {
   }
 
   void showEdges() {
-    System.out.printf("%s%n", PrintArray.printArray(this.latEdge, name + " lat"));
-    System.out.printf("%s%n", PrintArray.printArray(this.lonEdge, name + " lon"));
+    System.out.printf("%s lat = %s%n", name, PrintArray.printArray(this.latEdge));
+    System.out.printf("%s lon = %s%n", name, PrintArray.printArray(this.lonEdge));
   }
 
   void check() {

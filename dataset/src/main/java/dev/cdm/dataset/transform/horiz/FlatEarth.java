@@ -21,8 +21,12 @@ public class FlatEarth extends AbstractProjectionCT implements ProjectionBuilder
     double lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double lat0 = ctv.findAttributeDouble(CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double rot = ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.FlatEarth.ROTATIONANGLE, 0.0);
-    double earth_radius = TransformBuilders.getEarthRadiusInKm(ctv);
+    double earth_radius = ProjectionBuilders.getEarthRadiusInKm(ctv);
 
     return new dev.cdm.dataset.geoloc.projection.FlatEarth(lat0, lon0, rot, earth_radius);
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.FlatEarth.class;
   }
 }

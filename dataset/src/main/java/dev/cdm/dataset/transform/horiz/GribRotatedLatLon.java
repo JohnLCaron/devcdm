@@ -18,13 +18,17 @@ public class GribRotatedLatLon extends AbstractProjectionCT implements Projectio
 
   public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     double lon =
-        ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LONGITUDE, Double.NaN);
+        ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.GribRotatedLatLon.GRID_SOUTH_POLE_LONGITUDE, Double.NaN);
     double lat =
-        ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LATITUDE, Double.NaN);
+        ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.GribRotatedLatLon.GRID_SOUTH_POLE_LATITUDE, Double.NaN);
     double angle =
-        ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_ANGLE, Double.NaN);
+        ctv.findAttributeDouble(dev.cdm.dataset.geoloc.projection.GribRotatedLatLon.GRID_SOUTH_POLE_ANGLE, Double.NaN);
 
-    return new dev.cdm.dataset.geoloc.projection.RotatedLatLon(lat, lon, angle);
+    return new dev.cdm.dataset.geoloc.projection.GribRotatedLatLon(lat, lon, angle);
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.GribRotatedLatLon.class;
   }
 
 }

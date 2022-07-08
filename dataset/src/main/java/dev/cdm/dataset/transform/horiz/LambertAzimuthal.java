@@ -21,5 +21,9 @@ public class LambertAzimuthal extends AbstractProjectionCT implements Projection
     return new dev.cdm.dataset.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing,
         earth_radius);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.LambertAzimuthalEqualArea.class;
+  }
 }
 

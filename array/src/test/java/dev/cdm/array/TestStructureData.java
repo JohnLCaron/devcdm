@@ -69,7 +69,7 @@ public class TestStructureData {
     assertThat(array.get(3)).isEqualTo(array2.get(1));
   }
 
-  private StructureDataArray makeStructureArray(int idx) {
+  public static StructureDataArray makeStructureArray(int idx) {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
     builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});

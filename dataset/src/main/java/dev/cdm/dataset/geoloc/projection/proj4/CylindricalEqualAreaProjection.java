@@ -64,7 +64,7 @@ public class CylindricalEqualAreaProjection extends AbstractProjection {
 
   public CylindricalEqualAreaProjection(double lon0, double trueScaleLatitude, double falseEasting,
       double falseNorthing, Earth earth) {
-    super("CylindricalEqualAreaProjection", false);
+    super(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA, false);
 
     Preconditions.checkNotNull(earth, "CylindricalEqualAreaProjection constructor requires non-null Earth");
 
@@ -199,6 +199,17 @@ public class CylindricalEqualAreaProjection extends AbstractProjection {
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + (earth != null ? earth.hashCode() : 0);
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return "CylindricalEqualAreaProjection{" +
+            "scaleFactor=" + scaleFactor +
+            ", projectionLongitude=" + projectionLongitude +
+            ", falseEasting=" + falseEasting +
+            ", falseNorthing=" + falseNorthing +
+            ", earth=" + earth +
+            '}';
   }
 }
 

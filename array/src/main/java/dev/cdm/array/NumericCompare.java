@@ -65,8 +65,8 @@ public class NumericCompare {
 
     if (Float.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
-    } else if (a == 0 || b == 0 || absDiff < Float.MIN_NORMAL) {
-      return absDiff / Float.MIN_NORMAL;
+//    } else if (a == 0 || b == 0 || absDiff < Float.MIN_NORMAL) {
+//      return absDiff / Float.MIN_NORMAL;
     } else {
       float maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
       return absDiff / maxAbsValue;
@@ -79,8 +79,8 @@ public class NumericCompare {
 
     if (Double.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
-    } else if (a == 0 || b == 0 || absDiff < Double.MIN_NORMAL) {
-      return absDiff / Double.MIN_NORMAL;
+ //    } else if (a == 0 || b == 0 || absDiff < Double.MIN_NORMAL) {
+ //     return absDiff / Double.MIN_NORMAL;
     } else {
       double maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
       return absDiff / maxAbsValue;
@@ -105,29 +105,6 @@ public class NumericCompare {
   /** RelativeDifference is less than maxRelDiff. */
   public static boolean nearlyEquals(double a, double b, double maxRelDiff) {
     return relativeDifference(a, b) < maxRelDiff;
-  }
-
-  /** AbsoluteDifference is less than maxAbsDiff. */
-  public static boolean nearlyEqualsAbs(float a, float b, float maxAbsDiff) {
-    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
-  }
-
-  /** AbsoluteDifference is less than maxAbsDiff. */
-  public static boolean nearlyEqualsAbs(double a, double b, double maxAbsDiff) {
-    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
-  }
-
-  public static String showBits(byte[] bytes) {
-    try (Formatter f = new Formatter()) {
-      int count = 0;
-      for (byte b : bytes) {
-        short s = ArrayType.unsignedByteToShort(b);
-        f.format("%8s", Long.toBinaryString(s));
-        if (++count % 10 == 0)
-          f.format("%n");
-      }
-      return f.toString();
-    }
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -204,13 +181,42 @@ public class NumericCompare {
     }
     return ok;
   }
-
-  public static void showClassPath() {
-    System.out.println("Working Directory = " + System.getProperty("user.dir"));
-    String classpath = System.getProperty("java.class.path");
-    System.out.printf("Classpath =%n");
-    for (String cp : classpath.split(":")) {
-      System.out.printf("  %s%n", cp);
-    }
-  }
 }
+
+
+// TODO consider using this instead of Misc
+// https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
+// bool nearly_equal(
+// float a, float b,
+// float epsilon = 128 * FLT_EPSILON, float abs_th = FLT_MIN)
+// // those defaults are arbitrary and could be removed
+// {
+// assert(std::numeric_limits<float>::epsilon() <= epsilon);
+// assert(epsilon < 1.f);
+//
+// if (a == b) return true;
+//
+// auto diff = std::abs(a-b);
+// auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<float>::max());
+// // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
+// // keeping this commented out until I update figures below
+// return diff < std::max(abs_th, epsilon * norm);
+// }
+/*
+ * public static boolean nearlyEqual(float a, float b, float epsilon) {
+ * final float absA = Math.abs(a);
+ * final float absB = Math.abs(b);
+ * final float diff = Math.abs(a - b);
+ *
+ * if (a == b) { // shortcut, handles infinities
+ * return true;
+ * } else if (a == 0 || b == 0 || diff < Float.MIN_NORMAL) {
+ * // a or b is zero or both are extremely close to it
+ * // relative error is less meaningful here
+ * return diff < (epsilon * Float.MIN_NORMAL);
+ * } else { // use relative error
+ * return diff / (absA + absB) < epsilon;
+ * }
+ * }
+ */
+

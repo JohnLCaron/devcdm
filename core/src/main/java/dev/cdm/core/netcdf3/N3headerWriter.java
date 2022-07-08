@@ -107,8 +107,7 @@ class N3headerWriter extends N3header {
     raf.writeInt(0);
 
     // dims
-    Iterable<Dimension> dims = rootGroup.getDimensions();
-    int numdims = Iterables.size(dims);
+    int numdims = rootGroup.dimensions.size();
     if (numdims == 0) {
       raf.writeInt(0);
       raf.writeInt(0);
@@ -116,7 +115,7 @@ class N3headerWriter extends N3header {
       raf.writeInt(N3header.MAGIC_DIM);
       raf.writeInt(numdims);
     }
-    for (Dimension dim : dims) {
+    for (Dimension dim : rootGroup.dimensions) {
       writeString(dim.getShortName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       if (dim.isUnlimited()) {
@@ -433,7 +432,7 @@ class N3headerWriter extends N3header {
 
   private int findDimensionIndex(Group.Builder rootGroup, Dimension wantDim) {
     int count = 0;
-    for (Dimension dim : rootGroup.getDimensions()) {
+    for (Dimension dim : rootGroup.dimensions) {
       if (dim.equals(wantDim))
         return count;
       count++;

@@ -18,9 +18,9 @@ import dev.cdm.dataset.geoloc.Earth;
 
 import java.util.List;
 
-/** Static helper class for TransformBuilders */
-public class TransformBuilders {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TransformBuilders.class);
+/** Static helper class for ProjectionBuilder's */
+class ProjectionBuilders {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionBuilders.class);
 
   /*
    * from CF: false_easting(false_northing):

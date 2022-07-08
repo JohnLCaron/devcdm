@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 ;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.Objects;
 
 /** Concrete implementation of Array specialized for Byte. */
 @Immutable
@@ -70,19 +71,6 @@ final class ArrayByte extends Array<Byte> {
       }
     }
   }
-
-  /* Convert the Array into a ByteString.
-  ByteString getByteString() {
-    if (indexFn.isCanonicalOrder()) {
-      return ByteString.copyFrom(((StorageS) storage).storage);
-    }
-    byte[] raw = new byte[(int) length()];
-    int idx = 0;
-    for (byte bval : this) {
-      raw[idx++] = bval;
-    }
-    return ByteString.copyFrom(raw);
-  } */
 
   /**
    * Create a String out of this Array, collapsing all dimensions into one.
@@ -196,6 +184,18 @@ final class ArrayByte extends Array<Byte> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(storage, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageS bytes)) return false;
+      return java.util.Arrays.equals(storage, bytes.storage);
+    }
+
+    @Override
+    public int hashCode() {
+      return java.util.Arrays.hashCode(storage);
     }
 
     @Override

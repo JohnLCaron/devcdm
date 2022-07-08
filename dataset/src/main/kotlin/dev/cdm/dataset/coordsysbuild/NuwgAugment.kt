@@ -103,7 +103,7 @@ class NuwgAugment(val dataset: CdmDataset, val info : StringBuilder) {
         }
 
         // "referential" variables
-        for (dim in rootBuilder.getDimensions()) {
+        for (dim in rootBuilder.dimensions) {
             val dimName = dim.shortName
             if (rootBuilder.findVariableLocal(dimName).isPresent()) continue  // already has coord axis
             val ncvars = searchAliasedDimension(dim)

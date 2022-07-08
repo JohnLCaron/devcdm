@@ -26,4 +26,8 @@ public class RotatedPole extends AbstractProjectionCT implements ProjectionBuild
     return new dev.cdm.dataset.geoloc.projection.RotatedPole(lat, lon);
   }
 
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.RotatedPole.class;
+  }
+
 }

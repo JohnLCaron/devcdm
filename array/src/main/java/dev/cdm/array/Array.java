@@ -99,7 +99,7 @@ public abstract class Array<T> implements Iterable<T> {
     return "Array{" + "arrayType=" + arrayType + ", indexFn=" + indexFn + ", rank=" + rank + '}';
   }
 
-  /** Equal if the type and indexFn are equal, doesnt test the contents. */
+  /** Equal if the type and indexFn are equal, and compare each value with equals(). */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -108,15 +108,20 @@ public abstract class Array<T> implements Iterable<T> {
     if (!(o instanceof Array)) {
       return false;
     }
-    Array<?> array = (Array<?>) o;
-    return getRank() == array.getRank() && getArrayType() == array.getArrayType()
-        && Objects.equal(indexFn, array.indexFn);
+    Array<?> other = (Array<?>) o;
+    if (getRank() != other.getRank() || getArrayType() != other.getArrayType()
+        || !Objects.equal(indexFn, other.indexFn)) {
+      return false;
+    }
+
+    // compare contents
+    return storage().equals(other.storage());
   }
 
   /** Consistent with equals. */
   @Override
   public int hashCode() {
-    return Objects.hashCode(getArrayType(), indexFn, getRank());
+    return Objects.hashCode(getArrayType(), indexFn, getRank(), storage());
   }
 
   //////////////////////////////////////////////////////////

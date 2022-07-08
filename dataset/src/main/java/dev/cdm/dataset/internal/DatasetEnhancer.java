@@ -36,18 +36,6 @@ public class DatasetEnhancer {
     this.wantEnhance = wantEnhance == null ? EnumSet.noneOf(Enhance.class) : wantEnhance;
   }
 
-  /*
-   * Enhancement use cases
-   * 1. open NetcdfDataset(enhance).
-   * 2. NcML - must create the NetcdfDataset, and enhance when its done.
-   *
-   * Enhance mode is set when
-   * 1) the NetcdfDataset is opened
-   * 2) enhance(EnumSet<Enhance> mode) is called.
-   *
-   * Possible remove all direct access to Variable.enhance
-   */
-
   public CdmDataset.Builder<?> enhance() throws IOException {
     enhanceGroup(dsBuilder.rootGroup);
     dsBuilder.addEnhanceModes(wantEnhance);
@@ -109,12 +97,6 @@ public class DatasetEnhancer {
         varEnhance.remove(orgVarEnhancement);
       }
     }
-
-    // enhance() may have been called previously, with a different enhancement set.
-    // So, we need to reset to default before we process this new set.
-    // if (vb.orgDataType != null) {
-    // vb.setDataType(vb.orgDataType);
-    // }
 
     if (varEnhance.contains(Enhance.ConvertEnums) && vb.dataType.isEnum()) {
       vb.setArrayType(ArrayType.STRING);

@@ -11,7 +11,7 @@ import dev.cdm.dataset.geoloc.projection.AbstractProjection;
 import java.util.Objects;
 
 /**
- * A dummy Projection for Curvilinear coordinates that use identity to map lat,lon to y,x.
+ * A dummy Projection for Curvilinear coordinates that uses identity to map lat,lon to y,x.
  */
 public class CurvilinearProjection extends AbstractProjection {
   Array<Double> latdata;

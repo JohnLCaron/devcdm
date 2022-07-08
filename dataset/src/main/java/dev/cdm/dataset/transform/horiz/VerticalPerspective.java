@@ -33,4 +33,8 @@ public class VerticalPerspective extends AbstractProjectionCT implements Project
     // We assume distance comes in 'm' (CF-compliant) and we pass in as 'km'
     return new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000., false_easting, false_northing);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return VerticalPerspectiveView.class;
+  }
 }

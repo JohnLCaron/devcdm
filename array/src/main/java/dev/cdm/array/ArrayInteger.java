@@ -4,9 +4,11 @@
  */
 package dev.cdm.array;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 ;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /** Concrete implementation of Array specialized for Integer. */
@@ -83,6 +85,11 @@ class ArrayInteger extends Array<Integer> {
     return new ArrayInteger(this.arrayType, view, this.storage);
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), storage.hashCode());
+  }
+
   // used when the data is not in canonical order
   private class CanonicalIterator implements Iterator<Integer> {
     private final Iterator<Integer> iter = indexFn.iterator();
@@ -123,6 +130,18 @@ class ArrayInteger extends Array<Integer> {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageS integers)) return false;
+      return Arrays.equals(storage, integers.storage);
+    }
+
+    @Override
+    public int hashCode() {
+      return Arrays.hashCode(storage);
+    }
+
+    @Override
     public Iterator<Integer> iterator() {
       return new StorageIter();
     }
@@ -140,6 +159,20 @@ class ArrayInteger extends Array<Integer> {
         return storage[count++];
       }
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!super.equals(o)) {
+      return false;
+    }
+    Array<Integer> a2 = (Array<Integer>) o;
+    for (int idx = 0; idx < getSize(); idx++) {
+      if (!this.get(idx).equals(a2.get(idx))) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }

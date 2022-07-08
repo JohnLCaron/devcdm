@@ -277,19 +277,6 @@ public class CdmDataset extends CdmFile {
       return this.enhanceMode;
     }
 
-    public void addEnhanceMode(Enhance addEnhanceMode) {
-      ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
-      result.addAll(this.enhanceMode);
-      result.add(addEnhanceMode);
-      this.enhanceMode = result.build();
-    }
-
-    public void removeEnhanceMode(Enhance removeEnhanceMode) {
-      ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
-      this.enhanceMode.stream().filter(e -> !e.equals(removeEnhanceMode)).forEach(result::add);
-      this.enhanceMode = result.build();
-    }
-
     public void addEnhanceModes(Set<Enhance> addEnhanceModes) {
       ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
       result.addAll(this.enhanceMode);

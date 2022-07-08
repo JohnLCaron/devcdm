@@ -25,6 +25,8 @@ import dev.cdm.array.Immutable;
  */
 @Immutable
 public class PolyconicProjection extends AbstractProjection {
+  public static final String GRID_MAPPING_NAME = "Polyconic";
+
   private static final double TOL = 1e-10;
   private static final double CONV = 1e-10;
   private static final int N_ITER = 10;
@@ -61,7 +63,7 @@ public class PolyconicProjection extends AbstractProjection {
   }
 
   public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
-    super("Polyconic", false);
+    super(GRID_MAPPING_NAME, false);
 
     this._lat0 = lat0;
     this._lon0 = lon0;

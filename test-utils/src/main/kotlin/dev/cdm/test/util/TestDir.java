@@ -148,4 +148,15 @@ public class TestDir {
 
     return count;
   }
+
+
+  // random
+  public static void showClassPath() {
+    System.out.println("Working Directory = " + System.getProperty("user.dir"));
+    String classpath = System.getProperty("java.class.path");
+    System.out.printf("Classpath =%n");
+    for (String cp : classpath.split(":")) {
+      System.out.printf("  %s%n", cp);
+    }
+  }
 }

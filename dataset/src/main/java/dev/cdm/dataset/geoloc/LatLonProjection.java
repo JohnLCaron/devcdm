@@ -27,11 +27,11 @@ public class LatLonProjection extends AbstractProjection {
   }
 
   public LatLonProjection() {
-    this("LatLonProjection", EarthEllipsoid.DEFAULT, 0.0);
+    this(CF.LATITUDE_LONGITUDE, EarthEllipsoid.DEFAULT, 0.0);
   }
 
   public LatLonProjection(Earth earth) {
-    this("LatLonProjection", earth, 0.0);
+    this(CF.LATITUDE_LONGITUDE, earth, 0.0);
   }
 
   public LatLonProjection(String name, @Nullable Earth earth, double centerLon) {

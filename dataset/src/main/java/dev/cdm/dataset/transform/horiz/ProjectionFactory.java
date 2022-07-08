@@ -4,7 +4,6 @@
  */
 package dev.cdm.dataset.transform.horiz;
 
-import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateTransform;
@@ -18,29 +17,29 @@ import java.util.List;
 /** Factory for Projection Transforms. */
 public class ProjectionFactory {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionFactory.class);
-  private static final List<Transform> transformList = new ArrayList<>();
   private static boolean userMode = false;
 
+  static final List<Transform> transforms = new ArrayList<>();
   private static final boolean loadWarnings = false;
 
   // search in the order added
   static {
     registerTransform(CF.ALBERS_CONICAL_EQUAL_AREA, AlbersEqualArea.class);
     registerTransform(CF.AZIMUTHAL_EQUIDISTANT, AzimuthalEquidistant.class);
-    registerTransform(CDM.FlatEarth, FlatEarth.class);
     registerTransform(CDM.EquidistantCylindrical, EquidistantCylindrical.class);
+    registerTransform(CDM.FlatEarth, FlatEarth.class);
     registerTransform(CF.GEOSTATIONARY, Geostationary.class);
+    registerTransform(CDM.GribRotatedLatLon, GribRotatedLatLon.class);
     registerTransform(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, LambertAzimuthal.class);
     registerTransform(CF.LAMBERT_CONFORMAL_CONIC, LambertConformalConic.class);
     registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA, LambertCylindricalEqualArea.class);
     registerTransform(CF.LATITUDE_LONGITUDE, LatLon.class);
     registerTransform(CF.MERCATOR, Mercator.class);
-    registerTransform("MSGnavigation", MSGnavigation.class);
+    registerTransform(MSGnavigation.GRID_MAPPING_NAME, MSGnavigation.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
     registerTransform(CF.POLAR_STEREOGRAPHIC, PolarStereographic.class);
-    registerTransform("polyconic", PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012
+    registerTransform(PolyconicProjection.GRID_MAPPING_NAME, PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012
     registerTransform(CF.ROTATED_LATITUDE_LONGITUDE, RotatedPole.class);
-    registerTransform(CDM.GribRotatedLatLon, GribRotatedLatLon.class);
     registerTransform(CF.SINUSOIDAL, Sinusoidal.class);
     registerTransform(CF.STEREOGRAPHIC, Stereographic.class);
     registerTransform(CF.TRANSVERSE_MERCATOR, TransverseMercator.class);
@@ -51,15 +50,31 @@ public class ProjectionFactory {
     userMode = true;
   }
 
+  static class Transform {
+    final String transName;
+    final Class<? extends ProjectionBuilder> transClass;
+
+    Transform(String transName, Class<? extends ProjectionBuilder> transClass) {
+      this.transName = transName;
+      this.transClass = transClass;
+    }
+
+    @Override
+    public String toString() {
+      return transName + " : " + transClass;
+    }
+  }
+
   /**
-   * Register a class that implements HorizTransformBuilderIF
+   * Register a class that implements ProjectionBuilder
    * 
-   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
-   * @param c class that implements CoordTransBuilderIF.
+   * @param transformName name of transform, to identify the transform in datasets, eg CF names.
+   * @param c class that implements ProjectionBuilder.
    */
   public static void registerTransform(String transformName, Class<?> c) {
-    if (!(ProjectionBuilder.class.isAssignableFrom(c)))
-      throw new IllegalArgumentException("Class " + c.getName() + " must implement HorizTransformBuilderIF");
+    if (!(ProjectionBuilder.class.isAssignableFrom(c))) {
+      throw new IllegalArgumentException("Class " + c.getName() + " must implement ProjectionBuilder");
+    }
 
     // fail fast - check newInstance works
     try {
@@ -69,58 +84,19 @@ public class ProjectionFactory {
     }
 
     // user stuff gets put at top
+    Class<? extends ProjectionBuilder> cp = (Class<? extends ProjectionBuilder>) c;
     if (userMode)
-      transformList.add(0, new Transform(transformName, c));
+      transforms.add(0, new Transform(transformName, cp));
     else
-      transformList.add(new Transform(transformName, c));
+      transforms.add(new Transform(transformName, cp));
 
-  }
-
-  /**
-   * Register a class that implements HorizTransformBuilderIF.
-   * 
-   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
-   * @param className name of class that implements CoordTransBuilderIF.
-   * @throws ClassNotFoundException if Class.forName( className) fails
-   */
-  public static void registerTransform(String transformName, String className) throws ClassNotFoundException {
-    Class<?> c = Class.forName(className);
-    registerTransform(transformName, c);
-  }
-
-  /**
-   * Register a class that implements HorizTransformBuilderIF.
-   * 
-   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
-   * @param className name of class that implements CoordTransBuilderIF.
-   */
-  public static void registerTransformMaybe(String transformName, String className) {
-    Class<?> c;
-    try {
-      c = Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      if (loadWarnings)
-        log.warn("Coordinate Transform Class " + className + " not found.");
-      return;
-    }
-    registerTransform(transformName, c);
-  }
-
-  private static class Transform {
-    final String transName;
-    final Class<?> transClass;
-
-    Transform(String transName, Class<?> transClass) {
-      this.transName = transName;
-      this.transClass = transClass;
-    }
   }
 
   /**
    * Do we have a Projection, or can we make one for projCtv?
    */
   public static boolean hasProjectionFor(CoordinateTransform projCtv) {
-    AttributeContainer ctv = projCtv.metadata();
+    /* AttributeContainer ctv = projCtv.metadata();
     // standard name
     String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
     if (null == transform_name)
@@ -140,11 +116,11 @@ public class ProjectionFactory {
       return false;
     }
 
-    transform_name = transform_name.trim();
+    transform_name = transform_name.trim(); */
 
     // do we have a transform registered for this ?
-    for (Transform transform : transformList) {
-      if (transform.transName.equals(transform_name)) {
+    for (Transform transform : transforms) {
+      if (transform.transName.equals(projCtv.name())) {
         return true;
       }
     }
@@ -163,14 +139,14 @@ public class ProjectionFactory {
   public static Projection makeProjection(CoordinateTransform projCtv, Formatter parseInfo) {
     // do we have a transform registered for this name ?
     Class<?> builderClass = null;
-    for (Transform transform : transformList) {
+    for (Transform transform : transforms) {
       if (transform.transName.equals(projCtv.name())) {
         builderClass = transform.transClass;
         break;
       }
     }
 
-    // look throogh metadata. LOOK - should we get rid of this?
+    /* look throogh metadata. LOOK - should we get rid of this?
     if (builderClass == null) {
       AttributeContainer ctv = projCtv.metadata();
       // standard name
@@ -194,7 +170,7 @@ public class ProjectionFactory {
       }
 
       transform_name = transform_name.trim();
-      for (Transform transform : transformList) {
+      for (Transform transform : transforms) {
         if (transform.transName.equals(transform_name)) {
           builderClass = transform.transClass;
           break;
@@ -205,6 +181,11 @@ public class ProjectionFactory {
         parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s%n", transform_name, ctv);
         return null;
       }
+    } */
+
+    if (null == builderClass) {
+      parseInfo.format("**Failed to find CoordTransBuilder from transform = %s%n", projCtv.name());
+      return null;
     }
 
     // get an instance of that class

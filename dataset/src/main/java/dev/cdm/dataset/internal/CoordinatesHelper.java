@@ -7,7 +7,6 @@ package dev.cdm.dataset.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.*;
 import dev.cdm.dataset.coordsysbuild.CoordsHelperBuilder;
 
@@ -18,34 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /** An immutable helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
 public class CoordinatesHelper implements Coordinates {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
-
-  /** Make canonical name for this list of axes. */
-  public static String makeCanonicalName(List<CoordinateAxis.Builder<?>> axes) {
-    Preconditions.checkNotNull(axes);
-    return axes.stream().sorted(new AxisComparator()).map(a -> a.getFullName()).collect(Collectors.joining(" "));
-  }
-
-  private static class AxisComparator implements java.util.Comparator<CoordinateAxis.Builder<?>> {
-    public int compare(CoordinateAxis.Builder c1, CoordinateAxis.Builder c2) {
-      AxisType t1 = c1.axisType;
-      AxisType t2 = c2.axisType;
-
-      if ((t1 == null) && (t2 == null))
-        return c1.getFullName().compareTo(c2.getFullName());
-      if (t1 == null)
-        return -1;
-      if (t2 == null)
-        return 1;
-
-      return t1.axisOrder() - t2.axisOrder();
-    }
-  }
 
   //////////////////////////////////////////////////////////////////////////////////////////
 

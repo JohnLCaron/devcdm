@@ -34,7 +34,6 @@ public class EarthLocation {
     return new EarthLocation(lat, lon, alt, altUnits);
   }
 
-  // This is a value object; would like to use AutoValue, but current public version does not support subclassing.
   private final double latitude;
   private final double longitude;
   private final double altitude;

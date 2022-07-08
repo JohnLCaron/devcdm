@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 
 ;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Array of variable length primitive arrays of T, eg double[length][].
@@ -251,6 +252,20 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVByte arrays)) return false;
+      return primitiveArrayType == arrays.primitiveArrayType && java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = Objects.hash(primitiveArrayType);
+      result = 31 * result + java.util.Arrays.hashCode(primitiveArray);
+      return result;
+    }
+
+    @Override
     public Iterator<Array<Byte>> iterator() {
       return new StorageIter();
     }
@@ -316,6 +331,18 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVDouble arrays)) return false;
+      return java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      return java.util.Arrays.hashCode(primitiveArray);
+    }
+
+    @Override
     public Iterator<Array<Double>> iterator() {
       return new StorageIter();
     }
@@ -378,6 +405,19 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(primitiveArray, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVFloat)) return false;
+      StorageVFloat arrays = (StorageVFloat) o;
+      return java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      return java.util.Arrays.hashCode(primitiveArray);
     }
 
     @Override
@@ -448,6 +488,21 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVInt)) return false;
+      StorageVInt arrays = (StorageVInt) o;
+      return primitiveArrayType == arrays.primitiveArrayType && java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = Objects.hash(primitiveArrayType);
+      result = 31 * result + java.util.Arrays.hashCode(primitiveArray);
+      return result;
+    }
+
+    @Override
     public Iterator<Array<Integer>> iterator() {
       return new StorageIter();
     }
@@ -512,6 +567,21 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(primitiveArray, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVLong)) return false;
+      StorageVLong arrays = (StorageVLong) o;
+      return primitiveArrayType == arrays.primitiveArrayType && java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = Objects.hash(primitiveArrayType);
+      result = 31 * result + java.util.Arrays.hashCode(primitiveArray);
+      return result;
     }
 
     @Override
@@ -582,6 +652,21 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVShort)) return false;
+      StorageVShort arrays = (StorageVShort) o;
+      return primitiveArrayType == arrays.primitiveArrayType && java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = Objects.hash(primitiveArrayType);
+      result = 31 * result + java.util.Arrays.hashCode(primitiveArray);
+      return result;
+    }
+
+    @Override
     public Iterator<Array<Short>> iterator() {
       return new StorageIter();
     }
@@ -644,6 +729,18 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(primitiveArray, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageVString arrays)) return false;
+      return java.util.Arrays.equals(primitiveArray, arrays.primitiveArray);
+    }
+
+    @Override
+    public int hashCode() {
+      return java.util.Arrays.hashCode(primitiveArray);
     }
 
     @Override

@@ -10,9 +10,10 @@ import dev.cdm.dataset.geoloc.Projection;
 
 /** MSGnavigation projection */
 public class MSGnavigation extends AbstractProjectionCT implements ProjectionBuilder {
+  public static final String GRID_MAPPING_NAME = dev.cdm.dataset.geoloc.projection.sat.MSGnavigation.GRID_MAPPING_NAME;
 
   public String getTransformName() {
-    return "MSGnavigation";
+    return GRID_MAPPING_NAME;
   }
 
   public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
@@ -28,6 +29,10 @@ public class MSGnavigation extends AbstractProjectionCT implements ProjectionBui
 
     return new dev.cdm.dataset.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height, scale_x,
         scale_y);
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.sat.MSGnavigation.class;
   }
 
 }

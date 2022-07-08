@@ -9,6 +9,7 @@ import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.Earth;
+import dev.cdm.dataset.geoloc.Projection;
 
 import java.util.StringTokenizer;
 
@@ -28,7 +29,7 @@ public abstract class AbstractProjectionCT implements ProjectionBuilder {
     false_northing = ctv.findAttributeDouble(CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = TransformBuilders.getFalseEastingScaleFactor(units);
+      double scalef = ProjectionBuilders.getFalseEastingScaleFactor(units);
       false_easting *= scalef;
       false_northing *= scalef;
     }
@@ -37,7 +38,7 @@ public abstract class AbstractProjectionCT implements ProjectionBuilder {
     double semi_minor_axis = ctv.findAttributeDouble(CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = ctv.findAttributeDouble(CF.INVERSE_FLATTENING, 0.0);
 
-    earth_radius = TransformBuilders.getEarthRadiusInKm(ctv);
+    earth_radius = ProjectionBuilders.getEarthRadiusInKm(ctv);
     // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
       earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
@@ -65,4 +66,9 @@ public abstract class AbstractProjectionCT implements ProjectionBuilder {
     }
     return val;
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return Projection.class;
+  }
+
 }

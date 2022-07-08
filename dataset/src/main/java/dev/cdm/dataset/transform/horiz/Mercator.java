@@ -32,4 +32,8 @@ public class Mercator extends AbstractProjectionCT implements ProjectionBuilder 
 
     return new dev.cdm.dataset.geoloc.projection.Mercator(lon0, par, false_easting, false_northing, earth_radius);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.Mercator.class;
+  }
 }

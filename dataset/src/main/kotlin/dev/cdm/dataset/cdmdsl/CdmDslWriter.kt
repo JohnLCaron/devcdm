@@ -2,6 +2,7 @@ package dev.cdm.dataset.cdmdsl
 
 import dev.cdm.array.Indent
 import dev.cdm.array.PrintArray.printArray
+import dev.cdm.array.PrintArray.printArrayPlain
 import dev.cdm.core.api.*
 import dev.cdm.dataset.api.*
 import java.util.*
@@ -65,8 +66,14 @@ fun Attribute.writeDsl(builder: StringBuilder, indent: Indent) {
 }
 
 fun <T> shortenPrintArray(arrayValues: dev.cdm.array.Array<T>, len: Int): String {
+    var values = printArrayPlain(arrayValues)
+    if (values.length > len) values = values.take(len) + "...\""
+    return values
+}
+
+fun <T> shortenPrintArrayOld(arrayValues: dev.cdm.array.Array<T>, len: Int): String {
     val out = Formatter()
-    printArray(out, arrayValues, null, Indent(0))
+    printArray(out, arrayValues, Indent(0))
     var values = out.toString().replace("\n", "")
     if (values.length > len) values = values.take(len) + "...\""
     return values

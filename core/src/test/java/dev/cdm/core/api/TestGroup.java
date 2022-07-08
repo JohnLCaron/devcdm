@@ -467,11 +467,11 @@ public class TestGroup {
     assertThat(gb.addDimensionIfNotExists(dim)).isFalse();
 
     assertThat(gb.findDimension("dim1").isPresent()).isTrue();
-    assertThat(gb.getDimensions()).isNotEmpty();
+    assertThat(gb.dimensions).isNotEmpty();
 
     assertThat(gb.removeDimension("dim1")).isTrue();
     assertThat(gb.findDimension("dim1").isPresent()).isFalse();
-    assertThat(gb.getDimensions()).isEmpty();
+    assertThat(gb.dimensions).isEmpty();
 
     assertThat(gb.addDimensionIfNotExists(dim)).isTrue();
     assertThat(gb.findDimension("dim1").isPresent()).isTrue();

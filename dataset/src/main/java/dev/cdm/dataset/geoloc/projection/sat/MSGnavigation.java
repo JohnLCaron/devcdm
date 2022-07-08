@@ -144,6 +144,8 @@ public class MSGnavigation extends AbstractProjection {
    * **********************************************************************
    */
 
+  public static final String GRID_MAPPING_NAME = "MSGnavigation";
+
   public static final String HEIGHT_FROM_EARTH_CENTER = "height_from_earth_center";
   public static final String SCALE_X = "scale_x";
   public static final String SCALE_Y = "scale_y";
@@ -182,7 +184,7 @@ public class MSGnavigation extends AbstractProjection {
    */
   public MSGnavigation(double lat0, double lon0, double major_axis, double minor_axis, double sat_height,
       double scale_x, double scale_y) {
-    super("MSGnavigation", false);
+    super(GRID_MAPPING_NAME, false);
 
     this.lon0 = Math.toRadians(lon0);
     this.major_axis = .001 * major_axis; // convert to km
@@ -200,7 +202,7 @@ public class MSGnavigation extends AbstractProjection {
     double P = sat_height / major_axis;
     maxR = .99 * this.major_axis * Math.sqrt((P - 1) / (P + 1));
 
-    addParameter(CF.GRID_MAPPING_NAME, "MSGnavigation");
+    addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, lon0);
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
     addParameter(CF.SEMI_MAJOR_AXIS, major_axis);

@@ -23,4 +23,7 @@ public interface ProjectionBuilder {
   /** Get the Transform name. */
   String getTransformName();
 
+  Class<? extends Projection> getProjectionClass();
+
+
 }

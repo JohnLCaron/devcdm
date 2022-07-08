@@ -7,6 +7,7 @@ package dev.cdm.array;
 import com.google.common.base.Preconditions;
 
 ;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /** Concrete implementation of Array specialized for floats. */
@@ -117,6 +118,18 @@ final class ArrayFloat extends Array<Float> {
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       System.arraycopy(storage, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof StorageF floats)) return false;
+      return Arrays.equals(storage, floats.storage);
+    }
+
+    @Override
+    public int hashCode() {
+      return Arrays.hashCode(storage);
     }
 
     @Override

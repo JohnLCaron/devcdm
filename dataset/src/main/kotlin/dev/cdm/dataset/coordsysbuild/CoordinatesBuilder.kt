@@ -213,7 +213,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
             if (!vp.hasCoordinateSystem() && vp.maybeData()) {
                 val axesList = vp.findAllCoordinateAxes()
                 if (axesList.size >= 2) {
-                    val coordAxesName = CoordinatesHelper.makeCanonicalName(axesList)
+                    val coordAxesName = makeCoordSysCanonicalName(axesList)
                     val csb = coords.findCoordinateSystem(coordAxesName)
                     if (csb != null && coords.isComplete(csb, vp.vds)) {
                         vp.assignCoordinateSystem(csb.name, "(implicit)")
@@ -253,7 +253,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
             if (axisList.size < 2) {
                 return@forEach
             }
-            val coordAxesName = CoordinatesHelper.makeCanonicalName(axisList)
+            val coordAxesName = makeCoordSysCanonicalName(axisList)
             val csb = coords.findCoordinateSystem(coordAxesName)
             var okToBuild = false
 
@@ -461,13 +461,13 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
         }
 
         /** Make a coordinate axis from the variable. */
-        fun makeCoordinateAxis(): CoordinateAxis.Builder<*>? {
+        fun makeCoordinateAxis(): CoordinateAxis.Builder<*> {
             if (this.axis != null) {
-                return this.axis
+                return this.axis!!
             }
 
             // Create a CoordinateAxis out of this variable.
-            val axis = CoordinateAxis.fromVariableDS(vds)
+            val axis = CoordinateAxis.fromVariableDS(vds)!!
             if (axisType == null) {
                 axisType = identifyAxisType(vds)
             }
@@ -521,12 +521,12 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
          * Create a list of coordinate axes for this data variable, from coordinateVariables and names in coordinatesAll
          * @return list of coordinate axes for this data variable.
          */
-        fun findAllCoordinateAxes(): List<CoordinateAxis.Builder<*>?> {
+        fun findAllCoordinateAxes(): List<CoordinateAxis.Builder<*>> {
             if (coordinatesAll == null) {
                 // this will set coordinates to be the coordinate variables
                 setPartialCoordinates("")
             }
-            val axesList: MutableList<CoordinateAxis.Builder<*>?> = ArrayList()
+            val axesList: MutableList<CoordinateAxis.Builder<*>> = ArrayList()
             if (coordinatesAll != null) { // explicit axes
                 coordinatesAll!!.split(" ").forEach { vname ->
                     val ap = findVarProcess(vname, this)

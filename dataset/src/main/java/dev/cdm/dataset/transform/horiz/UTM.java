@@ -34,4 +34,8 @@ public class UTM extends AbstractProjectionCT implements ProjectionBuilder {
     // double a, double f, int zone, boolean isNorth
     return (axis != 0.0) ? new UtmProjection(axis, f, zone, isNorth) : new UtmProjection(zone, isNorth);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.UtmProjection.class;
+  }
 }

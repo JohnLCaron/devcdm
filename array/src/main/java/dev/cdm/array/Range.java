@@ -7,7 +7,6 @@ package dev.cdm.array;
 import com.google.common.base.Preconditions;
 
 import org.jetbrains.annotations.Nullable;
-;
 import java.util.Iterator;
 import java.util.Objects;
 

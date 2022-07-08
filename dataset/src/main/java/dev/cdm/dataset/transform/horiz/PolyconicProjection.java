@@ -19,6 +19,7 @@ import dev.cdm.dataset.geoloc.Projection;
  * @author ghansham@sac.isro.gov.in 1/8/2012
  */
 public class PolyconicProjection extends AbstractProjectionCT implements ProjectionBuilder {
+  public static final String GRID_MAPPING_NAME = dev.cdm.dataset.geoloc.projection.proj4.PolyconicProjection.GRID_MAPPING_NAME;
 
   public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
 
@@ -43,6 +44,10 @@ public class PolyconicProjection extends AbstractProjectionCT implements Project
   }
 
   public String getTransformName() {
-    return "polyconic";
+    return GRID_MAPPING_NAME;
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.proj4.PolyconicProjection.class;
   }
 }

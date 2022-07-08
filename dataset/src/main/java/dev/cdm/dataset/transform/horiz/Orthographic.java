@@ -22,4 +22,8 @@ public class Orthographic extends AbstractProjectionCT implements ProjectionBuil
 
     return new dev.cdm.dataset.geoloc.projection.Orthographic(lat0, lon0);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.Orthographic.class;
+  }
 }

@@ -59,8 +59,8 @@ public class TestArray {
 
     // contents different
     Array<?> array2 = Arrays.factory(ArrayType.DOUBLE, array.getShape(), new double[(int) array.getSize()]);
-    assertThat(array2).isEqualTo(array);
-    assertThat(array2.hashCode()).isEqualTo(array.hashCode());
+    assertThat(array2).isNotEqualTo(array);
+    assertThat(array2.hashCode()).isNotEqualTo(array.hashCode());
     assertThat(array.toString()).isEqualTo(
         "Array{arrayType=double, indexFn=IndexFn{shape=[1, 2, 3], stride=[6, 3, 1], rank=3, length=6, offset=0, canonicalOrder=true}, rank=3}");
   }

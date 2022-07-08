@@ -42,4 +42,8 @@ public class LatLon extends AbstractProjectionCT implements ProjectionBuilder {
 
     return new LatLonProjection(earth);
   }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return LatLonProjection.class;
+  }
 }

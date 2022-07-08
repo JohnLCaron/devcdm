@@ -24,13 +24,11 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         val rootBuilder = datasetBuilder.rootGroup
 
         // Figure out projection info. Assume the same for all variables
-        val lonVar = rootBuilder.findVariable("longitude")
-            .orElseThrow { IllegalStateException("Cant find variable longitude") } as VariableDS.Builder<*>
+        val lonVar = rootBuilder.vbuilders.find {it.shortName == "longitude"} as VariableDS.Builder
         lonVar.setUnits(CDM.LON_UNITS)
         lonVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lon.toString()))
 
-        val latVar = rootBuilder.findVariableLocal("latitude")
-            .orElseThrow { IllegalStateException("Cant find variable latitude") } as VariableDS.Builder<*>
+        val latVar = rootBuilder.vbuilders.find {it.shortName == "latitude"} as VariableDS.Builder<*>
         latVar.setUnits(CDM.LAT_UNITS)
         latVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lat.toString()))
 
@@ -69,7 +67,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         // get the times values
         val timesAtt = timeVar.attributeContainer.findAttribute("validTimes")
         if (timesAtt == null || timesAtt.arrayValues == null) {
-            info.appendLine("*** attribute validTimes doesnt exist for time variable ${timeVar.fullName}")
+            info.appendLine("*** attribute validTimes doesnt exist for time variable ${timeVar.shortName}")
             return null
         }
         var timesArray = timesAtt.arrayValues
@@ -92,7 +90,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         val dimTime = timeVar.orgVar.getDimension(0)
         val nTimesDim = dimTime.length
         if (nTimesDim != nTimesAtt) {
-            info.appendLine("*** ntimes in attribute ($nTimesAtt) doesnt match dimension length ($nTimesDim) for variable ${timeVar.fullName}")
+            info.appendLine("*** ntimes in attribute ($nTimesAtt) doesnt match dimension length ($nTimesDim) for variable ${timeVar.shortName}")
             return null
         }
 

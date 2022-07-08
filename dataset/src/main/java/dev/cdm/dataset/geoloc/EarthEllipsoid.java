@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import dev.cdm.array.Immutable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Type-safe enumeration of Earth Ellipsoids. Follows EPSG.
@@ -117,25 +118,6 @@ public class EarthEllipsoid extends Earth {
     return epsgId;
   }
 
-  @Override
-  public String toString() {
-    return getName();
-  }
 
-  @Override
-  public int hashCode() {
-    return getName().hashCode();
-  }
-
-  /** EarthEllipsoid with same name are equal */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (!(o instanceof EarthEllipsoid))
-      return false;
-    EarthEllipsoid oe = (EarthEllipsoid) o;
-    return oe.getName().equals(getName());
-  }
 }
 

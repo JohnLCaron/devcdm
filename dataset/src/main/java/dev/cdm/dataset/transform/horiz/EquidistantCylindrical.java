@@ -9,6 +9,7 @@ import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.geoloc.Projection;
+import dev.cdm.dataset.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 
 /** Create a Mercator Projection from the information in the Coordinate Transform Variable. */
 public class EquidistantCylindrical extends AbstractProjectionCT implements ProjectionBuilder {
@@ -27,5 +28,9 @@ public class EquidistantCylindrical extends AbstractProjectionCT implements Proj
     readStandardParams(ctv, geoCoordinateUnits);
 
     return new dev.cdm.dataset.geoloc.projection.EquidistantCylindrical(centralLat, centralLon, standardParellel, false_easting, false_northing, earth_radius);
+  }
+
+  public Class<? extends Projection> getProjectionClass() {
+    return dev.cdm.dataset.geoloc.projection.EquidistantCylindrical.class;
   }
 }
