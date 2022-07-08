@@ -107,6 +107,16 @@ public class NumericCompare {
     return relativeDifference(a, b) < maxRelDiff;
   }
 
+  /** AbsoluteDifference is less than maxAbsDiff. */
+  public static boolean nearlyEqualsAbs(float a, float b, float maxAbsDiff) {
+    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
+  }
+
+  /** AbsoluteDifference is less than maxAbsDiff. */
+  public static boolean nearlyEqualsAbs(double a, double b, double maxAbsDiff) {
+    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
+  }
+
   //////////////////////////////////////////////////////////////////////
 
   /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */

@@ -1,0 +1,35 @@
+// Grib1 Index version 9 (gbx9)
+syntax = "proto3";
+
+package dev.ucdm.grib.protogen;
+
+option java_package = "dev.ucdm.grib.protogen";
+option java_outer_classname = "Grib1IndexProto";
+
+message Grib1GdsSection {
+  bytes gds = 2;
+}
+
+message Grib1Record {
+  bytes header = 1;
+
+  // indicator section
+  uint64 gribMessageStart = 15;
+  uint64 gribMessageLength = 2;
+
+  // other sections
+  uint32 gdsIdx = 6;  // index into gdsList
+  bytes pds = 7;
+
+  uint64 bmsPos = 11;
+
+  uint64 dataPos = 13;
+  uint32 dataLen = 14;
+}
+
+message Grib1Index {
+  string filename = 1;
+  repeated Grib1GdsSection gdsList = 2;  // GDS factored out
+  repeated Grib1Record records = 3;
+  reserved 4; // version / proto_version, do not use again
+}
