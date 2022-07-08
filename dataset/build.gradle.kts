@@ -50,10 +50,10 @@ tasks.jar {
     manifest {
         attributes(mapOf(
             "Main-Class" to "dev.cdm.main",
-            "Implementation-Title" to "CDM (next generation) core library",
+            "Implementation-Title" to "CDM (next generation) dataset library",
             "Implementation-Version" to project.version))
     }
-    archiveBaseName.set("cdmng-dataset")
+    archiveBaseName.set("ucdm-dataset")
 }
 
 sourceSets.main {

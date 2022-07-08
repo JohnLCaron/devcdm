@@ -75,3 +75,13 @@ sourceSets {
         }
     }
 }
+
+tasks.jar {
+    manifest {
+        attributes(mapOf(
+            "Main-Class" to "dev.cdm.gcdm",
+            "Implementation-Title" to "UCDM (next generation) remote access library",
+            "Implementation-Version" to project.version))
+    }
+    archiveBaseName.set("ucdm-gcdm")
+}

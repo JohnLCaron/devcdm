@@ -50,8 +50,8 @@ tasks.jar {
     manifest {
         attributes(mapOf(
             "Main-Class" to "dev.cdm.aws.main",
-            "Implementation-Title" to "CDM (next generation) AWS S3 library",
+            "Implementation-Title" to "UCDM (next generation) AWS S3 library",
             "Implementation-Version" to project.version))
     }
-    archiveBaseName.set("cdmng-aws")
+    archiveBaseName.set("ucdm-aws")
 }

@@ -62,10 +62,10 @@ public class TestReadGridDataset {
   }
 
   @Test
-  @Disabled("Cant read swath")
+  @Disabled("Cant read swath") // TODO HdfEos COnventions for SWATH
   public void testSwath() throws Exception {
     String filename =
-        TestGridDatasets.gridLocalDir + "grid/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
+        TestGridDatasets.gridTestDir + "grid/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
         "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
         new int[] {1, 1, 73, 73});

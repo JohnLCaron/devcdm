@@ -4,6 +4,7 @@
  */
 package dev.cdm.dataset.transform.horiz;
 
+import dev.cdm.core.api.AttributeContainer;
 import dev.cdm.core.constants.CDM;
 import dev.cdm.core.constants.CF;
 import dev.cdm.dataset.api.CoordinateTransform;
@@ -146,7 +147,7 @@ public class ProjectionFactory {
       }
     }
 
-    /* look throogh metadata. LOOK - should we get rid of this?
+    // look through metadata. LOOK - should we get rid of this?
     if (builderClass == null) {
       AttributeContainer ctv = projCtv.metadata();
       // standard name
@@ -181,7 +182,7 @@ public class ProjectionFactory {
         parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s%n", transform_name, ctv);
         return null;
       }
-    } */
+    }
 
     if (null == builderClass) {
       parseInfo.format("**Failed to find CoordTransBuilder from transform = %s%n", projCtv.name());

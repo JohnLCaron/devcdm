@@ -38,6 +38,11 @@ import static com.google.common.truth.Truth.assertWithMessage;
 public class TestVertical {
 
   @Test
+  public void testOceanCF_OceanSigma() throws Exception {
+    open(TestGridDatasets.gridTestDir + "transforms/erie_test.ncml", "temp", OceanSigma.class, SimpleUnit.kmUnit);
+  }
+
+  @Test
   public void testOceanSG2() throws Exception {
     open(TestGridDatasets.gridTestDir + "transforms/ocean_his_g2.nc", "u", OceanSG2.class, SimpleUnit.kmUnit);
   }

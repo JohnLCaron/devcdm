@@ -8,7 +8,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import dev.cdm.array.Immutable;
+import dev.cdm.core.constants.AxisType;
 import dev.cdm.dataset.api.CdmDatasetCS;
+import dev.cdm.dataset.api.CoordinateTransform;
 import dev.cdm.grid.api.GridDataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,6 @@ import dev.cdm.core.api.Dimension;
 import dev.cdm.core.api.Dimensions;
 import dev.cdm.core.api.Variable;
 import dev.cdm.core.constants.FeatureType;
-import dev.cdm.core.constants._Coordinate;
 import dev.cdm.dataset.api.CoordinateAxis;
 import dev.cdm.dataset.api.CoordinateSystem;
 import dev.cdm.dataset.api.CdmDataset;
@@ -162,30 +163,17 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     Set<TrackVerticalTransform> findVerticalTransforms() {
-      for (Variable v : ncd.getVariables()) {
-        Optional<String> transformNameOpt = VerticalTransformFactory.hasVerticalTransformFor(v.attributes());
-        if (transformNameOpt.isPresent()) {
-          String transformName = transformNameOpt.get();
-          // A ctv that is also an axis.
-          makeVerticalTransforms(transformName, v.getFullName(), v.attributes());
-          // A ctv that has a _CoordinateAxes attribute pointing to an axis.
-          String axesNames = v.attributes().findAttributeString(_Coordinate.Axes, null);
-          if (axesNames != null) {
-            makeVerticalTransforms(transformName, axesNames, v.attributes());
+      for (CoordinateSystem csys : ncd.getCoordinateSystems()) {
+        CoordinateAxis vertAxis = csys.findAxis(AxisType.GeoZ); // ??
+        CoordinateTransform ctv = csys.getVerticalTransform();
+        if (ctv != null && vertAxis != null) {
+          VerticalTransform vt = VerticalTransformFactory.makeTransform(ncd, csys, ctv);
+          if (vt != null) {
+            result.add(new TrackVerticalTransform(vertAxis.getFullName(), vt, csys));
           }
         }
       }
       return result;
-    }
-
-    private void makeVerticalTransforms(String transform_name, String axisName, AttributeContainer attributes) {
-      for (CoordinateSystem csys : ncd.getCoordinateSystems()) {
-        if (csys.containsAxis(axisName)) {
-          Optional<VerticalTransform> vto =
-              VerticalTransformFactory.makeVerticalTransform(transform_name, ncd, csys, attributes, errlog);
-          vto.ifPresent(vt -> result.add(new TrackVerticalTransform(axisName, vt, csys)));
-        }
-      }
     }
   }
 

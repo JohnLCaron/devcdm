@@ -54,7 +54,7 @@ public class TestReadGridCoordinateSystem {
     String filename = TestGridDatasets.gridTestDir + "grid/20060926_0000.nc";
     String gridName = "Precipitable_water";
     int ngrids = testOpenNetcdfAsGrid(filename, gridName, new int[] {2}, new int[] {}, new int[] {103, 108}, false);
-    assertThat(ngrids).isEqualTo(8);
+    assertThat(ngrids).isEqualTo(10);
   }
 
   private int testOpenNetcdfAsGrid(String endpoint, String gridName, int[] expectedTimeShape, int[] otherCoordShape,

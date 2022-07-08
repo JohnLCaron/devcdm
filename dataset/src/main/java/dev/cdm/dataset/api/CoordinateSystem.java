@@ -144,7 +144,8 @@ public class CoordinateSystem {
       this.coordTransforms.stream()
               .filter( it -> it.isProjection())
               .findFirst()
-              .ifPresent( ctv -> this.projection = ProjectionFactory.makeProjection(ctv, new Formatter()));
+              .ifPresent( ctv ->
+                      this.projection = ProjectionFactory.makeProjection(ctv, new Formatter()));
     }
     return projection;
   }
