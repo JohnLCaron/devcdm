@@ -283,7 +283,7 @@ public abstract class Grib2Pds {
    * INDEX IS ONE BASED (not zero) to correspond with the manual.
    * Will throw Exception if index is out of bounds.
    *
-   * @param index 1 based index
+   * @param index 1-based index
    * @return input[index-1] as an int
    */
   public final int getOctet(int index) {
@@ -1735,7 +1735,7 @@ public abstract class Grib2Pds {
 
   // translate 7 byte time into CalendarDate
   // null means use refTime
-  protected CalendarDate calcTime(int startIndex) {
+  public CalendarDate calcTime(int startIndex) {
 
     int year = GribNumbers.int2(getOctet(startIndex++), getOctet(startIndex++));
     int month = getOctet(startIndex++);

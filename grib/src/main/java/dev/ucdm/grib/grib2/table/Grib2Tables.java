@@ -8,12 +8,13 @@ package dev.ucdm.grib.grib2.table;
 import com.google.common.collect.ImmutableList;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.GribTables;
-import dev.ucdm.grib.common.TimeCoordIntvDateValue;
-import dev.ucdm.grib.common.TimeCoordIntvValue;
-import dev.ucdm.grib.common.TimeUnitConverter;
-import dev.ucdm.grib.common.VertCoordType;
+import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
+import dev.ucdm.grib.coord.TimeCoordIntvValue;
+import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.grib2.iosp.GribConfig;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2SectionIdentification;
@@ -41,7 +42,7 @@ import java.util.Map;
  * @since 4/3/11
  */
 @Immutable
-public class Grib2Tables implements GribTables, TimeUnitConverter{
+public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
   private static final Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
   private static Grib2Tables wmoStandardTable;
@@ -199,6 +200,11 @@ public class Grib2Tables implements GribTables, TimeUnitConverter{
     return WmoParamTable.getParameter(discipline, category, number);
   }
 
+  @Nullable
+  public GribTables.Parameter getParameter(VariableIndex vindex) {
+    return getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////
   // Code interface (tables other than 4.2.x)
 
@@ -308,63 +314,30 @@ public class Grib2Tables implements GribTables, TimeUnitConverter{
   public VertCoordType getVertUnit(int code) {
     // VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean
     // isLayer)
-    switch (code) {
+    return switch (code) {
+      case 11, 12, 117, 237, 238 -> new VertCoordType(code, "m", null, true);
+      case 20 -> new VertCoordType(code, "K", null, false);
+      case 100, 119 -> new VertCoordType(code, "Pa", null, false);
+      case 102 -> new VertCoordType(code, "m", "mean sea level", true);
+      case 103 -> new VertCoordType(code, "m", "ground", true);
+      case 104, 105 -> new VertCoordType(code, "sigma", null, false); // positive?
 
-      case 11:
-      case 12:
-      case 117:
-      case 237:
-      case 238:
-        return new VertCoordType(code, "m", null, true);
+      case 106 -> new VertCoordType(code, "m", "land surface", false);
+      case 107 -> new VertCoordType(code, "K", null, true); // positive?
 
-      case 20:
-        return new VertCoordType(code, "K", null, false);
+      case 108 -> new VertCoordType(code, "Pa", "ground", true);
+      case 109 -> new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
 
-      case 100:
-      case 119:
-        return new VertCoordType(code, "Pa", null, false);
+      case 111 -> new VertCoordType(code, "eta", null, false);
+      case 114 -> new VertCoordType(code, "numeric", null, false);// ??
 
-      case 102:
-        return new VertCoordType(code, "m", "mean sea level", true);
-
-      case 103:
-        return new VertCoordType(code, "m", "ground", true);
-
-      case 104:
-      case 105:
-        return new VertCoordType(code, "sigma", null, false); // positive?
-
-      case 106:
-        return new VertCoordType(code, "m", "land surface", false);
-
-      case 107:
-        return new VertCoordType(code, "K", null, true); // positive?
-
-      case 108:
-        return new VertCoordType(code, "Pa", "ground", true);
-
-      case 109:
-        return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
-
-      case 111:
-        return new VertCoordType(code, "eta", null, false);
-
-      case 114:
-        return new VertCoordType(code, "numeric", null, false);// ??
-
-      case 160:
-        return new VertCoordType(code, "m", "sea level", false);
-
-      case 161:
-        return new VertCoordType(code, "m", "water surface", false);
+      case 160 -> new VertCoordType(code, "m", "sea level", false);
+      case 161 -> new VertCoordType(code, "m", "water surface", false);
 
       // NCEP specific
-      case 235:
-        return new VertCoordType(code, "0.1 C", null, true);
-
-      default:
-        return new VertCoordType(code, null, null, true);
-    }
+      case 235 -> new VertCoordType(code, "0.1 C", null, true);
+      default -> new VertCoordType(code, null, null, true);
+    };
   }
 
   public boolean isLevelUsed(int code) {
@@ -456,9 +429,9 @@ public class Grib2Tables implements GribTables, TimeUnitConverter{
   ////////////////////////////////////////////////////////////////////////////////////////////
   // Time utilities
 
-  private TimeUnitConverter timeUnitConverter;
+  private GribConfig.TimeUnitConverter timeUnitConverter;
 
-  public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
+  public void setTimeUnitConverter(GribConfig.TimeUnitConverter timeUnitConverter) {
     if (this.timeUnitConverter != null)
       throw new RuntimeException("Cant modify timeUnitConverter once its been set");
     this.timeUnitConverter = timeUnitConverter;

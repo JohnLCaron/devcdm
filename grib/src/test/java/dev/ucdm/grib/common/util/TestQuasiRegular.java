@@ -5,13 +5,8 @@
 
 package dev.ucdm.grib.common.util;
 
-/**
- * from https://github.com/lost-carrier 6/12/2014
- */
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +15,6 @@ import java.lang.invoke.MethodHandles;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@RunWith(JUnit4.class)
 public class TestQuasiRegular {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

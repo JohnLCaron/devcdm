@@ -14,7 +14,14 @@ import dev.cdm.core.api.Variable;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.cdm.core.iosp.AbstractIOServiceProvider;
 import dev.cdm.core.util.CancelTask;
+import dev.cdm.dataset.ncml.NcmlReader;
+import dev.ucdm.grib.collection.CollectionType;
+import dev.ucdm.grib.collection.GribCollection;
+import dev.ucdm.grib.collection.VariableIndex;
+import dev.ucdm.grib.common.CollectionUpdateType;
 import dev.ucdm.grib.common.GribTables;
+import dev.ucdm.grib.coord.Coordinate;
+import dev.ucdm.grib.coord.CoordinateTime2D;
 import org.jdom2.Element;
 
 import javax.annotation.Nullable;
@@ -30,18 +37,18 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   public static int debugIndexOnlyCount; // count number of data accesses
 
   // store custom tables in here
-  protected final FeatureCollectionConfig config = new FeatureCollectionConfig();
+  protected final GribConfig gribConfig = new GribConfig();
 
   public void setParamTable(Element paramTable) {
-    config.gribConfig.paramTable = paramTable;
+    gribConfig.paramTable = paramTable;
   }
 
   public void setLookupTablePath(String lookupTablePath) {
-    config.gribConfig.lookupTablePath = lookupTablePath;
+    gribConfig.lookupTablePath = lookupTablePath;
   }
 
   public void setParamTablePath(String paramTablePath) {
-    config.gribConfig.paramTablePath = paramTablePath;
+    gribConfig.paramTablePath = paramTablePath;
   }
 
   @Override
@@ -52,21 +59,21 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (s.startsWith("gribParameterTableLookup")) {
         int pos = s.indexOf("=");
         if (pos > 0) {
-          config.gribConfig.lookupTablePath = s.substring(pos + 1).trim();
+          gribConfig.lookupTablePath = s.substring(pos + 1).trim();
         }
 
       } else if (s.startsWith("gribParameterTable")) {
         int pos = s.indexOf("=");
         if (pos > 0) {
-          config.gribConfig.paramTablePath = s.substring(pos + 1).trim();
+          gribConfig.paramTablePath = s.substring(pos + 1).trim();
         }
       }
       return null;
     }
 
-    if (special instanceof Element) { // the root element will be <iospParam>
-      Element root = (Element) special;
-      config.gribConfig.configFromXml(root, Catalog.ncmlNS);
+    if (special instanceof org.jdom2.Element) { // the root element will be <iospParam>
+      Element root = (org.jdom2.Element) special;
+      gribConfig.configFromXml(root, NcmlReader.ncmlNS);
       return null;
     }
 
@@ -77,12 +84,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected final boolean isGrib1;
   protected final org.slf4j.Logger logger;
 
-  protected GribCollectionImmutable gribCollection;
-  protected GribCollectionImmutable.GroupGC gHcs;
-  protected GribCollectionImmutable.Type gtype; // only used if gHcs was set
-  protected boolean isPartitioned;
+  protected GribCollection gribCollection;
+  protected GribCollection.GroupGC gHcs;
+  protected CollectionType gtype; // only used if gHcs was set
+  protected boolean isPartitioned = false;
   protected boolean owned; // if Iosp is owned by GribCollection; affects close() TODO get rid of this
-  protected ucar.nc2.grib.GribTables gribTable;
+  protected GribTables gribTable;
 
   public GribIosp(boolean isGrib1, org.slf4j.Logger logger) {
     this.isGrib1 = isGrib1;
@@ -91,15 +98,15 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   protected abstract GribTables createCustomizer() throws IOException;
 
-  public abstract String makeVariableName(GribCollectionImmutable.VariableIndex vindex);
+  public abstract String makeVariableName(VariableIndex vindex);
 
-  public abstract String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex);
+  public abstract String makeVariableLongName(VariableIndex vindex);
 
-  public abstract String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex);
+  public abstract String makeVariableUnits(VariableIndex vindex);
 
   public abstract String getVerticalCoordDesc(int vc_code);
 
-  protected abstract GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex);
+  protected abstract GribTables.Parameter getParameter(VariableIndex vindex);
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
@@ -107,9 +114,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
-      if (this.gribCollection instanceof PartitionCollectionImmutable) {
-        isPartitioned = true;
-      }
+      //if (this.gribCollection instanceof PartitionCollectionImmutable) {
+      //  isPartitioned = true;
+      //}
       gribTable = createCustomizer();
       GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
 
@@ -118,17 +125,17 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } else if (gribCollection == null) { // may have been set in the constructor
 
       this.gribCollection =
-          GribCdmIndex.openGribCollectionFromRaf(raf, config, CollectionUpdateType.testIndexOnly, logger);
+          GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.testIndexOnly, gribConfig, logger);
       if (gribCollection == null) {
         throw new IllegalStateException("Not a GRIB data file or index file " + raf.getLocation());
       }
 
-      isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);
+      // isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);
       gribTable = createCustomizer();
       GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
 
       boolean useDatasetGroup = gribCollection.getDatasets().size() > 1;
-      for (GribCollectionImmutable.Dataset ds : gribCollection.getDatasets()) {
+      for (GribCollection.Dataset ds : gribCollection.getDatasets()) {
         Group.Builder topGroup;
         if (useDatasetGroup) {
           topGroup = Group.builder().setName(ds.getType().toString());
@@ -137,17 +144,15 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           topGroup = rootGroup;
         }
 
-        Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        boolean useGroups = ds.getGroupsSize() > 1;
-        for (GribCollectionImmutable.GroupGC g : groups) {
+        List<GribCollection.GroupGC> groups = ds.getGroups();
+        boolean useGroups = groups.size() > 1;
+        for (GribCollection.GroupGC g : groups) {
           helper.addGroup(topGroup, g, ds.getType(), useGroups);
         }
       }
     }
 
-    for (Attribute att : gribCollection.getGlobalAttributes()) {
-      rootGroup.addAttribute(att);
-    }
+    rootGroup.addAttributes(gribCollection.makeGlobalAttributes());
   }
 
   enum Time2DinfoType {
@@ -167,12 +172,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   @Nullable
-  String searchCoord(Grib2Utils.LatLonCoordType type, List<GribCollectionImmutable.VariableIndex> list) {
+  String searchCoord(Grib2Utils.LatLonCoordType type, List<VariableIndex> list) {
     if (type == null) {
       return null;
     }
 
-    GribCollectionImmutable.VariableIndex lat, lon;
+    VariableIndex lat, lon;
     switch (type) {
       case U:
         lat = findParameter(list, 198);
@@ -191,8 +196,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   @Nullable
-  private GribCollectionImmutable.VariableIndex findParameter(List<GribCollectionImmutable.VariableIndex> list, int p) {
-    for (GribCollectionImmutable.VariableIndex vindex : list) {
+  private VariableIndex findParameter(List<VariableIndex> list, int p) {
+    for (VariableIndex vindex : list) {
       if ((vindex.getDiscipline() == 0) && (vindex.getCategory() == 2) && (vindex.getParameter() == p)) {
         return vindex;
       }
@@ -234,7 +239,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
 
     try {
-      GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v2.getSPobject();
+      VariableIndex vindex = (VariableIndex) v2.getSPobject();
       GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vindex);
       SectionIterable sectionIter = new SectionIterable(section, v2.getShape());
       return dataReader.readData(sectionIter);

@@ -5,15 +5,12 @@
 package dev.ucdm.grib.common.util;
 
 import dev.cdm.array.ArrayType;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.grib.common.util.GribNumbers.convertSignedByte;
 import static dev.ucdm.grib.common.util.GribNumbers.convertSignedByte2;
 
-@RunWith(JUnit4.class)
 public class TestGribNumbers {
 
   @Test

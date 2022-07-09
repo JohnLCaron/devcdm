@@ -6,7 +6,7 @@ package dev.ucdm.grib.grib2.table;
 
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarPeriod;
-import dev.ucdm.grib.common.TimeCoordIntvDateValue;
+import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;

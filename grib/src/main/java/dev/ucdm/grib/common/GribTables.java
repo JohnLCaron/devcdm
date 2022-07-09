@@ -5,6 +5,8 @@
 
 package dev.ucdm.grib.common;
 
+import dev.ucdm.grib.coord.VertCoordType;
+
 import javax.annotation.Nullable;
 
 /**

@@ -9,10 +9,12 @@ import com.google.common.collect.ImmutableList;
 import dev.cdm.array.Immutable;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2SectionGridDefinition;
+
 import java.util.List;
 
 @Immutable
 public class Grib2Index {
+
   private final ImmutableList<Grib2SectionGridDefinition> gdsList;
   private final ImmutableList<Grib2Record> records;
 
@@ -32,5 +34,6 @@ public class Grib2Index {
   public int getNRecords() {
     return records.size();
   }
+
 
 }
