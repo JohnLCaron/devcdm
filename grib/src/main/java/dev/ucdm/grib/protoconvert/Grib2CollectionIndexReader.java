@@ -3,14 +3,16 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.collection;
+package dev.ucdm.grib.protoconvert;
+
+import dev.ucdm.grib.collection.GribCollection;
+import dev.ucdm.grib.collection.GribHorizCoordSystem;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.GribTables;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.grib2.record.Grib2Gds;
 import dev.ucdm.grib.grib2.record.Grib2SectionGridDefinition;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
-import dev.ucdm.grib.protoconvert.GribCollectionImport;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
 /**
@@ -21,15 +23,13 @@ import dev.ucdm.grib.protogen.GribCollectionProto;
  * @author caron
  * @since 11/9/13
  */
-public class Grib2CollectionImport extends GribCollectionImport {
-  public static final String MAGIC_START = "Grib2Collectio2Index"; // was Grib2CollectionIndex
+public class Grib2CollectionIndexReader extends GribCollectionIndexReader {
   static final int minVersion = 1; // increment this when you want to force index rebuild
   protected static final int version = 3; // increment this as needed, must be backwards compatible through minVersion
 
-
   protected Grib2Tables cust; // gets created in readIndex, after center etc is read in
 
-  public Grib2CollectionImport(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
+  public Grib2CollectionIndexReader(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
     super(gc, config, logger);
   }
 
@@ -45,7 +45,7 @@ public class Grib2CollectionImport extends GribCollectionImport {
 
   @Override
   protected String getMagicStart() {
-    return MAGIC_START;
+    return Grib2CollectionIndexWriter.MAGIC_START;
   }
 
   @Override

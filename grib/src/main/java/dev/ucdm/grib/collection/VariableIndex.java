@@ -11,7 +11,7 @@ import dev.ucdm.grib.coord.CoordinateTimeIntv;
 import dev.ucdm.grib.coord.SparseArray;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.grib2.iosp.Grib2Variable;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.grib2.record.Grib2Gds;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2SectionProductDefinition;
@@ -189,6 +189,10 @@ public class VariableIndex implements Comparable<VariableIndex> {
       if (group.coords.get(idx).getType() == want)
         return idx;
     return -1;
+  }
+
+  public Iterable<Integer> getCoordinateIndex() {
+    return coordIndex;
   }
 
   @Nullable

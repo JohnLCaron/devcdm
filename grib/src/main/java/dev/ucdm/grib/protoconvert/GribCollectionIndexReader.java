@@ -17,7 +17,7 @@ import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.coord.*;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
 import dev.cdm.core.calendar.CalendarDate;
@@ -27,13 +27,8 @@ import dev.cdm.core.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Superclass to read GribCollection from ncx file.
- *
- * @author caron
- * @since 2/20/14
- */
-public abstract class GribCollectionImport {
+/** Superclass to read GribCollection from ncx4 file. */
+public abstract class GribCollectionIndexReader {
   protected static final boolean debug = false;
   private static final boolean stackTrace = true;
 
@@ -52,7 +47,7 @@ public abstract class GribCollectionImport {
 
   protected abstract int getMinVersion();
 
-  public GribCollectionImport(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
+  public GribCollectionIndexReader(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
     this.logger = logger;
     this.gribConfig = config;
     this.gc = gc;
@@ -79,7 +74,7 @@ public abstract class GribCollectionImport {
       gc.version = raf.readInt();
       if (gc.version < getVersion()) {
         logger.debug("GribCollectionBuilderFromIndex {}: index found version={}, current version= {} on file {}",
-            gc.getName(), gc.version, GribCollectionPublish.currentVersion, raf.getLocation());
+            gc.getName(), gc.version, GribCollectionIndexWriter.currentVersion, raf.getLocation());
         // throw new IllegalStateException(); // temp debug
         if (gc.version < getMinVersion())
           return false;

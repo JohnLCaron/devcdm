@@ -10,6 +10,7 @@ import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.common.util.Counters;
 import dev.ucdm.grib.common.util.GribUtils;
+import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 
 import javax.annotation.Nullable;
@@ -291,7 +292,6 @@ public class CoordinateRuntime implements Coordinate {
     }
   }
 
-  /*
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     CalendarPeriod timeUnit;
 
@@ -314,8 +314,5 @@ public class CoordinateRuntime implements Coordinate {
       return new CoordinateRuntime(runtimeSorted, timeUnit);
     }
   }
-
-   */
-
 
 }

@@ -6,16 +6,19 @@
 package dev.ucdm.grib.grib2.iosp;
 
 import dev.cdm.core.constants.DataFormatType;
+import dev.cdm.core.http.RafHttp;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
+import dev.ucdm.grib.common.GribIosp;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2RecordScanner;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
+import dev.ucdm.grib.common.GribCollectionIndex;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -94,8 +97,7 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  static String makeVariableLongName(Grib2Tables cust, VariableIndex vindex,
-      boolean useGenType) {
+  public static String makeVariableLongName(Grib2Tables cust, VariableIndex vindex, boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
       boolean isProb = (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty());
@@ -194,21 +196,18 @@ public class Grib2Iosp extends GribIosp {
   // accept grib2 or ncx files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    // TODO
-    /* if (raf instanceof RafHttp) { // only do remote if memory resident
+    if (raf instanceof RafHttp) { // only do remote if memory resident
       if (raf.length() > raf.getBufferSize())
         return false;
 
     } else { // wont accept remote index
 
-      GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-      if (type == GribCdmIndex.GribCollectionType.GRIB2)
+      GribCollectionIndex.Type type = GribCollectionIndex.getType(raf);
+      if (type == GribCollectionIndex.Type.GRIB2)
         return true;
-      if (type == GribCdmIndex.GribCollectionType.Partition2)
+      if (type == GribCollectionIndex.Type.Partition2)
         return true;
     }
-
-     */
 
     // check for GRIB2 data file
     return Grib2RecordScanner.isValidFile(raf);
@@ -243,7 +242,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   @Override
-  protected GribTables createCustomizer() {
+  public GribTables createCustomizer() {
     cust = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(),
         gribCollection.getLocal(), gribCollection.getGenProcessId());
     return cust;

@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import java.util.List;
 

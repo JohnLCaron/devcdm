@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.ucdm.grib.grib2.iosp.GribCollectionIndex.NCX_SUFFIX;
+import static dev.ucdm.grib.common.GribCollectionIndex.NCX_SUFFIX;
 
 public class TestGrib2IospBuilder {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGrib2IospBuilder.class);

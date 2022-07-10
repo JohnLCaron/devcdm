@@ -25,8 +25,9 @@ import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.wmo.CommonCodeTable;
 import dev.ucdm.grib.coord.*;
-import dev.ucdm.grib.grib2.iosp.GribCollectionIndex;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.common.GribCollectionIndex;
+import dev.ucdm.grib.common.GribConfig;
+import dev.ucdm.grib.common.GribIosp;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
@@ -60,6 +61,7 @@ public abstract class GribCollection implements Closeable {
     return new GcMFile(directory, nameNoBlanks + GribCollectionIndex.NCX_SUFFIX, -1, -1, -1);
   }
 
+  public abstract GribIosp makeIosp() throws IOException;
 
   public abstract void addGlobalAttributes(AttributeContainerMutable result);
 
@@ -336,7 +338,7 @@ public abstract class GribCollection implements Closeable {
       return GribCollection.this;
     }
 
-    public Iterable<VariableIndex> getVariables() {
+    public List<VariableIndex> getVariables() {
       return variList;
     }
 

@@ -13,10 +13,13 @@ import dev.cdm.core.constants.CDM;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.grib2.iosp.Grib2Iosp;
+import dev.ucdm.grib.common.GribConfig;
+import dev.ucdm.grib.common.GribIosp;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Formatter;
 
 /** Grib2 specific subclass of GribCollection. */
@@ -24,6 +27,13 @@ public class Grib2Collection extends GribCollection {
 
   public Grib2Collection(String name, File directory, GribConfig config) {
     super(name, directory, config, false);
+  }
+
+  @Override
+  public GribIosp makeIosp() throws IOException {
+    GribIosp result = new Grib2Iosp(this);
+    result.createCustomizer();
+    return result;
   }
 
   @Override

@@ -7,9 +7,10 @@ package dev.ucdm.grib.common;
 
 import javax.annotation.Nullable;
 
-import dev.cdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.common.util.GribIndexCache;
+import dev.ucdm.grib.protoconvert.Grib1Index;
+import dev.ucdm.grib.protoconvert.Grib1IndexProto;
 import dev.ucdm.grib.protoconvert.Grib2Index;
 import dev.ucdm.grib.protoconvert.Grib2IndexProto;
 
@@ -33,7 +34,7 @@ public abstract class GribIndex {
   public static final boolean debug = false;
 
   /**
-   * Create a gbx9 index from a single grib2 file.
+   * Read a Grib2 gbx9 index, create it if it doest exist.
    * Use the existing index if it already exists and is not older than the data file.
    *
    * @param mfile the grib data or gbx9 file
@@ -42,7 +43,7 @@ public abstract class GribIndex {
    * @throws IOException on io error
    */
   @Nullable
-  public static Grib2Index readOrCreateIndex(MFile mfile, CollectionUpdateType force, Formatter errlog) throws IOException {
+  public static Grib2Index readOrCreateIndex2(MFile mfile, CollectionUpdateType force, Formatter errlog) throws IOException {
 
     String idxPath = mfile.getPath();
     if (!idxPath.endsWith(GBX9_IDX)) {
@@ -89,29 +90,56 @@ public abstract class GribIndex {
   //////////////////////////////////////////
 
   /**
-   * Read the gbx9 index file.
+   * Read a Grib2 gbx9 index, create it if it doest exist.
+   * Use the existing index if it already exists and is not older than the data file.
    *
-   * @param location location of the data file
-   * @param dataModified last modified date of the data file
-   * @param force rewrite? always, test, nocheck, never
-   * @return true if index was successfully read, false if index must be (re)created
-   */
-  public abstract boolean readIndex(String location, long dataModified, CollectionUpdateType force);
-
-  /**
-   * Make the gbx9 index file.
-   *
-   * @param location location of the data file
-   * @param dataRaf already opened data raf (leave open); if null, makeIndex opens and closes)
-   * @return true
+   * @param mfile the grib data or gbx9 file
+   * @param force force writing index
+   * @return the resulting GribIndex
    * @throws IOException on io error
    */
-  public abstract boolean makeIndex(String location, RandomAccessFile dataRaf) throws IOException;
+  @Nullable
+  public static Grib1Index readOrCreateIndex1(MFile mfile, CollectionUpdateType force, Formatter errlog) throws IOException {
 
-  /**
-   * The number of records in the index.
-   * 
-   * @return The number of records in the index.
-   */
-  public abstract int getNRecords();
+    String idxPath = mfile.getPath();
+    if (!idxPath.endsWith(GBX9_IDX)) {
+      idxPath += GBX9_IDX;
+    }
+    // look to see if the file is in some special cache (eg when cant write to data directory)
+    File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+    boolean idxFileExists = idxFile != null;
+
+    Grib1Index index = null;
+    if (idxFileExists && force != CollectionUpdateType.always) { // always create a new index
+      // look to see if the index file is older than the data file
+      boolean isOlder = idxFile.lastModified() < mfile.getLastModified();
+
+      if (force == CollectionUpdateType.nocheck || isOlder) {
+        // try to read it
+        index = Grib1IndexProto.readGrib1Index(idxFile.getAbsolutePath());
+      }
+    }
+
+    // create the index
+    if (index == null) {
+      // may not exist, overwrite if it does.
+      File idxFile2 = GribIndexCache.getFileOrCache(idxPath);
+      if (idxFile2 == null) {
+        errlog.format("Failed to find a place to write the index file for '%s'", idxPath);
+        return null;
+      }
+
+      if (!Grib1IndexProto.writeGrib1Index(mfile.getPath(), idxFile2, errlog)) {
+        logger.warn("  Index writing failed on {} errlog = '{}'", mfile.getPath(), errlog);
+      } else {
+        // read it back in
+        index = Grib1IndexProto.readGrib1Index(idxFile2.getAbsolutePath());
+        logger.debug("  Index written: {} == {} records", idxPath, index.getNRecords());
+      }
+    } else {
+      logger.debug("  Index read: {} == {} records", idxPath, index.getNRecords());
+    }
+
+    return index;
+  }
 }

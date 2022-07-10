@@ -3,23 +3,27 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 
 import dev.ucdm.grib.collection.CollectionSingleFile;
+import dev.ucdm.grib.collection.Grib1Collection;
 import dev.ucdm.grib.collection.Grib2Collection;
 import dev.ucdm.grib.collection.Grib2CollectionBuilder;
-import dev.ucdm.grib.collection.Grib2CollectionImport;
+import dev.ucdm.grib.protoconvert.Grib1CollectionIndexReader;
+import dev.ucdm.grib.protoconvert.Grib2CollectionIndexReader;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.MCollection;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.collection.MFileOS;
-import dev.ucdm.grib.common.CollectionUpdateType;
 import dev.ucdm.grib.common.util.GribIndexCache;
+import dev.ucdm.grib.grib1.record.Grib1RecordScanner;
 import dev.ucdm.grib.grib2.record.Grib2RecordScanner;
+import dev.ucdm.grib.protoconvert.Grib1IndexProto;
+import dev.ucdm.grib.protoconvert.Grib2IndexProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +32,7 @@ import dev.cdm.core.util.StringUtil2;
 import java.io.File;
 import java.io.IOException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
 
 
@@ -37,7 +42,8 @@ import java.util.Formatter;
  * TODO review - is this working?
  */
 public class GribCollectionIndex {
-  public enum GribCollectionType {
+
+  public enum Type {
     GRIB1, GRIB2, Partition1, Partition2, none
   }
 
@@ -52,15 +58,16 @@ public class GribCollectionIndex {
   // raf is a data file or an ncx file
   @Nullable
   public static GribCollection openGribCollectionFromRaf(RandomAccessFile raf,
-       CollectionUpdateType updateType, GribConfig config, Logger logger) throws IOException {
+                                                         CollectionUpdateType updateType, GribConfig config, Logger logger) throws IOException {
 
     GribCollection result = null;
 
     // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
     boolean isGrib2 = Grib2RecordScanner.isValidFile(raf);
-    //if (!isGrib2)
-    //  isGrib1 = Grib1RecordScanner.isValidFile(raf);
+    if (!isGrib2) {
+      isGrib1 = Grib1RecordScanner.isValidFile(raf);
+    }
 
     if (isGrib1 || isGrib2) {
       result = openGribCollectionFromDataFile(isGrib1, raf, updateType, config, null, logger);
@@ -129,7 +136,7 @@ public class GribCollectionIndex {
     return index;
   }
 
-  // open GribCollectionImmutable from an existing ncx file. return null on failure
+  // open GribCollection from an existing ncx file. return null on failure
   @Nullable
   public static GribCollection openNcxIndex(boolean isGrib1,
           String indexFilename, GribConfig config, boolean useCache, Logger logger) throws IOException {
@@ -140,10 +147,19 @@ public class GribCollectionIndex {
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
 
-    Grib2Collection result = new Grib2Collection(name, null, config);
-    Grib2CollectionImport reader = new Grib2CollectionImport(result, config, logger);
-    try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
-          reader.readIndex(raf);
+    GribCollection result = null;
+    if (isGrib1) {
+      result = new Grib1Collection(name, null, config);
+      Grib1CollectionIndexReader reader = new Grib1CollectionIndexReader(result, config, logger);
+      try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
+        reader.readIndex(raf);
+      }
+    } else {
+      result = new Grib2Collection(name, null, config);
+      Grib2CollectionIndexReader reader = new Grib2CollectionIndexReader(result, config, logger);
+      try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
+        reader.readIndex(raf);
+      }
     }
 
     return result;
@@ -155,6 +171,37 @@ public class GribCollectionIndex {
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
     Preconditions.checkArgument(idxFilename.endsWith(NCX_SUFFIX), idxFilename);
     return idxFilename.substring(0, idxFilename.length() - NCX_SUFFIX.length());
+  }
+
+  /**
+   * Find out what kind of index this is
+   *
+   * @param raf open RAF
+   * @return GribCollectionType
+   * @throws IOException on read error
+   */
+  public static GribCollectionIndex.Type getType(RandomAccessFile raf) throws IOException {
+    String magic;
+
+    // they all have the same number of bytes
+    raf.seek(0);
+    magic = raf.readString(Grib2IndexProto.MAGIC_START.getBytes(StandardCharsets.UTF_8).length);
+
+    switch (magic) {
+      case Grib2IndexProto.MAGIC_START:
+        return GribCollectionIndex.Type.GRIB2;
+
+      case Grib1IndexProto.MAGIC_START:
+        return GribCollectionIndex.Type.GRIB1;
+
+      /* case Grib2PartitionBuilder.MAGIC_START:
+        return GribCollectionIndex.Type.Partition2;
+
+      case Grib1PartitionBuilder.MAGIC_START:
+        return GribCollectionIndex.Type.Partition1; */
+
+    }
+    return GribCollectionIndex.Type.none;
   }
 
 }

@@ -26,7 +26,7 @@ public class TestGribIndex {
     MFile mfile = MFileOS.getExistingFile(testfile);
     assertThat(mfile).isNotNull();
 
-    Grib2Index gi = GribIndex.readOrCreateIndex(mfile, CollectionUpdateType.always, new Formatter());
+    Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.always, new Formatter());
 
     assertThat(gi).isNotNull();
     List<Grib2Record> records = gi.getRecords();

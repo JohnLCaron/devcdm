@@ -28,18 +28,15 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Build a GribCollection object for Grib-2 files. Manage grib collection index.
- * Covers GribCollectionProto, which serializes and deserializes.
- *
- * @author caron
- * @since 4/6/11
+ * Convert Grib2 collection indexes (ncx4) to/from proto.
+ * The generated proto code is in dev.ucdm.grib.protogen.GribCollectionProto.
  */
-public class Grib2CollectionPublish extends GribCollectionPublish {
+public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
   public static final String MAGIC_START = "Grib2Collectio2Index"; // was Grib2CollectionIndex
   static final int minVersion = 1; // increment this when you want to force index rebuild
   protected static final int version = 3; // increment this as needed, must be backwards compatible through minVersion
 
-  public Grib2CollectionPublish(MCollection dcm, org.slf4j.Logger logger) {
+  public Grib2CollectionIndexWriter(MCollection dcm, org.slf4j.Logger logger) {
     super(dcm, logger);
   }
 
@@ -81,18 +78,6 @@ public class Grib2CollectionPublish extends GribCollectionPublish {
     }
   }
 
-  ///////////////////////////////////////////////////
-  // heres where the actual writing is
-
-  /*
-   * MAGIC_START
-   * version
-   * sizeRecords
-   * SparseArray's (sizeRecords bytes)
-   * sizeIndex
-   * GribCollectionIndex (sizeIndex bytes)
-   */
-
   public boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
                             CollectionType type, CalendarDateRange dateRange) throws IOException {
     Grib2Record first = null; // take global metadata from here
@@ -122,7 +107,7 @@ public class Grib2CollectionPublish extends GribCollectionPublish {
         for (Grib2CollectionBuilder.VariableBag vb : g.gribVars) {
           if (first == null)
             first = vb.first;
-          GribCollectionProto.SparseArray vr = writeSparseArray(vb, g.fileSet);
+          GribCollectionProto.SparseArray vr = publishSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
           vb.pos = raf.getFilePointer();
           vb.length = b.length;
@@ -175,7 +160,7 @@ public class Grib2CollectionPublish extends GribCollectionPublish {
       }
 
       // the GC dataset
-      indexBuilder.addDataset(writeDatasetProto(type, groups));
+      indexBuilder.addDataset(publishDatasetProto(type, groups));
 
       // what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
@@ -207,25 +192,8 @@ public class Grib2CollectionPublish extends GribCollectionPublish {
     return true;
   }
 
-  /*
-   * message Record {
-   * uint32 fileno = 1; // which GRIB file ? key into GC.fileMap
-   * uint64 pos = 2; // offset in GRIB file of the start of entire message
-   * uint64 bmsPos = 3; // use alternate bms if non-zero
-   * uint32 drsOffset = 4; // offset of drs from pos (grib2 only)
-   * }
-   * 
-   * // SparseArray only at the GCs (MRC and SRC) not at the Partitions
-   * // dont need SparseArray in memory until someone wants to read from the variable
-   * message SparseArray {
-   * repeated uint32 size = 2 [packed=true]; // multidim sizes = shape[]
-   * repeated uint32 track = 3 [packed=true]; // 1-based index into record list, 0 == missing
-   * repeated Record records = 4; // List<Record>
-   * uint32 ndups = 5; // duplicates found when creating
-   * }
-   */
-  private GribCollectionProto.SparseArray writeSparseArray(Grib2CollectionBuilder.VariableBag vb,
-      Set<Integer> fileSet) {
+  private GribCollectionProto.SparseArray publishSparseArray(Grib2CollectionBuilder.VariableBag vb,
+                                                             Set<Integer> fileSet) {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
@@ -255,38 +223,25 @@ public class Grib2CollectionPublish extends GribCollectionPublish {
     return b.build();
   }
 
-  /*
-   * message Dataset {
-   * required Type type = 1;
-   * repeated Group groups = 2;
-   */
-  private GribCollectionProto.Dataset writeDatasetProto(CollectionType type, List<Group> groups) {
+  private GribCollectionProto.Dataset publishDatasetProto(CollectionType type, List<Group> groups) {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
     b.setType(ptype);
 
     for (Group group : groups)
-      b.addGroups(writeGroupProto(group));
+      b.addGroups(publishGroupProto(group));
 
     return b.build();
   }
 
-  /*
-   * message Group {
-   * Gds gds = 1; // use this to build the HorizCoordSys
-   * repeated Variable variables = 2; // list of variables
-   * repeated Coord coords = 3; // list of coordinates
-   * repeated uint32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
-   * }
-   */
-  private GribCollectionProto.Group writeGroupProto(Group g) {
+  private GribCollectionProto.Group publishGroupProto(Group g) {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds(writeGdsProto(g.gdss.getRawBytes(), -1));
 
     for (Grib2CollectionBuilder.VariableBag vbag : g.gribVars) {
-      b.addVariables(writeVariableProto(vbag));
+      b.addVariables(publishVariableProto(vbag));
     }
 
     for (Coordinate coord : g.coords) {
@@ -306,28 +261,7 @@ public class Grib2CollectionPublish extends GribCollectionPublish {
     return b.build();
   }
 
-
-  /*
-   * message Variable {
-   * uint32 discipline = 1;
-   * bytes pds = 2; // raw pds
-   * repeated uint32 ids = 3 [packed=true]; // extra info not in pds; grib2 id section
-   * 
-   * uint64 recordsPos = 4; // offset of SparseArray message for this Variable
-   * uint32 recordsLen = 5; // size of SparseArray message for this Variable
-   * 
-   * repeated uint32 coordIdx = 6 [packed=true]; // indexes into Group.coords
-   * 
-   * // optionally keep stats
-   * uint32 ndups = 8;
-   * uint32 nrecords = 9;
-   * uint32 missing = 10;
-   * 
-   * // partition only
-   * repeated PartitionVariable partVariable = 100;
-   * }
-   */
-  private GribCollectionProto.Variable writeVariableProto(Grib2CollectionBuilder.VariableBag vb) {
+  private GribCollectionProto.Variable publishVariableProto(Grib2CollectionBuilder.VariableBag vb) {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
     b.setDiscipline(vb.first.getDiscipline());

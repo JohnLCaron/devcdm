@@ -1,4 +1,4 @@
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import dev.cdm.grid.api.GridSubset;
 import dev.cdm.core.io.RandomAccessFile;

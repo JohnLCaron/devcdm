@@ -38,7 +38,7 @@ public class TestPds61 {
     MFile mfile = MFileOS.getExistingFile(testfile);
     assertThat(mfile).isNotNull();
 
-    dev.ucdm.grib.protoconvert.Grib2Index gi = GribIndex.readOrCreateIndex(mfile, CollectionUpdateType.nocheck, new Formatter());
+    dev.ucdm.grib.protoconvert.Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.nocheck, new Formatter());
 
     assertThat(gi).isNotNull();
     List<Grib2Record> records = gi.getRecords();

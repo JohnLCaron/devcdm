@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static dev.ucdm.grib.grib2.record.Grib2Record.scanModeMissing;
+
 /**
  * Scan raf for grib-2 messages
  *
@@ -192,11 +194,8 @@ public class Grib2RecordScanner {
         if (debugRepeat)
           logger.debug(" REPEAT AT {} != {}", pos + 4, ending);
         repeatPos = pos;
-        repeatRecord =
-            new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing); // this
-                                                                                                                       // assumes
-                                                                                                                       // immutable
-                                                                                                                       // sections
+        // this assumes immutable sections
+        repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, scanModeMissing);
         // track bms in case its a repeat
         if (bms.getBitMapIndicator() == 0)
           repeatBms = bms;
@@ -229,8 +228,7 @@ public class Grib2RecordScanner {
 
       if (foundEnding || debugEnding) {
         lastPos = raf.getFilePointer();
-        return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false,
-            Grib2Index.ScanModeMissing);
+        return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, scanModeMissing);
 
       } else { // skip this record
         // lastPos = is.getEndPos() + 20; dont trust is.getEndPos()

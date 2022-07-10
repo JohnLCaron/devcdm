@@ -3,22 +3,18 @@ package dev.ucdm.grib.grib2.iosp;
 import dev.cdm.core.api.CdmFile;
 import dev.cdm.core.api.Group;
 import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.iosp.IOServiceProvider;
-import dev.ucdm.grib.collection.CollectionSingleFile;
 import dev.ucdm.grib.collection.GribCollection;
-import dev.ucdm.grib.collection.MCollection;
-import dev.ucdm.grib.collection.MFile;
-import dev.ucdm.grib.collection.MFileOS;
 import dev.ucdm.grib.common.CollectionUpdateType;
+import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribIndex;
+import dev.ucdm.grib.common.GribCollectionIndex;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.ucdm.grib.grib2.iosp.GribCollectionIndex.NCX_SUFFIX;
+import static dev.ucdm.grib.common.GribCollectionIndex.NCX_SUFFIX;
 
 public class TestGrib2Iosp {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGrib2Iosp.class);

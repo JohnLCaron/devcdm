@@ -9,6 +9,10 @@ import javax.annotation.Nullable;
 import dev.cdm.array.NumericCompare;
 import dev.cdm.array.Indent;
 import dev.ucdm.grib.common.util.Counters;
+import dev.ucdm.grib.grib1.record.Grib1ParamLevel;
+import dev.ucdm.grib.grib1.record.Grib1Record;
+import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
+import dev.ucdm.grib.grib1.tables.Grib1Customizer;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
@@ -207,7 +211,6 @@ public class CoordinateVert implements Coordinate {
     }
   }
 
-  /*
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     int code;
     Grib1Customizer cust;
@@ -237,7 +240,5 @@ public class CoordinateVert implements Coordinate {
       return new CoordinateVert(code, cust.getVertUnit(code), levelSorted);
     }
   }
-
-   */
 
 }

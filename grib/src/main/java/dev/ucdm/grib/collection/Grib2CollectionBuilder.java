@@ -16,12 +16,13 @@ import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.grib2.iosp.Grib2Variable;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.grib2.record.Grib2Gds;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
-import dev.ucdm.grib.protoconvert.Grib2CollectionPublish;
+import dev.ucdm.grib.protoconvert.Grib1Index;
+import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.Grib2Index;
 
 import java.io.File;
@@ -52,9 +53,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
    * @param singleRuntime PartitionType = all; creates separate collection and index for each runtime. not used.
    */
   @Override
-  protected List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog)
-          throws IOException {
-    Map<GroupAndRuntime, Grib2CollectionPublish.Group> gdsMap = new HashMap<>();
+  protected List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) {
+    Map<GroupAndRuntime, Grib2CollectionIndexWriter.Group> gdsMap = new HashMap<>();
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
     int fileno = 0;
@@ -68,8 +68,14 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       Grib2Index index = null;
 
       try {
-        // LOOK not using the CollectionUpdateType from GribCOllectionINdex
-        index = GribIndex.readOrCreateIndex(mfile, CollectionUpdateType.test, errlog);
+        if (Grib.debugGbxIndexOnly) {
+          index = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.never, errlog);
+          if (index == null)
+            continue;
+        } else {
+          // LOOK not using the CollectionUpdateType from GribCOllectionINdex
+          index = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.test, errlog);
+        }
         allFiles.add(mfile); // add on success
 
       } catch (IOException ioe) {
@@ -107,9 +113,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         // separate Groups for each runtime, if singleRuntime == true
         long runtime = singleRuntime ? runtimeDate.getMillisFromEpoch() : 0;
         GroupAndRuntime gar = new GroupAndRuntime(hashCode, runtime);
-        Grib2CollectionPublish.Group g = gdsMap.get(gar);
+        Grib2CollectionIndexWriter.Group g = gdsMap.get(gar);
         if (g == null) {
-          g = new Grib2CollectionPublish.Group(gr.getGDSsection(), hashCode, runtimeDate);
+          g = new Grib2CollectionIndexWriter.Group(gr.getGDSsection(), hashCode, runtimeDate);
           gdsMap.put(gar, g);
         }
         g.records.add(gr);
@@ -125,8 +131,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     // rectilyze each group independently
-    List<Grib2CollectionPublish.Group> groups = new ArrayList<>(gdsMap.values());
-    for (Grib2CollectionPublish.Group g : groups) {
+    List<Grib2CollectionIndexWriter.Group> groups = new ArrayList<>(gdsMap.values());
+    for (Grib2CollectionIndexWriter.Group g : groups) {
       GribRecordStats stats = new GribRecordStats(); // debugging
       Grib2Rectilyser rect = new Grib2Rectilyser(g.records, g.hashCode);
       rect.make(gribConfig, stats, errlog);
@@ -186,11 +192,11 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
                                List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange)
           throws IOException {
-    Grib2CollectionPublish writer = new Grib2CollectionPublish(dcm, logger);
-    List<Grib2CollectionPublish.Group> groups2 = new ArrayList<>();
+    Grib2CollectionIndexWriter writer = new Grib2CollectionIndexWriter(dcm, logger);
+    List<Grib2CollectionIndexWriter.Group> groups2 = new ArrayList<>();
     // copy to change GribCollectionBuilder.Group -> GribCollectionPublish.Group
     for (Object g : groups) {
-      groups2.add((Grib2CollectionPublish.Group) g);
+      groups2.add((Grib2CollectionIndexWriter.Group) g);
     }
     File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type, dateRange);

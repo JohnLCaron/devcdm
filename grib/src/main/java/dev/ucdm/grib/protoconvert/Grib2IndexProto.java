@@ -30,7 +30,6 @@ public class Grib2IndexProto {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2IndexProto.class);
 
   public static final String MAGIC_START = "Grib2Index";
-  public static final int ScanModeMissing = 9999;
   private static final int version = 6; // index must be this version, or else rewrite.
 
   /**
@@ -70,7 +69,7 @@ public class Grib2IndexProto {
       byte[] m = new byte[size];
       Streams.readFully(fin, m);
 
-      dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Index proto = dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Index.parseFrom(m);
+      var proto = dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Index.parseFrom(m);
       logger.debug("{} for {}", proto.getFilename(), idxFile);
 
       for (dev.ucdm.grib.protogen.Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
@@ -92,7 +91,8 @@ public class Grib2IndexProto {
     return new Grib2Index(gdsList, records);
   }
 
-  private static Grib2Record importGrib2Record(dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Record proto, List<Grib2SectionGridDefinition> gdsList) throws IOException {
+  private static Grib2Record importGrib2Record(dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Record proto,
+                                               List<Grib2SectionGridDefinition> gdsList) throws IOException {
     var is = new Grib2SectionIndicator(proto.getGribMessageStart(), proto.getGribMessageLength(), proto.getDiscipline());
     var ids = importIdSection(proto.getIds());
 
@@ -141,7 +141,7 @@ public static boolean writeGrib2Index(String dataLocation, File idxFile, Formatt
     ArrayList<Grib2SectionGridDefinition> gdsList = new ArrayList<>();
     ArrayList<Grib2Record> records = new ArrayList<>();
 
-    dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Index.Builder idxBuilder = dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Index.newBuilder();
+    var idxBuilder = dev.ucdm.grib.protogen.Grib2IndexProto.Grib2Index.newBuilder();
     idxBuilder.setFilename(dataLocation);
 
     // read from the data file

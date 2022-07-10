@@ -18,6 +18,8 @@ import java.util.Formatter;
 
 /** Read one Record from a GRIB-2 files */
 public class Grib2Record {
+  public static final int scanModeMissing = 9999;
+
   private final Grib2SectionIndicator is;
   private final Grib2SectionIdentification id;
   private Grib2SectionLocalUse lus; // local use section
@@ -68,7 +70,7 @@ public class Grib2Record {
     // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Index.ScanModeMissing, so get it from the GDS,
     // which may have wrong one
     this.scanMode = scanMode;
-    if (scanMode == Grib2Index.ScanModeMissing && gdss != null) {
+    if (scanMode == scanModeMissing && gdss != null) {
       this.scanMode = gdss.getGDS().getScanMode();
     }
   }

@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import dev.ucdm.grib.common.util.Counters;
+import dev.ucdm.grib.grib1.record.Grib1Record;
+import dev.ucdm.grib.grib1.tables.Grib1Customizer;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 import org.slf4j.Logger;
@@ -1062,7 +1064,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /*
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record>
       implements CoordinateBuilder.TwoD<Grib1Record> {
     private final boolean isTimeInterval;
@@ -1160,7 +1161,5 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       return new int[] {runIdx, timeIdx};
     }
   }
-
-   */
 
 }

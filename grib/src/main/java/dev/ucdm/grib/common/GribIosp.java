@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import dev.cdm.array.Array;
 import dev.cdm.array.Arrays;
@@ -18,10 +18,9 @@ import dev.cdm.dataset.ncml.NcmlReader;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
-import dev.ucdm.grib.common.CollectionUpdateType;
-import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateTime2D;
+import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import org.jdom2.Element;
 
 import javax.annotation.Nullable;
@@ -96,7 +95,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     this.logger = logger;
   }
 
-  protected abstract GribTables createCustomizer() throws IOException;
+  public abstract GribTables createCustomizer() throws IOException;
 
   public abstract String makeVariableName(VariableIndex vindex);
 

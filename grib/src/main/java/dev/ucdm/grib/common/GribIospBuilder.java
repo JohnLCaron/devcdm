@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -11,13 +11,11 @@ import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.Grib;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
-import dev.ucdm.grib.common.GdsHorizCoordSys;
-import dev.ucdm.grib.common.GribStatType;
-import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.coord.*;
-import dev.ucdm.grib.grib2.iosp.GribIosp.Time2Dinfo;
-import dev.ucdm.grib.grib2.iosp.GribIosp.Time2DinfoType;
+import dev.ucdm.grib.common.GribIosp.Time2Dinfo;
+import dev.ucdm.grib.common.GribIosp.Time2DinfoType;
+import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 import org.slf4j.Logger;
 import dev.cdm.array.Array;

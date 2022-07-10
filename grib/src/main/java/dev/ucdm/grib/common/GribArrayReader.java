@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import com.google.common.base.Throwables;
 import java.io.IOException;
@@ -15,7 +15,6 @@ import javax.annotation.concurrent.Immutable;
 
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
-import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2RecordScanner;

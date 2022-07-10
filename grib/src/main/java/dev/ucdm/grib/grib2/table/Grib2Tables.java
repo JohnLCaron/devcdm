@@ -14,7 +14,7 @@ import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
 import dev.ucdm.grib.coord.TimeCoordIntvValue;
 import dev.ucdm.grib.coord.VertCoordType;
-import dev.ucdm.grib.grib2.iosp.GribConfig;
+import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2SectionIdentification;

@@ -8,6 +8,11 @@ import java.util.Arrays;
 
 import dev.cdm.array.Indent;
 import dev.ucdm.grib.common.util.Counters;
+import dev.ucdm.grib.common.util.GribUtils;
+import dev.ucdm.grib.grib1.record.Grib1ParamTime;
+import dev.ucdm.grib.grib1.record.Grib1Record;
+import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
+import dev.ucdm.grib.grib1.tables.Grib1Customizer;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
@@ -204,7 +209,6 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     }
   }
 
-  /*
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     final Grib1Customizer cust;
     final int code; // pdsFirst.getTimeUnit()
@@ -244,7 +248,5 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }
   }
-
-   */
 
 }

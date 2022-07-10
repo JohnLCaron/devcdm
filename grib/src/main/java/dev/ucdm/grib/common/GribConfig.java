@@ -1,4 +1,4 @@
-package dev.ucdm.grib.grib2.iosp;
+package dev.ucdm.grib.common;
 
 import dev.cdm.core.calendar.CalendarPeriod;
 import dev.cdm.core.util.StringUtil2;

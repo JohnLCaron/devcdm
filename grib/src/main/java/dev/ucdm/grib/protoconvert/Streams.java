@@ -90,8 +90,10 @@ public class Streams {
     byte[] b = new byte[test.length];
     raf.readFully(b);
     for (int i = 0; i < b.length; i++)
-      if (b[i] != test[i])
-        return false;
+      if (b[i] != test[i]) {
+        throw new IllegalStateException(String.format("expected %s but got %s", new String(test), new String(b)));
+        //return false;
+      }
     return true;
   }
 
