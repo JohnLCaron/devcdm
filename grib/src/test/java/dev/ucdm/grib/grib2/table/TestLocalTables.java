@@ -3,9 +3,7 @@ package dev.ucdm.grib.grib2.table;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import dev.ucdm.grib.common.GribTables;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -14,7 +12,6 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.grib.grib2.table.EccodesCodeTable.LATEST_VERSION;
 
-@RunWith(JUnit4.class)
 public class TestLocalTables {
 
   @Test

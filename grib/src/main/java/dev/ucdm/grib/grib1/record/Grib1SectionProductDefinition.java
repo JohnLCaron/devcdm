@@ -14,8 +14,8 @@ import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.wmo.CommonCodeTable;
 import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
-import dev.ucdm.grib.grib1.tables.Grib1ParamTableReader;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1ParamTableReader;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.util.zip.CRC32;
 @Immutable
 public final class Grib1SectionProductDefinition {
 
-  private final byte[] rawData;
+  private byte[] rawData;
 
   /**
    * Read Product Definition section from raf.
@@ -74,7 +74,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return table version
    */
-  public final int getTableVersion() {
+  public int getTableVersion() {
     return getOctet(4);
   }
 
@@ -83,7 +83,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return center id
    */
-  public final int getCenter() {
+  public int getCenter() {
     return getOctet(5);
   }
 
@@ -92,7 +92,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return typeGenProcess
    */
-  public final int getGenProcess() {
+  public int getGenProcess() {
     return getOctet(6);
   }
 
@@ -106,7 +106,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Grid Definition.
    */
-  public final int getGridDefinition() {
+  public int getGridDefinition() {
     return getOctet(7);
   }
 
@@ -115,7 +115,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Flag
    */
-  public final int getFlag() {
+  public int getFlag() {
     return getOctet(8);
   }
 
@@ -124,7 +124,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return index number of parameter in table
    */
-  public final int getParameterNumber() {
+  public int getParameterNumber() {
     return getOctet(9);
   }
 
@@ -133,7 +133,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return level type
    */
-  public final int getLevelType() {
+  public int getLevelType() {
     return getOctet(10);
   }
 
@@ -142,7 +142,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return level value1
    */
-  public final int getLevelValue1() {
+  public int getLevelValue1() {
     return getOctet(11);
   }
 
@@ -151,7 +151,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return level value2
    */
-  public final int getLevelValue2() {
+  public int getLevelValue2() {
     return getOctet(12);
   }
 
@@ -161,7 +161,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Reference Date as CalendarDate.
    */
-  public final CalendarDate getReferenceDate() {
+  public CalendarDate getReferenceDate() {
     int century = getReferenceCentury() - 1;
     if (century == -1)
       century = 20;
@@ -179,7 +179,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return time unit
    */
-  public final int getTimeUnit() {
+  public int getTimeUnit() {
     return getOctet(18);
   }
 
@@ -190,7 +190,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return time value 1
    */
-  public final int getTimeValue1() {
+  public int getTimeValue1() {
     return getOctet(19);
   }
 
@@ -202,7 +202,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return time value 2
    */
-  public final int getTimeValue2() {
+  public int getTimeValue2() {
     return getOctet(20);
   }
 
@@ -211,7 +211,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Time range indicator
    */
-  public final int getTimeRangeIndicator() {
+  public int getTimeRangeIndicator() {
     return getOctet(21);
   }
 
@@ -222,7 +222,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Number included in statistics
    */
-  public final int getNincluded() {
+  public int getNincluded() {
     return GribNumbers.int2(getOctet(22), getOctet(23));
   }
 
@@ -232,7 +232,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Number missing in statistics
    */
-  public final int getNmissing() {
+  public int getNmissing() {
     return getOctet(24);
   }
 
@@ -241,7 +241,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Century of reference
    */
-  public final int getReferenceCentury() {
+  public int getReferenceCentury() {
     return getOctet(25);
   }
 
@@ -250,7 +250,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return subcenter id
    */
-  public final int getSubCenter() {
+  public int getSubCenter() {
     return getOctet(26);
   }
 
@@ -260,7 +260,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Units decimal scale factor
    */
-  public final int getDecimalScale() {
+  public int getDecimalScale() {
     return GribNumbers.int2(getOctet(27), getOctet(28));
   }
 
@@ -269,7 +269,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return true, if GDS exists
    */
-  public final boolean gdsExists() {
+  public boolean gdsExists() {
     return (getFlag() & 128) == 128;
   }
 
@@ -278,7 +278,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return true, if BMS exists
    */
-  public final boolean bmsExists() {
+  public boolean bmsExists() {
     return (getFlag() & 64) == 64;
   }
 
@@ -408,7 +408,7 @@ public final class Grib1SectionProductDefinition {
     return false;
   }
 
-  public final int getPerturbationType() {
+  public int getPerturbationType() {
     if (!isEnsemble())
       return GribNumbers.UNDEFINED;
     switch (getCenter()) {
@@ -420,7 +420,7 @@ public final class Grib1SectionProductDefinition {
     return GribNumbers.UNDEFINED;
   }
 
-  public final int getPerturbationNumber() {
+  public int getPerturbationNumber() {
     if (!isEnsemble())
       return GribNumbers.UNDEFINED;
 

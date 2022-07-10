@@ -12,7 +12,7 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
-import dev.ucdm.grib.common.CollectionUpdateType;
+import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateTime2D;

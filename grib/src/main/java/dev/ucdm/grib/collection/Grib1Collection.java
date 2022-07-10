@@ -21,7 +21,7 @@ import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
 import dev.ucdm.grib.grib1.iosp.Grib1Iosp;
 import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 
 /**
  * Grib1-specific subclass of GribCollection.
@@ -32,7 +32,7 @@ import dev.ucdm.grib.grib1.tables.Grib1Customizer;
 public class Grib1Collection extends GribCollection {
 
   public Grib1Collection(String name, File directory, GribConfig config) {
-    super(name, directory, config, false);
+    super(name, directory, config, true);
   }
 
   @Override

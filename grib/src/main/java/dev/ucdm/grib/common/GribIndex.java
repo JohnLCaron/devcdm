@@ -7,6 +7,7 @@ package dev.ucdm.grib.common;
 
 import javax.annotation.Nullable;
 
+import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.protoconvert.Grib1Index;
@@ -19,13 +20,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Abstract superclass for Grib1Index and Grib2Index.
- * Handles gbx9 index for grib.
- * <p/>
- * Static methods for creating gbx9 indices for a single file.
- *
- * @author John
- * @since 9/5/11
+ * Logic for creating / managing gbx9 indices.
  */
 public abstract class GribIndex {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);

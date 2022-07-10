@@ -13,10 +13,17 @@ import java.util.stream.IntStream;
 import static com.google.common.truth.Truth.assertThat;
 
 public class TestGridGribDataset {
-  private static final String testfile = "/home/snake/tmp/rugley.pds15.grib2";
 
   @Test
-  public void testOpen() throws IOException {
+  public void testGrib1() throws IOException {
+    String testfile = "src/test/data/thinGrid.grib1";
+    String gridName = "Temperature_isobaric";
+    testOpen(testfile, gridName, new int[] {1, 1}, new int[] {1}, new int[] {73, 73});
+  }
+
+  @Test
+  public void testGrib2() throws IOException {
+    String testfile = "/home/snake/tmp/rugley.pds15.grib2";
     String gridName = "Clear_air_turbulence_CAT_isobaric_Maximum";
     testOpen(testfile, gridName, new int[] {1, 1}, new int[] {1}, new int[] {145, 288});
   }

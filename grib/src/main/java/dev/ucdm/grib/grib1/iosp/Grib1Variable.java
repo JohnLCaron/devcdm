@@ -9,7 +9,7 @@ import dev.ucdm.grib.grib1.record.Grib1Gds;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 
 /**
  * Used to group records into a CDM variable

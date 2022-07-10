@@ -13,8 +13,8 @@ import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.grib1.record.Grib1Gds;
 import dev.ucdm.grib.grib1.record.Grib1GdsPredefined;
 import dev.ucdm.grib.grib1.record.Grib1SectionGridDefinition;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
-import dev.ucdm.grib.grib1.tables.Grib1ParamTables;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1ParamTables;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
 import java.io.IOException;

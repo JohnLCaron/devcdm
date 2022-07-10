@@ -7,7 +7,7 @@ package dev.ucdm.grib.grib1.record;
 
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.util.GribNumbers;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 
 import javax.annotation.concurrent.Immutable;
 

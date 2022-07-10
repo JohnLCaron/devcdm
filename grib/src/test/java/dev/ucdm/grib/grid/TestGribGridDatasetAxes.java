@@ -23,6 +23,7 @@ public class TestGribGridDatasetAxes {
   @Test
   public void testTimeOffsetRegular() throws IOException {
     String endpoint = oldTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
+    System.out.printf("%s%n", endpoint);
 
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(endpoint, errlog)) {

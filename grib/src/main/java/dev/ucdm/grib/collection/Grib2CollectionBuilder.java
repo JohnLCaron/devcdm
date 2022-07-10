@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarPeriod;
-import dev.ucdm.grib.common.CollectionUpdateType;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
@@ -21,7 +20,6 @@ import dev.ucdm.grib.grib2.record.Grib2Gds;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
-import dev.ucdm.grib.protoconvert.Grib1Index;
 import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.Grib2Index;
 

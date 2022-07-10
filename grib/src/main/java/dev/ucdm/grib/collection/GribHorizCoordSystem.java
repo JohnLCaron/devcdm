@@ -10,10 +10,8 @@ import dev.ucdm.grib.common.GdsHorizCoordSys;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Encapsolates the GdsHorizCoordSys; shared by the GroupHcs
- *
- * @author caron
- * @since 11/10/2014
+ * Encapsolates the GdsHorizCoordSys; shared by the GribCollection.GroupGC
+ * TODO: review, is this needed?
  */
 @Immutable
 public class GribHorizCoordSystem {

@@ -11,12 +11,10 @@ import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.Grib;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
-import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.common.GribIosp.Time2Dinfo;
 import dev.ucdm.grib.common.GribIosp.Time2DinfoType;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
-import dev.ucdm.grib.grib2.table.Grib2Tables;
 import org.slf4j.Logger;
 import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
@@ -35,9 +33,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Makes a Grib Collection IOSP, out of the metadata in the GribCollection.
+ * Build a Grib Collection IOSP out of the metadata in the GribCollection.
  */
 class GribIospBuilder {
   final private GribIosp iosp;
@@ -220,8 +219,7 @@ class GribIospBuilder {
         String timeDimName = time.getName();
         String timeCoordName = time.getName();
 
-        if (time instanceof CoordinateTime2D) {
-          CoordinateTime2D time2D = (CoordinateTime2D) time;
+        if (time instanceof CoordinateTime2D time2D) {
           if (!gctype.isUniqueTime() && (time2D.isOrthogonal() || time2D.isRegular())) {
             timeDimName = makeTimeOffsetName(time.getName());
           } else {
@@ -253,7 +251,7 @@ class GribIospBuilder {
               dimNames.format("%s %s ", run.getName(), timeDimName);
             }
             coordinateAtt.format("%s %s ", run.getName(), timeCoordName);
-            if (timeDimName != timeCoordName) {
+            if (!Objects.equals(timeDimName, timeCoordName)) {
               coordinateAtt.format("%s ", timeDimName);
             }
           } // PC: Best time partition [ntimes] (time) reftime is generated in makeTimeAuxReference()
@@ -334,7 +332,7 @@ class GribIospBuilder {
           }
         }
 
-        addVariableAttributes(v.getAttributeContainer(), vindex, gribCollection);
+        gribCollection.addVariableAttributes(v.getAttributeContainer(), vindex);
         v.setSPobject(vindex);
       }
     }
@@ -403,7 +401,7 @@ class GribIospBuilder {
     if (runtime.getNCoords() != 1) {
       // for this case we have to generate a separate reftime, because have to use the same dimension
       String refName = "ref" + tcName;
-      if (!g.findVariableLocal(refName).isPresent()) {
+      if (g.findVariableLocal(refName).isEmpty()) {
         Variable.Builder<?> vref = Variable.builder().setName(refName).setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(g).setDimensionsByName(timeDimName);
         g.addVariable(vref);
@@ -497,25 +495,24 @@ class GribIospBuilder {
 
     // coordinate values
     switch (info.which) {
-      case reftime:
+      case reftime -> {
         CoordinateRuntime rtc = (CoordinateRuntime) info.time1D;
         int count = 0;
         for (double val : rtc.getOffsetsInTimeUnits()) {
           data[count++] = val;
         }
         return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
-
-      case timeAuxRef:
+      }
+      case timeAuxRef -> {
         CoordinateTimeAbstract time = (CoordinateTimeAbstract) info.time1D;
-        count = 0;
+        int count = 0;
         List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
         for (int masterIdx : time.getTime2runtime()) {
           data[count++] = masterOffsets.get(masterIdx - 1);
         }
         return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
-
-      default:
-        throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
+      }
+      default -> throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
     }
   }
 
@@ -931,50 +928,6 @@ class GribIospBuilder {
     } catch (Throwable t) {
       t.printStackTrace();
       throw new RuntimeException(t);
-    }
-  }
-
-  static void addVariableAttributes(AttributeContainerMutable v, VariableIndex vindex,
-                                    GribCollection gc) {
-    Grib2Tables cust2 = (Grib2Tables) gc.cust;
-
-    v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
-    int[] param = {vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
-    v.addAttribute(Attribute.fromArray("Grib2_Parameter", Arrays.factory(ArrayType.INT, new int[] {3}, param)));
-    String disc = cust2.getCodeTableValue("0.0", vindex.getDiscipline());
-    if (disc != null)
-      v.addAttribute(new Attribute("Grib2_Parameter_Discipline", disc));
-    String cat = cust2.getCategory(vindex.getDiscipline(), vindex.getCategory());
-    if (cat != null)
-      v.addAttribute(new Attribute("Grib2_Parameter_Category", cat));
-    GribTables.Parameter entry = cust2.getParameter(vindex);
-    if (entry != null)
-      v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
-
-    if (vindex.getLevelType() != GribNumbers.MISSING)
-      v.addAttribute(new Attribute("Grib2_Level_Type", vindex.getLevelType()));
-    String ldesc = cust2.getLevelName(vindex.getLevelType());
-    if (ldesc != null)
-      v.addAttribute(new Attribute("Grib2_Level_Desc", ldesc));
-
-    if (vindex.getEnsDerivedType() >= 0)
-      v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.getEnsDerivedType()));
-    else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
-      v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.getProbType()));
-      v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.getProbabilityName()));
-    }
-
-    if (vindex.getGenProcessType() >= 0) {
-      String genProcessTypeName = cust2.getGeneratingProcessTypeName(vindex.getGenProcessType());
-      if (genProcessTypeName != null)
-        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", genProcessTypeName));
-      else
-        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", vindex.getGenProcessType()));
-    }
-
-    String statType = cust2.getStatisticName(vindex.getIntvType());
-    if (statType != null) {
-      v.addAttribute(new Attribute("Grib2_Statistical_Process_Type", statType));
     }
   }
 }

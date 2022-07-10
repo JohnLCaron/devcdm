@@ -3,15 +3,12 @@ package dev.ucdm.grib.grib2.table;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.grib2.table.WmoCodeFlagTables.TableType;
 import dev.ucdm.grib.grib2.table.WmoCodeFlagTables.WmoTable;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@RunWith(JUnit4.class)
 public class TestWmoCodeFlagTables {
 
   @Test

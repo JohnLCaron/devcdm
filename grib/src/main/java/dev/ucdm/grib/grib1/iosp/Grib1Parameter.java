@@ -10,7 +10,7 @@ import java.util.Objects;
 import dev.cdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribUtils;
-import dev.ucdm.grib.grib1.tables.Grib1ParamTableReader;
+import dev.ucdm.grib.grib1.table.Grib1ParamTableReader;
 
 import javax.annotation.concurrent.Immutable;
 

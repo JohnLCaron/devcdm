@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Test reading GRIB2 files with {@link GribRotatedPole} projections.
+ * Test reading GRIB2 files with GribRotatedPole projections.
  * 
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */

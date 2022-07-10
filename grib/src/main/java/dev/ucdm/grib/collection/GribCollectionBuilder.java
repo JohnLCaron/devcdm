@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Superclass to build indexes for collections of Grib files.
- *
- * @author caron
- * @since 2/19/14
+ * Superclass to build ncx indexes for collections of Grib files.
  */
 public abstract class GribCollectionBuilder {
 

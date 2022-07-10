@@ -16,7 +16,7 @@ import dev.cdm.array.Section;
 import dev.ucdm.grib.grib2.iosp.Grib2Iosp;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.common.GribArrayReader;
-import dev.ucdm.grib.common.SectionIterable;
+import dev.ucdm.grib.common.util.SectionIterable;
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.constants.AxisType;
 import dev.cdm.core.constants.CDM;

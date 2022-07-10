@@ -13,7 +13,7 @@ import dev.cdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.coord.*;
 
-/** Make Time2D coordinates when requested. */
+/** Lazy creation of Time2D coordinates when requested. */
 class Time2DLazyCoordinate {
 
   static dev.cdm.array.Array<?> makeLazyCoordinateArray(Variable v2, GribIosp.Time2Dinfo info,

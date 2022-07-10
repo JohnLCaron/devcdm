@@ -1,5 +1,6 @@
 package dev.ucdm.grib.common;
 
+import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.collection.MFileOS;
 import dev.ucdm.grib.grib2.record.Grib2Gds;

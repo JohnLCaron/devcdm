@@ -38,12 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-/**
- * A mutable class for writing to or reading from ncx indices.
- *
- * @author John
- * @since 12/1/13
- */
+/** A mutable class for writing to or reading from ncx indices. */
 public abstract class GribCollection implements Closeable {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final long MISSING_RECORD = -1;
@@ -266,11 +261,7 @@ public abstract class GribCollection implements Closeable {
     return directory;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // stuff for FileCacheable
-
   public void close() throws java.io.IOException {
-
     if (indexRaf != null) {
       indexRaf.close();
       indexRaf = null;
@@ -454,7 +445,7 @@ public abstract class GribCollection implements Closeable {
   public VariableIndex makeVariableIndex(GroupGC g, GribTables customizer, int discipline, int center,
                                          int subcenter, byte[] rawPds, List<Integer> index, long recordsPos,
                                          int recordsLen) {
-    return new VariableIndex(config, g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
+    return new VariableIndex(isGrib1, config, g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
   }
 
   VariableIndex makeVariableIndex(GroupGC group, VariableIndex from) {
@@ -483,27 +474,6 @@ public abstract class GribCollection implements Closeable {
   @Immutable
   public record ReadRecord(int fileno, long pos, int bmsOffset, int drsOffset) {
   }
-
-/*  @Immutable
-  public static class Record {
-    public final int fileno; // which file
-    public final long pos; // offset on file where data starts
-    public final long bmsPos; // if non-zero, offset where bms starts
-    public final int scanMode; // from gds
-
-    public Record(int fileno, long pos, long bmsPos, int scanMode) {
-      this.fileno = fileno;
-      this.pos = pos;
-      this.bmsPos = bmsPos;
-      this.scanMode = scanMode;
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this).add("fileno", fileno).add("pos", pos).add("bmsPos", bmsPos)
-          .add("scanMode", scanMode).toString();
-    }
-  } */
 
   public void showIndex(Formatter f) {
     f.format("Class (%s)%n", getClass().getName());

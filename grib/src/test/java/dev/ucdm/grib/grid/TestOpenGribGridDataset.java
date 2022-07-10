@@ -97,7 +97,7 @@ public class TestOpenGribGridDataset {
 
   @Test
   public void testFileNotGrid() throws IOException {
-    String filename = coreLocalDir + "point/point.ncml";
+    String filename = coreLocalDir + "tst_small.nc";
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(filename, errlog)) {
       assertThat(gds).isNull();

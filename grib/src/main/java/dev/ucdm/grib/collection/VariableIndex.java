@@ -9,6 +9,11 @@ import dev.ucdm.grib.coord.CoordinateTime2D;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
 import dev.ucdm.grib.coord.CoordinateTimeIntv;
 import dev.ucdm.grib.coord.SparseArray;
+import dev.ucdm.grib.grib1.iosp.Grib1Variable;
+import dev.ucdm.grib.grib1.record.Grib1Gds;
+import dev.ucdm.grib.grib1.record.Grib1ParamTime;
+import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.grib2.iosp.Grib2Variable;
 import dev.ucdm.grib.common.GribConfig;
@@ -25,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
+/** A mutable class for writing / reading ncx indices. */
 public class VariableIndex implements Comparable<VariableIndex> {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(VariableIndex.class);
 
@@ -49,7 +55,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
   // stats
   public int ndups, nrecords, nmissing;
 
-  VariableIndex(GribConfig config, GribCollection.GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
+  VariableIndex(boolean isGrib1, GribConfig config, GribCollection.GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
                 List<Integer> index, long recordsPos, int recordsLen) {
     this.group = g;
     this.discipline = discipline;
@@ -60,7 +66,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
     this.recordsPos = recordsPos;
     this.recordsLen = recordsLen;
 
-    /* if (isGrib1) {
+    if (isGrib1) {
       Grib1Customizer cust = (Grib1Customizer) customizer;
       Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(rawPds);
 
@@ -90,57 +96,57 @@ public class VariableIndex implements Comparable<VariableIndex> {
       gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.useTableVersion,
           config.intvMerge, config.useCenter);
 
-    } else { */
-    Grib2Tables cust2 = (Grib2Tables) customizer;
-
-    Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
-    Grib2Pds pds = pdss.getPDS();
-    Preconditions.checkNotNull(pds);
-    this.tableVersion = -1;
-
-    // quantities that are stored in the pds
-    this.category = pds.getParameterCategory();
-    this.parameter = pds.getParameterNumber();
-    this.levelType = pds.getLevelType1();
-    this.intvType = pds.getStatisticalProcessType();
-    this.isLayer = Grib2Utils.isLayer(pds);
-
-    if (pds.isEnsembleDerived()) {
-      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
-      ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
     } else {
-      this.ensDerivedType = -1;
+      Grib2Tables cust2 = (Grib2Tables) customizer;
+
+      Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
+      Grib2Pds pds = pdss.getPDS();
+      Preconditions.checkNotNull(pds);
+      this.tableVersion = -1;
+
+      // quantities that are stored in the pds
+      this.category = pds.getParameterCategory();
+      this.parameter = pds.getParameterNumber();
+      this.levelType = pds.getLevelType1();
+      this.intvType = pds.getStatisticalProcessType();
+      this.isLayer = Grib2Utils.isLayer(pds);
+
+      if (pds.isEnsembleDerived()) {
+        Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
+        ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+      } else {
+        this.ensDerivedType = -1;
+      }
+
+      if (pds.isProbability()) {
+        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+        probabilityName = pdsProb.getProbabilityName();
+        probType = pdsProb.getProbabilityType();
+      } else {
+        this.probType = -1;
+        this.probabilityName = null;
+      }
+
+      if (pds.isPercentile()) {
+        Grib2Pds.PdsPercentile pdsPctl = (Grib2Pds.PdsPercentile) pds;
+        this.percentile = pdsPctl.getPercentileValue();
+      } else {
+        this.percentile = -1;
+      }
+
+      this.genProcessType = pds.getGenProcessType();
+      this.isEnsemble = pds.isEnsemble();
+
+      if (pds.isSpatialInterval()) {
+        Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
+        this.spatialStatType = pdsSpatial.getSpatialStatisticalProcessType();
+      } else {
+        this.spatialStatType = -1;
+      }
+      // TODO config vs serialized config
+      gribVariable = new Grib2Variable(cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds,
+              config.intvMerge, config.useGenType);
     }
-
-    if (pds.isProbability()) {
-      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
-      probabilityName = pdsProb.getProbabilityName();
-      probType = pdsProb.getProbabilityType();
-    } else {
-      this.probType = -1;
-      this.probabilityName = null;
-    }
-
-    if (pds.isPercentile()) {
-      Grib2Pds.PdsPercentile pdsPctl = (Grib2Pds.PdsPercentile) pds;
-      this.percentile = pdsPctl.getPercentileValue();
-    } else {
-      this.percentile = -1;
-    }
-
-    this.genProcessType = pds.getGenProcessType();
-    this.isEnsemble = pds.isEnsemble();
-
-    if (pds.isSpatialInterval()) {
-      Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
-      this.spatialStatType = pdsSpatial.getSpatialStatisticalProcessType();
-    } else {
-      this.spatialStatType = -1;
-    }
-
-    // TODO config vs serialized config
-    gribVariable = new Grib2Variable(cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds,
-            config.intvMerge, config.useGenType);
   }
 
   protected VariableIndex(GribCollection.GroupGC g, VariableIndex other) {

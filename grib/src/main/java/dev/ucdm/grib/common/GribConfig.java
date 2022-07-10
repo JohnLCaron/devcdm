@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/** Configuration settings for managing low level GRIB reading. */
 public class GribConfig {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribConfig.class);
 

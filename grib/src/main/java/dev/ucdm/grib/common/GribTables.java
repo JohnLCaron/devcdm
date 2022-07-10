@@ -12,9 +12,6 @@ import javax.annotation.Nullable;
 /**
  * Abstraction of GribTable for Grib Collections.
  * Allows Grib1 and Grib2 to be handled through common interface.
- *
- * @author John
- * @since 9/5/11
  */
 public interface GribTables {
 

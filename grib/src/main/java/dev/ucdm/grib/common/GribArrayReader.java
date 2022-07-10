@@ -15,7 +15,13 @@ import javax.annotation.concurrent.Immutable;
 
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
+import dev.ucdm.grib.common.util.SectionIterable;
 import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
+import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
+import dev.ucdm.grib.grib1.record.Grib1ParamTime;
+import dev.ucdm.grib.grib1.record.Grib1Record;
+import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2RecordScanner;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
@@ -35,9 +41,9 @@ public abstract class GribArrayReader {
   private static final Logger logger = LoggerFactory.getLogger(GribArrayReader.class);
 
   public static GribArrayReader factory(GribCollection gribCollection, VariableIndex vindex) {
-    //if (gribCollection.isGrib1)
-    //  return new Grib1ArrayReader(gribCollection, vindex);
-    //else
+    if (gribCollection.isGrib1)
+      return new Grib1ArrayReader(gribCollection, vindex);
+    else
       return new Grib2ArrayReader(gribCollection, vindex);
   }
 
@@ -353,7 +359,6 @@ public abstract class GribArrayReader {
     }
   }
 
-  /*
   private static class Grib1ArrayReader extends GribArrayReader {
     private final Grib1Customizer cust;
 
@@ -364,7 +369,7 @@ public abstract class GribArrayReader {
 
     @Override
     protected float[] readData(RandomAccessFile rafData, GribReaderRecord dr) throws IOException {
-      return Grib1Record.readData(rafData, dr.record.pos);
+      return Grib1Record.readData(rafData, dr.record.pos());
     }
 
     @Override
@@ -389,7 +394,5 @@ public abstract class GribArrayReader {
       System.out.printf("%nGrib1Record.readData at drsPos %d = %s%n", dataPos, f.toString());
     }
   }
-
-   */
 
 }

@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarPeriod;
-import dev.ucdm.grib.common.CollectionUpdateType;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
@@ -19,7 +18,7 @@ import dev.ucdm.grib.grib1.iosp.Grib1Iosp;
 import dev.ucdm.grib.grib1.iosp.Grib1Utils;
 import dev.ucdm.grib.grib1.iosp.Grib1Variable;
 import dev.ucdm.grib.grib1.record.*;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import dev.ucdm.grib.protoconvert.Grib1CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.Grib1Index;
@@ -29,11 +28,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Builds indexes for collections of Grib1 files.
- * May create GC or PC
- *
- * @author John
- * @since 2/5/14
+ * Builds ncx indexes for collections of Grib1 files.
+ * This is the hard logic here.
  */
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
@@ -41,7 +37,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private final GribConfig gribConfig;
   private Grib1Customizer cust;
 
-  Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+  public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
 
     this.gribConfig = (GribConfig) dcm.getAuxInfo(GribConfig.AUX_CONFIG);

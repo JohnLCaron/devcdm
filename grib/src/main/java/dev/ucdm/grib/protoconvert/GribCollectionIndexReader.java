@@ -97,33 +97,6 @@ public abstract class GribCollectionIndexReader {
       byte[] m = new byte[size];
       raf.readFully(m);
 
-      /*
-       * message GribCollection {
-       * required string name = 1; // must be unique - index filename is name.ncx
-       * required string topDir = 2; // filenames are reletive to this
-       * repeated File mfiles = 3; // list of grib MFiles
-       * repeated Dataset dataset = 4;
-       * repeated Gds gds = 5; // unique Gds, shared amongst datasets
-       * required Coord masterRuntime = 21; // list of runtimes in this GC
-       * 
-       * required int32 center = 6; // these 4 fields are to get a GribTable object
-       * required int32 subcenter = 7;
-       * required int32 master = 8;
-       * required int32 local = 9; // grib1 table Version
-       * 
-       * optional int32 genProcessType = 10;
-       * optional int32 genProcessId = 11;
-       * optional int32 backProcessId = 12;
-       * 
-       * // repeated Parameter params = 20; // not used
-       * FcConfig config = 21;
-       * uint64 startTime = 22; // calendar date, first valid time
-       * uint64 endTime = 23; // calendar date, last valid time
-       * 
-       * extensions 100 to 199;
-       * }
-       */
-
       GribCollectionProto.GribCollection proto = GribCollectionProto.GribCollection.parseFrom(m);
 
       // need to read this first to get this.tables initialized
@@ -163,8 +136,9 @@ public abstract class GribCollectionIndexReader {
       gc.masterRuntime = (CoordinateRuntime) importCoord(proto.getMasterRuntime());
 
       gc.datasets = new ArrayList<>(proto.getDatasetCount());
-      for (int i = 0; i < proto.getDatasetCount(); i++)
+      for (int i = 0; i < proto.getDatasetCount(); i++) {
         importDataset(proto.getDataset(i));
+      }
 
       return readExtensions(proto);
 
@@ -186,18 +160,6 @@ public abstract class GribCollectionIndexReader {
     return vi;
   }
 
-  /*
-   * message Dataset {
-   * enum Type {
-   * TwoD = 0;
-   * Best = 1;
-   * Analysis = 2;
-   * }
-   * 
-   * required Type type = 1;
-   * repeated Group groups = 2; // separate group for each GDS
-   * }
-   */
   private GribCollection.Dataset importDataset(GribCollectionProto.Dataset p) {
     CollectionType type = CollectionType.valueOf(p.getType().toString());
     GribCollection.Dataset ds = gc.makeDataset(type);
@@ -210,17 +172,6 @@ public abstract class GribCollectionIndexReader {
     return ds;
   }
 
-  /*
-   * message Group {
-   * required uint32 gdsIndex = 1; // index into GribCollection.gds array
-   * repeated Variable variables = 2; // list of variables
-   * repeated Coord coords = 3; // list of coordinates
-   * repeated int32 fileno = 4; // the component files that are in this group, index into gc.mfiles
-   * 
-   * repeated Parameter params = 20; // not used yet
-   * extensions 100 to 199;
-   * }
-   */
   protected GribCollection.GroupGC importGroup(GribCollectionProto.Group p) {
     GribCollection.GroupGC group = gc.makeGroup();
 
@@ -228,15 +179,18 @@ public abstract class GribCollectionIndexReader {
 
     // read coords before variables
     group.coords = new ArrayList<>();
-    for (int i = 0; i < p.getCoordsCount(); i++)
+    for (int i = 0; i < p.getCoordsCount(); i++) {
       group.coords.add(importCoord(p.getCoords(i)));
+    }
 
     group.filenose = new int[p.getFilenoCount()];
-    for (int i = 0; i < p.getFilenoCount(); i++)
+    for (int i = 0; i < p.getFilenoCount(); i++) {
       group.filenose[i] = p.getFileno(i);
+    }
 
-    for (int i = 0; i < p.getVariablesCount(); i++)
+    for (int i = 0; i < p.getVariablesCount(); i++) {
       readVariable(group, p.getVariables(i));
+    }
 
     // assign names, units to coordinates
     // CalendarDate firstRef = null;
@@ -249,29 +203,29 @@ public abstract class GribCollectionIndexReader {
     for (Coordinate coord : group.coords) {
       Coordinate.Type type = coord.getType();
       switch (type) {
-        case runtime:
+        case runtime -> {
           CoordinateRuntime reftime = (CoordinateRuntime) coord;
-          if (reftimeCoord > 0)
+          if (reftimeCoord > 0) {
             reftime.setName("reftime" + reftimeCoord);
+          }
           reftimeCoord++;
           runtimes.put(reftime, reftime);
-          break;
-
-        case time:
+        }
+        case time -> {
           CoordinateTime tc = (CoordinateTime) coord;
-          if (timeCoord > 0)
+          if (timeCoord > 0) {
             tc.setName("time" + timeCoord);
+          }
           timeCoord++;
-          break;
-
-        case timeIntv:
+        }
+        case timeIntv -> {
           CoordinateTimeIntv tci = (CoordinateTimeIntv) coord;
-          if (timeCoord > 0)
+          if (timeCoord > 0) {
             tci.setName("time" + timeCoord);
+          }
           timeCoord++;
-          break;
-
-        case time2D:
+        }
+        case time2D -> {
           CoordinateTime2D t2d = (CoordinateTime2D) coord;
           if (timeCoord > 0) {
             // make sure 2d time coordinate (non-unique) does not use the same name as the dimension
@@ -283,21 +237,17 @@ public abstract class GribCollectionIndexReader {
               t2d.setName("time" + timeCoord);
             }
           }
-
           timeCoord++;
           time2DCoords.add(t2d);
-          break;
-
-        case vert:
-          vertCoords.add((CoordinateVert) coord);
-          break;
-
-        case ens:
+        }
+        case vert -> vertCoords.add((CoordinateVert) coord);
+        case ens -> {
           CoordinateEns ce = (CoordinateEns) coord;
-          if (ensCoord > 0)
+          if (ensCoord > 0) {
             ce.setName("ens" + ensCoord);
+          }
           ensCoord++;
-          break;
+        }
       }
     }
     assignVertNames(vertCoords);

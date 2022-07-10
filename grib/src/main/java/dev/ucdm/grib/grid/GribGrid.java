@@ -22,7 +22,7 @@ import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GribArrayReader;
 import dev.ucdm.grib.common.GribIosp;
-import dev.ucdm.grib.common.SectionIterable;
+import dev.ucdm.grib.common.util.SectionIterable;
 
 import java.io.IOException;
 import java.util.ArrayList;

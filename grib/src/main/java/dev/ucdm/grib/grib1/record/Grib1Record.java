@@ -8,7 +8,7 @@ package dev.ucdm.grib.grib1.record;
 import dev.ucdm.grib.common.util.GribData;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.QuasiRegular;
-import dev.ucdm.grib.grib1.tables.Grib1Customizer;
+import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.io.RandomAccessFile;
 import java.io.IOException;
