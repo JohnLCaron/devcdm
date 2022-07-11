@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/dataset" />
             <option value="$PROJECT_DIR$/gcdm" />
+            <option value="$PROJECT_DIR$/grib" />
             <option value="$PROJECT_DIR$/grid" />
             <option value="$PROJECT_DIR$/test-utils" />
           </set>

@@ -66,7 +66,7 @@ class TestCFConventions {
     @Test
     fun testDir() {
         val files = testFilesIn(TestCdmDatasets.datasetLocalDir)
-            .addNameFilter { !it.startsWith("WrfNoTimeVar") }
+            .addNameFilter { !it.startsWith("WrfNoTimeVar") && it.endsWith(".nc")}
             .withRecursion()
             .build()
         files.forEach {

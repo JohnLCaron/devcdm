@@ -102,12 +102,12 @@ public class GridDatasetFactory {
         ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
 
     try {
-      Class<?> c = GridDatasetFactory.class.getClassLoader().loadClass("dev.cdm.core.api.grib.grid.GribGridDataset");
+      Class<?> c = GridDatasetFactory.class.getClassLoader().loadClass("dev.ucdm.grib.grid.GribGridDataset");
       Method method = c.getMethod("open", String.class, Formatter.class);
       Formatter gribErrlog = new Formatter();
-      Optional<GridDataset> result = (Optional<GridDataset>) method.invoke(null, endpoint, gribErrlog);
-      if (result.isPresent()) {
-        return new GribOpenAttempt(result.get(), true);
+      GridDataset result = (GridDataset) method.invoke(null, endpoint, gribErrlog);
+      if (result != null) {
+        return new GribOpenAttempt(result, true);
       } else if (!gribErrlog.toString().isEmpty()) {
         errLog.format("%s", gribErrlog);
         return new GribOpenAttempt(null, true);

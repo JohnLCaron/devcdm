@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import dev.cdm.array.Arrays;
 import dev.cdm.array.StructureDataArray;
 import dev.cdm.gcdm.protogen.GcdmGrpc;
@@ -26,6 +25,7 @@ import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderRequest;
 import dev.cdm.gcdm.protogen.GcdmServerProto.HeaderResponse;
 import dev.cdm.gcdm.GcdmConverter;
 import dev.cdm.core.api.*;
+import org.jetbrains.annotations.Nullable;
 
 /** A remote CdmFile, using gprc protocol to communicate. */
 public class GcdmCdmFile extends CdmFile {

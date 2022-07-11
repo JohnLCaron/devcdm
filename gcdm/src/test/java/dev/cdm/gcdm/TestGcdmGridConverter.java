@@ -11,8 +11,6 @@ import dev.cdm.grid.api.GridDatasetFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import dev.cdm.gcdm.client.GcdmGridDataset;
 
 import java.io.File;
@@ -26,7 +24,6 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * Test {@link GcdmGridConverter} by roundtripping and comparing with original. Metadata only.
  */
-@RunWith(Parameterized.class)
 public class TestGcdmGridConverter {
 
   public static Stream<Arguments> params() {

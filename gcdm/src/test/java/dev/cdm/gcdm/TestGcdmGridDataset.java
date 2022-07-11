@@ -7,8 +7,6 @@ package dev.cdm.gcdm;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import dev.cdm.gcdm.client.GcdmGridDataset;
 import dev.cdm.gcdm.client.GcdmCdmFile;
 import dev.cdm.grid.api.*;
@@ -22,7 +20,6 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * Test {@link GcdmCdmFile}
  */
-@RunWith(Parameterized.class)
 public class TestGcdmGridDataset {
   public static Stream<Arguments> params() {
     return Stream.of(
