@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
@@ -26,6 +26,7 @@ import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.grib1.record.Grib1RecordScanner;
 import dev.ucdm.grib.grib2.record.Grib2RecordScanner;
 import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
+import dev.ucdm.grib.protoconvert.GribCollectionIndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ import java.util.Formatter;
 
 /** Logic for creating / managing ncx4 indices. */
 public class GribCollectionIndex {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionIndex.class);
 
   public enum Type {
     GRIB1, GRIB2, Partition1, Partition2, none
@@ -52,7 +54,7 @@ public class GribCollectionIndex {
   // raf is a data file or an ncx file
   @Nullable
   public static GribCollection openGribCollectionFromRaf(
-          RandomAccessFile raf, CollectionUpdateType updateType, GribConfig config, Logger logger) throws IOException {
+          RandomAccessFile raf, CollectionUpdateType updateType, GribConfig config, Formatter errlog) throws IOException {
 
     GribCollection result = null;
 
@@ -64,18 +66,13 @@ public class GribCollectionIndex {
     }
 
     if (isGrib1 || isGrib2) {
-      result = openGribCollectionFromDataFile(isGrib1, raf, updateType, config, null, logger);
-      // TODO close the data file, the ncx raf file is managed by gribCollection
+      result = openGribCollectionFromDataFile(isGrib1, raf, updateType, config, errlog);
+      // TODO close the data file, the ncx raf file is managed by gribCollection ??
       // raf.close();
     } else {
-
-      // see if its an ncx file
-      GribCollectionIndex.Type collectionType = getType(raf);
-      if (collectionType == Type.none) {
-        return null;
-      }
-      isGrib1 = (collectionType == Type.GRIB1) || (collectionType == Type.Partition1);
-      result = openNcxIndex(isGrib1, raf.getLocation(), config, false, logger);
+      result = openNcxIndex(raf.getLocation(), config, false);
+      // TODO close the data file, the ncx raf file is managed by gribCollection ??
+      // raf.close();
     }
 
     return result;
@@ -83,18 +80,18 @@ public class GribCollectionIndex {
 
   // raf is a data file
   public static GribCollection openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf,
-      CollectionUpdateType updateType, GribConfig config, Formatter errlog, Logger logger)
+      CollectionUpdateType updateType, GribConfig config, Formatter errlog)
       throws IOException {
 
     File dataFile = new File(dataRaf.getLocation());
     MFile mfile = new MFileOS(dataFile);
     MCollection dcm = new CollectionSingleFile(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
-    return readOrCreateCollectionFromIndex(isGrib1, dcm, updateType, config, errlog, logger);
+    return readOrCreateCollectionFromIndex(isGrib1, dcm, updateType, config, errlog);
   }
 
   @Nullable
   public static GribCollection readOrCreateCollectionFromIndex(
-          boolean isGrib1, MCollection dcm, CollectionUpdateType force, GribConfig config, Formatter errlog, Logger logger) throws IOException {
+          boolean isGrib1, MCollection dcm, CollectionUpdateType force, GribConfig config, Formatter errlog) throws IOException {
 
     String idxPath = dcm.getIndexFilename(NCX_SUFFIX);
     // look to see if the file is in some special cache (eg when cant write to data directory)
@@ -106,9 +103,9 @@ public class GribCollectionIndex {
       // look to see if the index file is older than the collection
       boolean isOlder = idxFile.lastModified() < dcm.getLastModified();
 
-      if (force == CollectionUpdateType.nocheck || isOlder) {
+      if (force != CollectionUpdateType.nocheck && !isOlder) {
         // try to read it
-        gribCollection = openNcxIndex(isGrib1, dcm.getIndexFilename(NCX_SUFFIX), config, false, logger);
+        gribCollection = openNcxIndex(dcm.getIndexFilename(NCX_SUFFIX), config, false);
       }
     }
 
@@ -120,12 +117,12 @@ public class GribCollectionIndex {
         return null;
       }
 
-      if (!createNcxIndex(isGrib1, dcm, errlog, logger)) {
+      if (!createNcxIndex(isGrib1, dcm, errlog)) {
         logger.warn("  Index writing failed on {} errlog = '{}'", idxFile2, errlog);
 
       } else {
         // read it back in
-        gribCollection = openNcxIndex(isGrib1, dcm.getIndexFilename(NCX_SUFFIX), config, false, logger);
+        gribCollection = openNcxIndex(dcm.getIndexFilename(NCX_SUFFIX), config, false);
         logger.debug("  Index written: {}", idxPath);
       }
     } else {
@@ -136,7 +133,7 @@ public class GribCollectionIndex {
   }
 
   // create ncx file
-  private static boolean createNcxIndex(boolean isGrib1, MCollection dcm, Formatter errlog, Logger logger) throws IOException {
+  private static boolean createNcxIndex(boolean isGrib1, MCollection dcm, Formatter errlog) throws IOException {
     if (isGrib1) {
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       if (!builder.createIndex(errlog)) {
@@ -153,8 +150,7 @@ public class GribCollectionIndex {
 
   // open GribCollection from an existing ncx file. return null on failure
   @Nullable
-  public static GribCollection openNcxIndex(boolean isGrib1,
-          String indexFilename, GribConfig config, boolean useCache, Logger logger) throws IOException {
+  public static GribCollection openNcxIndex(String indexFilename, GribConfig config, boolean useCache) throws IOException {
 
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null)
@@ -163,16 +159,21 @@ public class GribCollectionIndex {
     String name = makeNameFromIndexFilename(indexFilename);
 
     GribCollection result = null;
-    if (isGrib1) {
-      result = new Grib1Collection(name, null, config);
-      Grib1CollectionIndexReader reader = new Grib1CollectionIndexReader(result, config, logger);
-      try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
-        reader.readIndex(raf);
+    try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
+      GribCollectionIndex.Type collectionType = getType(raf);
+      if (collectionType == Type.none) {
+        return null;
       }
-    } else {
-      result = new Grib2Collection(name, null, config);
-      Grib2CollectionIndexReader reader = new Grib2CollectionIndexReader(result, config, logger);
-      try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
+
+      boolean isGrib1 = (collectionType == Type.GRIB1) || (collectionType == Type.Partition1);
+      if (isGrib1) {
+        result = new Grib1Collection(name, null, config);
+        Grib1CollectionIndexReader reader = new Grib1CollectionIndexReader(result, config);
+        reader.readIndex(raf);
+
+      } else {
+        result = new Grib2Collection(name, null, config);
+        Grib2CollectionIndexReader reader = new Grib2CollectionIndexReader(result, config);
         reader.readIndex(raf);
       }
     }
@@ -193,13 +194,13 @@ public class GribCollectionIndex {
     // they all have the same number of bytes
     raf.seek(0);
     String magic = raf.readString(Grib2CollectionIndexWriter.MAGIC_START.getBytes(StandardCharsets.UTF_8).length);
-    System.out.printf("%s GribCollectionIndex has magic '%s'%n", raf.getLocation(), magic);
+    //System.out.printf("%s GribCollectionIndex has magic '%s'%n", raf.getLocation(), magic);
 
     return switch (magic) {
       case Grib2CollectionIndexWriter.MAGIC_START -> Type.GRIB2;
       case Grib1CollectionIndexWriter.MAGIC_START -> Type.GRIB1;
-      // case Grib2PartitionBuilder.MAGIC_START -> Type.Partition2;
-      // case Grib1PartitionBuilder.MAGIC_START -> Type.Partition1;
+      case GribCollectionIndexWriter.PARTITION2_START -> Type.Partition2;
+      case GribCollectionIndexWriter.PARTITION1_START -> Type.Partition1;
       default -> Type.none;
     };
   }

@@ -29,8 +29,8 @@ public class Grib2CollectionIndexReader extends GribCollectionIndexReader {
 
   protected Grib2Tables cust; // gets created in readIndex, after center etc is read in
 
-  public Grib2CollectionIndexReader(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
-    super(gc, config, logger);
+  public Grib2CollectionIndexReader(GribCollection gc, GribConfig config) {
+    super(gc, config);
   }
 
   @Override

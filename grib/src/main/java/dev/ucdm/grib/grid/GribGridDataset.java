@@ -34,8 +34,8 @@ import dev.cdm.grid.api.GridHorizCoordinateSystem;
 import dev.cdm.grid.api.GridTimeCoordinateSystem;
 import dev.cdm.core.io.RandomAccessFile;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -68,7 +68,7 @@ public class GribGridDataset implements GridDataset {
     try {
       raf = new RandomAccessFile(endpoint, "r");
       // TODO how do you pass in a non-standard GribConfig ? Or is that needed only when you are creating?
-      gc = GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.nocheck, new GribConfig(), logger);
+      gc = GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.nocheck, new GribConfig(), errLog);
 
       if (gc == null) {
         raf.close();

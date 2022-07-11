@@ -13,7 +13,7 @@ import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
 

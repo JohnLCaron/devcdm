@@ -2,7 +2,7 @@ package dev.ucdm.grib.coord;
 
 import java.util.Formatter;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 @Immutable
 public class EnsCoordValue implements Comparable<EnsCoordValue> {

@@ -28,7 +28,7 @@ import dev.cdm.grid.api.GridHorizCoordinateSystem;
 import dev.cdm.grid.api.GridHorizCurvilinear;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -5,12 +5,12 @@
 package dev.ucdm.grib.coord;
 
 import java.util.Arrays;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

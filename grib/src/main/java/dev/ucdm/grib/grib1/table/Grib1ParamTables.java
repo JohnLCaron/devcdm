@@ -6,14 +6,14 @@
 package dev.ucdm.grib.grib1.table;
 
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.common.util.GribResourceReader;
 import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

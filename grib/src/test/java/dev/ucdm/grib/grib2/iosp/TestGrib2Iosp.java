@@ -63,7 +63,7 @@ public class TestGrib2Iosp {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile + NCX_SUFFIX, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.test, config, logger)) {
+              raf, CollectionUpdateType.test, config, new Formatter())) {
 
         Grib2Iosp spi = new Grib2Iosp(gc);
 

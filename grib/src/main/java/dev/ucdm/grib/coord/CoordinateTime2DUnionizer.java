@@ -5,7 +5,7 @@
 package dev.ucdm.grib.coord;
 
 import com.google.common.collect.ImmutableList;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarPeriod;

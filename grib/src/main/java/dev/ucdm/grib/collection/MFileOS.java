@@ -6,8 +6,7 @@ package dev.ucdm.grib.collection;
 
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.nio.file.Files;
 
@@ -17,7 +16,6 @@ import java.nio.file.Files;
  * @author caron
  * @since Jun 30, 2009
  */
-@ThreadSafe
 public class MFileOS implements MFile {
 
   /**

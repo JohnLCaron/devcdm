@@ -29,8 +29,8 @@ import dev.cdm.grid.api.GridAxisSpacing;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.common.GribIosp;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

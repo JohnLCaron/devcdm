@@ -2,7 +2,7 @@ package dev.ucdm.grib.coord;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarPeriod;
 

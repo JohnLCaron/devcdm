@@ -17,7 +17,7 @@ import org.jdom2.input.SAXBuilder;
 
 import dev.ucdm.grib.grib2.iosp.Grib2Parameter;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

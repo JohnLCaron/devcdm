@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.cdm.core.util.KMPMatch;
 import dev.cdm.core.io.RandomAccessFile;

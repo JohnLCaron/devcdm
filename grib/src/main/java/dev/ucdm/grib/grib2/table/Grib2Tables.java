@@ -24,8 +24,8 @@ import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.wmo.CommonCodeTable;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;

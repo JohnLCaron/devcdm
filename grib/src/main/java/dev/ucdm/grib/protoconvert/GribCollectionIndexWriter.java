@@ -13,6 +13,9 @@ import dev.ucdm.grib.protogen.GribCollectionProto;
 
 /** Common superclass for writing Grib ncx files */
 public class GribCollectionIndexWriter {
+  public static final String PARTITION2_START = "Grib2Partition2Index"; // was Grib2Partition0Index
+  public static final String PARTITION1_START = "Grib1Partition2Index"; // was Grib1Partition0Index
+
   static final int currentVersion = 1;
 
   protected final MCollection dcm;

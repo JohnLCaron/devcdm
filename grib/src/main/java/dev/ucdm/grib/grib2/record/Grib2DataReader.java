@@ -10,7 +10,7 @@ import dev.ucdm.grib.common.util.BitReader;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;

@@ -2,7 +2,7 @@ package dev.ucdm.grib.grib2.table;
 
 import dev.ucdm.grib.common.GribTables;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface Grib2ParamTableInterface {

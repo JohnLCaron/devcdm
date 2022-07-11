@@ -6,8 +6,7 @@
 package dev.ucdm.grib.collection;
 
 import com.google.common.base.MoreObjects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import dev.cdm.core.api.Attribute;
 import dev.cdm.core.api.AttributeContainer;
@@ -29,7 +28,7 @@ import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribIosp;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,16 +70,20 @@ public abstract class GribCollection implements Closeable {
   public File directory;
   public String orgDirectory; // wtf ??
 
-  // set by the builder
+  // set by the builder : repalce by Info ??
   public int version; // the ncx version
   public int center, subcenter, master, local; // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC
-                                         // has subset of them
-                                         public List<Dataset> datasets;
+
+  // all the files used in this GC; key is the index in original collection, GC has subset of them
+  public Map<Integer, MFile> fileMap;
+  public List<Dataset> datasets;
   public CoordinateRuntime masterRuntime;
   public GribTables cust;
   public int indexVersion;
+
+  // is a partition if this is not null.
+  public Partitions partitions;
 
   public void setCalendarDateRange(long startMsecs, long endMsecs) {
     this.dateRange = CalendarDateRange.of(CalendarDate.of(startMsecs), CalendarDate.of(endMsecs));
@@ -141,6 +144,10 @@ public abstract class GribCollection implements Closeable {
     return config;
   }
 
+  public boolean isPartitionOfPartitions() {
+    return partitions != null && partitions.isPartitionOfPartitions;
+  }
+
   /**
    * The files that comprise the collection.
    * Actual paths, including the grib cache if used.
@@ -186,6 +193,15 @@ public abstract class GribCollection implements Closeable {
     throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
 
+  public CoordinateRuntime getMasterRuntime() {
+    return masterRuntime;
+  }
+  public void setFileMap(Map<Integer, MFile> fileMap) {
+    this.fileMap = fileMap;
+  }
+
+  // could be replaced by Info record
+  //   public record Info(int version, int center, int subcenter, int master, int local, int genProcessType, int genProcessId, int backProcessId) { }
   public int getVersion() {
     return version;
   }
@@ -200,10 +216,6 @@ public abstract class GribCollection implements Closeable {
 
   public int getMaster() {
     return master;
-  }
-
-  public CoordinateRuntime getMasterRuntime() {
-    return masterRuntime;
   }
 
   public int getLocal() {
@@ -222,9 +234,6 @@ public abstract class GribCollection implements Closeable {
     return backProcessId;
   }
 
-  public void setFileMap(Map<Integer, MFile> fileMap) {
-    this.fileMap = fileMap;
-  }
 
   /**
    * public by accident, do not use
@@ -279,17 +288,6 @@ public abstract class GribCollection implements Closeable {
       groups = new ArrayList<>();
     }
 
-    Dataset(Dataset from) {
-      this.gctype = from.gctype;
-      groups = new ArrayList<>(from.groups.size());
-    }
-
-    GroupGC addGroupCopy(GroupGC from) {
-      GroupGC g = new GroupGC(from);
-      groups.add(g);
-      return g;
-    }
-
     public List<GroupGC> getGroups() {
       return groups;
     }
@@ -300,6 +298,7 @@ public abstract class GribCollection implements Closeable {
   }
 
   public class GroupGC implements Comparable<GroupGC> {
+    public Dataset ds;
     public GribHorizCoordSystem horizCoordSys;
     public final List<VariableIndex> variList;
     public List<Coordinate> coords; // shared coordinates
@@ -307,17 +306,10 @@ public abstract class GribCollection implements Closeable {
     HashMap<VariableIndex, VariableIndex> varMap;
     public boolean isTwoD = true; // true except for Best (?)
 
-    GroupGC() {
+    GroupGC(Dataset ds) {
+      this.ds = ds;
       this.variList = new ArrayList<>();
       this.coords = new ArrayList<>();
-    }
-
-    // copy constructor for PartitionBuilder
-    GroupGC(GroupGC from) {
-      this.horizCoordSys = from.horizCoordSys; // reference
-      this.variList = new ArrayList<>(from.variList.size()); // empty list
-      this.coords = new ArrayList<>(from.coords.size()); // empty list
-      this.isTwoD = from.isTwoD;
     }
 
     public VariableIndex addVariable(VariableIndex vi) {
@@ -361,7 +353,7 @@ public abstract class GribCollection implements Closeable {
 
 
     @Override
-    public int compareTo(@Nonnull GroupGC o) {
+    public int compareTo(GroupGC o) {
       return getDescription().compareTo(o.getDescription());
     }
 
@@ -442,18 +434,6 @@ public abstract class GribCollection implements Closeable {
     }
   }
 
-  public VariableIndex makeVariableIndex(GroupGC g, GribTables customizer, int discipline, int center,
-                                         int subcenter, byte[] rawPds, List<Integer> index, long recordsPos,
-                                         int recordsLen) {
-    return new VariableIndex(isGrib1, config, g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
-  }
-
-  VariableIndex makeVariableIndex(GroupGC group, VariableIndex from) {
-    VariableIndex vip = new VariableIndex(group, from);
-    group.addVariable(vip);
-    return vip;
-  }
-
   public AttributeContainer makeGlobalAttributes() {
     AttributeContainerMutable result = new AttributeContainerMutable(name);
     String centerName = CommonCodeTable.getCenterName(getCenter(), 2);
@@ -497,6 +477,10 @@ public abstract class GribCollection implements Closeable {
       }
       f.format("%n");
     }
+
+    if (partitions != null) {
+      partitions.showIndex(f, masterRuntime);
+    }
   }
 
   @Override
@@ -514,9 +498,11 @@ public abstract class GribCollection implements Closeable {
     return "name=" + name + " directory=" + directory;
   }
 
-  public GroupGC makeGroup() {
-    return new GroupGC();
+  public GroupGC makeGroup(GribCollection.Dataset ds) {
+    return new GroupGC(ds);
   }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
 
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
     // absolute location

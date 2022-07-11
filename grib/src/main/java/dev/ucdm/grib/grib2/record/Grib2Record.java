@@ -12,7 +12,7 @@ import dev.cdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GribData;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 

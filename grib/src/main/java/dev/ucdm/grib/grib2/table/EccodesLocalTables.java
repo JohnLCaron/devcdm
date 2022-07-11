@@ -9,7 +9,7 @@ import dev.ucdm.grib.grib2.iosp.Grib2Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Formatter;

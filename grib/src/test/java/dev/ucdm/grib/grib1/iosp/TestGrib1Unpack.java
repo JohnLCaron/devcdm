@@ -52,7 +52,6 @@ public class TestGrib1Unpack {
   public void testEcmwfExtendedComplexData2() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing2.grib1";
     try (CdmFile nc = CdmFiles.open(testfile)) {
-
       Variable var = nc.findVariable("Snowfall_surface");
       Array<Float> data = (Array<Float>) var.readArray();
       float first = data.get(0, 0, 0, 0);

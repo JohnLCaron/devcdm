@@ -4,11 +4,11 @@
  */
 package dev.ucdm.grib.coord;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import dev.cdm.array.Immutable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
-import dev.ucdm.grib.common.util.Counters;
+import dev.cdm.core.util.Counters;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib2.record.Grib2Record;
@@ -19,7 +19,6 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarPeriod;
 import dev.cdm.array.Indent;
-import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -946,7 +945,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
 
     @Override
-    public int compareTo(@Nonnull Time2D o) {
+    public int compareTo(Time2D o) {
       int r = Long.compare(refDate, o.refDate);
       if (r == 0) {
         if (time != null) {

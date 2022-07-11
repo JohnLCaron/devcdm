@@ -3,7 +3,7 @@ package dev.ucdm.grib.coord;
 import java.util.Formatter;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import dev.cdm.array.NumericCompare;
 import dev.ucdm.grib.common.util.GribNumbers;
 

@@ -27,8 +27,8 @@ import java.io.IOException;
  */
 public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
 
-  public Grib1CollectionIndexReader(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
-    super(gc, config, logger);
+  public Grib1CollectionIndexReader(GribCollection gc, GribConfig config) {
+    super(gc, config);
   }
 
   protected Grib1Customizer cust; // gets created in readIndex, after center etc is read in

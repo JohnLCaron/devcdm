@@ -24,8 +24,8 @@ import dev.cdm.grid.api.GridTimeCoordinateSystem;
 import dev.cdm.array.Indent;
 import dev.cdm.grid.internal.SubsetTimeHelper;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+import dev.cdm.array.Immutable;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;

@@ -8,7 +8,7 @@ package dev.ucdm.grib.grib2.table;
 import com.google.common.collect.ImmutableList;
 import dev.cdm.core.util.StringUtil2;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

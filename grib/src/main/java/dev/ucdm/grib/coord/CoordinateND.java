@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import dev.cdm.array.Indent;
 import dev.cdm.array.Section;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.*;
 
 /**

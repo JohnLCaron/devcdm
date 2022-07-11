@@ -16,7 +16,7 @@ import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.Formatter;
 import java.util.Objects;
 

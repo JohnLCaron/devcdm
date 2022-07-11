@@ -7,7 +7,7 @@ package dev.ucdm.grib.common;
 
 import dev.ucdm.grib.coord.VertCoordType;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Abstraction of GribTable for Grib Collections.

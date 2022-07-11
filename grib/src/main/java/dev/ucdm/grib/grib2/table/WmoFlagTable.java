@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import dev.ucdm.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import dev.ucdm.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

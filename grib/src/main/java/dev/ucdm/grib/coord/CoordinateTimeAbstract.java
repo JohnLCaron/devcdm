@@ -8,7 +8,7 @@ package dev.ucdm.grib.coord;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarPeriod;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Abstract superclass for time coordinates ( time, timeIntv, time2D)

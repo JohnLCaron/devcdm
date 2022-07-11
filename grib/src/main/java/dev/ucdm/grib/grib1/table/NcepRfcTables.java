@@ -6,7 +6,7 @@
 package dev.ucdm.grib.grib1.table;
 
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import dev.cdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GribResourceReader;
 

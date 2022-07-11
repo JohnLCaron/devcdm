@@ -7,7 +7,7 @@ package dev.ucdm.grib.coord;
 import java.util.Arrays;
 
 import dev.cdm.array.Indent;
-import dev.ucdm.grib.common.util.Counters;
+import dev.cdm.core.util.Counters;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
 import dev.ucdm.grib.grib1.record.Grib1Record;
@@ -22,7 +22,7 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.calendar.CalendarPeriod;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

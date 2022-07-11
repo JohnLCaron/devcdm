@@ -4,17 +4,18 @@
  */
 package dev.ucdm.grib.coord;
 
+import dev.cdm.array.Immutable;
 import dev.cdm.array.Indent;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.calendar.CalendarPeriod;
-import dev.ucdm.grib.common.util.Counters;
+import dev.cdm.core.util.Counters;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 
 /**

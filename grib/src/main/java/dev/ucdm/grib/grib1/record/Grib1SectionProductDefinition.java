@@ -17,7 +17,7 @@ import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib1.table.Grib1ParamTableReader;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;

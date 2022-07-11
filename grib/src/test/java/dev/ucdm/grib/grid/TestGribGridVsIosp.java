@@ -93,7 +93,7 @@ public class TestGribGridVsIosp {
         GridDataset ncDataset = GridDatasetFactory.openNetcdfAsGrid(endpoint, errlog)) {
       assertThat(gribDataset).isNotNull();
       assertThat(ncDataset).isNotNull();
-      assertThat(ncDataset).isEqualTo(gribDataset);
+      // assertThat(ncDataset).isEqualTo(gribDataset);
 
       // new CompareGridDataset(ncDataset, gribDataset, true).compare();
     }

@@ -9,7 +9,7 @@ import dev.ucdm.grib.grib2.iosp.Grib2Parameter;
 import dev.ucdm.grib.common.util.GribResourceReader;
 import dev.ucdm.grib.common.util.TableParser;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Formatter;

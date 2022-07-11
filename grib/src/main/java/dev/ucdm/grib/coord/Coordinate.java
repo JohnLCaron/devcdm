@@ -7,7 +7,7 @@ package dev.ucdm.grib.coord;
 
 import dev.cdm.array.Indent;
 import dev.cdm.core.constants.AxisType;
-import dev.ucdm.grib.common.util.Counters;
+import dev.cdm.core.util.Counters;
 
 import java.util.Formatter;
 import java.util.List;

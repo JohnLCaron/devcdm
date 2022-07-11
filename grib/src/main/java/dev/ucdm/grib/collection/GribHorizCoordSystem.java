@@ -7,7 +7,7 @@ package dev.ucdm.grib.collection;
 
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * Encapsolates the GdsHorizCoordSys; shared by the GribCollection.GroupGC

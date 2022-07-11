@@ -9,7 +9,7 @@ import dev.cdm.array.Arrays;
 import dev.cdm.array.RangeIterator;
 import dev.cdm.array.Section;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

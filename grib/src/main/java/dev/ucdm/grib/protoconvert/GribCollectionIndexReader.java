@@ -5,17 +5,19 @@
 
 package dev.ucdm.grib.protoconvert;
 
-import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GcMFile;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.GribHorizCoordSystem;
 import dev.ucdm.grib.collection.MFile;
+import dev.ucdm.grib.collection.Partitions;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
+import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribTables;
+import dev.ucdm.grib.common.util.SmartArrayInt;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.protogen.GribCollectionProto;
@@ -24,16 +26,21 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateUnit;
 import dev.cdm.core.calendar.CalendarPeriod;
 import dev.cdm.core.io.RandomAccessFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 /** Superclass to read GribCollection from ncx4 file. */
 public abstract class GribCollectionIndexReader {
+  static final Logger logger = LoggerFactory.getLogger(GribCollectionIndexReader.class);
+
   protected static final boolean debug = false;
   private static final boolean stackTrace = true;
 
   protected GribCollection gc;
-  protected final org.slf4j.Logger logger;
   protected final GribConfig gribConfig;
   protected GribTables tables;
 
@@ -47,8 +54,7 @@ public abstract class GribCollectionIndexReader {
 
   protected abstract int getMinVersion();
 
-  public GribCollectionIndexReader(GribCollection gc, GribConfig config, org.slf4j.Logger logger) {
-    this.logger = logger;
+  public GribCollectionIndexReader(GribCollection gc, GribConfig config) {
     this.gribConfig = config;
     this.gc = gc;
   }
@@ -63,12 +69,11 @@ public abstract class GribCollectionIndexReader {
       raf.seek(0);
 
       //// header message
-      if (!Streams.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8))) {
-        raf.seek(0);
-        Streams.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8)); // debug
+      GribCollectionIndex.Type type = GribCollectionIndex.getType(raf);
+      if (type == GribCollectionIndex.Type.none) {
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
-        throw new IllegalStateException(); // temp debug
-        // return false;
+        // throw new IllegalStateException(); // temp debug
+        return false;
       }
 
       gc.version = raf.readInt();
@@ -139,8 +144,8 @@ public abstract class GribCollectionIndexReader {
       for (int i = 0; i < proto.getDatasetCount(); i++) {
         importDataset(proto.getDataset(i));
       }
-
-      return readExtensions(proto);
+      gc.partitions = this.importPartitions(gc, proto);
+      return true;
 
     } catch (Throwable t) {
       logger.warn("Error reading index " + raf.getLocation(), t);
@@ -150,30 +155,20 @@ public abstract class GribCollectionIndexReader {
     }
   }
 
-  protected boolean readExtensions(GribCollectionProto.GribCollection proto) {
-    return true;
-  }
-
-  protected VariableIndex readVariableExtensions(GribCollection.GroupGC group,
-                                                 GribCollectionProto.Variable pv, VariableIndex vi) {
-    group.addVariable(vi);
-    return vi;
-  }
-
   private GribCollection.Dataset importDataset(GribCollectionProto.Dataset p) {
     CollectionType type = CollectionType.valueOf(p.getType().toString());
     GribCollection.Dataset ds = gc.makeDataset(type);
 
     List<GribCollection.GroupGC> groups = new ArrayList<>(p.getGroupsCount());
     for (int i = 0; i < p.getGroupsCount(); i++)
-      groups.add(importGroup(p.getGroups(i)));
+      groups.add(importGroup(ds, p.getGroups(i)));
     ds.groups = groups;
 
     return ds;
   }
 
-  protected GribCollection.GroupGC importGroup(GribCollectionProto.Group p) {
-    GribCollection.GroupGC group = gc.makeGroup();
+  protected GribCollection.GroupGC importGroup(GribCollection.Dataset ds, GribCollectionProto.Group p) {
+    GribCollection.GroupGC group = gc.makeGroup(ds);
 
     group.horizCoordSys = readGds(p.getGds());
 
@@ -189,7 +184,7 @@ public abstract class GribCollectionIndexReader {
     }
 
     for (int i = 0; i < p.getVariablesCount(); i++) {
-      readVariable(group, p.getVariables(i));
+      group.addVariable(importVariable(gc, group, p.getVariables(i)));
     }
 
     // assign names, units to coordinates
@@ -290,8 +285,26 @@ public abstract class GribCollectionIndexReader {
       else
         runtime2D.setName(runtime.getName());
     }
-
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // these objects are created from the ncx index. lame - should only be in the builder i think
+  private final Set<String> hcsNames = new HashSet<>(5);
+
+  protected String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
+    // default id
+    String base = hcs.makeId();
+    // ensure uniqueness
+    String tryit = base;
+    int count = 1;
+    while (hcsNames.contains(tryit)) {
+      count++;
+      tryit = base + "-" + count;
+    }
+    hcsNames.add(tryit);
+    return tryit;
+  }
+
 
   /*
    * message Coord {
@@ -398,8 +411,9 @@ public abstract class GribCollectionIndexReader {
     return null;
   }
 
-  private VariableIndex readVariable(GribCollection.GroupGC group,
-                                     GribCollectionProto.Variable pv) {
+  private VariableIndex importVariable(GribCollection gc,
+                                       GribCollection.GroupGC group,
+                                       GribCollectionProto.Variable pv) {
     int discipline = pv.getDiscipline();
 
     byte[] rawPds = pv.getPds().toByteArray();
@@ -413,13 +427,17 @@ public abstract class GribCollectionIndexReader {
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
+    boolean isGrib1 = this instanceof Grib1CollectionIndexReader;
     VariableIndex result =
-        gc.makeVariableIndex(group, tables, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
+       new VariableIndex(isGrib1, gc, group, tables, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
+
     result.ndups = pv.getNdups();
     result.nrecords = pv.getNrecords();
     result.nmissing = pv.getMissing();
 
-    return readVariableExtensions(group, pv, result);
+    result.vpartition = importVariablePartitions(pv.getPartVariableList());
+
+    return result;
   }
 
   private static Coordinate.Type importAxisType(GribCollectionProto.GribAxisType type) {
@@ -440,22 +458,77 @@ public abstract class GribCollectionIndexReader {
     throw new IllegalStateException("illegal axis type " + type);
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // these objects are created from the ncx index. lame - should only be in the builder i think
-  private final Set<String> hcsNames = new HashSet<>(5);
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
-    // default id
-    String base = hcs.makeId();
-    // ensure uniqueness
-    String tryit = base;
-    int count = 1;
-    while (hcsNames.contains(tryit)) {
-      count++;
-      tryit = base + "-" + count;
+  @Nullable
+  private Partitions importPartitions(GribCollection gc, GribCollectionProto.GribCollection proto) {
+    if (proto.getPartitionsCount() == 0) {
+      return null;
     }
-    hcsNames.add(tryit);
-    return tryit;
+    boolean isPartitionOfPartitions = proto.getIsPartitionOfPartitions();
+    List<Partitions.Partition> partitions = proto.getPartitionsList().stream().map(it -> importPartition(it, gc.getDirectory())).toList();
+    List<Integer> list = proto.getRun2PartList();
+
+    int[] run2part = new int[list.size()];
+    int count = 0;
+    for (int partno : list) {
+      run2part[count++] = partno;
+    }
+    return new Partitions(gc, isPartitionOfPartitions, partitions, run2part);
   }
+
+  /*
+message Partition {
+  string name = 1;       // name is used in TDS - eg the subdirectory when generated by TimePartitionCollections
+  string filename = 2;   // the gribCollection.ncx file, reletive to gc.
+  uint64 lastModified = 4;
+  int64 length = 5;
+  int64 partitionDate = 6;  // partition date added 11/25/14
+}
+   */
+  private Partitions.Partition importPartition(GribCollectionProto.Partition proto, File parentDirectory) {
+    long partitionDateMillisecs = proto.getPartitionDate();
+    CalendarDate partitionDate = partitionDateMillisecs > 0 ? CalendarDate.of(partitionDateMillisecs) : null;
+    return new Partitions.Partition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(),
+            partitionDate, parentDirectory);
+  }
+
+  /*
+  message PartitionVariable {
+  uint32 groupno = 1;
+  uint32 varno = 2;
+  uint32 partno = 4;
+
+  // optionally keep stats
+  uint32 ndups = 8;
+  uint32 nrecords = 9;
+  uint32 missing = 10;
+}
+   */
+  @Nullable
+  public Partitions.VariablePartition importVariablePartitions(List<GribCollectionProto.PartitionVariable> pvList) {
+    int nparts = pvList.size();
+    if (nparts == 0) {
+      return null;
+    }
+
+    int[] partno = new int[nparts];
+    int[] groupno = new int[nparts];
+    int[] varno = new int[nparts];
+
+    int count = 0;
+    for (GribCollectionProto.PartitionVariable part : pvList) {
+      partno[count] = part.getPartno();
+      groupno[count] = part.getGroupno();
+      varno[count] = part.getVarno();
+      count++;
+    }
+
+    return new Partitions.VariablePartition(nparts,
+        new SmartArrayInt(partno),
+        new SmartArrayInt(groupno),
+        new SmartArrayInt(varno));
+  }
+
 
 }

@@ -6,6 +6,8 @@ import dev.ucdm.grib.collection.GribCollection;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Formatter;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -18,7 +20,7 @@ public class TestValidCollection {
 
   public static Stream<Arguments> params() {
     return Stream.of(
-            Arguments.of(oldTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4", false, true),
+            Arguments.of(oldTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4", false, false),
             Arguments.of(gridTestDir + "index/grib1.proto2.gbx9", true, true),
             Arguments.of(gridTestDir + "afwa.grib1", true, false),
             Arguments.of(gridTestDir + "afwa.grib1.ncx4", true, false),
@@ -31,10 +33,10 @@ public class TestValidCollection {
   @ParameterizedTest
   @MethodSource("params")
   public void testOpen(String filename, boolean isGrib1, boolean expectFail) {
-
+    System.out.printf("TestValidCollection %s%n", filename);
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
       GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.never, new GribConfig(), logger);
+              raf, CollectionUpdateType.never, new GribConfig(), new Formatter());
       if (gc == null) {
         if (!expectFail) fail();
         return;

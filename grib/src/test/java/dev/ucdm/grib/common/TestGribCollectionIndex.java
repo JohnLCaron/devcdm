@@ -8,6 +8,7 @@ import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.collection.MFileOS;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.grib1.iosp.Grib1Iosp;
+import dev.ucdm.grib.grib2.iosp.Grib2Iosp;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -31,7 +32,7 @@ public class TestGribCollectionIndex {
     Formatter errlog = new Formatter();
 
     try (GribCollection gc = GribCollectionIndex.readOrCreateCollectionFromIndex(false, dcm,
-            CollectionUpdateType.test, config, errlog, logger)) {
+            CollectionUpdateType.test, config, errlog)) {
       assertThat(gc).isNotNull();
       assertThat(gc.center).isEqualTo(7);
     } catch (Throwable t) {
@@ -48,7 +49,7 @@ public class TestGribCollectionIndex {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromDataFile(false, raf,
-              CollectionUpdateType.test, config, errlog, logger)) {
+              CollectionUpdateType.test, config, errlog)) {
         assertThat(gc).isNotNull();
         assertThat(gc.center).isEqualTo(7);
       } catch (Throwable t) {
@@ -66,7 +67,7 @@ public class TestGribCollectionIndex {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.test, config, logger)) {
+              raf, CollectionUpdateType.test, config, errlog)) {
         assertThat(gc).isNotNull();
         assertThat(gc.center).isEqualTo(7);
       } catch (Throwable t) {
@@ -84,28 +85,13 @@ public class TestGribCollectionIndex {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile + NCX_SUFFIX, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.test, config, logger)) {
+              raf, CollectionUpdateType.test, config, errlog)) {
         assertThat(gc).isNotNull();
         assertThat(gc.center).isEqualTo(7);
       } catch (Throwable t) {
         System.out.printf("errlog = '%s'%n", errlog);
         t.printStackTrace();
       }
-    }
-  }
-
-  @Test
-  public void testIsValidFile() throws IOException {
-    try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
-      assertThat(new Grib1Iosp().isValidFile(raf)).isTrue();
-    }
-
-    try (RandomAccessFile raf = new RandomAccessFile(testfile + NCX_SUFFIX, "r")) {
-      assertThat(new Grib1Iosp().isValidFile(raf)).isTrue();
-    }
-
-    try (RandomAccessFile raf = new RandomAccessFile(testfile + GribIndex.GBX9_IDX, "r")) {
-      assertThat(new Grib1Iosp().isValidFile(raf)).isFalse();
     }
   }
 

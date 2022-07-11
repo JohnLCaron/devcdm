@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.grib1.table;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.common.util.GribResourceReader;
 import dev.ucdm.grib.coord.VertCoordType;

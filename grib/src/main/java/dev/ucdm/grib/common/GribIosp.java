@@ -25,7 +25,7 @@ import dev.ucdm.grib.coord.CoordinateTime2D;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 import org.jdom2.Element;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
@@ -124,11 +124,11 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       helper.addGroup(rootGroup, gHcs, gtype, false);
 
     } else if (gribCollection == null) { // may have been set in the constructor
-
+      Formatter errlog = new Formatter();
       this.gribCollection =
-          GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.testIndexOnly, gribConfig, logger);
+          GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.testIndexOnly, gribConfig, errlog);
       if (gribCollection == null) {
-        throw new IllegalStateException("Not a GRIB data file or index file " + raf.getLocation());
+        throw new IllegalStateException(String.format("Fail to openGribCollectionFromRaf  %s err = %s", raf.getLocation(), errlog));
       }
 
       // isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);

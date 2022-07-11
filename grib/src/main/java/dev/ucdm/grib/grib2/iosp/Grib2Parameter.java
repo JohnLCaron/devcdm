@@ -9,7 +9,7 @@ import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.wmo.WmoUtils;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * A Grib-2 parameter

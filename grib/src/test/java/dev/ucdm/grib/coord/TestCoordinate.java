@@ -3,7 +3,7 @@ package dev.ucdm.grib.coord;
 import dev.cdm.array.Indent;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarPeriod;
-import dev.ucdm.grib.common.util.Counters;
+import dev.cdm.core.util.Counters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

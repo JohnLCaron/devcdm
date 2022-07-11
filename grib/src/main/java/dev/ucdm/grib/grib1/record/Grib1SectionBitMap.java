@@ -5,12 +5,12 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.cdm.core.io.RandomAccessFile;
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 
 /**

@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.collection;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 import com.google.common.base.Preconditions;
 import dev.cdm.core.calendar.CalendarDate;

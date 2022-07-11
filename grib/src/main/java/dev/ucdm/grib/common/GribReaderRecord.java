@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import dev.cdm.grid.api.GridSubset;
 import dev.ucdm.grib.collection.GribCollection;
 
-/** internal class for debugging. */
 class GribReaderRecord implements Comparable<GribReaderRecord> {
   int resultIndex; // index into the result array
   final GribCollection.ReadRecord record;

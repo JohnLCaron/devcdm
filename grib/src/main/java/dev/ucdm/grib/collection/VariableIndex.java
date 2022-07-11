@@ -23,8 +23,7 @@ import dev.ucdm.grib.grib2.record.Grib2SectionProductDefinition;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -34,6 +33,7 @@ import java.util.List;
 public class VariableIndex implements Comparable<VariableIndex> {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(VariableIndex.class);
 
+  public final GribCollection gribCollection; // belongs to this group
   public final GribCollection.GroupGC group; // belongs to this group
   public final int tableVersion; // grib1 only : can vary by variable
   public final int discipline, center, subcenter; // grib2 only
@@ -52,11 +52,15 @@ public class VariableIndex implements Comparable<VariableIndex> {
   public final int genProcessType;
   public final int spatialStatType;
 
+  // variable is a partition if not null
+  public Partitions.VariablePartition vpartition;
+
   // stats
   public int ndups, nrecords, nmissing;
 
-  VariableIndex(boolean isGrib1, GribConfig config, GribCollection.GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
-                List<Integer> index, long recordsPos, int recordsLen) {
+  public VariableIndex(boolean isGrib1, GribCollection gribCollection, GribCollection.GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
+                       List<Integer> index, long recordsPos, int recordsLen) {
+    this.gribCollection = gribCollection;
     this.group = g;
     this.discipline = discipline;
     this.rawPds = rawPds;
@@ -66,6 +70,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
     this.recordsPos = recordsPos;
     this.recordsLen = recordsLen;
 
+    GribConfig gribConfig = gribCollection.config;
     if (isGrib1) {
       Grib1Customizer cust = (Grib1Customizer) customizer;
       Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(rawPds);
@@ -93,8 +98,8 @@ public class VariableIndex implements Comparable<VariableIndex> {
       this.spatialStatType = -1;
 
       // TODO config vs serialized config
-      gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.useTableVersion,
-          config.intvMerge, config.useCenter);
+      gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), gribConfig.useTableVersion,
+              gribConfig.intvMerge, gribConfig.useCenter);
 
     } else {
       Grib2Tables cust2 = (Grib2Tables) customizer;
@@ -145,34 +150,8 @@ public class VariableIndex implements Comparable<VariableIndex> {
       }
       // TODO config vs serialized config
       gribVariable = new Grib2Variable(cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds,
-              config.intvMerge, config.useGenType);
+              gribConfig.intvMerge, gribConfig.useGenType);
     }
-  }
-
-  protected VariableIndex(GribCollection.GroupGC g, VariableIndex other) {
-    this.group = g;
-    this.tableVersion = other.tableVersion;
-    this.discipline = other.discipline;
-    this.center = other.center;
-    this.subcenter = other.subcenter;
-    this.rawPds = other.rawPds;
-    this.gribVariable = other.gribVariable;
-    this.coordIndex = new ArrayList<>(other.coordIndex);
-    this.recordsPos = 0;
-    this.recordsLen = 0;
-
-    this.category = other.category;
-    this.parameter = other.parameter;
-    this.levelType = other.levelType;
-    this.intvType = other.intvType;
-    this.isLayer = other.isLayer;
-    this.ensDerivedType = other.ensDerivedType;
-    this.probabilityName = other.probabilityName;
-    this.probType = other.probType;
-    this.genProcessType = other.genProcessType;
-    this.spatialStatType = other.spatialStatType;
-    this.isEnsemble = other.isEnsemble;
-    this.percentile = other.percentile;
   }
 
   public List<Coordinate> getCoordinates() {
@@ -188,6 +167,12 @@ public class VariableIndex implements Comparable<VariableIndex> {
       if (group.coords.get(idx).getType() == want)
         return group.coords.get(idx);
     return null;
+  }
+
+  // get the ith coordinate
+  public Coordinate getCoordinate(int index) {
+    int grpIndex = coordIndex.get(index);
+    return group.coords.get(grpIndex);
   }
 
   public int getCoordinateIdx(Coordinate.Type want) {
@@ -304,6 +289,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
   // read in on demand
   private SparseArray<GribCollection.ReadRecord> sparseArray; // for GC only; lazily read; same array shape as variable, minus x and y
 
+  // read in the record information from the ncx
   public synchronized void readRecords(GribCollection gc) throws IOException {
     if (this.sparseArray != null || recordsLen == 0) {
       return;
@@ -402,7 +388,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
   }
 
   @Override
-  public int compareTo(@Nonnull VariableIndex o) {
+  public int compareTo(VariableIndex o) {
     int r = discipline - o.discipline; // TODO add center, subcenter, version?
     if (r != 0)
       return r;

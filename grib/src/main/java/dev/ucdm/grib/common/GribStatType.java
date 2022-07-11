@@ -7,7 +7,7 @@ package dev.ucdm.grib.common;
 
 import dev.cdm.core.constants.CF;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Grib1 derived from Code table 5 : Time range indicator

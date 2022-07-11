@@ -14,7 +14,7 @@ import dev.cdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GaussianLatitudes;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 /**
  * A Horizontal coordinate system generated from a GRIB1 or GRIB2 GDS.

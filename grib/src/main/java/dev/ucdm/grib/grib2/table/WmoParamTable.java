@@ -7,7 +7,7 @@ import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import dev.ucdm.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class WmoParamTable implements Grib2ParamTableInterface {

@@ -8,7 +8,7 @@ package dev.ucdm.grib.grib2.record;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.GribNumbers;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 import java.io.IOException;
 import java.util.zip.CRC32;
 

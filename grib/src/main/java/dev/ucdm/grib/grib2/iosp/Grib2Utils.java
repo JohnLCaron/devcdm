@@ -13,7 +13,7 @@ import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.WmoParamTable;
 import dev.ucdm.grib.common.GribTables;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Static utilities for Grib-2

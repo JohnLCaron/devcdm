@@ -11,7 +11,7 @@ import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.iosp.Grib2Utils;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Center = (7) US National Weather Service, National Centres for Environmental Prediction (NCEP)

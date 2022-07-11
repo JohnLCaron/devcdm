@@ -2,7 +2,7 @@ package dev.ucdm.grib.grib2.table;
 
 import com.google.common.base.MoreObjects;
 
-import javax.annotation.concurrent.Immutable;
+import dev.cdm.array.Immutable;
 
 @Immutable
 public class Grib2TablesId {

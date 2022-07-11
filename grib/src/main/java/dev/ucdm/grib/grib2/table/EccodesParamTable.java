@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.grib2.iosp.Grib2Parameter;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

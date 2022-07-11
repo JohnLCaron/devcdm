@@ -3,9 +3,10 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.common.util;
+package dev.cdm.core.util;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

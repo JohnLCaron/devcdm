@@ -9,8 +9,7 @@ import dev.cdm.array.Array;
 import dev.cdm.array.ArrayType;
 import dev.cdm.array.Arrays;
 import dev.cdm.dataset.transform.vertical.VerticalTransform;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of VerticalTransform that makes a gcmd to get the 3D array.

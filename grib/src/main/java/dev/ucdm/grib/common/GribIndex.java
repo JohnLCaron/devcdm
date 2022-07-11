@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.MFile;
