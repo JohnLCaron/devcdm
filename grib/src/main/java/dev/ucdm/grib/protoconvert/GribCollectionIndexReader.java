@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GcMFile;
 import dev.ucdm.grib.collection.GribCollection;
-import dev.ucdm.grib.collection.GribHorizCoordSystem;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.collection.Partitions;
 import dev.ucdm.grib.collection.VariableIndex;
@@ -44,7 +43,7 @@ public abstract class GribCollectionIndexReader {
   protected final GribConfig gribConfig;
   protected GribTables tables;
 
-  protected abstract GribHorizCoordSystem readGds(GribCollectionProto.Gds p);
+  protected abstract GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p);
 
   protected abstract GribTables makeCustomizer() throws IOException;
 
@@ -170,7 +169,7 @@ public abstract class GribCollectionIndexReader {
   protected GribCollection.GroupGC importGroup(GribCollection.Dataset ds, GribCollectionProto.Group p) {
     GribCollection.GroupGC group = gc.makeGroup(ds);
 
-    group.horizCoordSys = readGds(p.getGds());
+    group.horizCoordSys = importGribHorizCoordSystem(p.getGds());
 
     // read coords before variables
     group.coords = new ArrayList<>();

@@ -118,7 +118,7 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
           if (first == null) {
             first = vb.first;
           }
-          GribCollectionProto.SparseArray vr = writeSparseArray(vb, g.fileSet);
+          GribCollectionProto.SparseArray vr = publishSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
           vb.pos = raf.getFilePointer();
           vb.length = b.length;
@@ -193,7 +193,7 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
         indexBuilder.addMfiles(b.build());
       }
 
-      indexBuilder.setMasterRuntime(writeCoordProto(masterRuntime));
+      indexBuilder.setMasterRuntime(publishCoordinateRuntime(masterRuntime));
 
       // gds
       for (Group g : groups) {
@@ -201,7 +201,7 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
       }
 
       // the GC dataset
-      indexBuilder.addDataset(writeDatasetProto(type, groups));
+      indexBuilder.addDataset(publishDatasetProto(type, groups));
 
       // what about just storing first ??
       Grib1SectionProductDefinition pds = first.getPDSsection();
@@ -249,8 +249,8 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
    * uint32 ndups = 5; // duplicates found when creating
    * }
    */
-  private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb,
-      Set<Integer> fileSet) {
+  private GribCollectionProto.SparseArray publishSparseArray(Grib1CollectionBuilder.VariableBag vb,
+                                                             Set<Integer> fileSet) {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     SparseArray<Grib1Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape()) {
@@ -280,14 +280,14 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
    * Type type = 1;
    * repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(CollectionType type, List<Group> groups) {
+  private GribCollectionProto.Dataset publishDatasetProto(CollectionType type, List<Group> groups) {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
     b.setType(ptype);
 
     for (Group group : groups) {
-      b.addGroups(writeGroupProto(group));
+      b.addGroups(publishGroupProto(group));
     }
 
     return b.build();
@@ -301,7 +301,7 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
    * repeated int32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
    * }
    */
-  private GribCollectionProto.Group writeGroupProto(Group g) {
+  private GribCollectionProto.Group publishGroupProto(Group g) {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
@@ -312,12 +312,12 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
 
     for (Coordinate coord : g.coords) {
       switch (coord.getType()) {
-        case runtime -> b.addCoords(writeCoordProto((CoordinateRuntime) coord));
-        case time -> b.addCoords(writeCoordProto((CoordinateTime) coord));
-        case timeIntv -> b.addCoords(writeCoordProto((CoordinateTimeIntv) coord));
-        case time2D -> b.addCoords(writeCoordProto((CoordinateTime2D) coord));
-        case vert -> b.addCoords(writeCoordProto((CoordinateVert) coord));
-        case ens -> b.addCoords(writeCoordProto((CoordinateEns) coord));
+        case runtime -> b.addCoords(publishCoordinateRuntime((CoordinateRuntime) coord));
+        case time -> b.addCoords(publishCoordinateTime((CoordinateTime) coord));
+        case timeIntv -> b.addCoords(publishCoordinateTimeIntv((CoordinateTimeIntv) coord));
+        case time2D -> b.addCoords(publishCoordinateTime2D((CoordinateTime2D) coord));
+        case vert -> b.addCoords(publishCoordinateVert((CoordinateVert) coord));
+        case ens -> b.addCoords(publishCoordinateEns((CoordinateEns) coord));
       }
     }
 

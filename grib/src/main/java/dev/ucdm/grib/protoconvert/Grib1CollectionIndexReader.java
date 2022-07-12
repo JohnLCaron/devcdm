@@ -6,7 +6,6 @@
 package dev.ucdm.grib.protoconvert;
 
 import dev.ucdm.grib.collection.GribCollection;
-import dev.ucdm.grib.collection.GribHorizCoordSystem;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribTables;
@@ -59,7 +58,7 @@ public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
   }
 
   @Override
-  protected GribHorizCoordSystem readGds(GribCollectionProto.Gds p) {
+  protected GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p) {
     byte[] rawGds = null;
     Grib1Gds gds;
     int predefined = -1;

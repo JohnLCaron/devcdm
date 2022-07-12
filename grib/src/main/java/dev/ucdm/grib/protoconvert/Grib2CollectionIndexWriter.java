@@ -151,7 +151,7 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
         indexBuilder.addMfiles(b.build());
       }
 
-      indexBuilder.setMasterRuntime(writeCoordProto(masterRuntime));
+      indexBuilder.setMasterRuntime(publishCoordinateRuntime(masterRuntime));
 
       // gds
       for (Object go : groups) {
@@ -246,12 +246,12 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
 
     for (Coordinate coord : g.coords) {
       switch (coord.getType()) {
-        case runtime -> b.addCoords(writeCoordProto((CoordinateRuntime) coord));
-        case time -> b.addCoords(writeCoordProto((CoordinateTime) coord));
-        case timeIntv -> b.addCoords(writeCoordProto((CoordinateTimeIntv) coord));
-        case time2D -> b.addCoords(writeCoordProto((CoordinateTime2D) coord));
-        case vert -> b.addCoords(writeCoordProto((CoordinateVert) coord));
-        case ens -> b.addCoords(writeCoordProto((CoordinateEns) coord));
+        case runtime -> b.addCoords(publishCoordinateRuntime((CoordinateRuntime) coord));
+        case time -> b.addCoords(publishCoordinateTime((CoordinateTime) coord));
+        case timeIntv -> b.addCoords(publishCoordinateTimeIntv((CoordinateTimeIntv) coord));
+        case time2D -> b.addCoords(publishCoordinateTime2D((CoordinateTime2D) coord));
+        case vert -> b.addCoords(publishCoordinateVert((CoordinateVert) coord));
+        case ens -> b.addCoords(publishCoordinateEns((CoordinateEns) coord));
       }
     }
 

@@ -6,6 +6,7 @@
 package dev.ucdm.grib.collection;
 
 import com.google.common.base.MoreObjects;
+import dev.ucdm.grib.protoconvert.GribHorizCoordSystem;
 import org.jetbrains.annotations.Nullable;
 
 import dev.cdm.core.api.Attribute;
@@ -339,10 +340,6 @@ public abstract class GribCollection implements Closeable {
       return horizCoordSys.getDescription();
     }
 
-    public byte[] getGdsBytes() {
-      return horizCoordSys.getRawGds();
-    }
-
     public Object getGdsHash() {
       return horizCoordSys.getGdsHash();
     }
@@ -363,16 +360,6 @@ public abstract class GribCollection implements Closeable {
         return result;
       for (int fileno : filenose)
         result.add(fileMap.get(fileno));
-      Collections.sort(result);
-      return result;
-    }
-
-    public List<String> getFilenames() {
-      List<String> result = new ArrayList<>();
-      if (filenose == null)
-        return result;
-      for (int fileno : filenose)
-        result.add(fileMap.get(fileno).getPath());
       Collections.sort(result);
       return result;
     }
@@ -412,12 +399,6 @@ public abstract class GribCollection implements Closeable {
         dateRange = result;
       }
       return dateRange;
-    }
-
-    public int getNFiles() {
-      if (filenose == null)
-        return 0;
-      return filenose.length;
     }
 
     public void show(Formatter f) {

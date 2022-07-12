@@ -11,6 +11,7 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.common.GribConfig;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
@@ -61,7 +62,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     for (MFile mfile : dcm) {
         Grib1Index index;
         try {
-          if (Grib.debugGbxIndexOnly) {
+          if (GribConstants.debugGbxIndexOnly) {
             index = GribIndex.readOrCreateIndex1(mfile, CollectionUpdateType.never, errlog);
             if (index == null)
               continue;

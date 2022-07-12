@@ -6,7 +6,6 @@
 package dev.ucdm.grib.protoconvert;
 
 import com.google.protobuf.ByteString;
-import dev.ucdm.grib.collection.GribHorizCoordSystem;
 import dev.ucdm.grib.collection.MCollection;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;
@@ -26,10 +25,6 @@ public class GribCollectionIndexWriter {
     this.logger = logger;
   }
 
-  protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) {
-    return writeGdsProto(hcs.getRawGds(), hcs.getPredefinedGridDefinition());
-  }
-
   static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
 
@@ -42,7 +37,7 @@ public class GribCollectionIndexWriter {
     return b.build();
   }
 
-  GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) {
+  GribCollectionProto.Coord publishCoordinateRuntime(CoordinateRuntime coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -56,7 +51,7 @@ public class GribCollectionIndexWriter {
     return b.build();
   }
 
-  GribCollectionProto.Coord writeCoordProto(CoordinateTime coord) {
+  GribCollectionProto.Coord publishCoordinateTime(CoordinateTime coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -76,7 +71,7 @@ public class GribCollectionIndexWriter {
     return b.build();
   }
 
-  GribCollectionProto.Coord writeCoordProto(CoordinateTimeIntv coord) {
+  GribCollectionProto.Coord publishCoordinateTimeIntv(CoordinateTimeIntv coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -96,7 +91,7 @@ public class GribCollectionIndexWriter {
     return b.build();
   }
 
-  GribCollectionProto.Coord writeCoordProto(CoordinateVert coord) {
+  GribCollectionProto.Coord publishCoordinateVert(CoordinateVert coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -114,7 +109,7 @@ public class GribCollectionIndexWriter {
     return b.build();
   }
 
-  GribCollectionProto.Coord writeCoordProto(CoordinateEns coord) {
+  GribCollectionProto.Coord publishCoordinateEns(CoordinateEns coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -128,7 +123,7 @@ public class GribCollectionIndexWriter {
     return b.build();
   }
 
-  GribCollectionProto.Coord writeCoordProto(CoordinateTime2D coord) {
+  GribCollectionProto.Coord publishCoordinateTime2D(CoordinateTime2D coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -143,9 +138,9 @@ public class GribCollectionIndexWriter {
     b.setIsRegular(coord.isRegular());
     for (Coordinate time : coord.getTimesForSerialization()) {
       if (time.getType() == Coordinate.Type.time)
-        b.addTimes(writeCoordProto((CoordinateTime) time));
+        b.addTimes(publishCoordinateTime((CoordinateTime) time));
       else
-        b.addTimes(writeCoordProto((CoordinateTimeIntv) time));
+        b.addTimes(publishCoordinateTimeIntv((CoordinateTimeIntv) time));
     }
 
     int[] time2runtime = coord.getTime2runtime();

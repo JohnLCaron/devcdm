@@ -46,7 +46,6 @@ public class VariableIndex implements Comparable<VariableIndex> {
 
   // derived from pds
   public final int category, parameter, levelType, intvType, ensDerivedType, probType, percentile;
-  private String intvName; // eg "mixed intervals, 3 Hour, etc"
   public final String probabilityName;
   public final boolean isLayer, isEnsemble;
   public final int genProcessType;
@@ -244,10 +243,6 @@ public class VariableIndex implements Comparable<VariableIndex> {
     return percentile;
   }
 
-  public String getIntvName() {
-    return intvName;
-  }
-
   public String getProbabilityName() {
     return probabilityName;
   }
@@ -270,19 +265,15 @@ public class VariableIndex implements Comparable<VariableIndex> {
 
   @Nullable
   public String getTimeIntvName() {
-    if (intvName != null)
-      return intvName;
     CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
     if (timeiCoord != null) {
-      intvName = timeiCoord.getTimeIntervalName();
-      return intvName;
+      return timeiCoord.getTimeIntervalName();
     }
 
     CoordinateTime2D time2DCoord = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
     if (time2DCoord == null || !time2DCoord.isTimeInterval())
       return null;
-    intvName = time2DCoord.getTimeIntervalName();
-    return intvName;
+    return time2DCoord.getTimeIntervalName();
   }
 
   /////////////////////////////
@@ -356,7 +347,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
   public String toString() {
     return MoreObjects.toStringHelper(this).add("tableVersion", tableVersion).add("discipline", discipline)
             .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
-            .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", intvName)
+            .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", getTimeIntvName())
             .add("probabilityName", probabilityName).add("isLayer", isLayer).add("genProcessType", genProcessType)
             .add("cdmHash", gribVariable.hashCode()).toString();
   }
@@ -366,7 +357,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
             .add("discipline", discipline).add("center", center).add("subcenter", subcenter).add("recordsPos", recordsPos)
             .add("recordsLen", recordsLen).add("gribVariable", gribVariable).add("coordIndex", coordIndex)
             .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
-            .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", intvName)
+            .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", getTimeIntvName())
             .add("probabilityName", probabilityName).add("isLayer", isLayer).add("isEnsemble", isEnsemble)
             .add("genProcessType", genProcessType).add("spatialStatType", spatialStatType).toString();
   }
@@ -376,8 +367,8 @@ public class VariableIndex implements Comparable<VariableIndex> {
       sb.format("Variable {%d-%d-%d", discipline, category, parameter);
       sb.format(", levelType=%d", levelType);
       sb.format(", intvType=%d", intvType);
-      if (intvName != null && !intvName.isEmpty()) {
-        sb.format(" intv=%s", intvName);
+      if (getTimeIntvName() != null && !getTimeIntvName().isEmpty()) {
+        sb.format(" intv=%s", getTimeIntvName());
       }
       if (probabilityName != null && !probabilityName.isEmpty()) {
         sb.format(" prob=%s", probabilityName);

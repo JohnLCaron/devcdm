@@ -40,7 +40,7 @@ public class Grib1Iosp extends GribIosp {
   @Override
   public String makeVariableName(VariableIndex v) {
     return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(),
-        v.getParameter(), v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
+        v.getParameter(), v.getLevelType(), v.isLayer(), v.getIntvType(), v.getTimeIntvName());
   }
 
   public static String makeVariableName(Grib1Customizer cust, GribConfig gribConfig,
@@ -109,7 +109,7 @@ public class Grib1Iosp extends GribIosp {
   @Override
   public String makeVariableLongName(VariableIndex v) {
     return makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(),
-        v.getParameter(), v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName(), v.getProbabilityName());
+        v.getParameter(), v.getLevelType(), v.isLayer(), v.getIntvType(), v.getTimeIntvName(), v.getProbabilityName());
   }
 
 

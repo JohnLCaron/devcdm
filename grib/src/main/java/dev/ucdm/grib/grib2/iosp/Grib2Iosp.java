@@ -62,7 +62,7 @@ public class Grib2Iosp extends GribIosp {
         }
       }
 
-      String intvName = vindex.getIntvName();
+      String intvName = vindex.getTimeIntvName();
       if (intvName != null && !intvName.isEmpty()) {
         f.format("_%s", intvName);
       }
@@ -112,15 +112,16 @@ public class Grib2Iosp extends GribIosp {
         f.format("%s", gp.getName());
       }
 
-      if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName().isEmpty()) {
+      String vintvName = vindex.getTimeIntvName();
+      if (vindex.getIntvType() >= 0 && vintvName != null && !vintvName.isEmpty()) {
         String intvName = cust.getStatisticNameShort(vindex.getIntvType());
         if (intvName == null || intvName.equalsIgnoreCase("Missing")) {
           intvName = cust.getStatisticNameShort(vindex.getIntvType());
         }
         if (intvName == null) {
-          f.format(" (%s)", vindex.getIntvName());
+          f.format(" (%s)", vintvName);
         } else {
-          f.format(" (%s %s)", vindex.getIntvName(), intvName);
+          f.format(" (%s %s)", vintvName, intvName);
         }
 
       } else if (vindex.getIntvType() >= 0) {

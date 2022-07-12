@@ -6,7 +6,7 @@ package dev.ucdm.grib.grid;
 
 import com.google.common.base.Preconditions;
 import dev.cdm.dataset.api.SimpleUnit;
-import dev.ucdm.grib.collection.Grib;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateEns;
 import dev.ucdm.grib.coord.CoordinateRuntime;
@@ -43,19 +43,19 @@ public class GribGridAxis {
       case runtime -> {
         CoordinateRuntime rtCoord = (CoordinateRuntime) gribCoord;
         GridAxis<?> axis = Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime)
-                .setDescription(Grib.GRIB_RUNTIME).build();
+                .setDescription(GribConstants.GRIB_RUNTIME).build();
         return new GribGridDataset.CoordAndAxis(gribCoord, axis);
       }
       case time -> {
         CoordinateTime timeCoord = (CoordinateTime) gribCoord;
         GridAxis<?> axis = Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset)
-                .setDescription(Grib.GRIB_VALID_TIME).build();
+                .setDescription(GribConstants.GRIB_VALID_TIME).build();
         return new GribGridDataset.CoordAndAxis(gribCoord, axis);
       }
       case timeIntv -> {
         CoordinateTimeIntv timeIntvCoord = (CoordinateTimeIntv) gribCoord;
         GridAxis<?> axis = Interval.builder().setTimeOffsetIntervalCoordinate(timeIntvCoord)
-                .setAxisType(AxisType.TimeOffset).setDescription(Grib.GRIB_VALID_TIME).build();
+                .setAxisType(AxisType.TimeOffset).setDescription(GribConstants.GRIB_VALID_TIME).build();
         return new GribGridDataset.CoordAndAxis(gribCoord, axis);
       }
       case time2D -> {

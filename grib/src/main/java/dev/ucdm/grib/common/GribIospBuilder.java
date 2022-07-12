@@ -8,7 +8,6 @@ package dev.ucdm.grib.common;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import dev.ucdm.grib.collection.CollectionType;
-import dev.ucdm.grib.collection.Grib;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.coord.*;
@@ -106,11 +105,11 @@ class GribIospBuilder {
       rlon.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
       rlon.setAutoGen(hcs.startx, hcs.dx);
     } else if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
-      horizDims = Grib.LAT_AXIS + " " + Grib.LON_AXIS;
+      horizDims = GribConstants.LAT_AXIS + " " + GribConstants.LON_AXIS;
 
       // Assume same number of points for all grids
-      g.addDimension(new Dimension(Grib.LON_AXIS, hcs.nx));
-      g.addDimension(new Dimension(Grib.LAT_AXIS, hcs.ny));
+      g.addDimension(new Dimension(GribConstants.LON_AXIS, hcs.nx));
+      g.addDimension(new Dimension(GribConstants.LAT_AXIS, hcs.ny));
 
     } else if (isLatLon) {
       // make horiz coordsys coordinate variable
@@ -119,12 +118,12 @@ class GribIospBuilder {
       hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
-      horizDims = Grib.LAT_AXIS + " " + Grib.LON_AXIS;
-      g.addDimension(new Dimension(Grib.LON_AXIS, hcs.nx));
-      g.addDimension(new Dimension(Grib.LAT_AXIS, hcs.ny));
+      horizDims = GribConstants.LAT_AXIS + " " + GribConstants.LON_AXIS;
+      g.addDimension(new Dimension(GribConstants.LON_AXIS, hcs.nx));
+      g.addDimension(new Dimension(GribConstants.LAT_AXIS, hcs.ny));
 
-      Variable.Builder<?> lat = Variable.builder().setName(Grib.LAT_AXIS).setArrayType(ArrayType.FLOAT)
-          .setParentGroupBuilder(g).setDimensionsByName(Grib.LAT_AXIS);
+      Variable.Builder<?> lat = Variable.builder().setName(GribConstants.LAT_AXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(GribConstants.LAT_AXIS);
       g.addVariable(lat);
       lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.getGaussianLats() != null) {
@@ -134,8 +133,8 @@ class GribIospBuilder {
         lat.setAutoGen(hcs.starty, hcs.dy);
       }
 
-      Variable.Builder<?> lon = Variable.builder().setName(Grib.LON_AXIS).setArrayType(ArrayType.FLOAT)
-          .setParentGroupBuilder(g).setDimensionsByName(Grib.LON_AXIS);
+      Variable.Builder<?> lon = Variable.builder().setName(GribConstants.LON_AXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(GribConstants.LON_AXIS);
       g.addVariable(lon);
       lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       lon.setAutoGen(hcs.startx, hcs.dx);
@@ -147,19 +146,19 @@ class GribIospBuilder {
       hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
-      horizDims = Grib.YAXIS + " " + Grib.XAXIS;
-      g.addDimension(new Dimension(Grib.XAXIS, hcs.nx));
-      g.addDimension(new Dimension(Grib.YAXIS, hcs.ny));
+      horizDims = GribConstants.YAXIS + " " + GribConstants.XAXIS;
+      g.addDimension(new Dimension(GribConstants.XAXIS, hcs.nx));
+      g.addDimension(new Dimension(GribConstants.YAXIS, hcs.ny));
 
-      Variable.Builder<?> xcv = Variable.builder().setName(Grib.XAXIS).setArrayType(ArrayType.FLOAT)
-          .setParentGroupBuilder(g).setDimensionsByName(Grib.XAXIS);
+      Variable.Builder<?> xcv = Variable.builder().setName(GribConstants.XAXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(GribConstants.XAXIS);
       g.addVariable(xcv);
       xcv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_X_COORDINATE));
       xcv.addAttribute(new Attribute(CDM.UNITS, "km"));
       xcv.setAutoGen(hcs.startx, hcs.dx);
 
-      Variable.Builder<?> ycv = Variable.builder().setName(Grib.YAXIS).setArrayType(ArrayType.FLOAT)
-          .setParentGroupBuilder(g).setDimensionsByName(Grib.YAXIS);
+      Variable.Builder<?> ycv = Variable.builder().setName(GribConstants.YAXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(GribConstants.YAXIS);
       g.addVariable(ycv);
       ycv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_Y_COORDINATE));
       ycv.addAttribute(new Attribute(CDM.UNITS, "km"));
@@ -321,14 +320,14 @@ class GribIospBuilder {
         if (vindex.getIntvType() >= 0) {
           GribStatType statType = gribTable.getStatType(vindex.getIntvType());
           if (statType != null) {
-            v.addAttribute(new Attribute(Grib.GRIB_STAT_TYPE, statType.toString()));
+            v.addAttribute(new Attribute(GribConstants.GRIB_STAT_TYPE, statType.toString()));
             CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
             Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
             if (cm != null && timeCoord != null) {
               v.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm));
             }
           } else {
-            v.addAttribute(new Attribute(Grib.GRIB_STAT_TYPE, vindex.getIntvType()));
+            v.addAttribute(new Attribute(GribConstants.GRIB_STAT_TYPE, vindex.getIntvType()));
           }
         }
 
@@ -351,7 +350,7 @@ class GribIospBuilder {
     g.addVariable(v);
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_RUNTIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     // lazy eval
@@ -379,7 +378,7 @@ class GribIospBuilder {
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     // the data is not generated until asked for to save space
@@ -406,7 +405,7 @@ class GribIospBuilder {
             .setParentGroupBuilder(g).setDimensionsByName(timeDimName);
         g.addVariable(vref);
         vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-        vref.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
+        vref.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_RUNTIME));
         vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
         vref.addAttribute(new Attribute(CDM.UNITS, units));
         vref.setSPobject(new Time2Dinfo(Time2DinfoType.isUniqueRuntime, time2D, null));
@@ -453,7 +452,7 @@ class GribIospBuilder {
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
     if (!tcName.equalsIgnoreCase(timeDimName)) {
       // explicitly set the axis type as Time
@@ -648,7 +647,7 @@ class GribIospBuilder {
     String units = coordTime.getTimeUdUnit();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[ntimes];
@@ -672,7 +671,7 @@ class GribIospBuilder {
         .setDimensionsByName(timeName);
     g.addVariable(v);
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_RUNTIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
     v.addAttribute(new Attribute(CDM.UNITS, units));
 
@@ -692,7 +691,7 @@ class GribIospBuilder {
     String units = coordTime.getTimeUdUnit();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GribConstants.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[ntimes];

@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.ucdm.grib.collection;
+package dev.ucdm.grib.common;
 
 /**
  * GRIB constants.
@@ -10,7 +10,7 @@ package dev.ucdm.grib.collection;
  * @author caron
  * @since 2/23/2016.
  */
-public class Grib {
+public class GribConstants {
 
   public static final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   public static final String GRIB_VALID_TIME = "GRIB forecast or observation time";
@@ -30,5 +30,5 @@ public class Grib {
   static boolean debugIndexOnly; // we are running with only ncx index files, no data
 
   // Class, not interface, per Bloch edition 2 item 19
-  private Grib() {} // disable instantiation
+  private GribConstants() {} // disable instantiation
 }

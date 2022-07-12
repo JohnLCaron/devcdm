@@ -11,6 +11,7 @@ import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.PartitionedReaderRecord;
 import dev.ucdm.grib.common.util.SmartArrayInt;
 import dev.ucdm.grib.coord.Coordinate;
@@ -19,6 +20,7 @@ import dev.ucdm.grib.coord.CoordinateTime2D;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
 import dev.ucdm.grib.coord.TimeCoordIntvValue;
 
+import dev.ucdm.grib.protoconvert.GribHorizCoordSystem;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
@@ -136,7 +138,7 @@ public class Partitions implements Closeable {
   @Nullable
   public static PartitionedReaderRecord getPartitionedReaderRecord(VariableIndex vi, int[] indexWanted) throws IOException {
 
-    if (Grib.debugRead) {
+    if (GribConstants.debugRead) {
       logger.debug("PartitionCollection.getDataRecord index wanted = ({}) on {} type={}",
               Arrays.toString(indexWanted), vi.gribCollection.indexFilename, vi.group.ds.gctype);
     }
@@ -152,7 +154,7 @@ public class Partitions implements Closeable {
       }
       Object val = runtime.getValue(firstIndex);
       masterIdx = vi.gribCollection.masterRuntime.getIndex(val);
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  TwoD firstIndex = {} val={} masterIdx={}", firstIndex, val, masterIdx);
 
     } else if (vi.group.ds.gctype == CollectionType.Best) {
@@ -162,7 +164,7 @@ public class Partitions implements Closeable {
         throw new IllegalStateException("Type.Best must have time coordinate");
       }
       masterIdx = time.getMasterRuntimeIndex(firstIndex) - 1;
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  Best firstIndex = {} masterIdx={}", firstIndex, masterIdx);
 
     } else if (vi.group.ds.gctype == CollectionType.MRUTP) {
@@ -173,7 +175,7 @@ public class Partitions implements Closeable {
       Object val = time2D.getRefDate(firstIndex);
       masterIdx = vi.gribCollection.masterRuntime.getIndex(val);
 
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  MRUTP firstIndex = {} masterIdx={}", firstIndex, masterIdx);
 
     } else {
@@ -213,7 +215,7 @@ public class Partitions implements Closeable {
       return null;
     }
 
-    if (Grib.debugRead) {
+    if (GribConstants.debugRead) {
       logger.debug("  result success: partno={} fileno={}", partno, record.fileno());
     }
     return new PartitionedReaderRecord(vi.gribCollection.partitions, partno, vindex2Dpart.group.getGdsHorizCoordSys(), record);
@@ -236,7 +238,7 @@ public class Partitions implements Closeable {
     // which partition? index into PartitionCollectionImmutable.partitions[]: variable may not exist in all partitions
     int partWant = vip.partnoSA.findIdx(partno);
     if (partWant < 0 || partWant >= vip.nparts) {
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  cant find partition={} in vip={}", partno, vip);
       return null;
     }
@@ -354,7 +356,7 @@ public class Partitions implements Closeable {
       if (time2D == null)
         throw new IllegalStateException("CoordinateTime2D has no time2D");
       CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  translateIndex2D[runIdx={}, timeIdx={}] in componentVar coords = ({}, {})", wholeIndex[0],
                 wholeIndex[1], (want == null) ? "null" : want.getRefDate(), want);
       if (want == null) {
@@ -372,7 +374,7 @@ public class Partitions implements Closeable {
     while (countDim < wholeIndex.length) {
       int idx = wholeIndex[countDim];
       int resultIdx = matchCoordinate(vi.getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim));
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  translateIndex2D[idx={}] resultIdx= {}", idx, resultIdx);
       if (resultIdx < 0) { // partition variable doesnt have a coordinate value that is in the "whole" variable
         return null;
@@ -402,7 +404,7 @@ public class Partitions implements Closeable {
   private static PartitionedReaderRecord getDataRecordPofP(VariableIndex vi, int[] indexWanted, VariableIndex compVindex2Dp) throws IOException {
     if (vi.group.ds.getType() == CollectionType.Best) {
       int[] indexWantedP = translateIndexBest(vi, indexWanted, compVindex2Dp);
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  (Best) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
       if (indexWantedP == null) {
         return null;
@@ -412,7 +414,7 @@ public class Partitions implements Closeable {
     } else {
       // corresponding index into compVindex2Dp
       int[] indexWantedP = translateIndex2D(vi, indexWanted, compVindex2Dp);
-      if (Grib.debugRead)
+      if (GribConstants.debugRead)
         logger.debug("  (2D) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
       if (indexWantedP == null) {
         return null;
