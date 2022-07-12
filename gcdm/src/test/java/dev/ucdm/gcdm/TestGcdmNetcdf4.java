@@ -5,6 +5,8 @@
 package dev.ucdm.gcdm;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf4Dir;
+import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -12,15 +14,13 @@ import java.util.stream.Stream;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.util.CompareCdmDataset;
+import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import dev.ucdm.gcdm.client.GcdmCdmFile;
 
 /** Test {@link GcdmCdmFile} */
-@RunWith(Parameterized.class)
 public class TestGcdmNetcdf4 {
 
   private static final Predicate<Object[]> filesToSkip = new Predicate<Object[]>() {
@@ -35,11 +35,8 @@ public class TestGcdmNetcdf4 {
   };
 
   public static Stream<Arguments> params() {
-    return Stream.of(
-            Arguments.of());
-/*      FileFilter ff = new SuffixFileFilter(".nc4");
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4", ff, result, false);
-      result = result.stream().filter(filesToSkip).collect(Collectors.toList()); */
+    return testFilesIn(coreLocalNetcdf4Dir)
+            .build();
   }
 
   @ParameterizedTest

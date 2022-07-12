@@ -4,7 +4,6 @@
  */
 package dev.ucdm.dataset.ncml;
 
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,9 +21,10 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import static dev.ucdm.array.NumericCompare.nearlyEquals;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalNcmlDir;
 
 public class TestNcmlRead {
-  public static String topDir = TestCdmDatasets.datasetLocalNcmlDir;
+  public static String topDir = datasetLocalNcmlDir;
 
   public static Stream<Arguments> params() {
     return Stream.of(

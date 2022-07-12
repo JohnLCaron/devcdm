@@ -7,7 +7,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.stream.Stream
 
-const val coreLocalDir = "../core/src/test/data/netcdf3/"
+const val coreLocalDir = "../core/src/test/data/"
+const val coreLocalNetcdf3Dir = "../core/src/test/data/netcdf3/"
+const val coreLocalNetcdf4Dir = "../core/src/test/data/netcdf4/"
 const val datasetLocalDir = "../dataset/src/test/data/"
 const val datasetLocalNcmlDir = "../dataset/src/test/data/ncml/"
 const val gribLocalDir = "../grib/src/test/data/"
@@ -77,14 +79,6 @@ class NameFilterOr(val filters : List<(String) -> Boolean>) : (String) -> Boolea
 }
 
 class TestFiles {
-
-    companion object {
-        val datasetLocalDir = "../dataset/src/test/data/"
-        val datasetLocalNcmlDir = "../dataset/src/test/data/ncml/"
-        val coreLocalDir = "../core/src/test/data/"
-        val coreNetcdf3Dir = "../core/src/test/data/netcdf3/"
-        val extraTestDir = "/home/snake/tmp/testData/"
-    }
 
     class StreamBuilder(var dirPath: String) {
         var nameFilters = mutableListOf<(String) -> Boolean>()

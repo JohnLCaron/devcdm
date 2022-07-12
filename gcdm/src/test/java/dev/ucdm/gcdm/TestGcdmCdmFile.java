@@ -5,12 +5,17 @@
 package dev.ucdm.gcdm;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalDir;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf4Dir;
+import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 import java.util.stream.Stream;
 
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.util.CompareCdmDataset;
+import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -20,35 +25,23 @@ import dev.ucdm.gcdm.client.GcdmCdmFile;
 public class TestGcdmCdmFile {
 
   public static Stream<Arguments> params() {
-    return Stream.of(
-            Arguments.of());
-
-    /* TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
-      FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/netcdf3", ff, result, true);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/netcdf4/files", ff, result, true);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/netcdf4/vlen", ff, result, true);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/hdf5/samples", ff, result, true);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/hdf5/support", ff, result, true);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/hdf5/wrf", ff, result, true);
-      // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/hdf4", ff, result, true); */
+    return testFilesIn(coreLocalDir)
+            .addNameFilter(new FileFilterSkipSuffixes(".cdl .txt"))
+            .withRecursion()
+            .build();
   }
 
-  private final String filename;
-  private final String gcdmUrl;
-
-  public TestGcdmCdmFile(String filename) {
-    this.filename = filename.replace("\\", "/");
-
-    // kludge for now. Also, need to auto start up CmdrServer
-    this.gcdmUrl = "gcdm://localhost:16111/" + this.filename;
+  public static Stream<Arguments> paramsTest() {
+    return Stream.of(
+            Arguments.of(coreLocalNetcdf3Dir + "testWriteFill.nc")
+    );
   }
 
   @ParameterizedTest
   @MethodSource("params")
-  public void doOne() throws Exception {
+  public void doOne(String filename) throws Exception {
     System.out.printf("TestGcdmCdmFile %s%n", filename);
+    String gcdmUrl = "gcdm://localhost:16111/" + filename;
     try (CdmFile ncfile = CdmDatasets.openFile(filename, null);
          GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
 

@@ -8,7 +8,6 @@ import dev.ucdm.array.NumericCompare;
 import dev.ucdm.dataset.api.CdmDataset;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.api.DatasetUrl;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import dev.ucdm.dataset.api.VariableDS;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
@@ -19,12 +18,13 @@ import dev.ucdm.array.StructureMembers;
 import dev.ucdm.core.api.*;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
 
 public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testCdmFile() throws Exception {
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.coreLocalDir + "testScaleRecord.nc");
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(coreLocalNetcdf3Dir + "testScaleRecord.nc");
     try (CdmFile ncfile = CdmDatasets.openFile(durl, -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable v = ncfile.findVariable("testScale");
       assertThat(v).isNotNull();
@@ -70,7 +70,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDataset() throws Exception {
-    try (CdmDataset ncfile = CdmDatasets.openDataset(TestCdmDatasets.coreLocalDir + "testScaleRecord.nc", true,
+    try (CdmDataset ncfile = CdmDatasets.openDataset(coreLocalNetcdf3Dir + "testScaleRecord.nc", true,
         null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("Open %s%n", ncfile.getLocation());
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");
@@ -105,7 +105,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDatasetAttributes() throws Exception {
-    try (CdmDataset ncfile = CdmDatasets.openDataset(TestCdmDatasets.coreLocalDir + "testScaleRecord.nc", true,
+    try (CdmDataset ncfile = CdmDatasets.openDataset(coreLocalNetcdf3Dir + "testScaleRecord.nc", true,
         null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("Open %s%n", ncfile.getLocation());
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");

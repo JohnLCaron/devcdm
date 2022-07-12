@@ -3,20 +3,20 @@ package cdm.dataset.cdmdsl
 import com.google.common.truth.Truth.assertThat
 import dev.ucdm.dataset.api.CdmDataset
 import dev.ucdm.dataset.api.CdmDatasetCS
-import dev.ucdm.dataset.api.TestCdmDatasets
 import dev.ucdm.dataset.cdmdsl.CdmdslDataset
 import dev.ucdm.dataset.cdmdsl.cdmdsl
 import dev.ucdm.dataset.cdmdsl.writeDsl
 import dev.ucdm.dataset.cdmdsl.build
 import dev.ucdm.dataset.coordsysbuild.openDatasetWithCoordSys
 import dev.ucdm.dataset.ncml.NcmlReader
+import dev.ucdm.test.util.datasetLocalNcmlDir
 import org.junit.jupiter.api.Test
 
 class TestDslWriter {
 
     @Test
     fun testWriteDsl() {
-        val cdmdsl: CdmdslDataset = cdmdsl( TestCdmDatasets.datasetLocalNcmlDir + "nc/example1.nc") {
+        val cdmdsl: CdmdslDataset = cdmdsl( datasetLocalNcmlDir + "nc/example1.nc") {
         }
         assertThat(cdmdsl).isNotNull()
 

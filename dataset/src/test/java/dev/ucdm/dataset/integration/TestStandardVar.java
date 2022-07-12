@@ -9,7 +9,6 @@ import dev.ucdm.core.write.Netcdf3FormatWriter;
 import dev.ucdm.dataset.api.CdmDataset;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.api.DatasetUrl;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import dev.ucdm.dataset.api.VariableDS;
 import dev.ucdm.dataset.api.VariableEnhanced;
 import dev.ucdm.dataset.testutil.CompareCdmFiles;
@@ -30,12 +29,13 @@ import java.util.EnumSet;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
 
 /** Test basics of enhanced {@link CdmDataset} */
 public class TestStandardVar {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final String filename = TestCdmDatasets.coreLocalDir + "standardVar.nc";
+  private final String filename = coreLocalNetcdf3Dir + "standardVar.nc";
 
   @Test
   public void testWriteStandardVar() throws Exception {

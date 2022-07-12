@@ -4,7 +4,6 @@
  */
 package dev.ucdm.dataset.ncml;
 
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
@@ -17,13 +16,14 @@ import dev.ucdm.dataset.api.CdmDatasets;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalNcmlDir;
 
 public class TestCachedNcmlData {
 
   @Test
   public void testCachedData() throws IOException {
 
-    try (CdmFile ncd = CdmDatasets.openFile(TestCdmDatasets.datasetLocalNcmlDir + "point/profileMultidim.ncml", null)) {
+    try (CdmFile ncd = CdmDatasets.openFile(datasetLocalNcmlDir + "point/profileMultidim.ncml", null)) {
       Variable v = ncd.findVariable("data");
       assertThat(v).isNotNull();
       Array<?> data = v.readArray();
@@ -34,7 +34,7 @@ public class TestCachedNcmlData {
   @Test
   @Disabled("doesnt work because CdmFileProvider cant pass in IospMessage")
   public void testCachedDataWithStructure() throws IOException {
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(TestCdmDatasets.datasetLocalNcmlDir + "point/profileMultidim.ncml");
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(datasetLocalNcmlDir + "point/profileMultidim.ncml");
 
     try (CdmFile ncd = CdmDatasets.openFile(durl, -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable s = ncd.findVariable("record");

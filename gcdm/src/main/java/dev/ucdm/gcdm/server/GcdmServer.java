@@ -40,7 +40,7 @@ import dev.ucdm.grid.api.*;
 
 /**
  * Server that manages startup/shutdown of a gCDM Server.
- * Note that NetcdfDatast / GridDataset is opened/closed on each request.
+ * Note that CdmDataset / GridDataset is opened/closed on each request.
  * TODO test caching performance.
  */
 public class GcdmServer {
@@ -108,24 +108,26 @@ public class GcdmServer {
     }
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////
   static class GcdmImpl extends GcdmImplBase {
 
     @Override
     public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
       System.out.printf("GcdmServer getHeader open %s%n", req.getLocation());
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
+
       try (CdmFile ncfile = CdmDatasets.openFile(req.getLocation(), null)) {
         GcdmProto.Header.Builder header = GcdmProto.Header.newBuilder().setLocation(req.getLocation())
             .setRoot(GcdmConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
         response.setHeader(header);
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
         logger.info("GcdmServer getHeader " + req.getLocation());
       } catch (Throwable t) {
-        logger.warn("GcdmServer getHeader failed ", t);
-        t.printStackTrace();
-        response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        logger.warn("GcdmServer getHeader failed, returning an error", t);
+        // t.printStackTrace();
+        response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());;
       }
+      responseObserver.onNext(response.build());
+      responseObserver.onCompleted();
     }
 
     @Override
@@ -148,8 +150,8 @@ public class GcdmServer {
         logger.info("GcdmServer getData " + req.getLocation());
 
       } catch (Throwable t) {
-        logger.warn("GcdmServer getData failed ", t);
-        t.printStackTrace();
+        logger.warn("GcdmServer getData failed, returning an error", t);
+        // t.printStackTrace();
         DataResponse.Builder response =
             DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(
@@ -253,16 +255,15 @@ public class GcdmServer {
         } else {
           response.setDataset(GcdmGridConverter.encodeGridDataset(gridDataset));
         }
-
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
         logger.info("GcdmServer getGridDataset " + request.getLocation());
       } catch (Throwable t) {
         System.out.printf("GcdmServer getGridDataset failed %s %n%s%n", t.getMessage(), errlog);
         logger.warn("GcdmServer getGridDataset failed ", t);
-        t.printStackTrace();
+        // t.printStackTrace();
         response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
+      responseObserver.onNext(response.build());
+      responseObserver.onCompleted();
     }
 
     @Override
@@ -278,6 +279,7 @@ public class GcdmServer {
       if (gridSubset.getGridName() == null) {
         makeError(response, "GridName is not set");
         responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
         return;
       }
 
@@ -296,17 +298,17 @@ public class GcdmServer {
             response.setData(GcdmGridConverter.encodeGridReferencedArray(geoReferencedArray));
             System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
                 java.util.Arrays.toString(geoReferencedArray.data().getShape()));
-
           }
         }
-
       } catch (Throwable t) {
         logger.warn("GcdmServer getGridData failed ", t);
         t.printStackTrace();
         errlog.format("%n%s", t.getMessage() == null ? "" : t.getMessage());
         makeError(response, errlog.toString());
       }
+
       responseObserver.onNext(response.build());
+      responseObserver.onCompleted();
       System.out.printf(" ** took=%s%n", stopwatch.stop());
     }
 
@@ -329,8 +331,7 @@ public class GcdmServer {
         response.setTimeIndex(request.getTimeIndex());
 
         if (gridDataset == null) {
-          response.setError(
-              GcdmProto.Error.newBuilder().setMessage("Dataset not found or not a GridDataset").build());
+          response.setError(GcdmProto.Error.newBuilder().setMessage("Dataset not found or not a GridDataset").build());
         } else {
           Optional<VerticalTransform> cto = gridDataset.findVerticalTransformByHash(request.getId());
           if (cto.isPresent()) {
@@ -340,16 +341,16 @@ public class GcdmServer {
             response.setError(GcdmProto.Error.newBuilder().setMessage("VerticalTransform not found").build());
           }
         }
-
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
         logger.info("GcdmServer getVerticalTransform " + request.getLocation());
       } catch (Throwable t) {
         System.out.printf("GcdmServer getVerticalTransform failed %s %n%s%n", t.getMessage(), errlog);
         logger.warn("GcdmServer getVerticalTransform failed ", t);
-        t.printStackTrace();
+        // t.printStackTrace();
         response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
+
+      responseObserver.onNext(response.build());
+      responseObserver.onCompleted();
     }
 
 

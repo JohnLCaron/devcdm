@@ -9,8 +9,12 @@ import com.google.common.base.Stopwatch;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -179,9 +183,15 @@ public class GcdmCdmFile extends CdmFile {
       // parse the URI
       URI uri = java.net.URI.create(this.remoteURI);
       String target = uri.getAuthority();
-      this.path = uri.getPath();
-      if (this.path.startsWith("/")) {
-        this.path = this.path.substring(1);
+      String urlPath = uri.getPath();
+      if (urlPath.startsWith("/")) {
+        urlPath= urlPath.substring(1);
+      }
+      File file = new File(urlPath);
+      try {
+        this.path = file.getCanonicalPath();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
 
       // Create a communication channel to the server, known as a Channel. Channels are thread-safe

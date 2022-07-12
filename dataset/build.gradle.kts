@@ -34,12 +34,12 @@ dependencies {
     implementation(kotlin("stdlib-common", "1.6.20"))
     implementation(kotlin("stdlib", "1.6.20"))
 
+    testImplementation(project(":test-utils"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
-    testImplementation(project(":test-utils"))
 }
 
 tasks.getByName<Test>("test") {
