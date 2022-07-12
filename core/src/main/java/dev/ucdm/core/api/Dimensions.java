@@ -7,6 +7,7 @@ package dev.ucdm.core.api;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import dev.ucdm.array.Section;
 
 import java.util.Collection;
 import java.util.Formatter;
@@ -26,9 +27,9 @@ public class Dimensions {
   }
 
   /**
-   * Make a dev.cdm.array.Section.Builder from an ordered set of Dimension objects.
+   * Make a Section.Builder from an ordered set of Dimension objects.
    */
-  public static dev.ucdm.array.Section.Builder makeArraySectionFromDimensions(Iterable<Dimension> dimensions) {
+  public static Section.Builder makeArraySectionFromDimensions(Iterable<Dimension> dimensions) {
     try {
       dev.ucdm.array.Section.Builder builder = dev.ucdm.array.Section.builder();
       for (Dimension d : dimensions) {

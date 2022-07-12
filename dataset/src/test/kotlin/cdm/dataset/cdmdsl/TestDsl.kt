@@ -14,7 +14,7 @@ class TestDsl {
     fun testNoReferencedDataset() {
         val cdmdsl: CdmdslDataset = cdmdsl() {
             attribute("title").setValue("Example Data")
-            attribute("_CoordSysBuilder").setValue("dev.cdm.dataset.conv.DefaultConventions")
+            attribute("_CoordSysBuilder").setValue("dev.ucdm.dataset.conv.DefaultConventions")
 
             dimension("time", 2)
             dimension("lat", 3)

@@ -46,7 +46,7 @@ public class TestGcdmCdmFileProblem {
    * io.grpc.StatusRuntimeException: RESOURCE_EXHAUSTED: gRPC message exceeds maximum size 51000000: 99265809
    * at io.grpc.Status.asRuntimeException(Status.java:535)
    * at io.grpc.stub.ClientCalls$BlockingResponseStream.hasNext(ClientCalls.java:648)
-   * at dev.cdm.gcdm.protogen.client.GcdmCdmFile.readArrayData(GcdmCdmFile.java:85)
+   * at dev.ucdm.gcdm.protogen.client.GcdmCdmFile.readArrayData(GcdmCdmFile.java:85)
    * at ucar.nc2.Variable.proxyReadArray(Variable.java:829)
    * at ucar.nc2.Variable.readArray(Variable.java:738)
    * ...

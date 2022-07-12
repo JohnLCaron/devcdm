@@ -64,7 +64,7 @@ tasks.getByName<Test>("test") {
 tasks.jar {
     manifest {
         attributes(mapOf(
-            "Main-Class" to "dev.cdm.grid",
+            "Main-Class" to "dev.ucdm.grib.main",
             "Implementation-Title" to "UCDM (next generation) GRIB library",
             "Implementation-Version" to project.version))
     }

@@ -1,6 +1,6 @@
-module dev.cdm.aws {
-  requires transitive dev.cdm.array;
-  requires transitive dev.cdm.core;
+module dev.ucdm.aws {
+  requires transitive dev.ucdm.array;
+  requires transitive dev.ucdm.core;
   requires com.google.common;
   requires org.slf4j;
   requires org.jetbrains.annotations;

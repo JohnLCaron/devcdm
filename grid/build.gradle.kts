@@ -41,8 +41,8 @@ tasks.getByName<Test>("test") {
 tasks.jar {
     manifest {
         attributes(mapOf(
-            "Main-Class" to "dev.cdm.grid",
-            "Implementation-Title" to "UCDM (next generation) core library",
+            "Main-Class" to "dev.ucdm.grid.main",
+            "Implementation-Title" to "UCDM (next generation) grid library",
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("ucdm-grid")

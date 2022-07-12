@@ -1,6 +1,6 @@
-module dev.cdm.dataset {
-  requires transitive dev.cdm.array;
-  requires transitive dev.cdm.core;
+module dev.ucdm.dataset {
+  requires transitive dev.ucdm.array;
+  requires transitive dev.ucdm.core;
   requires com.google.common;
   requires org.jdom2;
   requires org.slf4j;

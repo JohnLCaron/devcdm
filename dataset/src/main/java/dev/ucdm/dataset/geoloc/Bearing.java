@@ -8,8 +8,7 @@ package dev.ucdm.dataset.geoloc;
  * Computes the distance, azimuth, and back azimuth between
  * two lat-lon positions on the Earth's surface. Reference ellipsoid is the WGS-84 by default.
  *
- * You may use a default Earth (EarthEllipsoid.WGS84) or you may define your own using
- * a dev.cdm.dataset.geoloc.Earth object.
+ * You may use a default Earth (EarthEllipsoid.WGS84) or you may define your own using Earth class.
  *
  * @param azimuth the azimuth, degrees, 0 = north, clockwise positive
  * @param backazimuth the back azimuth, degrees, 0 = north, clockwise positive

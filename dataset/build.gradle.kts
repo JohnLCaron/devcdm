@@ -49,7 +49,7 @@ tasks.getByName<Test>("test") {
 tasks.jar {
     manifest {
         attributes(mapOf(
-            "Main-Class" to "dev.cdm.main",
+            "Main-Class" to "dev.ucdm.dataset.main",
             "Implementation-Title" to "CDM (next generation) dataset library",
             "Implementation-Version" to project.version))
     }

@@ -63,7 +63,7 @@ public class TestCompareVerticalTransforms {
           dev.ucdm.dataset.transform.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit),
       // @Disabled("fails because not correctly slicing vertical dimension out")
       // Arguments.of(TestGridDatasets.gridTestDir + "transforms/HIRLAMhybrid.ncml", "Relative_humidity_hybrid",
-      // dev.cdm.dataset.transform.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit),
+      // dev.ucdm.dataset.transform.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit),
 
       Arguments.of(TestGridDatasets.gridTestDir + "transforms/espresso_his_20130505_0000_0001.nc", "u",
           dev.ucdm.dataset.transform.vertical.OceanSG1.class, SimpleUnit.kmUnit),

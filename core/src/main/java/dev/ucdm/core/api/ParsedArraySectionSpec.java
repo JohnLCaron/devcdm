@@ -99,10 +99,10 @@ public class ParsedArraySectionSpec {
       indexSelect = null; // ignore whatever was sent
 
     // get the selected Ranges, or all, and add to the list
-    dev.ucdm.array.Section section;
+    Section section;
     if (indexSelect != null) {
-      section = new dev.ucdm.array.Section(indexSelect);
-      section = dev.ucdm.array.Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
+      section = new Section(indexSelect);
+      section = Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
       section = v.getSection(); // all
     }
@@ -134,10 +134,10 @@ public class ParsedArraySectionSpec {
     }
 
     // get the selected Ranges, or all, and add to the list
-    dev.ucdm.array.Section section;
+    Section section;
     if (indexSelect != null) {
-      section = new dev.ucdm.array.Section(indexSelect);
-      section = dev.ucdm.array.Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
+      section = new Section(indexSelect);
+      section = Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
       section = v.getSection(); // all
     }
@@ -146,27 +146,27 @@ public class ParsedArraySectionSpec {
   }
 
   /**
-   * Make section specification String from a dev.cdm.array.Section for a Variable.
+   * Make section specification String from a Section for a Variable.
    *
    * @param v for this Variable.
    * @param section list of Range. Must includes all parent structures. May be null, meaning use all.
    *        Individual ranges may be null, meaning all for that dimension.
    * @return section specification String.
    */
-  public static String makeSectionSpecString(Variable v, @Nullable dev.ucdm.array.Section section) {
+  public static String makeSectionSpecString(Variable v, @Nullable Section section) {
     StringBuilder sb = new StringBuilder();
     makeSpec(sb, v, section);
     return sb.toString();
   }
 
-  private static dev.ucdm.array.Section makeSpec(StringBuilder sb, Variable v, dev.ucdm.array.Section orgSection) {
+  private static Section makeSpec(StringBuilder sb, Variable v, Section orgSection) {
     if (v.isMemberOfStructure()) {
       Preconditions.checkNotNull(v.getParentStructure());
       orgSection = makeSpec(sb, v.getParentStructure(), orgSection);
       sb.append('.');
     }
 
-    dev.ucdm.array.Section vsection = (orgSection == null) ? v.getSection() : orgSection;
+    Section vsection = (orgSection == null) ? v.getSection() : orgSection;
 
     sb.append(v.isMemberOfStructure() ? CdmFiles.makeValidSectionSpecName(v.getShortName())
         : CdmFiles.makeFullNameSectionSpec(v));
@@ -196,11 +196,11 @@ public class ParsedArraySectionSpec {
   ///////////////////////////////////////////////////////////////////////////
   // Modify to allow setting after creation
   private final Variable variable; // the variable
-  private final dev.ucdm.array.Section section; // section for this variable, filled in from variable if needed
+  private final Section section; // section for this variable, filled in from variable if needed
   @Nullable
   private ParsedArraySectionSpec child; // if not null, variable is a Structure, and this is one of its members
 
-  public ParsedArraySectionSpec(Variable variable, dev.ucdm.array.Section section) {
+  public ParsedArraySectionSpec(Variable variable, Section section) {
     this.variable = variable;
     this.section = section;
   }
@@ -211,7 +211,7 @@ public class ParsedArraySectionSpec {
   }
 
   /** The section of the Variable. */
-  public dev.ucdm.array.Section getSection() {
+  public Section getSection() {
     return section;
   }
 

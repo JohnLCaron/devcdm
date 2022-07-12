@@ -32,7 +32,6 @@ import static dev.ucdm.array.PrintArray.printArray;
  * Utility to implement ncdump.
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h).
- * Version that works with dev.cdm.array.Array.
  */
 @Immutable
 public class Ncdump {
@@ -330,7 +329,7 @@ public class Ncdump {
 
   /**
    * Write the NcML representation for a file.
-   * Note that dev.cdm.dataset.api.NcMLWriter has a JDOM implementation, for complete NcML.
+   * Note that NcMLWriter has a JDOM implementation, for complete NcML.
    * This method implements only the "core" NcML for plain ole netcdf files.
    *
    * @param ncfile write NcML for this file
@@ -343,19 +342,14 @@ public class Ncdump {
 
     Predicate<? super Variable> writeVarsPred;
     switch (showValues) {
-      case none:
-        writeVarsPred = NcmlWriter.writeNoVariablesPredicate;
-        break;
-      case coordsOnly:
-        writeVarsPred = NcmlWriter.writeCoordinateVariablesPredicate;
-        break;
-      case all:
-        writeVarsPred = NcmlWriter.writeAllVariablesPredicate;
-        break;
-      default:
+      case none -> writeVarsPred = NcmlWriter.writeNoVariablesPredicate;
+      case coordsOnly -> writeVarsPred = NcmlWriter.writeCoordinateVariablesPredicate;
+      case all -> writeVarsPred = NcmlWriter.writeAllVariablesPredicate;
+      default -> {
         String message =
-            String.format("CAN'T HAPPEN: showValues (%s) != null and checked all possible enum values.", showValues);
+                String.format("CAN'T HAPPEN: showValues (%s) != null and checked all possible enum values.", showValues);
         throw new AssertionError(message);
+      }
     }
 
     NcmlWriter ncmlWriter = new NcmlWriter(null, null, writeVarsPred);
@@ -369,25 +363,6 @@ public class Ncdump {
   private static final String usage =
       "usage: Ncdump <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
-  /**
-   * Main program.
-   * <p>
-   * <strong>dev.cdm.core.api.NCdumpW filename [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
-   * </strong>
-   * <p>
-   * where:
-   * <ul>
-   * <li>filename : path of any CDM readable file
-   * <li>cdl or ncml: output format is CDL or NcML
-   * <li>-vall : dump all variable data
-   * <li>-c : dump coordinate variable data
-   * <li>-v varName1;varName2; : dump specified variable(s)
-   * <li>-v varName(0:1,:,12) : dump specified variable section
-   * </ul>
-   * Default is to dump the header info only.
-   *
-   * @param args arguments
-   */
   public static void main(String[] args) {
     if (args.length == 0) {
       System.out.println(usage);

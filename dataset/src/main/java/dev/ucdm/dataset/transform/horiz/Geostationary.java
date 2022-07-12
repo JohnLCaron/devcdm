@@ -71,8 +71,7 @@ public class Geostationary extends AbstractProjectionCT implements ProjectionBui
   }
 
   private double getScaleFactor(String geoCoordinateUnits) {
-    // default value of -1.0 interpreted as no scaling in the class
-    // dev.cdm.dataset.geoloc.projection.sat.Geostationary
+    // default value of -1.0 interpreted as no scaling in the Geostationary class
     double scaleFactor = defaultScaleFactor;
     String neededMapCoordinateUnit = "radian";
 

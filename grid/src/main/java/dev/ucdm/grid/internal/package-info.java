@@ -3,7 +3,4 @@
  * See LICENSE for license information.
  */
 
-/**
- * Implementation classes for dev.cdm.core.api.grid, wrapping CdmDataset amd VariableDS.
- */
 package dev.ucdm.grid.internal;

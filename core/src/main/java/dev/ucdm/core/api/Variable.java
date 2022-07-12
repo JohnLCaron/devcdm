@@ -571,7 +571,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       cache.setCachedData(data);
     }
 
-    // dev.cdm.array.Array is Immutable
+    // dont need to copy Array because its Immutable
     return data;
   }
 

@@ -23,7 +23,6 @@ import java.util.Set;
 /**
  * Helper class for curvilinear lat, lon coordinates. The longitude values must use projection coordinates,
  * i.e. continuous values that are not normalized to a 360 cylinder.
- * originally from dev.cdm.core.api.ft2.coverage.adapter.GeoGridCoordinate2D and CoordinateAxis2D.makeEdges()
  */
 public class CurvilinearCoords {
 

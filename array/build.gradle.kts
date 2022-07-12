@@ -8,7 +8,7 @@ plugins {
 
 group = "dev.cdm"
 version = "1.0-SNAPSHOT"
-description = "dev.cdm.core"
+description = "dev.ucdm.core"
 
 repositories {
     mavenCentral()
