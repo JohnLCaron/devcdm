@@ -6,9 +6,9 @@
 package dev.ucdm.grib.grib2.table;
 
 import com.google.common.base.Preconditions;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
 import dev.ucdm.grib.grib2.iosp.Grib2Parameter;

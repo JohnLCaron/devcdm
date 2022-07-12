@@ -5,7 +5,7 @@
 package dev.ucdm.grib.common;
 
 import javax.annotation.Nonnull;
-import dev.cdm.grid.api.GridSubset;
+import dev.ucdm.grid.api.GridSubset;
 import dev.ucdm.grib.collection.GribCollection;
 
 class GribReaderRecord implements Comparable<GribReaderRecord> {

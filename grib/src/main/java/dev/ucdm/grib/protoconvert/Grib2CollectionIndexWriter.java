@@ -6,9 +6,9 @@
 package dev.ucdm.grib.protoconvert;
 
 import com.google.protobuf.ByteString;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateRange;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateRange;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GcMFile;
 import dev.ucdm.grib.collection.Grib2CollectionBuilder;

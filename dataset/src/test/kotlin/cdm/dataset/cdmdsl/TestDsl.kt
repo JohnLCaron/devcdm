@@ -1,11 +1,11 @@
 package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.cdmdsl.CdmdslDataset
-import dev.cdm.dataset.cdmdsl.cdmdsl
-import dev.cdm.dataset.cdmdsl.writeDsl
-import dev.cdm.dataset.cdmdsl.build
+import dev.ucdm.dataset.api.CdmDatasetCS
+import dev.ucdm.dataset.cdmdsl.CdmdslDataset
+import dev.ucdm.dataset.cdmdsl.cdmdsl
+import dev.ucdm.dataset.cdmdsl.writeDsl
+import dev.ucdm.dataset.cdmdsl.build
 import org.junit.jupiter.api.Test
 
 class TestDsl {

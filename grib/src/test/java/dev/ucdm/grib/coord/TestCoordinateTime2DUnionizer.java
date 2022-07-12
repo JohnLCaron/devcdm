@@ -1,8 +1,8 @@
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.Indent;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.array.Indent;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import org.junit.Test;
 

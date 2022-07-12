@@ -1,15 +1,15 @@
 package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.dataset.api.CdmDataset
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.TestCdmDatasets
-import dev.cdm.dataset.cdmdsl.CdmdslDataset
-import dev.cdm.dataset.cdmdsl.cdmdsl
-import dev.cdm.dataset.cdmdsl.writeDsl
-import dev.cdm.dataset.cdmdsl.build
-import dev.cdm.dataset.coordsysbuild.openDatasetWithCoordSys
-import dev.cdm.dataset.ncml.NcmlReader
+import dev.ucdm.dataset.api.CdmDataset
+import dev.ucdm.dataset.api.CdmDatasetCS
+import dev.ucdm.dataset.api.TestCdmDatasets
+import dev.ucdm.dataset.cdmdsl.CdmdslDataset
+import dev.ucdm.dataset.cdmdsl.cdmdsl
+import dev.ucdm.dataset.cdmdsl.writeDsl
+import dev.ucdm.dataset.cdmdsl.build
+import dev.ucdm.dataset.coordsysbuild.openDatasetWithCoordSys
+import dev.ucdm.dataset.ncml.NcmlReader
 import org.junit.jupiter.api.Test
 
 class TestDslWriter {

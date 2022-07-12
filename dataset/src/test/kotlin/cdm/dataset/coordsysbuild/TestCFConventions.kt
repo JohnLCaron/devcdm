@@ -1,14 +1,14 @@
 package cdm.dataset.coordsysbuild
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.core.constants.AxisType
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.CdmDatasets
-import dev.cdm.dataset.api.TestCdmDatasets
-import dev.cdm.dataset.api.VariableDS
-import dev.cdm.dataset.cdmdsl.*
-import dev.cdm.dataset.coordsysbuild.findCoordSysBuilder
-import dev.cdm.test.util.testFilesIn
+import dev.ucdm.core.constants.AxisType
+import dev.ucdm.dataset.api.CdmDatasetCS
+import dev.ucdm.dataset.api.CdmDatasets
+import dev.ucdm.dataset.api.TestCdmDatasets
+import dev.ucdm.dataset.api.VariableDS
+import dev.ucdm.dataset.cdmdsl.*
+import dev.ucdm.dataset.coordsysbuild.findCoordSysBuilder
+import dev.ucdm.test.util.testFilesIn
 import org.junit.jupiter.api.Test
 
 class TestCFConventions {

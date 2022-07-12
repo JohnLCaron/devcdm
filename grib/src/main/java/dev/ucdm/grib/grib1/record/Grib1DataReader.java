@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.BitReader;
 import dev.ucdm.grib.common.util.GribData;
 import dev.ucdm.grib.common.util.GribNumbers;

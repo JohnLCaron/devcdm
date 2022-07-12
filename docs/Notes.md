@@ -25,7 +25,7 @@
 ## CdmFiles
 * move code to Uncompress class
 * remove N3iosp special case getIosp()
-* note registerIOProvider("dev.cdm.core.api.internal.iosp.hdf5.H5iosp");
+* note registerIOProvider("dev.ucdm.core.api.internal.iosp.hdf5.H5iosp");
 
 ## RandomAccessFile
 * remove acquire

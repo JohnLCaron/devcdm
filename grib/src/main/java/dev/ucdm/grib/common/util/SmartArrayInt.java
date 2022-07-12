@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common.util;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
 

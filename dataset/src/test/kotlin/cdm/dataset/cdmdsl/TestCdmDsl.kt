@@ -1,9 +1,9 @@
 package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.array.ArrayType
-import dev.cdm.dataset.cdmdsl.CdmdslDataset
-import dev.cdm.dataset.cdmdsl.cdmdsl
+import dev.ucdm.array.ArrayType
+import dev.ucdm.dataset.cdmdsl.CdmdslDataset
+import dev.ucdm.dataset.cdmdsl.cdmdsl
 import org.junit.jupiter.api.Test
 
 class TestCdmDsl {

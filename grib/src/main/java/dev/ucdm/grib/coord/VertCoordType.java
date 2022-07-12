@@ -1,6 +1,6 @@
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 /**
  * Encapsulate the semantics in GRIB level types (Grib1 table 3, Grib2 code table 4.5).

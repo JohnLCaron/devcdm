@@ -1,6 +1,6 @@
 package dev.ucdm.grib.grid;
 
-import dev.cdm.grid.api.*;
+import dev.ucdm.grid.api.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -21,10 +21,10 @@ import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateUnit;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateUnit;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.io.RandomAccessFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

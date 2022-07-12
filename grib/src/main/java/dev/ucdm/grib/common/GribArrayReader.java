@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GribCollection;
@@ -30,13 +30,13 @@ import dev.ucdm.grib.grib2.record.Grib2RecordScanner;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.cdm.array.Array;
-import dev.cdm.array.ArrayType;
-import dev.cdm.array.Arrays;
-import dev.cdm.array.InvalidRangeException;
-import dev.cdm.array.RangeIterator;
-import dev.cdm.grid.api.GridSubset;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.array.Array;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.array.InvalidRangeException;
+import dev.ucdm.array.RangeIterator;
+import dev.ucdm.grid.api.GridSubset;
+import dev.ucdm.core.io.RandomAccessFile;
 
 /** Matches the variable coordinate index to GribRecords */
 @Immutable

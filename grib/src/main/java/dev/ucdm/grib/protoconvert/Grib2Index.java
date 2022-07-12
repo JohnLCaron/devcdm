@@ -6,7 +6,7 @@
 package dev.ucdm.grib.protoconvert;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.record.Grib2SectionGridDefinition;
 

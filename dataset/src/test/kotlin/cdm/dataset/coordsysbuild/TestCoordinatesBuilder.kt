@@ -1,10 +1,10 @@
 package cdm.dataset.coordsysbuild
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.core.constants.AxisType
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.cdmdsl.*
-import dev.cdm.dataset.coordsysbuild.findCoordSysBuilder
+import dev.ucdm.core.constants.AxisType
+import dev.ucdm.dataset.api.CdmDatasetCS
+import dev.ucdm.dataset.cdmdsl.*
+import dev.ucdm.dataset.coordsysbuild.findCoordSysBuilder
 import org.junit.jupiter.api.Test
 
 class TestCoordinatesBuilder {

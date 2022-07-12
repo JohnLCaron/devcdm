@@ -6,7 +6,7 @@
 package dev.ucdm.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.constants.CDM;
+import dev.ucdm.core.constants.CDM;
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribResourceReader;

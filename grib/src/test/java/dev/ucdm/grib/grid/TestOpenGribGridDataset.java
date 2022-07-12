@@ -6,14 +6,14 @@
 package dev.ucdm.grib.grid;
 
 import org.junit.jupiter.api.Test;
-import static dev.cdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.coreLocalDir;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalDir;
 import static org.junit.Assert.fail;
 
 /** Test {@link GribGridDataset} */

@@ -3,5 +3,5 @@ module dev.cdm.array {
   requires org.slf4j;
   requires org.jetbrains.annotations;
 
-  exports dev.cdm.array;
+  exports dev.ucdm.array;
 }

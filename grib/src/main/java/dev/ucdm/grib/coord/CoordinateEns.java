@@ -5,16 +5,16 @@
 
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.Indent;
-import dev.cdm.array.NumericCompare;
-import dev.cdm.core.util.Counters;
+import dev.ucdm.array.Indent;
+import dev.ucdm.array.NumericCompare;
+import dev.ucdm.core.util.Counters;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

@@ -5,9 +5,9 @@
 
 package dev.ucdm.grib.grib1.iosp;
 
-import dev.cdm.core.http.RafHttp;
-import dev.cdm.core.constants.DataFormatType;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.http.RafHttp;
+import dev.ucdm.core.constants.DataFormatType;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;

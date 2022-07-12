@@ -1,10 +1,10 @@
 package dev.ucdm.grib.collection;
 
 import com.google.common.primitives.Ints;
-import dev.cdm.array.Array;
-import dev.cdm.core.api.CdmFile;
-import dev.cdm.core.api.CdmFiles;
-import dev.cdm.core.api.Variable;
+import dev.ucdm.array.Array;
+import dev.ucdm.core.api.CdmFile;
+import dev.ucdm.core.api.CdmFiles;
+import dev.ucdm.core.api.Variable;
 import dev.ucdm.grib.common.TestGribCollectionIndex;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 public class TestGribDataReading {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);

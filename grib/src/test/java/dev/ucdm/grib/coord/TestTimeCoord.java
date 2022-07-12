@@ -1,7 +1,7 @@
 package dev.ucdm.grib.coord;
 
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

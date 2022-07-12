@@ -7,8 +7,8 @@ package dev.ucdm.grib.coord;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
 import java.util.*;
 
 /**

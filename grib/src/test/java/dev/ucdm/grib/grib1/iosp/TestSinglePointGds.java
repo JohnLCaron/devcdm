@@ -4,8 +4,8 @@
  */
 package dev.ucdm.grib.grib1.iosp;
 
-import dev.cdm.array.Array;
-import dev.cdm.core.api.*;
+import dev.ucdm.array.Array;
+import dev.ucdm.core.api.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

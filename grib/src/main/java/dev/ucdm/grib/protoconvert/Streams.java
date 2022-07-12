@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.protoconvert;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.io.InputStream;

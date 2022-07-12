@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common.wmo;
 
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 
 /** Utilities common to WMO table parsing. */
 public class WmoUtils {

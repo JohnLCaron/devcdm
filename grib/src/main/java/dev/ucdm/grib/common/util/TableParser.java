@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common.util;
 
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

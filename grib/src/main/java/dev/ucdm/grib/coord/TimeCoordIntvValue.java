@@ -2,9 +2,9 @@ package dev.ucdm.grib.coord;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import dev.cdm.array.Immutable;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.array.Immutable;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
 
 // use for time intervals
 @Immutable

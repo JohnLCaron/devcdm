@@ -7,7 +7,7 @@ package dev.ucdm.grib.protoconvert;
 
 import com.google.protobuf.ByteString;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.grib2.record.*;
 import org.jetbrains.annotations.Nullable;
 

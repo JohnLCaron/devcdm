@@ -5,10 +5,10 @@
 
 package dev.ucdm.grib.grid;
 
-import dev.cdm.array.MinMax;
-import dev.cdm.grid.api.*;
+import dev.ucdm.array.MinMax;
+import dev.ucdm.grid.api.*;
 import org.junit.jupiter.api.Test;
-import static dev.cdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 import java.io.IOException;
 import java.util.Formatter;

@@ -1,9 +1,9 @@
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.Indent;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.util.Counters;
+import dev.ucdm.array.Indent;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.util.Counters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

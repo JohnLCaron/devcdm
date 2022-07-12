@@ -5,15 +5,15 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import dev.cdm.array.NumericCompare;
-import dev.cdm.dataset.geoloc.*;
-import dev.cdm.dataset.geoloc.LatLonProjection;
-import dev.cdm.dataset.geoloc.projection.Stereographic;
+import dev.ucdm.array.NumericCompare;
+import dev.ucdm.dataset.geoloc.*;
+import dev.ucdm.dataset.geoloc.LatLonProjection;
+import dev.ucdm.dataset.geoloc.projection.Stereographic;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
 
@@ -868,7 +868,7 @@ public abstract class Grib1Gds {
       if (earth.isSpherical()) {
         proj = new Stereographic(latOrigin, lov, scale);
       } else {
-        proj = new dev.cdm.dataset.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, lad,
+        proj = new dev.ucdm.dataset.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, lad,
             0.0, 0.0, earth);
       }
 
@@ -1046,10 +1046,10 @@ public abstract class Grib1Gds {
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
-        proj = new dev.cdm.dataset.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0,
+        proj = new dev.ucdm.dataset.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0,
             earth.getEquatorRadius() * .001);
       } else {
-        proj = new dev.cdm.dataset.geoloc.projection.proj4.LambertConformalConicEllipse(latin1, lov, latin1, latin2, 0.0,
+        proj = new dev.ucdm.dataset.geoloc.projection.proj4.LambertConformalConicEllipse(latin1, lov, latin1, latin2, 0.0,
             0.0, earth);
       }
 
@@ -1194,8 +1194,8 @@ public abstract class Grib1Gds {
       // put longitude origin at first point - doesnt actually matter
       // param par standard parallel (degrees). cylinder cuts earth at this latitude.
       Earth earth = getEarth();
-      dev.cdm.dataset.geoloc.projection.Mercator proj =
-          new dev.cdm.dataset.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
+      dev.ucdm.dataset.geoloc.projection.Mercator proj =
+          new dev.ucdm.dataset.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
 
       // find out where things start
       ProjectionPoint startP = proj.latLonToProj(new LatLonPoint(la1, lo1));
@@ -1283,8 +1283,8 @@ public abstract class Grib1Gds {
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      dev.cdm.dataset.geoloc.projection.GribRotatedLatLon proj =
-          new dev.cdm.dataset.geoloc.projection.GribRotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
+      dev.ucdm.dataset.geoloc.projection.GribRotatedLatLon proj =
+          new dev.ucdm.dataset.geoloc.projection.GribRotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny,
           null);
     }

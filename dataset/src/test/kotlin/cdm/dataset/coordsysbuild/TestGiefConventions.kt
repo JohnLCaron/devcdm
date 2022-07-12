@@ -1,14 +1,13 @@
 package cdm.dataset.coordsysbuild
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.core.calendar.CalendarDate
-import dev.cdm.core.calendar.CalendarDateUnit
-import dev.cdm.core.constants.AxisType
-import dev.cdm.dataset.api.CdmDatasets
-import dev.cdm.dataset.api.VariableDS
-import dev.cdm.dataset.cdmdsl.*
+import dev.ucdm.core.calendar.CalendarDate
+import dev.ucdm.core.calendar.CalendarDateUnit
+import dev.ucdm.core.constants.AxisType
+import dev.ucdm.dataset.api.CdmDatasets
+import dev.ucdm.dataset.api.VariableDS
+import dev.ucdm.dataset.cdmdsl.*
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.provider.Arguments
 
 class TestGiefConventions {
     val testFile = "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/gief/coamps.wind_uv.nc";

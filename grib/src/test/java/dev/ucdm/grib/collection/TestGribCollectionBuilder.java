@@ -1,6 +1,6 @@
 package dev.ucdm.grib.collection;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.TestGribCollectionIndex;
@@ -13,7 +13,7 @@ import java.util.Formatter;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.testFilesIn;
+import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGribCollectionBuilder {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);

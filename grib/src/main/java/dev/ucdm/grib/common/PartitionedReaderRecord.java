@@ -4,7 +4,7 @@ import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.Partitions;
 
 import javax.annotation.Nonnull;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.io.IOException;
 
 // ver8  PartitionCollectionImmutable.DataRecord

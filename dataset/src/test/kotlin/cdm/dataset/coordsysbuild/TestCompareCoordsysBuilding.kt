@@ -1,25 +1,22 @@
 package cdm.dataset.coordsysbuild
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.core.api.Attribute
-import dev.cdm.core.api.Variable
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.CdmDatasets
-import dev.cdm.dataset.cdmdsl.write
-import dev.cdm.dataset.cdmdsl.writeDsl
-import dev.cdm.dataset.coordsysbuild.findCoordSysBuilder
-import dev.cdm.dataset.util.CdmObjFilter
-import dev.cdm.dataset.util.CompareCdmDataset
-import dev.cdm.test.util.extraTestDir
-import dev.cdm.test.util.oldTestDir
-import dev.cdm.test.util.testFilesIn
+import dev.ucdm.core.api.Attribute
+import dev.ucdm.core.api.Variable
+import dev.ucdm.dataset.api.CdmDatasetCS
+import dev.ucdm.dataset.api.CdmDatasets
+import dev.ucdm.dataset.cdmdsl.write
+import dev.ucdm.dataset.cdmdsl.writeDsl
+import dev.ucdm.dataset.coordsysbuild.findCoordSysBuilder
+import dev.ucdm.dataset.util.CdmObjFilter
+import dev.ucdm.dataset.util.CompareCdmDataset
+import dev.ucdm.test.util.extraTestDir
+import dev.ucdm.test.util.testFilesIn
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.io.IOException
-import java.nio.file.Path
 import java.util.stream.Stream
-import kotlin.io.path.name
 
 
 var showOrg = false

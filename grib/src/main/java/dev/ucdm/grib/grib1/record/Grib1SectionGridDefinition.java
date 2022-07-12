@@ -7,7 +7,7 @@ package dev.ucdm.grib.grib1.record;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.grib.common.util.GribNumbers;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;

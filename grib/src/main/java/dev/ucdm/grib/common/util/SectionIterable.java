@@ -5,11 +5,11 @@
 package dev.ucdm.grib.common.util;
 
 import com.google.common.base.Preconditions;
-import dev.cdm.array.Arrays;
-import dev.cdm.array.RangeIterator;
-import dev.cdm.array.Section;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.array.RangeIterator;
+import dev.ucdm.array.Section;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

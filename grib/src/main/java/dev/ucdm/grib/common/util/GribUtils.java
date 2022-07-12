@@ -5,9 +5,9 @@
 
 package dev.ucdm.grib.common.util;
 
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.util.StringUtil2;
 
 /**
  * General Utilities used by GRIB code.

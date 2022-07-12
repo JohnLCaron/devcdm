@@ -5,12 +5,12 @@
 
 package dev.ucdm.grib.collection;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 import com.google.common.base.Preconditions;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateRange;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateRange;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.coord.*;
 
 import java.io.File;

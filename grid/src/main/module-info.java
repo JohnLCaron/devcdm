@@ -7,5 +7,5 @@ module dev.cdm.grid {
   requires tech.units.indriya;
   requires static org.jetbrains.annotations;
 
-  exports dev.cdm.grid.api;
+  exports dev.ucdm.grid.api;
 }

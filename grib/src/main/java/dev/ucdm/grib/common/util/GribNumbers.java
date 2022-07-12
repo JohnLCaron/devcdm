@@ -5,8 +5,8 @@
 
 package dev.ucdm.grib.common.util;
 
-import dev.cdm.array.ArrayType;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.core.io.RandomAccessFile;
 
 import java.io.IOException;
 

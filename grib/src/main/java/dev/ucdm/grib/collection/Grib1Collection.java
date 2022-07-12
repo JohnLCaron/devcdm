@@ -5,10 +5,10 @@
 
 package dev.ucdm.grib.collection;
 
-import dev.cdm.core.api.Attribute;
-import dev.cdm.core.api.AttributeContainerMutable;
-import dev.cdm.core.constants.DataFormatType;
-import dev.cdm.core.constants.CDM;
+import dev.ucdm.core.api.Attribute;
+import dev.ucdm.core.api.AttributeContainerMutable;
+import dev.ucdm.core.constants.DataFormatType;
+import dev.ucdm.core.constants.CDM;
 
 import java.io.File;
 import java.io.IOException;
