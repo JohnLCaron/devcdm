@@ -5,7 +5,7 @@
 package dev.ucdm.grib.grid;
 
 import com.google.common.base.Preconditions;
-import dev.cdm.dataset.api.SimpleUnit;
+import dev.ucdm.dataset.api.SimpleUnit;
 import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateEns;
@@ -18,19 +18,19 @@ import dev.ucdm.grib.coord.EnsCoordValue;
 import dev.ucdm.grib.coord.TimeCoordIntvValue;
 import dev.ucdm.grib.coord.VertCoordType;
 import dev.ucdm.grib.coord.VertCoordValue;
-import dev.cdm.core.api.Attribute;
-import dev.cdm.core.calendar.CalendarDateUnit;
-import dev.cdm.core.constants.AxisType;
-import dev.cdm.core.constants.CF;
-import dev.cdm.grid.api.GridAxis;
-import dev.cdm.grid.api.GridAxisInterval;
-import dev.cdm.grid.api.GridAxisPoint;
-import dev.cdm.grid.api.GridAxisSpacing;
+import dev.ucdm.core.api.Attribute;
+import dev.ucdm.core.calendar.CalendarDateUnit;
+import dev.ucdm.core.constants.AxisType;
+import dev.ucdm.core.constants.CF;
+import dev.ucdm.grid.api.GridAxis;
+import dev.ucdm.grid.api.GridAxisInterval;
+import dev.ucdm.grid.api.GridAxisPoint;
+import dev.ucdm.grid.api.GridAxisSpacing;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.common.GribIosp;
 
 import org.jetbrains.annotations.Nullable;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -372,7 +372,7 @@ public class GribGridAxis {
     } else {
       double increment = dvalues[1] - dvalues[0];
       for (int i = 1; i < nvalues; i++) {
-        if (!dev.cdm.array.NumericCompare.nearlyEquals(dvalues[i] - dvalues[i - 1], increment, incrTol)) {
+        if (!dev.ucdm.array.NumericCompare.nearlyEquals(dvalues[i] - dvalues[i - 1], increment, incrTol)) {
           return null;
         }
       }
@@ -414,11 +414,11 @@ public class GribGridAxis {
       boolean isRegular = true;
       double increment = value2[0] - value1[0];
       for (int i = 0; i < ncoords - 1; i++) {
-        if (!dev.cdm.array.NumericCompare.nearlyEquals(value2[i] - value1[i], increment, incrTol)) {
+        if (!dev.ucdm.array.NumericCompare.nearlyEquals(value2[i] - value1[i], increment, incrTol)) {
           isRegular = false;
           break;
         }
-        if (!dev.cdm.array.NumericCompare.nearlyEquals(value1[i + 1] - value1[i], increment, incrTol)) {
+        if (!dev.ucdm.array.NumericCompare.nearlyEquals(value1[i + 1] - value1[i], increment, incrTol)) {
           isRegular = false;
           break;
         }
@@ -435,7 +435,7 @@ public class GribGridAxis {
       contigValues.add(value1[0]);
       for (int i = 0; i < ncoords - 1; i++) {
         contigValues.add(value2[i]);
-        if (!dev.cdm.array.NumericCompare.nearlyEquals(value1[i + 1], value2[i])) {
+        if (!dev.ucdm.array.NumericCompare.nearlyEquals(value1[i + 1], value2[i])) {
           isContiguous = false;
           break;
         }
@@ -444,7 +444,7 @@ public class GribGridAxis {
     } else {
       contigValues.add(value2[0]);
       for (int i = 0; i < ncoords - 1; i++) {
-        if (!dev.cdm.array.NumericCompare.nearlyEquals(value1[i], value2[i + 1])) {
+        if (!dev.ucdm.array.NumericCompare.nearlyEquals(value1[i], value2[i + 1])) {
           isContiguous = false;
           break;
         }

@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common.util;
 
-import dev.cdm.array.ArrayType;
+import dev.ucdm.array.ArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

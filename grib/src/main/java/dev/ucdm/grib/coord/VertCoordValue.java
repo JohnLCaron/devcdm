@@ -3,8 +3,8 @@ package dev.ucdm.grib.coord;
 import java.util.Formatter;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import dev.cdm.array.Immutable;
-import dev.cdm.array.NumericCompare;
+import dev.ucdm.array.Immutable;
+import dev.ucdm.array.NumericCompare;
 import dev.ucdm.grib.common.util.GribNumbers;
 
 @Immutable

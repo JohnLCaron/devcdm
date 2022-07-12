@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.ucdm.grib.common.util.GribNumbers;
-import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.array.Immutable;
+import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.array.Immutable;
 import java.io.IOException;
 
 /**

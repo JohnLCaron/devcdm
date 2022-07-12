@@ -2,7 +2,7 @@ package dev.ucdm.grib.collection;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateTime2D;

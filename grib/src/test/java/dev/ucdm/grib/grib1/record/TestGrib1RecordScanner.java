@@ -1,6 +1,6 @@
 package dev.ucdm.grib.grib1.record;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -10,7 +10,7 @@ import java.util.Formatter;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.testFilesIn;
+import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGrib1RecordScanner {
   interface Callback {

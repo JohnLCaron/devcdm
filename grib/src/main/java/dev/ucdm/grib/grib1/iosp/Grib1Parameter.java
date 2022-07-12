@@ -7,12 +7,12 @@ package dev.ucdm.grib.grib1.iosp;
 
 import java.util.Objects;
 
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.grib1.table.Grib1ParamTableReader;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 /**
  * A Grib-1 Parameter

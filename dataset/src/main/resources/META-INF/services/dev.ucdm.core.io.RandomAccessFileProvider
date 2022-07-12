@@ -1,0 +1,2 @@
+dev.ucdm.core.http.InMemoryRafHttpProvider
+dev.ucdm.core.http.RafHttp$Provider

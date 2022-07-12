@@ -4,8 +4,8 @@
  */
 package dev.ucdm.grib.grib2.record;
 
-import dev.cdm.array.*;
-import dev.cdm.core.api.*;
+import dev.ucdm.array.*;
+import dev.ucdm.core.api.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

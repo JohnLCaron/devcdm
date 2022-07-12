@@ -13,14 +13,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-import dev.cdm.dataset.ncml.NcmlReader;
+import dev.ucdm.dataset.ncml.NcmlReader;
 import dev.ucdm.grib.common.util.GribResourceReader;
 import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

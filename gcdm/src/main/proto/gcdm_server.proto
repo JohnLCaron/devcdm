@@ -3,12 +3,12 @@
 
 syntax = "proto3";
 
-package dev.cdm.gcdm.protogen;
+package dev.ucdm.gcdm.protogen;
 
 import "gcdm.proto";
 import "gcdm_grid.proto";
 
-option java_package = "dev.cdm.gcdm.protogen";
+option java_package = "dev.ucdm.gcdm.protogen";
 option java_outer_classname = "GcdmServerProto";
 
 service Gcdm {

@@ -13,7 +13,7 @@ import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

@@ -6,15 +6,15 @@
 package dev.ucdm.grib.common;
 
 import com.google.common.base.MoreObjects;
-import dev.cdm.array.Array;
-import dev.cdm.array.ArrayType;
-import dev.cdm.array.Arrays;
-import dev.cdm.dataset.geoloc.*;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.array.Array;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.dataset.geoloc.*;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GaussianLatitudes;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 /**
  * A Horizontal coordinate system generated from a GRIB1 or GRIB2 GDS.

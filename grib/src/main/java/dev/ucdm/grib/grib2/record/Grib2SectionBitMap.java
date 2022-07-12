@@ -6,11 +6,11 @@
 package dev.ucdm.grib.grib2.record;
 
 import com.google.common.base.MoreObjects;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.GribNumbers;
 
 import org.jetbrains.annotations.Nullable;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.io.IOException;
 
 /**

@@ -6,18 +6,18 @@ package dev.ucdm.grib.common;
 
 import java.util.List;
 
-import dev.cdm.array.ArrayType;
-import dev.cdm.array.Arrays;
-import dev.cdm.core.api.Variable;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.core.api.Variable;
+import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.coord.*;
 
 /** Lazy creation of Time2D coordinates when requested. */
 class Time2DLazyCoordinate {
 
-  static dev.cdm.array.Array<?> makeLazyCoordinateArray(Variable v2, GribIosp.Time2Dinfo info,
-                                                        GribCollection gribCollection) {
+  static dev.ucdm.array.Array<?> makeLazyCoordinateArray(Variable v2, GribIosp.Time2Dinfo info,
+                                                         GribCollection gribCollection) {
     double[] data;
     if (info.time2D != null) {
       data = makeLazyTime2Darray(info);

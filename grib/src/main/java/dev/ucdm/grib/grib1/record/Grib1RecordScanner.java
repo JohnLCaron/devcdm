@@ -7,9 +7,9 @@ package dev.ucdm.grib.grib1.record;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.grib.common.util.GribNumbers;
-import dev.cdm.core.util.KMPMatch;
-import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.KMPMatch;
+import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.core.util.StringUtil2;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

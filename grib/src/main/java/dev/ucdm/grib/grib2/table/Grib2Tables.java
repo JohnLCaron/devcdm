@@ -6,8 +6,8 @@
 package dev.ucdm.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.GribTables;
@@ -25,7 +25,7 @@ import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.wmo.CommonCodeTable;
 
 import org.jetbrains.annotations.Nullable;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;

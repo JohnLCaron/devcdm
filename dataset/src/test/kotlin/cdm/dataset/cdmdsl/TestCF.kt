@@ -1,17 +1,15 @@
 package cdm.dataset.cdmdsl
 
 import com.google.common.truth.Truth.assertThat
-import dev.cdm.array.Array
-import dev.cdm.core.api.CdmFile
-import dev.cdm.core.constants.AxisType
-import dev.cdm.dataset.api.CdmDatasetCS
-import dev.cdm.dataset.api.CdmDatasets
-import dev.cdm.dataset.api.VariableDS
-import dev.cdm.dataset.cdmdsl.CdmdslDataset
-import dev.cdm.dataset.cdmdsl.cdmdsl
-import dev.cdm.dataset.cdmdsl.write
-import dev.cdm.dataset.cdmdsl.writeDsl
-import dev.cdm.dataset.cdmdsl.build
+import dev.ucdm.array.Array
+import dev.ucdm.core.constants.AxisType
+import dev.ucdm.dataset.api.CdmDatasets
+import dev.ucdm.dataset.api.VariableDS
+import dev.ucdm.dataset.cdmdsl.CdmdslDataset
+import dev.ucdm.dataset.cdmdsl.cdmdsl
+import dev.ucdm.dataset.cdmdsl.write
+import dev.ucdm.dataset.cdmdsl.writeDsl
+import dev.ucdm.dataset.cdmdsl.build
 import org.junit.jupiter.api.Test
 import java.io.IOException
 

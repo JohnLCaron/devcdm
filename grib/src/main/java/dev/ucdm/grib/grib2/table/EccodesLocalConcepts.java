@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.grib2.iosp.Grib2Parameter;
 import org.slf4j.Logger;

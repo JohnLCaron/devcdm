@@ -7,16 +7,16 @@ package dev.ucdm.grib.grib2.record;
 
 import com.google.common.base.Preconditions;
 
-import dev.cdm.array.NumericCompare;
-import dev.cdm.dataset.geoloc.*;
-import dev.cdm.dataset.geoloc.projection.*;
-import dev.cdm.dataset.geoloc.projection.sat.MSGnavigation;
+import dev.ucdm.array.NumericCompare;
+import dev.ucdm.dataset.geoloc.*;
+import dev.ucdm.dataset.geoloc.projection.*;
+import dev.ucdm.dataset.geoloc.projection.sat.MSGnavigation;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.Formatter;
 import java.util.Objects;
 
@@ -789,8 +789,8 @@ public abstract class Grib2Gds {
       // put longitude origin at first point - doesnt actually matter
       // param par standard parallel (degrees). cylinder cuts earth at this latitude.
       Earth earth = getEarth();
-      dev.cdm.dataset.geoloc.projection.Mercator proj =
-              new dev.cdm.dataset.geoloc.projection.Mercator(lo1, lad, 0, 0, earth.getEquatorRadius() * .001);
+      dev.ucdm.dataset.geoloc.projection.Mercator proj =
+              new dev.ucdm.dataset.geoloc.projection.Mercator(lo1, lad, 0, 0, earth.getEquatorRadius() * .001);
 
       // find out where things start
       ProjectionPoint startP = proj.latLonToProj(new LatLonPoint(la1, lo1));
@@ -960,7 +960,7 @@ public abstract class Grib2Gds {
       if (earth.isSpherical()) {
         proj = new Stereographic(latOrigin, lov, scale);
       } else {
-        proj = new dev.cdm.dataset.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, lad,
+        proj = new dev.ucdm.dataset.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, lad,
                 0.0, 0.0, earth);
       }
 
@@ -1127,10 +1127,10 @@ public abstract class Grib2Gds {
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
-        proj = new dev.cdm.dataset.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0,
+        proj = new dev.ucdm.dataset.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0,
                 earth.getEquatorRadius() * .001);
       } else {
-        proj = new dev.cdm.dataset.geoloc.projection.proj4.LambertConformalConicEllipse(latin1, lov, latin1, latin2, 0.0,
+        proj = new dev.ucdm.dataset.geoloc.projection.proj4.LambertConformalConicEllipse(latin1, lov, latin1, latin2, 0.0,
                 0.0, earth);
       }
 
@@ -1214,10 +1214,10 @@ public abstract class Grib2Gds {
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
-        proj = new dev.cdm.dataset.geoloc.projection.AlbersEqualArea(latin1, lov, latin1, latin2, 0.0, 0.0,
+        proj = new dev.ucdm.dataset.geoloc.projection.AlbersEqualArea(latin1, lov, latin1, latin2, 0.0, 0.0,
                 earth.getEquatorRadius() * .001);
       } else {
-        proj = new dev.cdm.dataset.geoloc.projection.proj4.AlbersEqualAreaEllipse(latin1, lov, latin1, latin2, 0.0, 0.0,
+        proj = new dev.ucdm.dataset.geoloc.projection.proj4.AlbersEqualAreaEllipse(latin1, lov, latin1, latin2, 0.0, 0.0,
                 earth);
       }
 

@@ -6,9 +6,9 @@
 package dev.ucdm.grib.grib2.record;
 
 import com.google.common.base.MoreObjects;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GribData;
 import dev.ucdm.grib.common.util.QuasiRegular;
 

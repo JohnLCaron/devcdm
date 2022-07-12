@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common;
 
-import dev.cdm.core.constants.CF;
+import dev.ucdm.core.constants.CF;
 
 import org.jetbrains.annotations.Nullable;
 

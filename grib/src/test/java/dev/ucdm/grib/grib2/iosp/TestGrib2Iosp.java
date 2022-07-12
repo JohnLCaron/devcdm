@@ -1,8 +1,8 @@
 package dev.ucdm.grib.grib2.iosp;
 
-import dev.cdm.core.api.CdmFile;
-import dev.cdm.core.api.Group;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.api.CdmFile;
+import dev.ucdm.core.api.Group;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.common.GribConfig;

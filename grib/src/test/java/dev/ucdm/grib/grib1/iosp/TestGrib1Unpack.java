@@ -4,9 +4,9 @@
  */
 package dev.ucdm.grib.grib1.iosp;
 
-import dev.cdm.array.*;
-import dev.cdm.core.api.*;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.array.*;
+import dev.ucdm.core.api.*;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.collection.MFileOS;

@@ -4,7 +4,7 @@
  */
 package dev.ucdm.grib.common.wmo;
 
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;

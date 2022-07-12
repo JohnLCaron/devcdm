@@ -5,9 +5,9 @@
 
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.Indent;
-import dev.cdm.core.constants.AxisType;
-import dev.cdm.core.util.Counters;
+import dev.ucdm.array.Indent;
+import dev.ucdm.core.constants.AxisType;
+import dev.ucdm.core.util.Counters;
 
 import java.util.Formatter;
 import java.util.List;

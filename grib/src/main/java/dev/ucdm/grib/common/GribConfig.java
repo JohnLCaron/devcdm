@@ -1,7 +1,7 @@
 package dev.ucdm.grib.common;
 
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.util.StringUtil2;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 

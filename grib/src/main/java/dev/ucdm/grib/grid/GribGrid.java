@@ -5,19 +5,19 @@
 
 package dev.ucdm.grib.grid;
 
-import dev.cdm.array.Array;
-import dev.cdm.array.ArrayType;
-import dev.cdm.array.InvalidRangeException;
-import dev.cdm.array.RangeIterator;
-import dev.cdm.core.api.Attribute;
-import dev.cdm.core.api.AttributeContainer;
-import dev.cdm.core.api.AttributeContainerMutable;
-import dev.cdm.core.constants.CDM;
-import dev.cdm.grid.api.Grid;
-import dev.cdm.grid.api.GridCoordinateSystem;
-import dev.cdm.grid.api.GridReferencedArray;
-import dev.cdm.grid.api.GridSubset;
-import dev.cdm.grid.api.MaterializedCoordinateSystem;
+import dev.ucdm.array.Array;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.array.InvalidRangeException;
+import dev.ucdm.array.RangeIterator;
+import dev.ucdm.core.api.Attribute;
+import dev.ucdm.core.api.AttributeContainer;
+import dev.ucdm.core.api.AttributeContainerMutable;
+import dev.ucdm.core.constants.CDM;
+import dev.ucdm.grid.api.Grid;
+import dev.ucdm.grid.api.GridCoordinateSystem;
+import dev.ucdm.grid.api.GridReferencedArray;
+import dev.ucdm.grid.api.GridSubset;
+import dev.ucdm.grid.api.MaterializedCoordinateSystem;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GribArrayReader;
@@ -118,7 +118,7 @@ public class GribGrid implements Grid {
   }
 
   @Override
-  public Array<Number> readDataSection(dev.cdm.array.Section section) throws InvalidRangeException, IOException {
+  public Array<Number> readDataSection(dev.ucdm.array.Section section) throws InvalidRangeException, IOException {
     GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vi);
     SectionIterable want = new SectionIterable(section, getCoordinateSystem().getNominalShape());
     return (Array<Number>) dataReader.readData(want);

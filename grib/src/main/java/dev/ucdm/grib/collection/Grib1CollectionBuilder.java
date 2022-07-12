@@ -7,9 +7,9 @@ package dev.ucdm.grib.collection;
 
 import javax.annotation.Nonnull;
 
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateRange;
-import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateRange;
+import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribIndex;

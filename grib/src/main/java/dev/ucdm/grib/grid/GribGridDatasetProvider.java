@@ -5,10 +5,10 @@
 
 package dev.ucdm.grib.grid;
 
-import dev.cdm.core.util.CancelTask;
-import dev.cdm.dataset.api.DatasetUrl;
-import dev.cdm.grid.api.GridDataset;
-import dev.cdm.grid.api.GridDatasetProvider;
+import dev.ucdm.core.util.CancelTask;
+import dev.ucdm.dataset.api.DatasetUrl;
+import dev.ucdm.grid.api.GridDataset;
+import dev.ucdm.grid.api.GridDatasetProvider;
 
 import java.io.IOException;
 import java.util.Formatter;

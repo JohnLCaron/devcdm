@@ -1,6 +1,6 @@
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.NumericCompare;
+import dev.ucdm.array.NumericCompare;
 import org.junit.Test;
 
 import java.util.ArrayList;

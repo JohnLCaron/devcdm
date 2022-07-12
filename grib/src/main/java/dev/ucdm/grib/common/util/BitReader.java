@@ -5,7 +5,7 @@
 package dev.ucdm.grib.common.util;
 
 import com.google.common.base.Preconditions;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 
 import java.io.EOFException;
 import java.io.IOException;

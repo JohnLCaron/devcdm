@@ -5,11 +5,11 @@
 
 package dev.ucdm.grib.collection;
 
-import dev.cdm.array.ArrayType;
-import dev.cdm.array.Arrays;
-import dev.cdm.core.api.*;
-import dev.cdm.core.constants.DataFormatType;
-import dev.cdm.core.constants.CDM;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.core.api.*;
+import dev.ucdm.core.constants.DataFormatType;
+import dev.ucdm.core.constants.CDM;
 import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribNumbers;

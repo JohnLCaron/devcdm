@@ -30,8 +30,8 @@ import dev.ucdm.grib.protoconvert.GribCollectionIndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.core.util.StringUtil2;
 import java.io.File;
 import java.io.IOException;
 

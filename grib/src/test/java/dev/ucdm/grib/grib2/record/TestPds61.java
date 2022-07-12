@@ -3,7 +3,7 @@
  */
 package dev.ucdm.grib.grib2.record;
 
-import dev.cdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.grib.collection.MFile;
 import dev.ucdm.grib.collection.MFileOS;
 import dev.ucdm.grib.collection.CollectionUpdateType;

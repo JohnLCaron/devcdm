@@ -6,7 +6,7 @@
 package dev.ucdm.grib.grid;
 
 
-import dev.cdm.grid.api.*;
+import dev.ucdm.grid.api.*;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 /**
  * Open Grib files directly through GribGrid, and indirectly through NetcdfDataset which ises GribIosp.

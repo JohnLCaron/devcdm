@@ -7,7 +7,7 @@ package dev.ucdm.grib.protoconvert;
 
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 /**
  * Encapsolates the GdsHorizCoordSys; shared by the GribCollection.GroupGC

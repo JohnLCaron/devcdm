@@ -5,16 +5,16 @@
 
 package dev.ucdm.grib.common;
 
-import dev.cdm.array.Array;
-import dev.cdm.array.Arrays;
-import dev.cdm.array.InvalidRangeException;
-import dev.cdm.array.Section;
-import dev.cdm.core.api.Group;
-import dev.cdm.core.api.Variable;
-import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.iosp.AbstractIOServiceProvider;
-import dev.cdm.core.util.CancelTask;
-import dev.cdm.dataset.ncml.NcmlReader;
+import dev.ucdm.array.Array;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.array.InvalidRangeException;
+import dev.ucdm.array.Section;
+import dev.ucdm.core.api.Group;
+import dev.ucdm.core.api.Variable;
+import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.core.iosp.AbstractIOServiceProvider;
+import dev.ucdm.core.util.CancelTask;
+import dev.ucdm.dataset.ncml.NcmlReader;
 import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.GribCollection;

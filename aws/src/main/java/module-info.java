@@ -11,5 +11,5 @@ module dev.cdm.aws {
   requires software.amazon.awssdk.regions;
   requires software.amazon.awssdk.services.s3;
 
-  exports dev.cdm.aws.s3;
+  exports dev.ucdm.aws.s3;
 }

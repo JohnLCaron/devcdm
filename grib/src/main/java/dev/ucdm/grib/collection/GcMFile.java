@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.collection;
 
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.util.StringUtil2;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.File;

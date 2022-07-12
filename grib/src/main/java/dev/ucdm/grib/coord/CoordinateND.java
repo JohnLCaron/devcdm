@@ -5,10 +5,10 @@
 package dev.ucdm.grib.coord;
 
 import com.google.common.base.Preconditions;
-import dev.cdm.array.Indent;
-import dev.cdm.array.Section;
+import dev.ucdm.array.Indent;
+import dev.ucdm.array.Section;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.*;
 
 /**

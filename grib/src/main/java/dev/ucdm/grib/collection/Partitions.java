@@ -7,8 +7,8 @@ package dev.ucdm.grib.collection;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribConstants;

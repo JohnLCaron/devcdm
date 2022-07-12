@@ -6,10 +6,10 @@
 package dev.ucdm.grib.grib1.record;
 
 
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateUnit;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateUnit;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.wmo.CommonCodeTable;
@@ -17,7 +17,7 @@ import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib1.table.Grib1ParamTableReader;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;

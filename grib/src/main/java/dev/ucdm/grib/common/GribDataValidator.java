@@ -1,8 +1,7 @@
 package dev.ucdm.grib.common;
 
-import dev.cdm.grid.api.GridSubset;
-import dev.cdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.common.GribTables;
+import dev.ucdm.grid.api.GridSubset;
+import dev.ucdm.core.io.RandomAccessFile;
 
 import java.io.IOException;
 

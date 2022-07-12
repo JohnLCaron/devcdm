@@ -1,6 +1,6 @@
 package dev.ucdm.grib.common;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.GribCollection;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,7 +11,7 @@ import java.util.Formatter;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestValidCollection {

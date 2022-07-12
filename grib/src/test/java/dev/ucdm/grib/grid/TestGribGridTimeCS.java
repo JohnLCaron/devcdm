@@ -6,13 +6,13 @@
 package dev.ucdm.grib.grid;
 
 import com.google.common.collect.ImmutableList;
-import dev.cdm.array.NumericCompare;
-import dev.cdm.array.Range;
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateUnit;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.constants.AxisType;
-import dev.cdm.grid.api.*;
+import dev.ucdm.array.NumericCompare;
+import dev.ucdm.array.Range;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateUnit;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.constants.AxisType;
+import dev.ucdm.grid.api.*;
 import org.junit.jupiter.api.Test;
 
 
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.cdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 /** Test {@link GribGridTimeCoordinateSystem} */
 public class TestGribGridTimeCS {

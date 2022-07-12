@@ -8,7 +8,7 @@ package dev.ucdm.grib.grib1.record;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 
 /**
  * Level information contained in a particular PDS.

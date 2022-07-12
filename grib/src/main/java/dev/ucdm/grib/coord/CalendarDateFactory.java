@@ -4,7 +4,7 @@
  */
 package dev.ucdm.grib.coord;
 
-import dev.cdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDate;
 import java.util.HashMap;
 import java.util.Map;
 

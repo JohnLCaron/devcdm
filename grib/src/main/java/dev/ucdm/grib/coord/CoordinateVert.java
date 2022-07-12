@@ -4,12 +4,12 @@
  */
 package dev.ucdm.grib.coord;
 
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import org.jetbrains.annotations.Nullable;
 
-import dev.cdm.array.NumericCompare;
-import dev.cdm.array.Indent;
-import dev.cdm.core.util.Counters;
+import dev.ucdm.array.NumericCompare;
+import dev.ucdm.array.Indent;
+import dev.ucdm.core.util.Counters;
 import dev.ucdm.grib.grib1.record.Grib1ParamLevel;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;

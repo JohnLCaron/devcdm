@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.grib2.record;
 
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.GribNumbers;
 
 import java.io.IOException;

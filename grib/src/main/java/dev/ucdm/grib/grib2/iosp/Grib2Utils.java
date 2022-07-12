@@ -5,9 +5,9 @@
 
 package dev.ucdm.grib.grib2.iosp;
 
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.core.constants.AxisType;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.core.constants.AxisType;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.WmoParamTable;

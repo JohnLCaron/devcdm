@@ -5,10 +5,10 @@
 
 package dev.ucdm.grib.coord;
 
-import dev.cdm.core.calendar.CalendarDate;
-import dev.cdm.core.calendar.CalendarDateRange;
-import dev.cdm.core.calendar.CalendarPeriod;
-import dev.cdm.array.Immutable;
+import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.core.calendar.CalendarDateRange;
+import dev.ucdm.core.calendar.CalendarPeriod;
+import dev.ucdm.array.Immutable;
 
 /**
  * Abstract superclass for time coordinates ( time, timeIntv, time2D)

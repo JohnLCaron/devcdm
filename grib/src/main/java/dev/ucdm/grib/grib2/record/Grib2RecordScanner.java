@@ -5,9 +5,9 @@
 
 package dev.ucdm.grib.grib2.record;
 
-import dev.cdm.core.io.RandomAccessFile;
-import dev.cdm.core.util.KMPMatch;
-import dev.cdm.core.util.StringUtil2;
+import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.core.util.KMPMatch;
+import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GribNumbers;
 
 import org.jetbrains.annotations.Nullable;

@@ -12,7 +12,7 @@ import dev.ucdm.grib.grib1.record.Grib1RecordScanner;
 import dev.ucdm.grib.grib1.record.Grib1SectionBinaryData;
 import dev.ucdm.grib.grib1.record.Grib1SectionBitMap;
 import dev.ucdm.grib.grib1.record.Grib1SectionGridDefinition;
-import dev.cdm.core.io.RandomAccessFile;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.grib1.record.Grib1SectionIndicator;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 import org.jetbrains.annotations.Nullable;

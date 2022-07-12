@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.cdm.array.Immutable;
+import dev.ucdm.array.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
