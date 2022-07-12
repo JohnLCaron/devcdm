@@ -32,7 +32,7 @@ public class TestDataTemplate {
   public void testDrs2() throws IOException {
     final String testfile = "../grib/src/test/data/ds.snow.grib2";
     try (CdmFile nc = CdmFiles.open(testfile)) {
-      Variable var = nc.findVariable("Total_snowfall_surface_Accumulation");
+      Variable var = nc.findVariable("Total_snowfall_surface_6_Hour_Accumulation");
       assertThat(var).isNotNull();
       Array<Float> data = (Array<Float>) var.readArray();
 

@@ -12,7 +12,7 @@ class GribReaderRecord implements Comparable<GribReaderRecord> {
   int resultIndex; // index into the result array
   final GribCollection.ReadRecord record;
   final GdsHorizCoordSys hcs;
-  GridSubset validation;
+  GridSubset validation; // debugging I think
 
   GribReaderRecord(int resultIndex, GribCollection.ReadRecord record, GdsHorizCoordSys hcs) {
     this.resultIndex = resultIndex;
@@ -20,11 +20,16 @@ class GribReaderRecord implements Comparable<GribReaderRecord> {
     this.hcs = hcs;
   }
 
+  public void setResultIndex(int resultIndex) {
+    this.resultIndex = resultIndex;
+  }
+
   @Override
   public int compareTo(@Nonnull GribReaderRecord o) {
     int r = Integer.compare(record.fileno(), o.record.fileno());
-    if (r != 0)
+    if (r != 0) {
       return r;
+    }
     return Long.compare(record.pos(), o.record.pos());
   }
 

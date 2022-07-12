@@ -111,8 +111,10 @@ public class CoordinateRuntime implements Coordinate {
     for (int idx = 0; idx < runtimes.length; idx++) {
       double runtime = (double) getRuntime(idx);
       double msecs = (runtime - start);
+      // TODO can we use CalendarDate instead of GribUtils?
       // Note doesnt work for month, year.
       // since runtimes is in millis, have no choice but to use fixed time period intervals.
+      result.add(msecs / GribUtils.getValueInMillisecs(timePeriod));
       result.add(msecs / GribUtils.getValueInMillisecs(timePeriod));
     }
     return result;

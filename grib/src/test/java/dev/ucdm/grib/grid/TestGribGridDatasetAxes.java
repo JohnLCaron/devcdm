@@ -29,7 +29,7 @@ public class TestGribGridDatasetAxes {
     try (GribGridDataset gds = GribGridDataset.open(endpoint, errlog)) {
       assertWithMessage(errlog.toString()).that(gds).isNotNull();
       System.out.println("readGridDataset: " + gds.getLocation());
-      // float Convective_Hazard_Outlook_surface_24_hours_Average(
+      // LOOK ver8 Convective_Hazard_Outlook_surface_24_Hour_Average
       Grid grid = gds.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
 

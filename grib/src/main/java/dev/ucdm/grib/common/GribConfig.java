@@ -265,7 +265,7 @@ public class GribConfig {
     }
   }
 
-  public void show(Formatter f) {
+  public Formatter show(Formatter f) {
     f.format("GribConfig= ");
     if (useGenType != useGenTypeDef)
       f.format(" useGenType=%s", useGenType);
@@ -284,6 +284,7 @@ public class GribConfig {
       f.format("  gdsNamer=%s%n", gdsNamer);
     if (intvFilter != null)
       f.format("  intvFilter=%s%n", intvFilter);
+    return f;
   }
 
   @Override

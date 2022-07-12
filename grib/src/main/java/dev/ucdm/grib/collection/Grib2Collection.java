@@ -10,6 +10,7 @@ import dev.cdm.array.Arrays;
 import dev.cdm.core.api.*;
 import dev.cdm.core.constants.DataFormatType;
 import dev.cdm.core.constants.CDM;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
@@ -72,7 +73,7 @@ public class Grib2Collection extends GribCollection {
         }
       }
 
-      String intvName = vindex.getIntvName();
+      String intvName = vindex.getTimeIntvName();
       if (intvName != null && !intvName.isEmpty()) {
         if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS)) {
           f.format("_Imixed");
@@ -104,7 +105,7 @@ public class Grib2Collection extends GribCollection {
   static void addVariableAttributes(AttributeContainerMutable v, VariableIndex vindex, GribCollection gc) {
     Grib2Tables cust2 = (Grib2Tables) gc.cust;
 
-    v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
+    v.addAttribute(new Attribute(GribConstants.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     int[] param = {vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
     v.addAttribute(Attribute.fromArray("Grib2_Parameter", Arrays.factory(ArrayType.INT, new int[] {3}, param)));
     String disc = cust2.getCodeTableValue("0.0", vindex.getDiscipline());

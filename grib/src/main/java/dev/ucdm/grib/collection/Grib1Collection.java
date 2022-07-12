@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 import dev.ucdm.grib.common.GribConfig;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribIosp;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.GribUtils;
@@ -53,7 +54,7 @@ public class Grib1Collection extends GribCollection {
   @Override
   public String makeVariableId(VariableIndex v) {
     return makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(), v.getLevelType(),
-        v.isLayer(), v.getIntvType(), v.getIntvName());
+        v.isLayer(), v.getIntvType(), v.getTimeIntvName());
   }
 
   static String makeVariableId(int center, int subcenter, int tableVersion, int paramNo, int levelType, boolean isLayer,
@@ -93,7 +94,7 @@ public class Grib1Collection extends GribCollection {
     Grib1Customizer cust1 = (Grib1Customizer) gc.cust;
 
     // Grib attributes
-    v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
+    v.addAttribute(new Attribute(GribConstants.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     v.addAttribute(new Attribute("Grib1_Center", gc.getCenter()));
     v.addAttribute(new Attribute("Grib1_Subcenter", gc.getSubcenter()));
     v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));

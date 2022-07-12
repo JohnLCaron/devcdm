@@ -39,7 +39,7 @@ public class TestGrib1Unpack {
   public void testEcmwfExtendedComplexData() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing.grib1";
     try (CdmFile nc = CdmFiles.open(testfile)) {
-      Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface");
+      Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour");
       Array<Float> data = (Array<Float>) var.readArray();
       float first = data.get(0, 0, 0, 0);
 

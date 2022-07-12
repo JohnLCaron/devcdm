@@ -1,0 +1,41 @@
+<gribConfig datasetTypes="Best LatestFile Files">
+    <latestNamer name="Latest FNMOC COAMPS Equatorial America 0.15 degree"/>
+    <bestNamer name="Best FNMOC COAMPS Equatorial America 0.15 degree Time Series"/>
+    <filesSort>
+        <lexigraphicByName increasing="false"/>
+    </filesSort>
+
+    <gdsHash from="-2121584860" to="28944332"/>
+    <pdsHash>
+        <useTableVersion>true</useTableVersion>
+        <useGenType>true</useGenType>
+        <intvMerge>false</intvMerge>
+        <useCenter>true</useCenter>
+    </pdsHash>
+    <intvFilter excludeZero="false"/>
+    <intvFilter intvLength="3">
+        <variable id="0-1-8"/>
+        <variable id="0-1-10"/>
+    </intvFilter>
+    <intvFilter interval="225,228"/>
+    <option name="timeUnit" value="1 minute" />
+    <option name="runtimeCoordinate" value="union" />
+    <gdsName hash='-1960629519' groupName='KTUA Arkansas-Red River RFC'/>
+    <timeUnitConvert from='8' to='11'/>
+    <gribParameterTableLookup>lookupTablePath</gribParameterTableLookup>
+
+    <parameterMap>
+        <parameter code="2">
+            <description>Pressure reduced to MSL</description>
+            <units>Pa</units>
+            <name>PRMSL</name>
+        </parameter>
+        <parameter code="3">
+            <description>Pressure tendency</description>
+            <units>Pa/s</units>
+            <name>PTEND</name>
+            <CF>tendency_of_air_pressure</CF>
+            <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Pressure Tendency</GCMD>
+        </parameter>
+    </parameterMap>
+</gribConfig>

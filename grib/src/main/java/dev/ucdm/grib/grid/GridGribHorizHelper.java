@@ -6,7 +6,7 @@
 package dev.ucdm.grib.grid;
 
 import com.google.common.collect.ImmutableList;
-import dev.ucdm.grib.collection.Grib;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
@@ -65,22 +65,22 @@ class GridGribHorizHelper {
     } else { // not curvilinear
 
       if (hcs.isLatLon()) { // latlon
-        xaxis = GridAxisPoint.builder().setName(Grib.LON_AXIS).setAxisType(AxisType.Lon).setUnits(CDM.LON_UNITS)
+        xaxis = GridAxisPoint.builder().setName(GribConstants.LON_AXIS).setAxisType(AxisType.Lon).setUnits(CDM.LON_UNITS)
             .setRegular(hcs.nx, hcs.startx, hcs.dx).build();
 
         if (hcs.hasGaussianLats()) {
-          yaxis = GridAxisPoint.builder().setName(Grib.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
+          yaxis = GridAxisPoint.builder().setName(GribConstants.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
               .setValues(hcs.getGaussianLatsArray()).setSpacing(GridAxisSpacing.irregularPoint)
               .addAttribute(new Attribute(CDM.GAUSSIAN, "true")).build();
         } else {
-          yaxis = GridAxisPoint.builder().setName(Grib.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
+          yaxis = GridAxisPoint.builder().setName(GribConstants.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
               .setRegular(hcs.ny, hcs.starty, hcs.dy).build();
         }
 
       } else { // regular projection coordinates
-        xaxis = GridAxisPoint.builder().setName(Grib.XAXIS).setAxisType(AxisType.GeoX).setUnits("km")
+        xaxis = GridAxisPoint.builder().setName(GribConstants.XAXIS).setAxisType(AxisType.GeoX).setUnits("km")
             .setDescription(CF.PROJECTION_X_COORDINATE).setRegular(hcs.nx, hcs.startx, hcs.dx).build();
-        yaxis = GridAxisPoint.builder().setName(Grib.YAXIS).setAxisType(AxisType.GeoY).setUnits("km")
+        yaxis = GridAxisPoint.builder().setName(GribConstants.YAXIS).setAxisType(AxisType.GeoY).setUnits("km")
             .setDescription(CF.PROJECTION_Y_COORDINATE).setRegular(hcs.ny, hcs.starty, hcs.dy).build();
       }
     }

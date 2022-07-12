@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import dev.cdm.core.calendar.CalendarDate;
 import dev.cdm.core.calendar.CalendarDateRange;
 import dev.cdm.core.calendar.CalendarPeriod;
+import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
@@ -66,7 +67,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       Grib2Index index = null;
 
       try {
-        if (Grib.debugGbxIndexOnly) {
+        if (GribConstants.debugGbxIndexOnly) {
           index = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.never, errlog);
           if (index == null)
             continue;

@@ -5,6 +5,7 @@
 
 package dev.ucdm.grib.common;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import java.util.Formatter;
 import java.util.List;
 import dev.cdm.array.Immutable;
 
+import dev.ucdm.grib.collection.CollectionType;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.util.SectionIterable;
+import dev.ucdm.grib.coord.CoordinateTime2D;
 import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
 import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
@@ -131,10 +134,10 @@ public abstract class GribArrayReader {
     while (iterWanted.hasNext()) {
       iterWanted.next(indexWanted); // returns the vindexP index in indexWanted array
 
-      /* TODO for MRUTP, must munge the index here (not in vindexP.getDataRecord, because its recursive
-      if (gribCollection.getCollectionType() == CollectionType.MRUTP) {
+      // TODO for MRUTP, must munge the index here (not in vindexP.getDataRecord, because its recursive
+      if (vi.group.ds.gctype == CollectionType.MRUTP) {
         // find the partition from getRuntimeIdxFromMrutpTimeIndex
-        CoordinateTime2D time2D = (CoordinateTime2D) vindexP.getCoordinateTime();
+        CoordinateTime2D time2D = (CoordinateTime2D) vi.getCoordinateTime();
         Preconditions.checkNotNull(time2D);
         int[] timeIndices = time2D.getTimeIndicesFromMrutp(indexWanted[0]);
 
@@ -143,14 +146,14 @@ public abstract class GribArrayReader {
         indexReallyWanted[1] = timeIndices[1];
         System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length - 1);
         useIndex = indexReallyWanted;
-      } */
+      }
 
       PartitionedReaderRecord record = gribCollection.partitions.getPartitionedReaderRecord(vi, useIndex);
       if (record == null) {
         resultPos++; // can just skip, since result is prefilled with NaNs
         continue;
       }
-      record.resultIndex = resultPos;
+      record.setResultIndex(resultPos);
       records.add(record);
       resultPos++;
     }
