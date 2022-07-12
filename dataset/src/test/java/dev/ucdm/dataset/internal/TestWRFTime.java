@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
-
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
 public class TestWRFTime {
 
   @Test
   public void testWrfTimeUnderscore() throws IOException {
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/WrfTimesStrUnderscore.nc";
+    String tstFile = datasetLocalDir + "dataset/WrfTimesStrUnderscore.nc";
     System.out.println(tstFile);
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       // make sure this file went through the WrfConvention
@@ -36,7 +36,7 @@ public class TestWRFTime {
 
   @Test
   public void testWrfNoTimeVar() throws IOException {
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/WrfNoTimeVar.nc";
+    String tstFile = datasetLocalDir + "dataset/WrfNoTimeVar.nc";
     System.out.printf("Open %s%n", tstFile);
     Set<CdmDataset.Enhance> defaultEnhanceMode = CdmDataset.getDefaultEnhanceMode();
     EnumSet<CdmDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);

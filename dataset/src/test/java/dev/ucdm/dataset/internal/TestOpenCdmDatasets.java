@@ -22,21 +22,23 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalNcmlDir;
 
 public class TestOpenCdmDatasets {
 
   public static Stream<Arguments> params() throws IOException {
     return Stream.concat(
-        Files.list(Paths.get(dev.ucdm.dataset.api.TestCdmDatasets.coreLocalDir))
+        Files.list(Paths.get(coreLocalNetcdf3Dir))
               .filter(file -> !Files.isDirectory(file))
               .filter(file -> !file.getFileName().toString().startsWith("Wrf"))
               .map(Path::toString)
               .map(Arguments::of),
 
         Stream.of(
-            Arguments.of(dev.ucdm.dataset.api.TestCdmDatasets.datasetLocalNcmlDir + "testRead.xml"),
-            Arguments.of(dev.ucdm.dataset.api.TestCdmDatasets.datasetLocalNcmlDir + "readMetadata.xml"),
-            Arguments.of(dev.ucdm.dataset.api.TestCdmDatasets.datasetLocalNcmlDir + "testReadHttps.xml"))
+            Arguments.of(datasetLocalNcmlDir + "testRead.xml"),
+            Arguments.of(datasetLocalNcmlDir + "readMetadata.xml"),
+            Arguments.of(datasetLocalNcmlDir + "testReadHttps.xml"))
     );
   }
 

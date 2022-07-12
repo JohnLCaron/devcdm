@@ -7,7 +7,6 @@ package dev.ucdm.dataset.integration;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.Variable;
 import dev.ucdm.dataset.api.CdmDatasets;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.Arrays;
@@ -20,13 +19,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalNcmlDir;
 
 /** Test reading variable data */
 public class TestReadStrides {
 
   @Test
   public void testReadStridesCached() throws Exception {
-    String filename = TestCdmDatasets.datasetLocalNcmlDir + "nc/time0.nc";
+    String filename = datasetLocalNcmlDir + "nc/time0.nc";
     try (CdmFile ncfile = CdmDatasets.openDataset(filename)) {
       Variable temp = ncfile.findVariable("T");
       assertThat(temp).isNotNull();
@@ -111,7 +111,7 @@ public class TestReadStrides {
 
   @Test
   public void testReadStridesNoCache() throws Exception {
-    String filename = TestCdmDatasets.datasetLocalNcmlDir + "nc/time0.nc";
+    String filename = datasetLocalNcmlDir + "nc/time0.nc";
     try (CdmFile ncfile = CdmDatasets.openDataset(filename)) {
       Variable temp = ncfile.findVariable("T");
       assertThat(temp).isNotNull();
@@ -181,7 +181,7 @@ public class TestReadStrides {
 
   @Test
   public void testReadStridesAll() throws Exception {
-    String filename = TestCdmDatasets.datasetLocalNcmlDir + "nc/time0.nc";
+    String filename = datasetLocalNcmlDir + "nc/time0.nc";
 
       testReadStrides(filename);
   }

@@ -4,6 +4,7 @@
  */
 package dev.ucdm.gcdm;
 
+import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,18 +16,22 @@ import java.io.File;
 import java.util.Formatter;
 import java.util.stream.Stream;
 
+import static dev.ucdm.test.util.TestFilesKt.coreLocalDir;
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
+import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 /**
  * Test {@link GcdmCdmFile}
  */
 public class TestGcdmGridDataset {
-  public static Stream<Arguments> params() {
-    return Stream.of(
-            Arguments.of(TestGcdmDatasets.coreLocalDir + "permuteTest.nc"));
 
-    //FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .gbx9 aggFmrc.xml cg.ncml");
-    // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/ft/grid", ff, result, true);
+  public static Stream<Arguments> params() {
+    return testFilesIn(oldTestDir + "/ft/grid")
+            .addNameFilter(new FileFilterSkipSuffixes(".cdl .gbx9 aggFmrc.xml cg.ncml"))
+            .addNameFilter(it -> !it.contains("RTMA_CONUS_2p5km"))
+            .withRecursion()
+            .build();
   }
 
   @ParameterizedTest
@@ -36,7 +41,6 @@ public class TestGcdmGridDataset {
   }
 
   public static void roundtrip(String filename) throws Exception {
-
     filename = filename.replace("\\", "/");
     File file = new File(filename);
     // kludge for now. Also, need to auto start up CmdrServer

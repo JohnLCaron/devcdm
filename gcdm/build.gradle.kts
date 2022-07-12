@@ -11,6 +11,7 @@ import com.google.protobuf.gradle.protoc
 plugins {
     id("java")
     id("java-library")
+    id("application")
     alias(libs.plugins.protobufPlugin)
     alias(libs.plugins.execforkPlugin)
 }
@@ -22,6 +23,17 @@ description = "gRPC client and server implementation of CDM Remote Procedure Cal
 repositories {
     mavenCentral()
     mavenLocal()
+    // TODO something else?
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-releases/")
+            }
+        }
+        filter {
+            includeModule("edu.ucar", "jj2000")
+        }
+    }
 }
 
 dependencies {
@@ -29,17 +41,23 @@ dependencies {
     api(project(":core"))
     api(project(":dataset"))
     api(project(":grid"))
+    api(project(":grib"))
 
     compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(platform(libs.grpcBom))
     implementation(libs.grpcProtobuf)
     implementation(libs.grpcStub)
     implementation(libs.guava)
+    implementation(libs.jj2000)
     implementation(libs.protobufJava)
     implementation(libs.slf4j)
     compileOnly(libs.tomcatAnnotationsApi)
     implementation(libs.uomImpl)
 
+    runtimeOnly(libs.grpcNettyShaded)
+    runtimeOnly(libs.slf4jJdk14)
+
+    testImplementation(project(":test-utils"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -79,9 +97,24 @@ sourceSets {
 tasks.jar {
     manifest {
         attributes(mapOf(
-            "Main-Class" to "dev.cdm.gcdm",
-            "Implementation-Title" to "UCDM (next generation) remote access library",
+            "Main-Class" to "dev.ucdm.gcdm.GcdmServer",
+            "Implementation-Title" to "UCDM Remote Procedure Calls",
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("ucdm-gcdm")
+}
+
+application {
+    mainClass.set("dev.ucdm.gcdm.GcdmServer")
+}
+
+val startDaemonTask = tasks.register<com.github.psxpaul.task.JavaExecFork>("startDaemon") {
+    classpath = sourceSets.main.get().runtimeClasspath
+    main = "ucar.gcdm.server.GcdmServer"
+    jvmArgs = listOf("-Xmx512m", "-Djava.awt.headless=true")
+    standardOutput = "$buildDir/gcdm_logs/gcdm.log"
+    errorOutput = "$buildDir/gcdm_logs/gcdm-error.log"
+    stopAfter = tasks.test.get()
+    waitForPort = 16111
+    waitForOutput = "Server started, listening on 16111"
 }

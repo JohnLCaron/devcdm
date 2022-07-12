@@ -4,7 +4,6 @@
  */
 package dev.ucdm.dataset.ncml;
 
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.core.api.CdmFile;
@@ -14,10 +13,11 @@ import dev.ucdm.dataset.api.CdmDatasets;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
 
 /** Test NcmlNew enhancement */
 public class TestEnhance {
-  private static String dataDir = TestCdmDatasets.datasetLocalDir + "ncml/enhance/";
+  private static String dataDir = datasetLocalDir + "ncml/enhance/";
 
   @Test
   public void testStandaloneNoEnhance() throws IOException {

@@ -6,7 +6,6 @@
 package dev.ucdm.dataset.internal;
 
 import dev.ucdm.dataset.api.CdmDatasetCS;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.core.api.Variable;
@@ -20,6 +19,7 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
 import static java.lang.String.format;
 
 public class TestSimpleGeom {
@@ -29,7 +29,7 @@ public class TestSimpleGeom {
   public void testLine() throws IOException {
     String failMessage, found, expected;
     boolean testCond;
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
+    String tstFile = datasetLocalDir + "dataset/hru_soil_moist_vlen_3hru_5timestep.nc";
 
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       // make sure this dataset used the cfConvention
@@ -56,7 +56,7 @@ public class TestSimpleGeom {
     String failMessage, found, expected;
     boolean testCond;
 
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
+    String tstFile = datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
     try(CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
@@ -82,7 +82,7 @@ public class TestSimpleGeom {
 
   @Test
   public void testCoordinateVariable() throws IOException {
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
+    String tstFile = datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
@@ -95,7 +95,7 @@ public class TestSimpleGeom {
 
   @Test
   public void testVarLenDataVariable() throws IOException {
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
+    String tstFile = datasetLocalDir + "dataset/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {

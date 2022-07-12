@@ -6,7 +6,6 @@ import dev.ucdm.dataset.api.CdmDatasetCS;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.api.CoordinateSystem;
 import dev.ucdm.dataset.api.SimpleUnit;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import dev.ucdm.dataset.api.VariableDS;
 import dev.ucdm.dataset.transform.vertical.AtmosHybridSigmaPressure;
 import org.junit.jupiter.api.Test;
@@ -16,12 +15,13 @@ import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 
 public class TestVertical {
 
   @Test
   public void testHybridSigmaPressure() throws Exception {
-    String filename = TestCdmDatasets.gridTestDir + "transforms/HybridSigmaPressure.nc";
+    String filename = extraTestDir + "transforms/HybridSigmaPressure.nc";
     open(filename, "T", AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 

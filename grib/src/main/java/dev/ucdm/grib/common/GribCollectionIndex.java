@@ -70,6 +70,10 @@ public class GribCollectionIndex {
       // TODO close the data file, the ncx raf file is managed by gribCollection ??
       // raf.close();
     } else {
+      // check if its a collection dataset
+      if (getType(raf) == Type.none) {
+        return null;
+      }
       result = openNcxIndex(raf.getLocation(), config, false);
       // TODO close the data file, the ncx raf file is managed by gribCollection ??
       // raf.close();
@@ -78,7 +82,7 @@ public class GribCollectionIndex {
     return result;
   }
 
-  // raf is a data file
+  // raf is a data fileGribGridDataset
   public static GribCollection openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf,
       CollectionUpdateType updateType, GribConfig config, Formatter errlog)
       throws IOException {

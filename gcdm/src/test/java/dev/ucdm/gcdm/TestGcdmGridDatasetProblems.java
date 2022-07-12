@@ -6,25 +6,28 @@ package dev.ucdm.gcdm;
 
 import org.junit.Test;
 import dev.ucdm.gcdm.client.GcdmCdmFile;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
+
 
 /** Test {@link GcdmCdmFile} */
 public class TestGcdmGridDatasetProblems {
 
-  /* TODO GRIB @Test
+  @Test
   public void testTimeCoordRegular() throws Exception {
-    String filename = TestGcdmDatasets.testDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4";
-    TestGcdmGridConverter.roundtrip(Paths.get(filename));
-  } */
+    String filename = oldTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_NBM_ALASKA_ver7.ncx4";
+    TestGcdmGridDataset.roundtrip(filename);
+  }
 
   @Test
   public void testCurvilinear() throws Exception {
-    String filename = TestGcdmDatasets.testDir + "grid/stag/bora_feb.nc";
+    String filename = extraTestDir + "grid/stag/bora_feb.nc";
     TestGcdmGridDataset.roundtrip(filename);
   }
 
   @Test
   public void testVerticalTransform() throws Exception {
-    String filename = TestGcdmDatasets.testDir + "grid/testCFwriter.nc";
+    String filename = extraTestDir + "grid/testCFwriter.nc";
     TestGcdmGridDataset.roundtrip(filename);
   }
 

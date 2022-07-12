@@ -1,6 +1,5 @@
 package dev.ucdm.dataset.unit;
 
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
@@ -15,6 +14,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
+
 
 public class TestUdunitNames {
 
@@ -124,9 +126,9 @@ public class TestUdunitNames {
   }
 
   private List<Udunit> readUdunitXmlFile(String xmlFilename) throws IOException {
-    System.out.printf("%n**** readUdunitXmlFile %s%n", TestCdmDatasets.datasetLocalDir + xmlFilename);
+    System.out.printf("%n**** readUdunitXmlFile %s%n", datasetLocalDir + xmlFilename);
     List<Udunit> result = new ArrayList<>();
-    try (InputStream ios = new FileInputStream(TestCdmDatasets.datasetLocalDir + xmlFilename)) {
+    try (InputStream ios = new FileInputStream(datasetLocalDir + xmlFilename)) {
       org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();

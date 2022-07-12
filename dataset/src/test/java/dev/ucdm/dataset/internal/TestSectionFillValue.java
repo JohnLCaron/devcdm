@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import dev.ucdm.core.iosp.IospUtils;
 import dev.ucdm.dataset.api.CdmDataset;
 import dev.ucdm.dataset.api.CdmDatasets;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import dev.ucdm.dataset.api.VariableDS;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
-
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
 /**
  * Test fill values when reading sections of a Variable.
  * from (WUB-664639) (Didier Earith)
@@ -31,7 +30,7 @@ public class TestSectionFillValue {
 
   @Test
   public void testExplicitFillValue() throws Exception {
-    String filename = TestCdmDatasets.coreLocalDir + "standardVar.nc";
+    String filename = coreLocalNetcdf3Dir + "standardVar.nc";
     try (CdmDataset ncfile = CdmDatasets.openDataset(filename)) {
       VariableDS v = (VariableDS) ncfile.findVariable("t3");
       assertThat(v).isNotNull();
@@ -55,7 +54,7 @@ public class TestSectionFillValue {
 
   @Test
   public void testImplicitFillValue() throws Exception {
-    String filename = TestCdmDatasets.coreLocalDir + "testWriteFill.nc";
+    String filename = coreLocalNetcdf3Dir + "testWriteFill.nc";
     List<String> varWithFill = Lists.newArrayList("temperature", "rtemperature");
     try (CdmFile ncfile = CdmDatasets.openFile(filename, null);
          CdmDataset ncd = CdmDatasets.openDataset(filename)) {

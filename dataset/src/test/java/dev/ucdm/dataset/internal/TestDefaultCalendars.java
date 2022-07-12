@@ -7,7 +7,6 @@ package dev.ucdm.dataset.internal;
 
 import dev.ucdm.core.api.Attribute;
 import dev.ucdm.dataset.api.CdmDatasetCS;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.core.calendar.Calendar;
@@ -21,6 +20,7 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
 import static java.lang.String.format;
 
 public class TestDefaultCalendars {
@@ -35,7 +35,7 @@ public class TestDefaultCalendars {
     String failMessage, found, expected;
     boolean testCond;
 
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/cfMissingCalendarAttr.nc";
+    String tstFile = datasetLocalDir + "dataset/cfMissingCalendarAttr.nc";
 
     // open the test file
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetCS(tstFile, true)) {
@@ -97,7 +97,7 @@ public class TestDefaultCalendars {
     String failMessage, found, expected;
     boolean testCond;
 
-    String tstFile = TestCdmDatasets.datasetLocalDir + "dataset/coardsMissingCalendarAttr.nc";
+    String tstFile = datasetLocalDir + "dataset/coardsMissingCalendarAttr.nc";
 
     // open the test file
     try (CdmDatasetCS ncd = CdmDatasets.openDatasetWithCS(tstFile, true)) {

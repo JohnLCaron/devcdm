@@ -9,7 +9,6 @@ import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.Variable;
 import dev.ucdm.dataset.api.CdmDataset;
 import dev.ucdm.dataset.api.CdmDatasets;
-import dev.ucdm.dataset.api.TestCdmDatasets;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.ArrayType;
@@ -18,13 +17,15 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalNcmlDir;
 
 /** Test Unsigned values and attributes in NcML works correctly */
 public class TestUnsigned {
 
   @Test
   public void testSigned() throws IOException {
-    try (CdmFile ncfile = CdmDatasets.openDataset(TestCdmDatasets.coreLocalDir + "testWrite.nc")) {
+    try (CdmFile ncfile = CdmDatasets.openDataset(coreLocalNetcdf3Dir + "testWrite.nc")) {
       Variable v = ncfile.findVariable("bvar");
       assertThat(v).isNotNull();
       assertThat(v.getArrayType().isUnsigned()).isFalse();
@@ -44,7 +45,7 @@ public class TestUnsigned {
 
   @Test
   public void testUnsigned() throws IOException {
-    try (CdmFile ncfile = CdmDatasets.openDataset(TestCdmDatasets.datasetLocalNcmlDir + "testUnsignedByte.ncml")) {
+    try (CdmFile ncfile = CdmDatasets.openDataset(datasetLocalNcmlDir + "testUnsignedByte.ncml")) {
       Variable v = ncfile.findVariable("bvar");
       assertThat(v).isNotNull();
       assertThat(v.getArrayType().isUnsigned()).isFalse();
@@ -66,7 +67,7 @@ public class TestUnsigned {
   public void testUnsignedWrap() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='All' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" //
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" //
         + "  <variable name='bvar' shape='lat' type='byte'>\n"//
         + "    <attribute name='_Unsigned' value='true' />\n" //
         + "    <attribute name='scale_factor' type='float' value='2.0' />\n" //
@@ -95,7 +96,7 @@ public class TestUnsigned {
   public void testVarWithUnsignedAttribute() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='All' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" //
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" //
         + "  <variable name='bvar' shape='lat' type='byte'>\n" //
         + "    <attribute name='_Unsigned' value='true' />\n" //
         + "   </variable>\n" //
@@ -124,7 +125,7 @@ public class TestUnsigned {
   public void testVarWithUnsignedTypeNotEnhanced() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" //
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" //
         + "  <variable name='bvar' shape='lat' type='ubyte'/>" //
         + "</netcdf>";
 
@@ -152,7 +153,7 @@ public class TestUnsigned {
   public void testArrayWithUnsignedTypeNotEnhanced() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" //
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" //
         + "  <variable name='bvar' shape='lat' type='ubyte'/>" //
         + "</netcdf>";
 
@@ -188,7 +189,7 @@ public class TestUnsigned {
   public void testVarWithUnsignedTypeEnhanced() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" //
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" //
         + "  <variable name='bvar' shape='lat' type='ubyte'/>" //
         + "</netcdf>";
 
@@ -214,7 +215,7 @@ public class TestUnsigned {
   public void testAttWithUnsignedType() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='All' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" //
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" //
         + "  <attribute name='gatt' type='ubyte'>1 0 -1</attribute>" //
         + "</netcdf>";
 
@@ -242,7 +243,7 @@ public class TestUnsigned {
   public void testAttWithUnsignedAtt() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='All' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n"
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n"
         + "  <attribute name='gatt' type='byte' isUnsigned='true'>1 0 -1</attribute>" + "</netcdf>";
 
     try (CdmDataset ncd = CdmDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
@@ -269,7 +270,7 @@ public class TestUnsigned {
   public void testAttWithUnsignedType2() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='All' location='"
-        + TestCdmDatasets.coreLocalDir + "testWrite.nc'>\n" + "  <attribute name='gatt' type='ubyte' value='1 0 -1' />"
+        + coreLocalNetcdf3Dir + "testWrite.nc'>\n" + "  <attribute name='gatt' type='ubyte' value='1 0 -1' />"
         + "</netcdf>";
 
     try (CdmDataset ncd = CdmDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
