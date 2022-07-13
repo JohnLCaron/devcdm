@@ -5,22 +5,25 @@
 
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.core.api.Attribute;
 import dev.ucdm.core.constants.AxisType;
 
 import java.util.Formatter;
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 /** Test {@link GridDataset} */
 public class TestGridDataset {
 
   @Test
   public void testBasics() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "grid/GFS_Puerto_Rico_191km_20090729_0000.nc";
+    String filename = extraTestDir + "grid/GFS_Puerto_Rico_191km_20090729_0000.nc";
     Formatter errlog = new Formatter();
 
     try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
@@ -53,6 +56,31 @@ public class TestGridDataset {
               + " isobaric1 (GridAxisPoint) %n" + " y (GridAxisPoint) %n" + " x (GridAxisPoint) "));
 
       assertThat(gcs.showFnSummary()).isEqualTo("GRID(T,Z,Y,X)");
+    }
+  }
+
+  @Test
+  public void testProblem() throws Exception {
+    String filename = oldTestDir + "ft/grid/echoTops_runtime.nc";
+    String gridName = "ECHO_TOP";
+    Formatter errlog = new Formatter();
+
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      System.out.println("readGridDataset: " + gds.getLocation());
+
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      assertThat(grid).isNotNull();
+
+      // test GridCoordinateSystem
+      assertThat(grid.getCoordinateSystem()).isNotNull();
+      GridCoordinateSystem gcs = grid.getCoordinateSystem();
+      assertThat(gcs.getNominalShape()).isEqualTo(List.of(24,1,1,1));
+
+      GridReferencedArray data = grid.readData(GridSubset.create());
+      assertThat(data).isNotNull();
+      assertThat(data.materializedCoordinateSystem()).isNotNull();
+      assertThat(data.materializedCoordinateSystem().getMaterializedShape()).isEqualTo(List.of(24,1,1,1));
     }
   }
 }

@@ -4,7 +4,7 @@
  */
 package dev.ucdm.core.iosp;
 
-/** Uses longs for indexing, otherwise similar to dev.cdm.array.Index */
+/** Uses longs for indexing, otherwise similar to dev.ucdm.array.Index */
 public class IndexLong {
   private final int[] shape;
   private final long[] stride;

@@ -21,7 +21,7 @@ public class TestBasic {
       assertThat(cdmFile.getCdmFileTypeId()).isEqualTo("HDF4");
       assertThat(cdmFile.getCdmFileTypeDescription()).isEqualTo("Hierarchical Data Format, version 4");
       assertThat(cdmFile.getCdmFileTypeVersion()).isEqualTo("4.2.1 (NCSA HDF Version 4.2 Release 1, February 17, 2005)");
-      assertThat(cdmFile.getDetailInfo()).contains("iosp= class dev.cdm.core.hdf4.H4iosp");
+      assertThat(cdmFile.getDetailInfo()).contains("iosp= class dev.ucdm.core.hdf4.H4iosp");
     }
   }
 }

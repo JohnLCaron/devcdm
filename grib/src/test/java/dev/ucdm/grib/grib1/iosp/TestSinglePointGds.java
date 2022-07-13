@@ -6,7 +6,7 @@ package dev.ucdm.grib.grib1.iosp;
 
 import dev.ucdm.array.Array;
 import dev.ucdm.core.api.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

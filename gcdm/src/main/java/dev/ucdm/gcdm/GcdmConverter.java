@@ -31,7 +31,7 @@ import dev.ucdm.array.Range;
 import dev.ucdm.array.Section;
 import dev.ucdm.core.api.*;
 
-/** Convert between Gcdm Protos and Netcdf objects, using dev.cdm.array.Array for data. */
+/** Convert between Gcdm Protos and CdmFile objects. */
 public class GcdmConverter {
   private static final boolean debugSize = false;
 

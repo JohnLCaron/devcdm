@@ -170,19 +170,18 @@ public class CdmFiles {
    * efficiency, with an optional special object for the iosp.
    *
    * @param location    location of file. This may be a
-   *                    <ol>
-   *                    <li>local netcdf-3 filename (with a file: prefix or no prefix)
-   *                    <li>remote netcdf-3 filename (with an http: prefix)
-   *                    <li>local netcdf-4 filename (with a file: prefix or no prefix)
-   *                    <li>local hdf-5 filename (with a file: prefix or no prefix)
-   *                    <li>local iosp filename (with a file: prefix or no prefix)
-   *                    </ol>
-   *                    If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file
-   *                    without the suffix,
-   *                    then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally
-   *                    it prefers to
-   *                    place the uncompressed file in the same directory as the original file. If it does not have write permission
-   *                    on that directory, it will use the directory defined by dev.cdm.util.DiskCache class.
+   * <ol>
+   * <li>local netcdf-3 filename (with a file: prefix or no prefix)
+   * <li>remote netcdf-3 filename (with an http: prefix)
+   * <li>local netcdf-4 filename (with a file: prefix or no prefix)
+   * <li>local hdf-5 filename (with a file: prefix or no prefix)
+   * <li>local iosp filename (with a file: prefix or no prefix)
+   * </ol>
+   * If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file without the suffix,
+   * then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally it prefers to
+   * place the uncompressed file in the same directory as the original file. If it does not have write permission
+   * on that directory, it will use the directory defined by the DiskCache class.
+   *
    * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null

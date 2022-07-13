@@ -1,4 +1,4 @@
-module dev.cdm.array {
+module dev.ucdm.array {
   requires com.google.common;
   requires org.slf4j;
   requires org.jetbrains.annotations;

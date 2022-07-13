@@ -4,6 +4,7 @@
  */
 package dev.ucdm.gcdm;
 
+import dev.ucdm.gcdm.server.DataRoots;
 import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -40,14 +41,12 @@ public class TestGcdmGridDataset {
     roundtrip(filename);
   }
 
+  private static DataRoots dataRoots = new DataRoots();
+
   public static void roundtrip(String filename) throws Exception {
-    filename = filename.replace("\\", "/");
-    File file = new File(filename);
-    // kludge for now. Also, need to auto start up CmdrServer
-    String gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
+    String gcdmUrl = dataRoots.makeGcdmUrl(filename);
 
-    System.out.printf("TestGcdmCdmFile  %s%n", filename);
-
+    System.out.printf("openGridDataset  %s%n", gcdmUrl);
     Formatter info = new Formatter();
     try (GridDataset local = GridDatasetFactory.openGridDataset(filename, info)) {
       if (local == null) {

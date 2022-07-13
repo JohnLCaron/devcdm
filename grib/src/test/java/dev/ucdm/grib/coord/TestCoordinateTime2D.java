@@ -5,7 +5,7 @@ import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.core.util.Counters;
 import dev.ucdm.grib.grib2.record.Grib2Record;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -11,8 +11,9 @@ import dev.ucdm.array.ArrayType;
  * A Grid's data array with Geo referencing.
  * The materializedCoordinateSystem matches the data.
  */
-public record GridReferencedArray(String name,
-                                  ArrayType arrayType,
-                                  Array<Number> data,
-                                  MaterializedCoordinateSystem materializedCoordinateSystem) {
+public record GridReferencedArray(
+        String name,
+        ArrayType arrayType,
+        Array<Number> data,
+        MaterializedCoordinateSystem materializedCoordinateSystem) {
 }

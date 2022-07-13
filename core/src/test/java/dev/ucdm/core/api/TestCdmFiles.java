@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link dev.ucdm.core.api.CdmFiles} */
+/** Test {@link CdmFiles} */
 public class TestCdmFiles {
   public static final String coreLocalDir = "src/test/data/";
   public static final String coreLocalNetcdf3Dir = "src/test/data/netcdf3/";
@@ -19,7 +19,7 @@ public class TestCdmFiles {
   @Test
   public void testOpenWithClassName() throws Exception {
     try (CdmFile ncfile = CdmFiles.open(coreLocalNetcdf3Dir + "longOffset.nc",
-        "dev.cdm.core.netcdf3.N3iosp", -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+        "dev.ucdm.core.netcdf3.N3iosp", -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("%s%n", ncfile);
     }
   }

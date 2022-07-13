@@ -1,6 +1,6 @@
 package dev.ucdm.grid.internal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.grid.api.GridSubset;
 import dev.ucdm.dataset.geoloc.LatLonPoint;
 import dev.ucdm.dataset.geoloc.LatLonRect;

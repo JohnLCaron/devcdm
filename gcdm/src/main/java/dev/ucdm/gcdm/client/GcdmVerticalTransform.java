@@ -12,7 +12,8 @@ import dev.ucdm.dataset.transform.vertical.VerticalTransform;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Implementation of VerticalTransform that makes a gcmd to get the 3D array.
+ * Implementation of VerticalTransform that used Gcdm to get the VerticalTransform 3D array.
+ * This allows us to not have to implement the VerticalTransform on the client.
  * Not immutable because we need to set the GcdmGridDataset after construction.
  */
 public class GcdmVerticalTransform implements VerticalTransform {

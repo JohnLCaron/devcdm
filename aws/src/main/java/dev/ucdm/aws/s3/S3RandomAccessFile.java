@@ -37,10 +37,10 @@ import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 public final class S3RandomAccessFile extends RemoteRandomAccessFile implements ReadableRemoteFile, Closeable {
 
   private static final int s3BufferSize = Integer
-      .parseInt(System.getProperty("dev.cdm.io.s3.bufferSize", String.valueOf(defaultRemoteFileBufferSize)));
+      .parseInt(System.getProperty("dev.ucdm.io.s3.bufferSize", String.valueOf(defaultRemoteFileBufferSize)));
 
   private static final long s3MaxReadCacheSize = Long
-      .parseLong(System.getProperty("dev.cdm.io.s3.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
+      .parseLong(System.getProperty("dev.ucdm.io.s3.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
 
   private final CdmS3Uri uri;
   private S3Client client;
@@ -140,8 +140,8 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
   }
 
   /**
-   * Hook into service provider interface to RandomAccessFileProvider. Register in
-   * META-INF.services.dev.cdm.io.spi.RandomAccessFileProvider
+   * Hook into service provider interface to RandomAccessFileProvider.
+   * Register in META-INF.services.dev.ucdm.io.spi.RandomAccessFileProvider
    */
   public static class Provider implements RandomAccessFileProvider {
 

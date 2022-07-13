@@ -6,7 +6,6 @@ package dev.ucdm.array;
 
 import com.google.common.base.Objects;
 
-;
 import java.util.Iterator;
 
 /** Superclass for implementations of multidimensional arrays. */

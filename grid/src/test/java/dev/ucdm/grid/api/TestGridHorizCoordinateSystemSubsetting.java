@@ -6,7 +6,7 @@
 package dev.ucdm.grid.api;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Range;
 import dev.ucdm.core.api.Attribute;
 import dev.ucdm.core.constants.AxisType;

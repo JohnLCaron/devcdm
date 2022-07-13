@@ -67,7 +67,7 @@ message Group {
   repeated EnumTypedef enum_types = 7;
 }
 
-message Header {
+message CdmFile {
   string location = 1;
   string title = 2;  // ??
   string id = 3;     // ??
@@ -140,8 +140,6 @@ message StructureMemberProto {
   repeated int32 shapes = 3;
   StructureMembersProto members = 4;
 }
-
-/////////////////////////////////////////////////////////////////
 
 message Error {
   string message = 1;

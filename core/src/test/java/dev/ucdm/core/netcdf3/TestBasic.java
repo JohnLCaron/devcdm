@@ -21,7 +21,7 @@ public class TestBasic {
       assertThat(cdmFile.getCdmFileTypeId()).isEqualTo("NetCDF");
       assertThat(cdmFile.getCdmFileTypeDescription()).isEqualTo("NetCDF-3/CDM");
       assertThat(cdmFile.getCdmFileTypeVersion()).isEqualTo("1");
-      assertThat(cdmFile.getDetailInfo()).contains("iosp= class dev.cdm.core.netcdf3.N3iosp");
+      assertThat(cdmFile.getDetailInfo()).contains("iosp= class dev.ucdm.core.netcdf3.N3iosp");
       assertThat(cdmFile.getDetailInfo()).contains("raf length= 30408");
     }
   }

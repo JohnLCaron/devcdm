@@ -5,7 +5,7 @@ import dev.ucdm.core.api.AttributeContainerMutable;
 import dev.ucdm.core.api.Group;
 import dev.ucdm.core.constants.CDM;
 import dev.ucdm.dataset.api.CoordinateTransform;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.core.constants.AxisType;
 import dev.ucdm.dataset.api.CoordinateAxis;

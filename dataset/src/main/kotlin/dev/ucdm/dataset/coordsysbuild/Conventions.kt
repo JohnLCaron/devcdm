@@ -47,8 +47,8 @@ fun openDatasetWithCoordSys(orgDataset: CdmDataset) : CdmDatasetCS {
         .setCoordsHelper(coords)
         .setConventionUsed(coordSysBuilder.conventionName)
         .build()
-    println(coordSysBuilder.info)
-    println(withcs.writeDsl())
+    //println(coordSysBuilder.info)
+    //println(withcs.writeDsl())
 
     return withcs
 }

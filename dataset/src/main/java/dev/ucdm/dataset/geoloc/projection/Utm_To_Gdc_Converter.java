@@ -19,21 +19,7 @@ import dev.ucdm.dataset.geoloc.LatLonPoint;
  * This is a direct conversion.
  *
  * @author Dan Toms, SRI International
- *         <p/>
- *         modified JCaron 01/2005
- *         <ol>
- *         <li>turn static methods into object methods, to make thread-safe
- *         <li>rename methods to follow upper/lower case conventions
- *         <li>add convenience methods for dev.cdm.dataset.geoloc.Projection
- *         <li>longitude must be in range +=180.
- *         </ol>
- *         <p/>
- *         random testing shows:
- *         avg error x= 0.4 y=0.06 meters
- *         but sometimes x error can be as high as 15 meters
- *         where err = abs(x - inverse(f(x)))
- *         <p/>
- *         timing: inverse(f(x)) takes 2 - 3 microseconds.
+ * @author John Caron
  */
 
 class Utm_To_Gdc_Converter {

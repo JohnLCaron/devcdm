@@ -5,7 +5,7 @@
 
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.Arrays;
 import dev.ucdm.array.InvalidRangeException;
@@ -17,6 +17,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 import static org.junit.Assert.assertThrows;
 
 /** Test {@link GridDataset} that is curvilinear. */
@@ -35,7 +36,7 @@ public class TestReadCurvilinearSubsetProjectRect {
   // axes=(time, lat, lon, )
   @Test
   public void testNetcdfCurvilinear2D() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "transforms/UTM/artabro_20120425.nc";
+    String filename = extraTestDir + "transforms/UTM/artabro_20120425.nc";
     String gridName = "dirm";
     String subset = "-8.541168, 43.409361, 0.123220, 0.105206"; // -> [49, 31] [39, 91]";
     int ncols = 61;
@@ -95,7 +96,7 @@ public class TestReadCurvilinearSubsetProjectRect {
 
   @Test
   public void testNetcdfCurvilinearNoIntersection() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "transforms/UTM/artabro_20120425.nc";;
+    String filename = extraTestDir + "transforms/UTM/artabro_20120425.nc";;
     String gridName = "dirm";
     String subsetOff = "8.402816, 43.467008, 0.230588, 0.127544";
 

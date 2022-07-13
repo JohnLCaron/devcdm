@@ -6,7 +6,7 @@
 package dev.ucdm.core.write;
 
 import dev.ucdm.core.api.TestCdmFiles;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.CdmFiles;
 

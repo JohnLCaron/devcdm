@@ -9,6 +9,9 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import dev.ucdm.gcdm.GcdmConverter;
 import dev.ucdm.gcdm.GcdmGridConverter;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.GridDataRequest;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.GridDataResponse;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.VerticalTransformRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -22,6 +25,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static dev.ucdm.gcdm.protogen.GcdmServerProto.*;
 
 /** A remote CDM GridDataset, using gRpc protocol to communicate. */
 public class GcdmGridDataset implements GridDataset {
@@ -76,7 +81,7 @@ public class GcdmGridDataset implements GridDataset {
 
   GridReferencedArray readData(GridSubset subset) throws IOException {
     log.info("GcdmGridDataset request data subset " + subset);
-    GcdmGridProto.GridDataRequest.Builder requestb = GcdmGridProto.GridDataRequest.newBuilder().setLocation(path);
+    GridDataRequest.Builder requestb = GridDataRequest.newBuilder().setLocation(path);
     for (Map.Entry<String, Object> entry : subset.getEntries()) {
       requestb.putSubset(entry.getKey(), entry.getValue().toString());
     }
@@ -85,10 +90,10 @@ public class GcdmGridDataset implements GridDataset {
     List<GridReferencedArray> results = new ArrayList<>();
 
     try {
-      Iterator<GcdmGridProto.GridDataResponse> responses =
+      Iterator<GridDataResponse> responses =
           blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getGridData(requestb.build());
 
-      GcdmGridProto.GridDataResponse response = responses.next();
+      GridDataResponse response = responses.next();
       if (response.hasError()) {
         throw new IOException(response.getError().getMessage());
       }
@@ -119,9 +124,9 @@ public class GcdmGridDataset implements GridDataset {
     log.info("GcdmGridDataset request getVerticalTransform {} {} {}", id, name, timeIndex);
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    GcdmGridProto.VerticalTransformRequest request = GcdmGridProto.VerticalTransformRequest.newBuilder().setId(id)
+    VerticalTransformRequest request = VerticalTransformRequest.newBuilder().setId(id)
         .setLocation(path).setVerticalTransform(name).setTimeIndex(timeIndex).build();
-    GcdmGridProto.VerticalTransformResponse response = blockingStub.getVerticalTransform(request);
+    VerticalTransformResponse response = blockingStub.getVerticalTransform(request);
     if (response.hasError()) {
       throw new RuntimeException(response.getError().getMessage());
     } else {
@@ -280,13 +285,13 @@ public class GcdmGridDataset implements GridDataset {
 
     private void readDataset(Formatter errlog) {
       log.info("GcdmGridDataset request header for " + path);
-      GcdmGridProto.GridDatasetRequest request =
-          GcdmGridProto.GridDatasetRequest.newBuilder().setLocation(path).build();
-      GcdmGridProto.GridDatasetResponse response = blockingStub.getGridDataset(request);
+      GridDatasetRequest request =
+          GridDatasetRequest.newBuilder().setLocation(path).build();
+      GridDatasetResponse response = blockingStub.getGridDataset(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {
-        this.proto = response.getDataset();
+        this.proto = response.getGridDataset();
         GcdmGridConverter.decodeGridDataset(this.proto, this, errlog);
       }
     }

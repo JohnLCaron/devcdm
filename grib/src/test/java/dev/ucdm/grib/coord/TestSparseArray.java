@@ -1,7 +1,7 @@
 package dev.ucdm.grib.coord;
 
 import dev.ucdm.array.NumericCompare;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Formatter;

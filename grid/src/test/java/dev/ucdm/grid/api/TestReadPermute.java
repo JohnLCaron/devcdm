@@ -4,7 +4,7 @@
  */
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.Index;
 import dev.ucdm.array.InvalidRangeException;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalDir;
 
 /** Test permuted example file. */
 public class TestReadPermute {
@@ -21,7 +22,7 @@ public class TestReadPermute {
   public void testReadPermute() throws Exception {
     Formatter errlog = new Formatter();
     try (GridDataset dataset =
-        GridDatasetFactory.openGridDataset(TestGridDatasets.cdmLocalDir + "netcdf3/permuteTest.nc", errlog)) {
+        GridDatasetFactory.openGridDataset(coreLocalDir + "netcdf3/permuteTest.nc", errlog)) {
 
       doRead4(dataset, "tzyx");
       doRead4(dataset, "tzxy");

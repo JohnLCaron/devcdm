@@ -14,7 +14,6 @@ import dev.ucdm.dataset.transform.vertical.OceanSG2;
 import dev.ucdm.dataset.transform.vertical.OceanSigma;
 import dev.ucdm.dataset.transform.vertical.VerticalTransform;
 import dev.ucdm.dataset.transform.vertical.WrfEta;
-import dev.ucdm.grid.api.TestGridDatasets;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
@@ -33,69 +32,70 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 
 /** Test basic projection methods */
 public class TestVertical {
 
   @Test
   public void testOceanCF_OceanSigma() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/erie_test.ncml", "temp", OceanSigma.class, SimpleUnit.kmUnit);
+    open(extraTestDir + "transforms/erie_test.ncml", "temp", OceanSigma.class, SimpleUnit.kmUnit);
   }
 
   @Test
   public void testOceanSG2() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/ocean_his_g2.nc", "u", OceanSG2.class, SimpleUnit.kmUnit);
+    open(extraTestDir + "transforms/ocean_his_g2.nc", "u", OceanSG2.class, SimpleUnit.kmUnit);
   }
 
   @Test
   public void testExistingFieldVerticalTransform() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/VExisting3D_NUWG.nc", "rhu_hybr", ExistingFieldVerticalTransform.class,
+    open(extraTestDir + "transforms/VExisting3D_NUWG.nc", "rhu_hybr", ExistingFieldVerticalTransform.class,
             SimpleUnit.geopotentialHeight);
   }
 
   @Test
   @Disabled("fails because not correctly slicing vertical dimension out")
   public void testHIRLAMhybrid() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/HIRLAMhybrid.ncml", "Relative_humidity_hybrid",
+    open(extraTestDir + "transforms/HIRLAMhybrid.ncml", "Relative_humidity_hybrid",
         AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testOceanS() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/roms_ocean_s_coordinate.nc", "temp", OceanS.class, SimpleUnit.kmUnit);
+    open(extraTestDir + "transforms/roms_ocean_s_coordinate.nc", "temp", OceanS.class, SimpleUnit.kmUnit);
   }
 
   @Test
   public void testOceanSigma() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/gomoos_cf.nc", "temp", OceanSigma.class, SimpleUnit.kmUnit);
+    open(extraTestDir + "transforms/gomoos_cf.nc", "temp", OceanSigma.class, SimpleUnit.kmUnit);
   }
 
   @Test
   public void testAtmSigma() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/temperature.nc", "Temperature", AtmosSigma.class,
+    open(extraTestDir + "transforms/temperature.nc", "Temperature", AtmosSigma.class,
         SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testAtmHybrid() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/ccsm2.nc", "T", AtmosHybridSigmaPressure.class,
+    open(extraTestDir + "transforms/ccsm2.nc", "T", AtmosHybridSigmaPressure.class,
         SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testHybridSigmaPressure() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "transforms/HybridSigmaPressure.nc";
+    String filename = extraTestDir + "transforms/HybridSigmaPressure.nc";
     open(filename, "T", AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testWrfEta() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/wrfout_v2_Lambert.nc", "T", WrfEta.class, SimpleUnit.pressureUnit);
+    open(extraTestDir + "transforms/wrfout_v2_Lambert.nc", "T", WrfEta.class, SimpleUnit.pressureUnit);
   }
 
   @Test
   public void testWrfEta2() throws Exception {
-    open(TestGridDatasets.gridTestDir + "transforms/wrfout_d01_2006-03-08_21-00-00", "T", WrfEta.class,
+    open(extraTestDir + "transforms/wrfout_d01_2006-03-08_21-00-00", "T", WrfEta.class,
         SimpleUnit.pressureUnit);
   }
 

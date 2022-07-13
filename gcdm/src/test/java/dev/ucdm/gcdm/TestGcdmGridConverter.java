@@ -10,6 +10,7 @@ import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 import dev.ucdm.gcdm.protogen.GcdmGridProto;
+import dev.ucdm.gcdm.server.DataRoots;
 import dev.ucdm.grid.api.GridDataset;
 import dev.ucdm.grid.api.GridDatasetFactory;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,6 +63,9 @@ public class TestGcdmGridConverter {
     );
   }
 
+  private static DataRoots dataRoots = new DataRoots();
+
+
   @ParameterizedTest
   @MethodSource("params")
   public void testGcdmGridConverter(String filename) throws Exception {
@@ -71,14 +75,14 @@ public class TestGcdmGridConverter {
     System.out.printf("getCanonicalPath %s%n", file.getCanonicalPath());
 
     // kludge for now. Also, need to auto start up CmdrServer
-    String gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
+    String gcdmUrl = dataRoots.makeGcdmUrl(filename);
     Path path = Paths.get(filename);
 
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(path.toString(), errlog)) {
       assertThat(gridDataset).isNotNull();
 
-      GcdmGridProto.GridDataset proto = GcdmGridConverter.encodeGridDataset(gridDataset);
+      GcdmGridProto.GridDataset proto = GcdmGridConverter.encodeGridDataset(gridDataset, "locomotion");
       GcdmGridDataset.Builder builder = GcdmGridDataset.builder();
       GcdmGridConverter.decodeGridDataset(proto, builder, errlog);
       GcdmGridDataset roundtrip = builder.build(false);

@@ -1,7 +1,7 @@
-module dev.cdm.grid {
-  requires transitive dev.cdm.array;
-  requires transitive dev.cdm.core;
-  requires transitive dev.cdm.dataset;
+module dev.ucdm.grid {
+  requires transitive dev.ucdm.array;
+  requires transitive dev.ucdm.core;
+  requires transitive dev.ucdm.dataset;
   requires com.google.common;
   requires org.slf4j;
   requires tech.units.indriya;

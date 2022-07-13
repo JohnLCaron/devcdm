@@ -6,8 +6,8 @@
 package dev.ucdm.grid.api;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.Arrays;
@@ -30,7 +30,7 @@ public class TestGridHorizCurvilinear {
   private Array<Number> lat2d;
   private Array<Number> lon2d;
 
-  @Before
+  @BeforeEach
   public void setup() {
     GridAxisPoint.Builder<?> xbuilder = GridAxisPoint.builder().setAxisType(AxisType.Lon).setName("xname")
         .setUnits("nominal").setDescription("desc").setRegular(nx, 0.0, 1.0).setSpacing(GridAxisSpacing.regularPoint);

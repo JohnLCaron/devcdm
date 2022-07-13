@@ -14,23 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Scan files and extract Grib1Records. usage:
- * 
- * <pre>
- * Grib1RecordScanner reader = new Grib1RecordScanner(raf);
- * while (reader.hasNext()) {
- * dev.cdm.grib.grib1.Grib1Record gr = reader.next();
- * Grib1SectionProductDefinition pds = gr.getPDSsection();
- * Grib1SectionGridDefinition gds = gr.getGDSsection();
- * ...
- * }
- *
- * </pre>
- *
- * @author John
- * @since 9/3/11
- */
+/** Scan files and extract Grib1Records. */
 public class Grib1RecordScanner {
 
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);

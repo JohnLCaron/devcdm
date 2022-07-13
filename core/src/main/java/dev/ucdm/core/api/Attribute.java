@@ -205,7 +205,7 @@ public class Attribute {
     return getNumericValue(index);
   }
 
-  /** Get the values as an dev.cdm.array.Array. */
+  /** Get the values as an Array. */
   @Nullable
   public dev.ucdm.array.Array<?> getArrayValues() {
     if (svalue != null) {

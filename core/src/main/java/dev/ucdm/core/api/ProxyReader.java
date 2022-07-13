@@ -4,6 +4,7 @@
  */
 package dev.ucdm.core.api;
 
+import dev.ucdm.array.Array;
 import dev.ucdm.core.util.CancelTask;
 
 import java.io.IOException;
@@ -11,11 +12,11 @@ import java.io.IOException;
 /** Reader of the data for a Variable. */
 public interface ProxyReader {
 
-  /** Read all the data for a Variable, returning dev.cdm.array.Array. */
-  dev.ucdm.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException;
+  /** Read all the data for a Variable, returning Array. */
+  Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException;
 
-  /** Read a section of the data for a Variable, returning dev.cdm.array.Array. */
-  dev.ucdm.array.Array<?> proxyReadArray(Variable client, dev.ucdm.array.Section section, CancelTask cancelTask)
+  /** Read a section of the data for a Variable, returning Array. */
+  Array<?> proxyReadArray(Variable client, dev.ucdm.array.Section section, CancelTask cancelTask)
       throws IOException, dev.ucdm.array.InvalidRangeException;
 
 }

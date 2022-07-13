@@ -21,7 +21,7 @@ public class TestBasic {
       assertThat(cdmFile.getCdmFileTypeId()).isEqualTo("HDF5");
       assertThat(cdmFile.getCdmFileTypeDescription()).isEqualTo("Hierarchical Data Format 5");
       assertThat(cdmFile.getCdmFileTypeVersion()).isEqualTo("superblock version 0");
-      assertThat(cdmFile.getDetailInfo()).contains("iosp= class dev.cdm.core.hdf5.H5iosp");
+      assertThat(cdmFile.getDetailInfo()).contains("iosp= class dev.ucdm.core.hdf5.H5iosp");
     }
   }
 }

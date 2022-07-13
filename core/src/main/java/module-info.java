@@ -1,5 +1,5 @@
-module dev.cdm.core {
-  requires transitive dev.cdm.array;
+module dev.ucdm.core {
+  requires transitive dev.ucdm.array;
   requires com.google.common;
   requires transitive java.net.http;
   requires org.jdom2;
