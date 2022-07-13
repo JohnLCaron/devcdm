@@ -5,7 +5,7 @@
 
 package dev.ucdm.grid.internal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.core.constants.AxisType;
 import dev.ucdm.grid.api.GridAxisInterval;
 import dev.ucdm.grid.api.GridAxisPoint;

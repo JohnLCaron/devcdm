@@ -69,7 +69,7 @@ public class NumericCompare {
 //      return absDiff / Float.MIN_NORMAL;
     } else {
       float maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
-      return absDiff / maxAbsValue;
+      return (maxAbsValue < defaultMaxRelativeDiffFloat) ? absDiff : absDiff / maxAbsValue;
     }
   }
 
@@ -83,7 +83,7 @@ public class NumericCompare {
  //     return absDiff / Double.MIN_NORMAL;
     } else {
       double maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
-      return absDiff / maxAbsValue;
+      return (maxAbsValue < defaultMaxRelativeDiffDouble) ? absDiff : absDiff / maxAbsValue;
     }
   }
 

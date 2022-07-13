@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.util.CompareCdmDataset;
+import dev.ucdm.gcdm.server.DataRoots;
 import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -22,6 +23,7 @@ import dev.ucdm.gcdm.client.GcdmCdmFile;
 
 /** Test {@link GcdmCdmFile} */
 public class TestGcdmNetcdf4 {
+  private static DataRoots dataRoots = new DataRoots();
 
   private static final Predicate<Object[]> filesToSkip = new Predicate<Object[]>() {
     @Override
@@ -42,7 +44,7 @@ public class TestGcdmNetcdf4 {
   @ParameterizedTest
   @MethodSource("params")
   public void doOne(String filename) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + filename;
+    String gcdmUrl = dataRoots.makeGcdmUrl(filename);
     try (CdmFile ncfile = CdmDatasets.openFile(filename, null);
          GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
 

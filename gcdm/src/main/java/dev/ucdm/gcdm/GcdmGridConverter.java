@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 /** Convert between GcdmGrid Protos and GridDataset objects. */
 public class GcdmGridConverter {
 
-  public static GcdmGridProto.GridDataset encodeGridDataset(GridDataset org) {
+  public static GcdmGridProto.GridDataset encodeGridDataset(GridDataset org, String location) {
     GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
     builder.setName(org.getName());
-    builder.setLocation(org.getLocation());
+    builder.setLocation(location);
     builder.setFeatureType(convertFeatureType(org.getFeatureType()));
     builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
 
@@ -492,7 +492,17 @@ public class GcdmGridConverter {
     }
     builder.setHorizCoordSys(decodeHorizCS(proto.getHorizCoordinateSystem(), axes, errlog));
     builder.setTimeCoordSys(decodeTimeCS(proto.getTimeCoordinateSystem(), axes));
-    return builder;
+
+    for (GridAxis<?> axis : axes) {
+      if (axis.getAxisType().isVert() ) {
+        builder.setVertAxis(axis);
+      }
+      if (axis.getAxisType() == AxisType.Ensemble && axis instanceof GridAxisPoint) {
+        builder.setEnsAxis((GridAxisPoint) axis);
+      }
+    }
+
+      return builder;
   }
 
 

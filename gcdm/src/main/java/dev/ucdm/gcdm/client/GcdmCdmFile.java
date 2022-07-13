@@ -6,15 +6,15 @@ package dev.ucdm.gcdm.client;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
+import dev.ucdm.gcdm.protogen.GcdmProto;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.CdmDataRequest;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.CdmDataResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +22,8 @@ import java.util.concurrent.TimeUnit;
 import dev.ucdm.array.Arrays;
 import dev.ucdm.array.StructureDataArray;
 import dev.ucdm.gcdm.protogen.GcdmGrpc;
-import dev.ucdm.gcdm.protogen.GcdmServerProto.DataRequest;
-import dev.ucdm.gcdm.protogen.GcdmServerProto.DataResponse;
-import dev.ucdm.gcdm.protogen.GcdmProto.Header;
-import dev.ucdm.gcdm.protogen.GcdmServerProto.HeaderRequest;
-import dev.ucdm.gcdm.protogen.GcdmServerProto.HeaderResponse;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.CdmRequest;
+import dev.ucdm.gcdm.protogen.GcdmServerProto.CdmResponse;
 import dev.ucdm.gcdm.GcdmConverter;
 import dev.ucdm.core.api.*;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class GcdmCdmFile extends CdmFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GcdmCdmFile.class);
   private static final int MAX_DATA_WAIT_SECONDS = 30;
-  private static final int MAX_MESSAGE = 101 * 1000 * 1000; // 101 Mb
+  private static final int MAX_MESSAGE = 101 * 1000 * 1000; // 101 Mb LOOK where is this set ??
   private static boolean showRequest = true;
 
   public static final String PROTOCOL = "gcdm";
@@ -62,12 +59,12 @@ public class GcdmCdmFile extends CdmFile {
 
     List<dev.ucdm.array.Array<?>> results = new ArrayList<>();
     long size = 0;
-    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
+    CdmDataRequest request = CdmDataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
-      Iterator<DataResponse> responses =
+      Iterator<CdmDataResponse> responses =
           blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getCdmData(request);
       while (responses.hasNext()) {
-        DataResponse response = responses.next();
+        CdmDataResponse response = responses.next();
         if (response.hasError()) {
           throw new IOException(response.getError().getMessage());
         }
@@ -132,7 +129,7 @@ public class GcdmCdmFile extends CdmFile {
   private GcdmCdmFile(Builder<?> builder) {
     super(builder);
     this.remoteURI = builder.remoteURI;
-    this.path = builder.path;
+    this.path = builder.dataPath;
     this.channel = builder.channel;
     this.blockingStub = builder.blockingStub;
   }
@@ -161,11 +158,12 @@ public class GcdmCdmFile extends CdmFile {
     private String remoteURI;
     private ManagedChannel channel;
     private GcdmGrpc.GcdmBlockingStub blockingStub;
-    private String path;
+    private String dataPath;
     private boolean built;
 
     protected abstract T self();
 
+    // serverUrl/dataPath
     public T setRemoteURI(String remoteURI) {
       this.remoteURI = remoteURI;
       return self();
@@ -183,15 +181,9 @@ public class GcdmCdmFile extends CdmFile {
       // parse the URI
       URI uri = java.net.URI.create(this.remoteURI);
       String target = uri.getAuthority();
-      String urlPath = uri.getPath();
-      if (urlPath.startsWith("/")) {
-        urlPath= urlPath.substring(1);
-      }
-      File file = new File(urlPath);
-      try {
-        this.path = file.getCanonicalPath();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
+      this.dataPath = uri.getPath();
+      if (this.dataPath.startsWith("/")) {
+        this.dataPath = this.dataPath.substring(1);
       }
 
       // Create a communication channel to the server, known as a Channel. Channels are thread-safe
@@ -205,7 +197,7 @@ public class GcdmCdmFile extends CdmFile {
           .build();
       try {
         this.blockingStub = GcdmGrpc.newBlockingStub(channel);
-        readHeader(path);
+        readCdmFile(dataPath);
 
       } catch (Exception e) {
         // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
@@ -222,14 +214,14 @@ public class GcdmCdmFile extends CdmFile {
       }
     }
 
-    private void readHeader(String location) {
+    private void readCdmFile(String location) {
       log.info("GcdmCdmFile request header for " + location);
-      HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
-      HeaderResponse response = blockingStub.getNetcdfHeader(request);
+      CdmRequest request = CdmRequest.newBuilder().setLocation(location).build();
+      CdmResponse response = blockingStub.getCdmFile(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {
-        Header header = response.getHeader();
+        GcdmProto.CdmFile header = response.getCdmFile();
         setId(header.getId());
         setTitle(header.getTitle());
         setLocation(remoteURI);

@@ -8,7 +8,7 @@ package dev.ucdm.grid.api;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 import dev.ucdm.dataset.api.CdmDatasetCS;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.Arrays;
 import dev.ucdm.array.InvalidRangeException;
@@ -23,6 +23,8 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 /** Test {@link GridDataset} that is curvilinear. */
 public class TestReadGridCurvilinear {
@@ -40,7 +42,7 @@ public class TestReadGridCurvilinear {
   // axes=(ocean_time, sc_r, lat_rho, lon_rho, ) {
   @Test
   public void testNetcdf2D() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "curvilinear/mississippi.nc";
+    String filename = extraTestDir + "curvilinear/mississippi.nc";
     testClassifier(filename);
   }
 
@@ -57,7 +59,7 @@ public class TestReadGridCurvilinear {
   // axes=(time, lat, lon, )
   @Test
   public void testNetcdfCurvilinear2D() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "transforms/UTM/artabro_20120425.nc";
+    String filename = extraTestDir + "transforms/UTM/artabro_20120425.nc";
     testClassifier(filename);
     /*
      * readGrid(filename, "rtp", ImmutableList.of(85, 151, 171),
@@ -81,23 +83,23 @@ public class TestReadGridCurvilinear {
   // axes=(time, sigma, ypos, xpos, )
   @Test
   public void testNetcdfCurvilinear() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "curvilinear/Run_20091025_0000.nc";
+    String filename = extraTestDir + "curvilinear/Run_20091025_0000.nc";
     testClassifier(filename);
     readGrid(filename, "wv", ImmutableList.of(432, 22, 12), "time ypos xpos", null, null, new int[] {1, 22, 12});
   }
 
   // TODO may be flakey because when ncx is generated, time coordinate naming is arbitrary.
   // If persists, maybe dont check cs name.
-  // @Test TODO move to GRIB
+  @Test
   public void testGribCurvilinear() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    String filename = oldTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     readGrid(filename, "Sea_Surface_Height_Relative_to_Geoid_surface", ImmutableList.of(1, 1, 1684, 1200),
         "reftime time1 Lat Lon", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testCurvilinearGrib() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "curvilinear/ofs_atl.t00z.F024.grb.grib2";
+    String filename = extraTestDir + "curvilinear/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "3-D_Temperature_depth_below_sea";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 

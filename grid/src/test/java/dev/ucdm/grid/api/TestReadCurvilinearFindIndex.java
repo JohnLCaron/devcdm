@@ -5,7 +5,7 @@
 
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.Arrays;
 import dev.ucdm.core.constants.FeatureType;
@@ -16,6 +16,8 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.common.truth.Truth8.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 /** Test {@link GridDataset} that is curvilinear. */
 public class TestReadCurvilinearFindIndex {
@@ -33,7 +35,7 @@ public class TestReadCurvilinearFindIndex {
   // axes=(time, lat, lon, )
   @Test
   public void testNetcdfCurvilinear2D() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "transforms/UTM/artabro_20120425.nc";
+    String filename = oldTestDir + "transforms/UTM/artabro_20120425.nc";
     String gridName = "dirm";
 
     Formatter errlog = new Formatter();
@@ -93,9 +95,9 @@ public class TestReadCurvilinearFindIndex {
     }
   }
 
-  // @Test TODO move to grib
+  @Test
   public void TestGribCurvilinear() throws Exception {
-    String endpoint = TestGridDatasets.gridTestDir + "testGribCurvilinear/ofs_atl.t00z.F024.grb.grib2";
+    String endpoint = extraTestDir + "curvilinear/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "Mixed_layer_depth_surface";
     System.out.printf("open %s %s%n", endpoint, gridName);
 

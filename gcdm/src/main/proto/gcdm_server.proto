@@ -12,29 +12,29 @@ option java_package = "dev.ucdm.gcdm.protogen";
 option java_outer_classname = "GcdmServerProto";
 
 service Gcdm {
-  rpc GetNetcdfHeader (HeaderRequest) returns (HeaderResponse) {}
-  rpc GetCdmData (DataRequest) returns (stream DataResponse) {}
+  rpc GetCdmFile (CdmRequest) returns (CdmResponse) {}
+  rpc GetCdmData (CdmDataRequest) returns (stream CdmDataResponse) {}
   rpc GetGridDataset (GridDatasetRequest) returns (GridDatasetResponse) {}
   rpc GetGridData (GridDataRequest) returns (stream GridDataResponse) {}
   rpc GetVerticalTransform (VerticalTransformRequest) returns (VerticalTransformResponse) {}
 }
 
-message HeaderRequest {
-  string location = 1;
+message CdmRequest {
+  string location = 1; // dataRoot/filepath
 }
 
-message HeaderResponse {
+message CdmResponse {
   Error error = 1;  // non-empty on error
   uint32 version = 2; // response version
-  Header header = 3;
+  CdmFile cdm_file = 3;
 }
 
-message DataRequest {
-  string location = 1;
-  string variable_spec = 2;
+message CdmDataRequest {
+  string location = 1; // dataRoot/filepath
+  string variable_spec = 2; // varName(0,0:3,:)
 }
 
-message DataResponse {
+message CdmDataResponse {
   Error error = 1;    // non-empty on error
   uint32 version = 2; // response version
 
@@ -44,4 +44,44 @@ message DataResponse {
   Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
 
   Data data = 7;
+}
+
+message GridDatasetRequest {
+  string location = 1;
+}
+
+message GridDatasetResponse {
+  Error error = 1;  // non-empty on error
+  uint32 version = 2; // response version
+  GridDataset grid_dataset = 3;
+}
+
+message GridDataRequest {
+  string location = 1;
+  map<string, string> subset = 2;
+}
+
+message GridDataResponse {
+  Error error = 1;    // non-empty on error
+  uint32 version = 2; // response version
+
+  string location = 3;
+  map<string, string> subset = 4;
+  GridReferencedArray data = 5;
+}
+
+message VerticalTransformRequest {
+  sint32 id = 1;
+  string location = 2;
+  string vertical_transform = 3;
+  int32 time_index = 4;
+}
+
+message VerticalTransformResponse {
+  Error error = 1;    // non-empty on error
+  string location = 2;
+  string vertical_transform = 3;
+  int32 time_index = 4;
+
+  Data data3D = 5;
 }

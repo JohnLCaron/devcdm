@@ -5,8 +5,8 @@
 
 package dev.ucdm.grid.internal;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.Arrays;
@@ -23,7 +23,7 @@ public class TestCurvilinearCoords {
   private Array<Number> lat2d;
   private Array<Number> lon2d;
 
-  @Before
+  @BeforeEach
   public void setup() {
     make(10, 10, (y, x) -> 1.01 * (y + x), (y, x) -> 1.02 * (y + x));
   }

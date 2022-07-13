@@ -27,8 +27,8 @@ public class CompareGridDataset {
   }
 
   public void compare() {
-    System.out.printf(" GridDataset (%s) = %s%n%n", roundtrip.getClass().getName(), roundtrip.getLocation());
-    System.out.printf("    expected (%s) = %s%n%n", expected.getClass().getName(), expected.getLocation());
+    System.out.printf(" roundtrip (%s) = %s%n", roundtrip.getClass().getName(), roundtrip.getLocation());
+    System.out.printf("  expected (%s) = %s%n%n", expected.getClass().getName(), expected.getLocation());
 
     assertThat(roundtrip.getName()).startsWith(expected.getName());
     assertThat(roundtrip.getFeatureType()).isEqualTo(expected.getFeatureType());

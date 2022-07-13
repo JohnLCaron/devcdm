@@ -10,16 +10,6 @@ import "gcdm.proto";
 option java_package = "dev.ucdm.gcdm.protogen";
 option java_outer_classname = "GcdmGridProto";
 
-message GridDatasetRequest {
-  string location = 1;
-}
-
-message GridDatasetResponse {
-  Error error = 1;  // non-empty on error
-  uint32 version = 2; // response version
-  GridDataset dataset = 3;
-}
-
 ////////////////////////////////////////////////
 // Gcdm General (could be in more generic proto)
 
@@ -175,48 +165,16 @@ message GridDataset {
 /////////////////////////////////////////////////////////////////////////////
 // GridData
 
-message GridDataRequest {
-  string location = 1;
-  map<string, string> subset = 2;
-}
-
-message GridDataResponse {
-  Error error = 1;    // non-empty on error
-  uint32 version = 2; // response version
-
-  string location = 3;
-  map<string, string> subset = 4;
-  GridReferencedArray data = 5;
-}
-
 message MaterializedCoordinateSystem {
   repeated GridAxis axes = 2;
   GridHorizCoordinateSystem horiz_coordinate_system = 3;
   GridTimeCoordinateSystem time_coordinate_system = 4;
+  // CylindricalCoord lonCoordinate = 7; // TODO
 }
 
 message GridReferencedArray {
   string grid_name = 1;
   Data data = 2;
   MaterializedCoordinateSystem materialized_coordinate_system = 3;
-}
-
-////////////////////////////////////////////////////////////////////////////
-// VerticalTransform
-
-message VerticalTransformRequest {
-  sint32 id = 1;
-  string location = 2;
-  string vertical_transform = 3;
-  int32 time_index = 4;
-}
-
-message VerticalTransformResponse {
-  Error error = 1;    // non-empty on error
-  string location = 2;
-  string vertical_transform = 3;
-  int32 time_index = 4;
-
-  Data data3D = 5;
 }
 

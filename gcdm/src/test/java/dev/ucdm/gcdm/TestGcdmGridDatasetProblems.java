@@ -4,8 +4,9 @@
  */
 package dev.ucdm.gcdm;
 
-import org.junit.Test;
 import dev.ucdm.gcdm.client.GcdmCdmFile;
+import org.junit.jupiter.api.Test;
+
 import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 

@@ -5,7 +5,7 @@
 
 package dev.ucdm.grid.internal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.Arrays;

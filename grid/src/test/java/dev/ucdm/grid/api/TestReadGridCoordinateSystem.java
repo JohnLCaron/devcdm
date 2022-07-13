@@ -5,7 +5,7 @@
 
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 
 /** Test {@link GridDatasetFactory} CoordinateSystem */
 public class TestReadGridCoordinateSystem {
@@ -30,28 +31,28 @@ public class TestReadGridCoordinateSystem {
   // bound2== 6.000000 12.000000 18.000000 24.000000 30.000000 36.000000 42.000000 48.000000 60.000000 72.000000
   @Test
   public void testCFmiscodedBounds() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "coords/ukmo.nc";
+    String filename = extraTestDir + "coords/ukmo.nc";
     String gridName = "temperature_2m";
     testOpenNetcdfAsGrid(filename, gridName, new int[] {5, 10}, new int[] {}, new int[] {77, 97}, true);
   }
 
   @Test
   public void testWithSingleTime() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "coords/CG2006158_150000h_usfc.nc";
+    String filename = extraTestDir + "coords/CG2006158_150000h_usfc.nc";
     String gridName = "CGusfc";
     testOpenNetcdfAsGrid(filename, gridName, new int[] {1}, new int[] {1}, new int[] {29, 26}, true);
   }
 
   @Test
   public void testWithTimeOnly() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "coords/NAM_CONUS_80km_20070501_1200.nc";
+    String filename = extraTestDir + "coords/NAM_CONUS_80km_20070501_1200.nc";
     String gridName = "RH";
     testOpenNetcdfAsGrid(filename, gridName, new int[] {11}, new int[] {19}, new int[] {65, 93}, false);
   }
 
   @Test
   public void testDuplicateGrids() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "grid/20060926_0000.nc";
+    String filename = extraTestDir + "grid/20060926_0000.nc";
     String gridName = "Precipitable_water";
     int ngrids = testOpenNetcdfAsGrid(filename, gridName, new int[] {2}, new int[] {}, new int[] {103, 108}, false);
     assertThat(ngrids).isEqualTo(10);

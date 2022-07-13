@@ -3,7 +3,7 @@ package dev.ucdm.dataset.write;
 import dev.ucdm.array.Array;
 import dev.ucdm.dataset.ncml.NcmlWriter;
 import org.jdom2.Element;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.core.api.Variable;
 

@@ -32,6 +32,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testRuntimeOnly(project(":grib"))
+
 }
 
 tasks.getByName<Test>("test") {

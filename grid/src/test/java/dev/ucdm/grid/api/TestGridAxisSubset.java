@@ -1,6 +1,6 @@
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Range;
 import dev.ucdm.core.api.Attribute;
 import dev.ucdm.core.constants.AxisType;

@@ -14,9 +14,10 @@ import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.util.CompareCdmFiles;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.util.CompareCdmDataset;
-import org.junit.Test;
+import dev.ucdm.gcdm.server.DataRoots;
 
 import dev.ucdm.gcdm.client.GcdmCdmFile;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -148,9 +149,10 @@ public class TestGcdmCdmFileProblem {
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  private static DataRoots dataRoots = new DataRoots();
 
   public void compareArrayToArray(Path path) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = dataRoots.makeGcdmUrl(path.toString());
     try (CdmFile ncfile = CdmDatasets.openFile(path.toString(), null);
          GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
       boolean ok = new CompareCdmDataset().compare(ncfile, gcdmFile);
@@ -159,7 +161,8 @@ public class TestGcdmCdmFileProblem {
   }
 
   public void compareArrayToArray(Path path, String varName) throws Exception {
-    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = dataRoots.makeGcdmUrl(path.toString());
+    System.out.printf("compareArrayToArray %s -> %s%n", path, gcdmUrl);
     try (CdmFile ncfile = CdmDatasets.openFile(path.toString(), null);
         GcdmCdmFile gcdmFile = GcdmCdmFile.builder().setRemoteURI(gcdmUrl).build()) {
 

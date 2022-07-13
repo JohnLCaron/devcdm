@@ -5,7 +5,7 @@
 
 package dev.ucdm.core.write;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Section;
 import dev.ucdm.core.api.Dimension;
 

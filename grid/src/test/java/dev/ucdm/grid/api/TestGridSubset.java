@@ -1,6 +1,6 @@
 package dev.ucdm.grid.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.dataset.geoloc.LatLonPoint;

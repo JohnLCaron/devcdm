@@ -1,7 +1,7 @@
 package dev.ucdm.grid.internal;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Range;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateUnit;

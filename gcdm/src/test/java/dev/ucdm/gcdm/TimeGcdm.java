@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import dev.ucdm.core.api.Variable;
-import org.junit.Test;
+import dev.ucdm.gcdm.server.DataRoots;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.gcdm.client.GcdmCdmFile;
 
@@ -20,11 +21,13 @@ import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 
 /** Time {@link GcdmCdmFile} 759MB takes ~ 3 minutes */
 public class TimeGcdm {
+  private static DataRoots dataRoots = new DataRoots();
+
   String localFilename = extraTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
 
   @Test
   public void readCmdrArray() throws IOException {
-    String gcdmUrl = "gcdm://localhost:16111/" + localFilename;
+    String gcdmUrl = dataRoots.makeGcdmUrl(localFilename);
 
     long total = 0;
     Stopwatch stopwatchAll = Stopwatch.createStarted();

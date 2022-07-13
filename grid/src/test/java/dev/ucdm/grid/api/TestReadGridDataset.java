@@ -3,7 +3,7 @@ package dev.ucdm.grid.api;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 import org.junit.jupiter.api.Disabled;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.InvalidRangeException;
@@ -15,6 +15,9 @@ import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.coreLocalDir;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 import static org.junit.Assert.assertThrows;
 
 /** Test reading {@link GridDataset} */
@@ -22,7 +25,7 @@ public class TestReadGridDataset {
 
   @Test
   public void readGridOneVertCoord() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "grid/20060926_0000.nc";
+    String filename = extraTestDir + "grid/20060926_0000.nc";
     readGrid(filename, "Relative_humidity_height_above_ground", ImmutableList.of(2, 1, 103, 108),
         "time height_above_ground2 y x", false, 2, "hours since 2006-09-26T00:00Z", "2006-09-26T03:00Z",
         "2006-09-26T06:00Z", "2006-09-26T06:00Z", 0.0, 2.0, new int[] {1, 1, 103, 108});
@@ -30,7 +33,7 @@ public class TestReadGridDataset {
 
   @Test
   public void readGridRegularTime() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "grid/GFS_Puerto_Rico_191km_20090729_0000.nc";
+    String filename = extraTestDir + "grid/GFS_Puerto_Rico_191km_20090729_0000.nc";
     readGrid(filename, "Temperature_isobaric", ImmutableList.of(20, 6, 39, 45), "time isobaric1 y x", false, 20,
         "hours since 2009-07-29T00:00Z", "2009-07-29T12:00Z", "2009-08-08T00:00Z", "2009-08-02T12:00:00Z", 700.0, 700.0,
         new int[] {1, 1, 39, 45});
@@ -39,7 +42,7 @@ public class TestReadGridDataset {
   @Test
   public void readGridIrregularTime() throws Exception {
     // TODO "1960-01-01T00:00:00Z" in mixed gregorian is now "1960-01-03T00:00Z" in iso, so, lost 3 days ??
-    String filename = TestGridDatasets.gridTestDir + "grid/cldc.mean.nc";
+    String filename = extraTestDir + "grid/cldc.mean.nc";
     readGrid(filename, "cldc", ImmutableList.of(456, 21, 360), "time lat lon", true, 456,
         "days since 0001-01-01T00:00Z", "1960-01-03T00:00Z", "1997-12-03T00:00Z", "1966-06-03T00:00Z", null, null,
         new int[] {1, 21, 360});
@@ -47,7 +50,7 @@ public class TestReadGridDataset {
 
   @Test
   public void testNoTimeAxis() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "grid/inittest24.QRIDV07200.ncml";
+    String filename = extraTestDir + "grid/inittest24.QRIDV07200.ncml";
     readGrid(filename, "QR", ImmutableList.of(150, 50, 50), "SLVL SLAT SLON", true, 0, "", "", "", null, 725.0, 725.0,
         new int[] {1, 50, 50});
   }
@@ -55,7 +58,7 @@ public class TestReadGridDataset {
   @Test
   @Disabled("valtime not monotonic")
   public void testDependentAxis() throws Exception {
-    String filename = TestGridDatasets.gridTestDir + "grid/2003021212_avn-x.nc";
+    String filename = extraTestDir + "grid/2003021212_avn-x.nc";
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
         "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
         new int[] {1, 1, 73, 73});
@@ -65,7 +68,7 @@ public class TestReadGridDataset {
   @Disabled("Cant read swath") // TODO HdfEos COnventions for SWATH
   public void testSwath() throws Exception {
     String filename =
-        TestGridDatasets.gridTestDir + "grid/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
+        extraTestDir + "grid/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
         "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
         new int[] {1, 1, 73, 73});
@@ -150,7 +153,7 @@ public class TestReadGridDataset {
 
   @Test
   public void testFileNotFound() {
-    String filename = TestGridDatasets.cdmLocalDir + "conventions/fileNot.nc";
+    String filename = coreLocalDir + "conventions/fileNot.nc";
     Formatter errlog = new Formatter();
 
     assertThrows(FileNotFoundException.class, () -> GridDatasetFactory.openGridDataset(filename, errlog));
@@ -158,7 +161,7 @@ public class TestReadGridDataset {
 
   @Test
   public void testFileNotGrid() throws IOException {
-    String filename = TestGridDatasets.datasetLocalDir + "ncml/point/point.ncml";
+    String filename = datasetLocalDir + "ncml/point/point.ncml";
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gridDataset).isNull();

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import dev.ucdm.dataset.api.CdmDatasetCS;
 import org.junit.jupiter.api.Disabled;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import dev.ucdm.core.constants.FeatureType;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.grid.api.*;
@@ -15,13 +15,16 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static dev.ucdm.test.util.TestFilesKt.datasetLocalDir;
+import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
+import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 /** Test {@link DatasetClassifier} */
 public class TestDatasetClassifier {
 
-  // @Test TODO move to GRIB
+  @Test
   public void testNamPolar() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "tds_index/NCEP/NAM/Polar_90km/NAM_Polar_90km_20201027_0000.grib2.ncx4";
+    String filename = oldTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM_Polar_90km_20201027_0000.grib2.ncx4";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -38,9 +41,9 @@ public class TestDatasetClassifier {
     }
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testNamPolarCollection() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
+    String filename = oldTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -60,7 +63,7 @@ public class TestDatasetClassifier {
   @Test
   public void testNoGrids() throws IOException {
     // No Grids found because unidentified ensemble, time axis.
-    String filename = TestGridDatasets.datasetLocalDir + "ncml/testNested.ncml";
+    String filename = datasetLocalDir + "ncml/testNested.ncml";
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
@@ -70,10 +73,10 @@ public class TestDatasetClassifier {
     }
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testScalarRuntime() throws IOException {
     // scalar runtime
-    String filename = TestGridDatasets.gridLocalDir + "tds/ncep/GEFS_Global_1p0deg_Ensemble_20120215_0000.grib2";
+    String filename = oldTestDir + "tds/ncep/GEFS_Global_1p0deg_Ensemble_20120215_0000.grib2";
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
@@ -111,7 +114,7 @@ public class TestDatasetClassifier {
   @Test
   public void testScalarVert() throws IOException {
     // scalar runtime
-    String filename = TestGridDatasets.gridTestDir + "coords/ukmo.nc";
+    String filename = extraTestDir + "coords/ukmo.nc";
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
@@ -146,9 +149,9 @@ public class TestDatasetClassifier {
     }
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testFMRC() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "gribCollections/cfsr/pwat.gdas.199612.grb2";
+    String filename = oldTestDir + "gribCollections/cfsr/pwat.gdas.199612.grb2";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -188,7 +191,7 @@ public class TestDatasetClassifier {
   // @Test
   @Disabled("TODO not dealing with multiple groups; coverage ver6 looks wrong also (ok in ver5)")
   public void problemWithGroups() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "gribCollections/ecmwf/mad/MAD10090000100900001";
+    String filename = extraTestDir + "gribCollections/ecmwf/mad/MAD10090000100900001";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -212,9 +215,9 @@ public class TestDatasetClassifier {
    * hour 0: time: 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, (16)
    * hour 12: time: 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, (16)
    */
-  // @Test TODO move to GRIB
+  @Test
   public void testRegularTimeOffset() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
+    String filename = oldTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -231,9 +234,9 @@ public class TestDatasetClassifier {
     }
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testMRUTP() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "tds_index/NCEP/GFS/Global_0p25deg_ana/GFS-Global_0p25deg_ana.ncx4";
+    String filename = oldTestDir + "tds_index/NCEP/GFS/Global_0p25deg_ana/GFS-Global_0p25deg_ana.ncx4";
 
     // MRUTP has a runtime and time sharing the same dimension.
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
@@ -251,9 +254,9 @@ public class TestDatasetClassifier {
     }
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testMRUTP2() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "gribCollections/anal/HRRRanalysis.ncx4";
+    String filename = oldTestDir + "gribCollections/anal/HRRRanalysis.ncx4";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -270,9 +273,9 @@ public class TestDatasetClassifier {
     }
   }
 
-  // @Test TODO move to GRIB
+  @Test
   public void testMRUTP3() throws IOException {
-    String filename = TestGridDatasets.gridLocalDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
+    String filename = oldTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
 
     try (CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(filename, true)) {
       Formatter errlog = new Formatter();
@@ -291,7 +294,7 @@ public class TestDatasetClassifier {
 
   @Test
   public void testBothXYandLatLon() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "grid/testCFwriter.nc";
+    String filename = extraTestDir + "grid/testCFwriter.nc";
     String gridName = "Temperature";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
@@ -312,7 +315,7 @@ public class TestDatasetClassifier {
 
   @Test
   public void testCurvilinear1D() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "curvilinear/Run_20091025_0000.nc";
+    String filename = extraTestDir + "curvilinear/Run_20091025_0000.nc";
     String gridName = "temp";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
@@ -333,7 +336,7 @@ public class TestDatasetClassifier {
 
   @Test
   public void testCurvilinear() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "curvilinear/mississippi.nc";
+    String filename = extraTestDir + "curvilinear/mississippi.nc";
     String gridName = "temp";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
@@ -354,7 +357,7 @@ public class TestDatasetClassifier {
 
   @Test
   public void testCurvilinear2() throws IOException {
-    String filename = TestGridDatasets.gridTestDir + "curvilinear/signell_bathy_fixed.nc";
+    String filename = extraTestDir + "curvilinear/signell_bathy_fixed.nc";
     String gridName = "h";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
