@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Coordinate value-based subsetting of a Grid.
@@ -215,6 +216,10 @@ public class GridSubset {
 
   public Set<Map.Entry<String, Object>> getEntries() {
     return req.entrySet();
+  }
+
+  public Map<String, String> getMap() {
+    return req.keySet().stream().collect(Collectors.toMap(key -> key, key -> req.get(key).toString()));
   }
 
   ////////////////////////////////////////////////////

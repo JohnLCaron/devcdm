@@ -11,19 +11,11 @@ import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.gcdm.GcdmConverter;
 import dev.ucdm.gcdm.GcdmGridConverter;
 import dev.ucdm.gcdm.protogen.GcdmServerProto;
-import io.grpc.Grpc;
-import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.ServerCall;
-import io.grpc.ServerCall.Listener;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerCredentials;
-import io.grpc.ServerInterceptor;
-import io.grpc.TlsServerCredentials;
 import io.grpc.stub.StreamObserver;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -81,34 +73,6 @@ public class GcdmServer {
     System.out.println("---> Server started, listening on " + port);
   }
 
-  private void startWithTLS() throws IOException {
-    // Creates an instance using provided certificate chain and private key.
-    // Generally they should be PEM-encoded and the key is an unencrypted PKCS#8 key
-    // (file headers have "BEGIN CERTIFICATE" and "BEGIN PRIVATE KEY").
-    // ServerCredentials creds = TlsServerCredentials.create(certChainFile, privateKeyFile);
-    ServerCredentials creds = TlsServerCredentials.create((File) null, (File) null);
-    Server server = Grpc.newServerBuilderForPort(port, creds)
-            .addService(new GcdmImpl()) //
-            .build().start();
-
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      @Override
-      public void run() {
-        // Use stderr here since the logger may have been reset by its JVM shutdown hook.
-        System.err.println("*** shutting down gRPC server since JVM is shutting down");
-        try {
-          GcdmServer.this.stop();
-        } catch (InterruptedException e) {
-          e.printStackTrace(System.err);
-        }
-        System.err.println("*** server shut down");
-      }
-    });
-
-    logger.info("Server started, listening on " + port);
-    System.out.println("---> Server started, listening on " + port);
-  }
-
   private void stop() throws InterruptedException {
     if (server != null) {
       server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
@@ -133,19 +97,6 @@ public class GcdmServer {
     server.blockUntilShutdown();
   }
 
-  static class MyServerInterceptor implements ServerInterceptor {
-    @Override
-    public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata requestHeaders,
-                                                      ServerCallHandler<ReqT, RespT> next) {
-      System.out.printf("***ServerCall %s%n", call);
-      System.out.printf("   Attributes %s%n", call.getAttributes());
-      System.out.printf("   MethodDesc %s%n", call.getMethodDescriptor());
-      System.out.printf("   Authority %s%n", call.getAuthority());
-      System.out.printf("   Metadata %s%n", requestHeaders);
-      return next.startCall(call, requestHeaders);
-    }
-  }
-
   private static Map<String, String> dataRoots = Map.of(
           "extraTestDir", "/home/snake/tmp/testData/",
           "oldTestDir", "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/"
@@ -157,7 +108,7 @@ public class GcdmServer {
 
     @Override
     public void getCdmFile(CdmRequest req, StreamObserver<CdmResponse> responseObserver) {
-      CdmResponse.Builder response = CdmResponse.newBuilder();
+      var response = CdmResponse.newBuilder().setLocation(req.getLocation());
 
       String dataPath = roots.convertRootToPath(req.getLocation());
       if (dataPath == null) {
@@ -165,17 +116,25 @@ public class GcdmServer {
                 .setMessage(String.format("No data root for '%s'", req.getLocation()))
                 .build());
       } else {
-        System.out.printf("GcdmServer getHeader open '%s' -> '%s'%n", req.getLocation(), dataPath);
+        System.out.printf("GcdmServer getCdmFile '%s' -> '%s'%n", req.getLocation(), dataPath);
 
         try (CdmFile ncfile = CdmDatasets.openFile(dataPath, null)) {
           GcdmProto.CdmFile.Builder cdmFile = GcdmProto.CdmFile.newBuilder().setLocation(req.getLocation())
                   .setRoot(GcdmConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
           response.setCdmFile(cdmFile);
-          logger.info("GcdmServer getHeader " + req.getLocation());
+          logger.debug("GcdmServer getCdmFile " + req.getLocation());
+
+        } catch (FileNotFoundException t) {
+          response.setError(GcdmProto.Error.newBuilder()
+                  .setMessage(req.getLocation() + " (No such file or directory)")
+                  .build());
+
         } catch (Throwable t) {
-          logger.warn("GcdmServer getHeader failed, returning an error", t);
-          // t.printStackTrace();
-          response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
+          logger.warn("GcdmServer getCdmFile failed, returning an error", t);
+          t.printStackTrace();
+          response.setError(GcdmProto.Error.newBuilder()
+                  .setMessage(req.getLocation() + " Server error")
+                  .build());
         }
       }
 
@@ -186,63 +145,69 @@ public class GcdmServer {
     @Override
     public void getCdmData(CdmDataRequest req, StreamObserver<CdmDataResponse> responseObserver) {
       System.out.printf("GcdmServer getData %s %s%n", req.getLocation(), req.getVariableSpec());
-      final Stopwatch stopwatch = Stopwatch.createStarted();
-      long size = -1;
+
+      var response = CdmDataResponse.newBuilder()
+              .setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
 
       String dataPath = roots.convertRootToPath(req.getLocation());
       if (dataPath == null) {
-        CdmDataResponse.Builder response =
-                CdmDataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(GcdmProto.Error.newBuilder()
                 .setMessage(String.format("No data root for '%s'", req.getLocation()))
                 .build());
         responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
+        return;
 
-      } else {
-        System.out.printf("GcdmServer getHeader open '%s' -> '%s'%n", req.getLocation(), dataPath);
+      }
+      System.out.printf("GcdmServer getHeader open '%s' -> '%s'%n", req.getLocation(), dataPath);
+      final Stopwatch stopwatch = Stopwatch.createStarted();
+      long size = -1;
 
-        try (CdmFile ncfile = CdmDatasets.openFile(dataPath, null)) { // TODO cache ncfile?
-          ParsedArraySectionSpec varSection = ParsedArraySectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
-          Variable var = varSection.getVariable();
-          if (var instanceof Sequence) {
-            size = getSequenceData(ncfile, varSection, responseObserver);
-          } else {
-            Section wantSection = varSection.getSection();
-            size = var.getElementSize() * wantSection.computeSize();
-            getNetcdfData(ncfile, varSection, responseObserver);
-          }
-          logger.info("GcdmServer getData " + req.getLocation());
-
-        } catch (Throwable t) {
-          logger.warn("GcdmServer getData failed, returning an error", t);
-          // t.printStackTrace();
-          CdmDataResponse.Builder response =
-                  CdmDataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
-          response.setError(
-                  GcdmProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
-          responseObserver.onNext(response.build());
+      try (CdmFile ncfile = CdmDatasets.openFile(dataPath, null)) { // TODO cache ncfile?
+        ParsedArraySectionSpec varSection = ParsedArraySectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
+        Variable var = varSection.getVariable();
+        if (var instanceof Sequence) {
+          size = readSequenceData(req, ncfile, varSection, responseObserver);
+        } else {
+          Section wantSection = varSection.getSection();
+          size = var.getElementSize() * wantSection.computeSize();
+          readCdmData(req, ncfile, varSection, responseObserver);
         }
+        logger.debug("GcdmServer getData " + req.getLocation());
+        System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
+
+      } catch (FileNotFoundException t) {
+        response.setError(GcdmProto.Error.newBuilder()
+                .setMessage(req.getLocation() + " (No such file or directory)")
+                .build());
+        responseObserver.onNext(response.build());
+
+      } catch (Throwable t) {
+        logger.warn("GcdmServer getCdmData failed, returning an error", t);
+        t.printStackTrace();
+        response.setError(GcdmProto.Error.newBuilder()
+                .setMessage(req.getLocation() + " Server error")
+                .build());
+        responseObserver.onNext(response.build());
       }
       responseObserver.onCompleted();
-
-      System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
     }
 
-    private void getNetcdfData(CdmFile ncfile, ParsedArraySectionSpec varSection,
-                               StreamObserver<CdmDataResponse> responseObserver) throws IOException, InvalidRangeException {
+    private void readCdmData(CdmDataRequest req, CdmFile ncfile, ParsedArraySectionSpec varSection,
+                             StreamObserver<CdmDataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getSection();
       long size = var.getElementSize() * wantSection.computeSize();
       if (size > MAX_MESSAGE) {
-        getDataInChunks(ncfile, varSection, responseObserver);
+        readDataInChunks(req, ncfile, varSection, responseObserver);
       } else {
-        getOneChunk(ncfile, varSection, responseObserver);
+        readOneChunk(req, varSection, responseObserver);
       }
     }
 
-    private void getDataInChunks(CdmFile ncfile, ParsedArraySectionSpec varSection,
-                                 StreamObserver<CdmDataResponse> responseObserver) throws IOException, InvalidRangeException {
+    private void readDataInChunks(CdmDataRequest req, CdmFile ncfile, ParsedArraySectionSpec varSection,
+                                  StreamObserver<CdmDataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       Variable var = varSection.getVariable();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
@@ -253,20 +218,23 @@ public class GcdmServer {
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
         Section section = new Section(chunkOrigin, chunkShape);
         ParsedArraySectionSpec spec = new ParsedArraySectionSpec(var, section);
-        getOneChunk(ncfile, spec, responseObserver);
+        readOneChunk(req, spec, responseObserver);
         index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
       }
     }
 
-    private void getOneChunk(CdmFile ncfile, ParsedArraySectionSpec varSection,
-                             StreamObserver<CdmDataResponse> responseObserver) throws IOException, InvalidRangeException {
+    private void readOneChunk(CdmDataRequest req, ParsedArraySectionSpec varSection,
+                              StreamObserver<CdmDataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getSection();
 
-      CdmDataResponse.Builder response = CdmDataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
-              .setVarFullName(var.getFullName()).setSection(GcdmConverter.encodeSection(wantSection));
+      CdmDataResponse.Builder response = CdmDataResponse.newBuilder().
+              setLocation(req.getLocation())
+              .setVariableSpec(spec)
+              .setVarFullName(var.getFullName())
+              .setSection(GcdmConverter.encodeSection(wantSection));
 
       Array<?> data = var.readArray(wantSection);
       response.setData(GcdmConverter.encodeData(data.getArrayType(), data));
@@ -277,8 +245,8 @@ public class GcdmServer {
     }
 
 
-    private long getSequenceData(CdmFile ncfile, ParsedArraySectionSpec varSection,
-                                 StreamObserver<CdmDataResponse> responseObserver) throws InvalidRangeException {
+    private long readSequenceData(CdmDataRequest req, CdmFile ncfile, ParsedArraySectionSpec varSection,
+                                  StreamObserver<CdmDataResponse> responseObserver) throws InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
@@ -295,7 +263,7 @@ public class GcdmServer {
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
           StructureDataArray sdataArray = new StructureDataArray(members, new int[]{count}, sdata);
           Section section = Section.builder().appendRange(start, start + count).build();
-          CdmDataResponse.Builder response = CdmDataResponse.newBuilder().setLocation(ncfile.getLocation())
+          CdmDataResponse.Builder response = CdmDataResponse.newBuilder().setLocation(req.getLocation())
                   .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverter.encodeSection(section));
           response.setData(GcdmConverter.encodeData(ArrayType.SEQUENCE, sdataArray));
           responseObserver.onNext(response.build());
@@ -310,32 +278,40 @@ public class GcdmServer {
     // GridDataset
 
     @Override
-    public void getGridDataset(GcdmServerProto.GridDatasetRequest request,
+    public void getGridDataset(GcdmServerProto.GridDatasetRequest req,
                                io.grpc.stub.StreamObserver<GcdmServerProto.GridDatasetResponse> responseObserver) {
-      GcdmServerProto.GridDatasetResponse.Builder response = GcdmServerProto.GridDatasetResponse.newBuilder();
+      GcdmServerProto.GridDatasetResponse.Builder response = GcdmServerProto.GridDatasetResponse.newBuilder().setLocation(req.getLocation());
 
-      String dataPath = roots.convertRootToPath(request.getLocation());
+      String dataPath = roots.convertRootToPath(req.getLocation());
       if (dataPath == null) {
         response.setError(GcdmProto.Error.newBuilder()
-                .setMessage(String.format("No data root for '%s'", request.getLocation()))
+                .setMessage(String.format("No data root for '%s'", req.getLocation()))
                 .build());
-      } else {
 
+      } else {
         System.out.printf("GcdmServer getGridDataset open %s%n", dataPath);
         Formatter errlog = new Formatter();
         try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(dataPath, errlog)) {
           if (gridDataset == null) {
             response.setError(GcdmProto.Error.newBuilder()
-                    .setMessage(String.format("Dataset '%s' not found or not a GridDataset", request.getLocation())).build());
+                    .setMessage(String.format("Dataset '%s' not found or not a GridDataset", req.getLocation())).
+                    build());
           } else {
-            response.setGridDataset(GcdmGridConverter.encodeGridDataset(gridDataset, request.getLocation()));
+            response.setGridDataset(GcdmGridConverter.encodeGridDataset(gridDataset, req.getLocation()));
           }
-          logger.info("GcdmServer getGridDataset " + request.getLocation());
+          logger.debug("GcdmServer getGridDataset " + req.getLocation());
+
+        } catch (FileNotFoundException t) {
+          response.setError(GcdmProto.Error.newBuilder()
+                  .setMessage(req.getLocation() + " (No such file or directory)")
+                  .build());
+
         } catch (Throwable t) {
-          System.out.printf("GcdmServer getGridDataset failed %s %n%s%n", t.getMessage(), errlog);
           logger.warn("GcdmServer getGridDataset failed ", t);
-          // t.printStackTrace();
-          response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
+          t.printStackTrace();
+          response.setError(GcdmProto.Error.newBuilder()
+                  .setMessage(req.getLocation() + " Server error")
+                  .build());
         }
       }
 
@@ -344,63 +320,62 @@ public class GcdmServer {
     }
 
     @Override
-    public void getGridData(GcdmServerProto.GridDataRequest request,
+    public void getGridData(GcdmServerProto.GridDataRequest req,
                             io.grpc.stub.StreamObserver<dev.ucdm.gcdm.protogen.GcdmServerProto.GridDataResponse> responseObserver) {
+      var response = GcdmServerProto.GridDataResponse.newBuilder().setLocation(req.getLocation())
+              .putAllSubset(req.getSubsetMap());
 
-      String dataPath = roots.convertRootToPath(request.getLocation());
+      String dataPath = roots.convertRootToPath(req.getLocation());
       if (dataPath == null) {
-        GcdmServerProto.GridDataResponse.Builder response =
-                GcdmServerProto.GridDataResponse.newBuilder().setLocation(request.getLocation());
         response.setError(GcdmProto.Error.newBuilder()
-                .setMessage(String.format("No data root for '%s'", request.getLocation()))
+                .setMessage(String.format("No data root for '%s'", req.getLocation()))
                 .build());
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
         return;
-
-      } else {
-        System.out.printf("GcdmServer getData %s %s == %s%n", request.getLocation(), request.getSubsetMap(), dataPath);
-        GcdmServerProto.GridDataResponse.Builder response = GcdmServerProto.GridDataResponse.newBuilder();
-        response.setLocation(request.getLocation()).putAllSubset(request.getSubsetMap());
-
-        final Stopwatch stopwatch = Stopwatch.createStarted();
-
-        GridSubset gridSubset = GridSubset.fromStringMap(request.getSubsetMap());
-        if (gridSubset.getGridName() == null) {
-          makeError(response, "GridName is not set");
-          responseObserver.onNext(response.build());
-          responseObserver.onCompleted();
-          return;
-        }
-
-        Formatter errlog = new Formatter();
-        try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(dataPath, errlog)) {
-          if (gridDataset == null) {
-            makeError(response, String.format("GridDataset '%s' not found", request.getLocation()));
-          } else {
-            String wantGridName = gridSubset.getGridName();
-            Grid wantGrid = gridDataset.findGrid(wantGridName).orElse(null);
-            if (wantGrid == null) {
-              makeError(response,
-                      String.format("GridDataset '%s' does not have Grid '%s", request.getLocation(), wantGridName));
-            } else {
-              GridReferencedArray geoReferencedArray = wantGrid.readData(gridSubset);
-              response.setData(GcdmGridConverter.encodeGridReferencedArray(geoReferencedArray));
-              System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
-                      java.util.Arrays.toString(geoReferencedArray.data().getShape()));
-            }
-          }
-        } catch (Throwable t) {
-          logger.warn("GcdmServer getGridData failed ", t);
-          t.printStackTrace();
-          errlog.format("%n%s", t.getMessage() == null ? "" : t.getMessage());
-          makeError(response, errlog.toString());
-        }
-
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
-        System.out.printf(" ** took=%s%n", stopwatch.stop());
       }
+
+      System.out.printf("GcdmServer getData %s %s == %s%n", req.getLocation(), req.getSubsetMap(), dataPath);
+      final Stopwatch stopwatch = Stopwatch.createStarted();
+
+      Formatter errlog = new Formatter();
+      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(dataPath, errlog)) {
+        if (gridDataset == null) {
+          makeError(response, String.format("'%s' not a Grid dataset", req.getLocation()));
+        } else {
+          GridSubset gridSubset = GridSubset.fromStringMap(req.getSubsetMap());
+          String wantGridName = gridSubset.getGridName();
+          Grid wantGrid = gridDataset.findGrid(wantGridName).orElse(null);
+          if (gridSubset.getGridName() == null) {
+            makeError(response, "GridName is not set");
+
+          } else if (wantGrid == null) {
+            makeError(response, String.format("GridDataset '%s' does not have Grid '%s'", req.getLocation(), wantGridName));
+
+          } else {
+            GridReferencedArray geoReferencedArray = wantGrid.readData(gridSubset);
+            response.setData(GcdmGridConverter.encodeGridReferencedArray(geoReferencedArray));
+            System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
+                    java.util.Arrays.toString(geoReferencedArray.data().getShape()));
+          }
+        }
+
+      } catch (FileNotFoundException t) {
+        response.setError(GcdmProto.Error.newBuilder()
+                .setMessage(req.getLocation() + " (No such file or directory)")
+                .build());
+
+      } catch (Throwable t) {
+        logger.warn("GcdmServer getGridDataset failed ", t);
+        t.printStackTrace();
+        response.setError(GcdmProto.Error.newBuilder()
+                .setMessage(req.getLocation() + " Server error")
+                .build());
+      }
+
+      responseObserver.onNext(response.build());
+      responseObserver.onCompleted();
+      System.out.printf(" ** took=%s%n", stopwatch.stop());
     }
 
     void makeError(GcdmServerProto.GridDataResponse.Builder response, String message) {
@@ -411,50 +386,55 @@ public class GcdmServer {
     // VerticalTransform
 
     @Override
-    public void getVerticalTransform(GcdmServerProto.VerticalTransformRequest request,
+    public void getVerticalTransform(GcdmServerProto.VerticalTransformRequest req,
                                      io.grpc.stub.StreamObserver<GcdmServerProto.VerticalTransformResponse> responseObserver) {
-      String dataPath = roots.convertRootToPath(request.getLocation());
-      if (dataPath == null) {
-        GcdmServerProto.VerticalTransformResponse.Builder response = GcdmServerProto.VerticalTransformResponse.newBuilder();
-        response.setError(GcdmProto.Error.newBuilder()
-                .setMessage(String.format("No data root for '%s'", request.getLocation()))
-                .build());
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
-        return;
-      } else {
-        System.out.printf("GcdmServer getVerticalTransform open %s%n", request.getLocation());
-        GcdmServerProto.VerticalTransformResponse.Builder response = GcdmServerProto.VerticalTransformResponse.newBuilder();
-        Formatter errlog = new Formatter();
-        try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
-          response.setLocation(request.getLocation());
-          response.setVerticalTransform(request.getVerticalTransform());
-          response.setTimeIndex(request.getTimeIndex());
+      GcdmServerProto.VerticalTransformResponse.Builder response = GcdmServerProto.VerticalTransformResponse.newBuilder()
+              .setLocation(req.getLocation()).setVerticalTransform(req.getVerticalTransform())
+              .setTimeIndex(req.getTimeIndex());
 
+      String dataPath = roots.convertRootToPath(req.getLocation());
+      if (dataPath == null) {
+        response.setError(GcdmProto.Error.newBuilder()
+                .setMessage(String.format("No data root for '%s'", req.getLocation()))
+                .build());
+
+      } else {
+        System.out.printf("GcdmServer getVerticalTransform open %s%n", req.getLocation());
+        Formatter errlog = new Formatter();
+        try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(dataPath, errlog)) {
           if (gridDataset == null) {
             response.setError(GcdmProto.Error.newBuilder().setMessage("Dataset not found or not a GridDataset").build());
+          } else if (req.getId() == 0) {
+            response.setError(GcdmProto.Error.newBuilder().setMessage("The VerticalTransform id must be supplied").build());
           } else {
-            Optional<VerticalTransform> cto = gridDataset.findVerticalTransformByHash(request.getId());
+            Optional<VerticalTransform> cto = gridDataset.findVerticalTransformByHash(req.getId());
             if (cto.isPresent()) {
-              Array<?> data = cto.get().getCoordinateArray3D(request.getTimeIndex());
+              Array<?> data = cto.get().getCoordinateArray3D(req.getTimeIndex());
               response.setData3D(GcdmConverter.encodeData(data.getArrayType(), data));
             } else {
               response.setError(GcdmProto.Error.newBuilder().setMessage("VerticalTransform not found").build());
             }
           }
-          logger.info("GcdmServer getVerticalTransform " + request.getLocation());
+          logger.debug("GcdmServer getVerticalTransform " + req.getLocation());
+
+        } catch (FileNotFoundException t) {
+          response.setError(GcdmProto.Error.newBuilder()
+                  .setMessage(req.getLocation() + " (No such file or directory)")
+                  .build());
+
         } catch (Throwable t) {
           System.out.printf("GcdmServer getVerticalTransform failed %s %n%s%n", t.getMessage(), errlog);
           logger.warn("GcdmServer getVerticalTransform failed ", t);
-          // t.printStackTrace();
-          response.setError(GcdmProto.Error.newBuilder().setMessage(t.getMessage()).build());
+          t.printStackTrace();
+          response.setError(GcdmProto.Error.newBuilder()
+                  .setMessage(req.getLocation() + " Server error")
+                  .build());
         }
-
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
       }
-    }
 
+      responseObserver.onNext(response.build());
+      responseObserver.onCompleted();
+    }
 
   } // GcdmImpl
 }

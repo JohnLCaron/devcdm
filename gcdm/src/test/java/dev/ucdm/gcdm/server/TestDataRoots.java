@@ -1,7 +1,6 @@
-package dev.ucdm.gcdm;
+package dev.ucdm.gcdm.server;
 
 
-import dev.ucdm.gcdm.server.DataRoots;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertThat;

@@ -2,8 +2,9 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package dev.ucdm.gcdm;
+package dev.ucdm.gcdm.client;
 
+import dev.ucdm.gcdm.CompareGridDataset;
 import dev.ucdm.gcdm.server.DataRoots;
 import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;

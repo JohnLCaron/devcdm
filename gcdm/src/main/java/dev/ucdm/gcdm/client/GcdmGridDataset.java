@@ -82,8 +82,8 @@ public class GcdmGridDataset implements GridDataset {
   GridReferencedArray readData(GridSubset subset) throws IOException {
     log.info("GcdmGridDataset request data subset " + subset);
     GridDataRequest.Builder requestb = GridDataRequest.newBuilder().setLocation(path);
-    for (Map.Entry<String, Object> entry : subset.getEntries()) {
-      requestb.putSubset(entry.getKey(), entry.getValue().toString());
+    for (Map.Entry<String, String> entry : subset.getMap().entrySet()) {
+      requestb.putSubset(entry.getKey(), entry.getValue());
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
     long size = 0;
