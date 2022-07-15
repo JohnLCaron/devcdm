@@ -5,6 +5,10 @@
 
 package dev.ucdm.gcdm.server;
 
+import dev.ucdm.array.Array;
+import dev.ucdm.array.Arrays;
+import dev.ucdm.array.InvalidRangeException;
+import dev.ucdm.gcdm.GcdmConverter;
 import dev.ucdm.gcdm.protogen.GcdmGrpc;
 import dev.ucdm.gcdm.protogen.GcdmServerProto;
 import io.grpc.Grpc;
@@ -17,9 +21,10 @@ import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.array.PrintArray.printArray;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/** A simple client that makes a GridDataset request from GcdmServer.*/
+/** A simple client that makes a VerticalTransform request from GcdmServer.*/
 public class TestServerVerticalTransform {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestServerVerticalTransform.class);
   private static final int MAX_MESSAGE = 50 * 1000 * 1000;
@@ -75,15 +80,52 @@ public class TestServerVerticalTransform {
   }
 
   @Test
-  public void testMissingParameters() {
+  public void testNoTransformName() {
     try (GcdmClient client = new GcdmClient("localhost:16111")) {
       GcdmServerProto.VerticalTransformRequest request = GcdmServerProto.VerticalTransformRequest.newBuilder().setLocation(location).build();
       GcdmServerProto.VerticalTransformResponse response = client.blockingStub.getVerticalTransform(request);
       assertThat(response).isNotNull();
       assertThat(response.hasError()).isTrue();
-      assertThat(response.getError().getMessage()).contains("Dataset 'coreLocalNetcdf3Dir/testWriteFill.nc' not found or not a GridDataset");
+      assertThat(response.getError().getMessage()).contains("The VerticalTransform name must be supplied");
       assertThat(response.getData3D()).isNotNull();
       assertThat(response.getLocation()).isEqualTo(location);
+    }
+  }
+
+  @Test
+  public void testBadTransformName() {
+    try (GcdmClient client = new GcdmClient("localhost:16111")) {
+      GcdmServerProto.VerticalTransformRequest request = GcdmServerProto.VerticalTransformRequest.newBuilder()
+              .setLocation(location)
+              .setVerticalTransform("bad")
+              .build();
+      GcdmServerProto.VerticalTransformResponse response = client.blockingStub.getVerticalTransform(request);
+      assertThat(response).isNotNull();
+      assertThat(response.hasError()).isTrue();
+      assertThat(response.getError().getMessage()).contains("VerticalTransform 'bad' not found");
+      assertThat(response.getData3D()).isNotNull();
+      assertThat(response.getLocation()).isEqualTo(location);
+      assertThat(response.getVerticalTransform()).isEqualTo("bad");
+    }
+  }
+
+  @Test
+  public void testGood() throws InvalidRangeException {
+    try (GcdmClient client = new GcdmClient("localhost:16111")) {
+      GcdmServerProto.VerticalTransformRequest request = GcdmServerProto.VerticalTransformRequest.newBuilder()
+              .setLocation(location)
+              .setVerticalTransform("ocean_s_coordinate_g2")
+              .build();
+      GcdmServerProto.VerticalTransformResponse response = client.blockingStub.getVerticalTransform(request);
+      assertThat(response).isNotNull();
+      assertThat(response.getLocation()).isEqualTo(location);
+      assertThat(response.getVerticalTransform()).isEqualTo("ocean_s_coordinate_g2");
+      assertThat(response.hasError()).isFalse();
+      assertThat(response.getData3D()).isNotNull();
+      Array<?> data = GcdmConverter.decodeData(response.getData3D());
+      assertThat(data.getRank()).isEqualTo(3);
+      assertThat(data.getShape()).isEqualTo(new int[] {6, 120, 156});
+      System.out.printf("data = %s%n", printArray(Arrays.slice(data, 0, 0)));
     }
   }
 

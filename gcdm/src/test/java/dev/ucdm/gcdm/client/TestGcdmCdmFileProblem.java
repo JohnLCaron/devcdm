@@ -11,12 +11,11 @@ import static dev.ucdm.test.util.TestFilesKt.extraTestDir;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 import dev.ucdm.core.api.CdmFile;
-import dev.ucdm.core.util.CompareCdmFiles;
+import dev.ucdm.core.testutil.CompareCdmFiles;
 import dev.ucdm.dataset.api.CdmDatasets;
-import dev.ucdm.dataset.util.CompareCdmDataset;
+import dev.ucdm.test.util.CompareCdmDataset;
 import dev.ucdm.gcdm.server.DataRoots;
 
-import dev.ucdm.gcdm.client.GcdmCdmFile;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;

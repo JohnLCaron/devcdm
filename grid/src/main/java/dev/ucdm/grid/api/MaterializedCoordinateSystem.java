@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** A Coordinate System for materialized gridded data, ie that has been read into memory. */
 @Immutable
@@ -112,6 +113,19 @@ public class MaterializedCoordinateSystem {
   /** Public by accident. */
   public Array<Number> readSpecial(Grid grid) throws InvalidRangeException, IOException {
     return lonCoordinate.readSpecial(this, grid);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    MaterializedCoordinateSystem that = (MaterializedCoordinateSystem) o;
+    return Objects.equals(tcs, that.tcs) && Objects.equals(hcs, that.hcs) && Objects.equals(ens, that.ens) && Objects.equals(vert, that.vert) && Objects.equals(lonCoordinate, that.lonCoordinate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(tcs, hcs, ens, vert, lonCoordinate);
   }
 
   //////////////////////////////////////////////////////////////////////////

@@ -120,11 +120,11 @@ public class GcdmGridDataset implements GridDataset {
     }
   }
 
-  Array<Number> getVerticalTransform(int id, String name, int timeIndex) {
-    log.info("GcdmGridDataset request getVerticalTransform {} {} {}", id, name, timeIndex);
+  Array<Number> getVerticalTransform(String name, int timeIndex) {
+    log.info("GcdmGridDataset request getVerticalTransform {} {}", name, timeIndex);
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    VerticalTransformRequest request = VerticalTransformRequest.newBuilder().setId(id)
+    VerticalTransformRequest request = VerticalTransformRequest.newBuilder()
         .setLocation(path).setVerticalTransform(name).setTimeIndex(timeIndex).build();
     VerticalTransformResponse response = blockingStub.getVerticalTransform(request);
     if (response.hasError()) {

@@ -94,7 +94,7 @@ public class OceanSigma extends AbstractVerticalTransform {
 
   private OceanSigma(CdmDataset ds, String ctvName, String units, String sigmaVar, String etaVar, String depthVar)
       throws IOException {
-    super(ds, CF.ocean_sigma_coordinate, ctvName, units);
+    super(ds, ctvName, units);
 
     this.sigmaVar = sigmaVar;
     this.etaVar = etaVar;

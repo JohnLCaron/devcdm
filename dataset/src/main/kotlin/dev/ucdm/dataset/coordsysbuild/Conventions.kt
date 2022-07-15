@@ -13,7 +13,7 @@ fun findCoordSysBuilder(dataset: CdmDataset): CoordinatesBuilder {
     return when {
         conv == "Default" -> DefaultConventions()
         conv.startsWith("CF-1.") -> CFConventions()
-        conv.startsWith("COARDS") -> DefaultConventions()
+        conv.startsWith("COARDS") -> CFConventions()
         conv.startsWith("GDV") -> GdvConventions()
         conv.startsWith("GIEF") -> GiefConventions()
         conv.startsWith("MARS") -> DefaultConventions()

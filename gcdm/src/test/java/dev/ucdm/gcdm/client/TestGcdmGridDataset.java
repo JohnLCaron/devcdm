@@ -4,21 +4,20 @@
  */
 package dev.ucdm.gcdm.client;
 
+import dev.ucdm.array.Array;
+import dev.ucdm.dataset.transform.vertical.VerticalTransform;
 import dev.ucdm.gcdm.CompareGridDataset;
 import dev.ucdm.gcdm.server.DataRoots;
 import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import dev.ucdm.gcdm.client.GcdmGridDataset;
-import dev.ucdm.gcdm.client.GcdmCdmFile;
 import dev.ucdm.grid.api.*;
 
-import java.io.File;
 import java.util.Formatter;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static dev.ucdm.test.util.TestFilesKt.coreLocalDir;
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
@@ -61,6 +60,51 @@ public class TestGcdmGridDataset {
         }
         assertThat(remote).isInstanceOf(GcdmGridDataset.class);
         new CompareGridDataset(remote, local, false).compare();
+      }
+    }
+  }
+
+  public static void readData(String filename, String gridName) throws Exception {
+    String gcdmUrl = dataRoots.makeGcdmUrl(filename);
+
+    System.out.printf("openGridDataset  %s%n", gcdmUrl);
+    Formatter info = new Formatter();
+    try (GridDataset local = GridDatasetFactory.openGridDataset(filename, info)) {
+      assertThat(local).isNotNull();
+      Grid localGrid = local.findGrid(gridName).orElseThrow();
+
+      try (GridDataset remote = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
+        assertThat(remote).isNotNull();
+        assertThat(remote).isInstanceOf(GcdmGridDataset.class);
+        Grid remoteGrid = remote.findGrid(gridName).orElseThrow();
+        GridReferencedArray remoteArray = remoteGrid.readData(GridSubset.create());
+        GridReferencedArray localArray = localGrid.readData(GridSubset.create());
+
+        assertThat(remoteArray.name()).isEqualTo(localArray.name());
+        assertThat(remoteArray.arrayType()).isEqualTo(localArray.arrayType());
+        assertThat(remoteArray.data()).isEqualTo(localArray.data());
+        assertThat(remoteArray.materializedCoordinateSystem()).isEqualTo(localArray.materializedCoordinateSystem());
+      }
+    }
+  }
+
+  public static void readVerticalTransform(String filename, String transformName) throws Exception {
+    String gcdmUrl = dataRoots.makeGcdmUrl(filename);
+
+    System.out.printf("openGridDataset  %s%n", gcdmUrl);
+    Formatter info = new Formatter();
+    try (GridDataset local = GridDatasetFactory.openGridDataset(filename, info)) {
+      assertThat(local).isNotNull();
+      VerticalTransform localVt = local.findVerticalTransformByName(transformName).orElseThrow();
+
+      try (GridDataset remote = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
+        assertThat(remote).isNotNull();
+        assertThat(remote).isInstanceOf(GcdmGridDataset.class);
+        VerticalTransform remoteVt = remote.findVerticalTransformByName(transformName).orElseThrow();
+
+        Array<?> remoteArray = remoteVt.getCoordinateArray3D(0);
+        Array<?> localArray = localVt.getCoordinateArray3D(0);
+        assertThat(remoteArray).isEqualTo(localArray);
       }
     }
   }

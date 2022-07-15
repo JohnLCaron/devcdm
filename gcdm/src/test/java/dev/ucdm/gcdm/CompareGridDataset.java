@@ -5,9 +5,12 @@
 
 package dev.ucdm.gcdm;
 
+import dev.ucdm.array.InvalidRangeException;
 import dev.ucdm.array.NumericCompare;
 import dev.ucdm.core.api.*;
 import dev.ucdm.grid.api.*;
+
+import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -26,7 +29,7 @@ public class CompareGridDataset {
     this.gribIosp = gribIosp;
   }
 
-  public void compare() {
+  public void compare() throws InvalidRangeException, IOException {
     System.out.printf(" roundtrip (%s) = %s%n", roundtrip.getClass().getName(), roundtrip.getLocation());
     System.out.printf("  expected (%s) = %s%n%n", expected.getClass().getName(), expected.getLocation());
 
@@ -61,7 +64,8 @@ public class CompareGridDataset {
     }
   }
 
-  public boolean compareGridCoordinateSystem(GridCoordinateSystem roundtrip, GridCoordinateSystem expected) {
+  public boolean compareGridCoordinateSystem(GridCoordinateSystem roundtrip, GridCoordinateSystem expected)
+          throws InvalidRangeException, IOException {
     boolean ok = true;
 
     assertThat(roundtrip.getName()).isEqualTo(expected.getName());
@@ -69,6 +73,8 @@ public class CompareGridDataset {
     assertThat(roundtrip.getVerticalTransform() == null).isEqualTo(expected.getVerticalTransform() == null);
     if (roundtrip.getVerticalTransform() != null) {
       assertThat(roundtrip.getVerticalTransform().getName()).isEqualTo(expected.getVerticalTransform().getName());
+      assertThat(roundtrip.getVerticalTransform().getCoordinateArray3D(0))
+              .isEqualTo(expected.getVerticalTransform().getCoordinateArray3D(0));
     }
     assertThat(roundtrip.getNominalShape()).isEqualTo(expected.getNominalShape());
     assertThat(roundtrip.isZPositive()).isEqualTo(expected.isZPositive());

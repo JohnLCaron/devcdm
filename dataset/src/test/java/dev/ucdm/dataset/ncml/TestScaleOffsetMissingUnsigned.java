@@ -86,7 +86,7 @@ public class TestScaleOffsetMissingUnsigned {
       Variable v = ncfileRead.findVariable("packed");
       assertThat(v).isNotNull();
       readPacked = (Array<Number>) v.readArray();
-      dev.ucdm.dataset.testutil.CompareCdmFiles.compareData("packed", packed, readPacked);
+      CompareArrayToArray.compareData("packed", packed, readPacked);
     }
 
     Array<Number> readEnhanced;

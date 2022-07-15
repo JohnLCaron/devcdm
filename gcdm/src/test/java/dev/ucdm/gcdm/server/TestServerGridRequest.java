@@ -5,22 +5,13 @@
 
 package dev.ucdm.gcdm.server;
 
-import com.google.common.base.Stopwatch;
-import dev.ucdm.gcdm.GcdmGridConverter;
-import dev.ucdm.gcdm.protogen.GcdmGridProto;
 import dev.ucdm.gcdm.protogen.GcdmServerProto;
-import dev.ucdm.grid.api.GridReferencedArray;
 import dev.ucdm.grid.api.GridSubset;
 import io.grpc.Grpc;
 import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
-import io.grpc.StatusRuntimeException;
 
 import java.io.Closeable;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import dev.ucdm.gcdm.protogen.GcdmGrpc;

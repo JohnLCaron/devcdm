@@ -13,13 +13,11 @@ import java.util.stream.Stream;
 
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.dataset.api.CdmDatasets;
-import dev.ucdm.dataset.util.CompareCdmDataset;
+import dev.ucdm.test.util.CompareCdmDataset;
 import dev.ucdm.gcdm.server.DataRoots;
-import dev.ucdm.test.util.FileFilterSkipSuffixes;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import dev.ucdm.gcdm.client.GcdmCdmFile;
 
 /** Test {@link GcdmCdmFile} */
 public class TestGcdmNetcdf4 {

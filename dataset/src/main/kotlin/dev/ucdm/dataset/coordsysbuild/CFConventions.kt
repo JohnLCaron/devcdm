@@ -1,8 +1,11 @@
 package dev.ucdm.dataset.coordsysbuild
 
+import dev.ucdm.core.api.Attribute
+import dev.ucdm.core.calendar.Calendar
 import dev.ucdm.core.calendar.CalendarDateUnit
 import dev.ucdm.core.constants.AxisType
 import dev.ucdm.core.constants.CF
+import dev.ucdm.dataset.api.CoordinateAxis
 import dev.ucdm.dataset.api.SimpleUnit
 import dev.ucdm.dataset.api.VariableDS
 
@@ -156,5 +159,22 @@ open class CFConventions(name: String = "CFConventions") : DefaultConventions(na
             }
         }
         super.identifyCoordinateTransforms()
+    }
+
+    override fun makeCoordinateAxes() {
+        super.makeCoordinateAxes();
+
+        coords.coordAxes.filter { it.axisType?.isTime ?: false }.forEach { checkTimeVarForCalendar(it) }
+    }
+
+    // add gregorian calendar attribute to any time coordinate.
+    // CF mandates gregorian as default, CDM uses proleptic_gregorian as default.
+    // No one would use gregorian is they actually understood it.
+    open fun checkTimeVarForCalendar(vb: CoordinateAxis.Builder<*>) {
+        var calAttr = vb.attributeContainer.findAttributeIgnoreCase(CF.CALENDAR)
+        if (calAttr == null) {
+            calAttr = Attribute(CF.CALENDAR, Calendar.gregorian.toString())
+            vb.addAttribute(calAttr)
+        }
     }
 }

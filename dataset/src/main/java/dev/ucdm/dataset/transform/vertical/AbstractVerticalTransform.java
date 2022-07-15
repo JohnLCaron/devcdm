@@ -78,14 +78,12 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
   //////////////////////////////////////////////////////////
 
   protected final CdmDataset ds;
-  protected final String name;
-  protected final String ctvName;
+  protected final String name; // unique in the dataset
   protected final String units;
 
-  AbstractVerticalTransform(CdmDataset ds, String name, String ctvName, String units) {
+  AbstractVerticalTransform(CdmDataset ds, String name, String units) {
     this.ds = ds;
     this.name = name;
-    this.ctvName = ctvName;
     this.units = units;
   }
 
@@ -95,31 +93,9 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
   }
 
   @Override
-  public String getCtvName() {
-    return ctvName;
-  }
-
-  @Override
   @Nullable
   public String getUnitString() {
     return units;
-  }
-
-  // Implementation that reads the full 3D array and just picks out the specified x, y.
-  // Optimization could cache at least one time index
-  @Override
-  public Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
-      throws IOException, InvalidRangeException {
-    Array<Number> array3D = getCoordinateArray3D(timeIndex);
-    int nz = array3D.getShape()[0];
-    double[] result = new double[nz];
-
-    int count = 0;
-    for (int z = 0; z < nz; z++) {
-      result[count++] = array3D.get(z, yIndex, xIndex).doubleValue();
-    }
-
-    return Arrays.factory(ArrayType.DOUBLE, new int[] {nz}, result);
   }
 
   static String getFormula(AttributeContainer ctv, Formatter errlog) {

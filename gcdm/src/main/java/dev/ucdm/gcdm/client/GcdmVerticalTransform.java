@@ -6,8 +6,6 @@
 package dev.ucdm.gcdm.client;
 
 import dev.ucdm.array.Array;
-import dev.ucdm.array.ArrayType;
-import dev.ucdm.array.Arrays;
 import dev.ucdm.dataset.transform.vertical.VerticalTransform;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,13 +18,11 @@ public class GcdmVerticalTransform implements VerticalTransform {
   private GcdmGridDataset gridDataset;
   private final int id;
   private final String name;
-  private final String ctvName;
   private final String units;
 
-  public GcdmVerticalTransform(int id, String name, String ctvName, String units) {
+  public GcdmVerticalTransform(int id, String name, String units) {
     this.id = id;
     this.name = name;
-    this.ctvName = ctvName;
     this.units = units;
   }
 
@@ -43,11 +39,6 @@ public class GcdmVerticalTransform implements VerticalTransform {
     return name;
   }
 
-  @Override
-  public String getCtvName() {
-    return ctvName;
-  }
-
   @Nullable
   @Override
   public String getUnitString() {
@@ -56,22 +47,6 @@ public class GcdmVerticalTransform implements VerticalTransform {
 
   @Override
   public Array<Number> getCoordinateArray3D(int timeIndex) {
-    return gridDataset.getVerticalTransform(this.id, this.name, timeIndex);
-  }
-
-  // Implementation that reads the full 3D array and just picks out the specified x, y.
-  // Optimization could cache at least one time index
-  @Override
-  public Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) {
-    Array<Number> array3D = getCoordinateArray3D(timeIndex);
-    int nz = array3D.getShape()[0];
-    double[] result = new double[nz];
-
-    int count = 0;
-    for (int z = 0; z < nz; z++) {
-      result[count++] = array3D.get(z, yIndex, xIndex).doubleValue();
-    }
-
-    return Arrays.factory(ArrayType.DOUBLE, new int[] {nz}, result);
+    return gridDataset.getVerticalTransform(this.name, timeIndex);
   }
 }

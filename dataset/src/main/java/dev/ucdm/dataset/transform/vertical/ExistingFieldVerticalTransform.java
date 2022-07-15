@@ -50,7 +50,7 @@ public class ExistingFieldVerticalTransform extends AbstractVerticalTransform {
 
   private ExistingFieldVerticalTransform(CdmDataset ds, String ctvName, String units, String existingField,
                                          int rank) {
-    super(ds, CF.ocean_sigma_coordinate, ctvName, units);
+    super(ds, ctvName, units);
 
     this.existingField = existingField;
     this.rank = rank;

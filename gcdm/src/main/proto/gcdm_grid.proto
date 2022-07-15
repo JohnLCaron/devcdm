@@ -145,8 +145,7 @@ message Grid {
 message VerticalTransform {
   sint32 id = 1;
   string name = 2;
-  string ctvName = 3; // needed?
-  string units = 4;
+  string units = 3;
 }
 
 message GridDataset {

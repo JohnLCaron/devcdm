@@ -61,6 +61,12 @@ public interface GridDataset extends Closeable {
         .filter(vt -> (vt != null) && vt.hashCode() == hash).findFirst();
   }
 
+  /** Find VerticalTransform using its hashCode. */
+  default Optional<VerticalTransform> findVerticalTransformByName(String name) {
+    return getGridCoordinateSystems().stream().map(cs -> cs.getVerticalTransform())
+            .filter(vt -> (vt != null) && vt.getName().equals(name)).findFirst();
+  }
+
   default void toString(Formatter buf) {
     buf.format("name = %s%n", getName());
     buf.format("location = %s%n", getLocation());

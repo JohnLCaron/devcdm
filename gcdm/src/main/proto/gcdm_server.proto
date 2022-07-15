@@ -70,10 +70,9 @@ message GridDataResponse {
 }
 
 message VerticalTransformRequest {
-  sint32 id = 1;
-  string location = 2;
-  string vertical_transform = 3;
-  int32 time_index = 4;
+  string location = 1;
+  string vertical_transform = 2;
+  int32 time_index = 3;
 }
 
 message VerticalTransformResponse {

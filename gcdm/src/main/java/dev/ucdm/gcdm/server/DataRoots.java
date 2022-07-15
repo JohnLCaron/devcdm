@@ -9,15 +9,6 @@ import java.util.*;
 
 public class DataRoots {
 
-  private static class PathComparator implements Comparator<String> {
-    public int compare(String s1, String s2) {
-      return s2.compareTo(s1); // reverse sort
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  private final TreeSet<String> treeSet = new TreeSet<>(new PathComparator()); // this should be in-memory for speed
-
   private Map<String, String> dataRoots = Map.of(
           "coreLocalDir/", "/home/snake/dev/github/devcdm/core/src/test/data/",
           "coreLocalNetcdf3Dir/", "/home/snake/dev/github/devcdm/core/src/test/data/netcdf3/",
@@ -99,51 +90,6 @@ public class DataRoots {
     }
     String gcdmUrl = "gcdm://localhost:16111/" + path;
     return gcdmUrl;
-  }
-
-  /**
-   * Find the longest path match.
-   * 
-   * @param reqPath find object with longest match where reqPath.startsWith( key)
-   * @return the value whose key is the longest that matches path, or null if none
-   */
-  @Nullable
-  public String getDataRootOld(String reqPath) {
-    SortedSet<String> tail = treeSet.tailSet(reqPath);
-    if (tail.isEmpty())
-      return null;
-    String after = tail.first();
-    if (reqPath.startsWith(after)) // common case
-      return tail.first();
-
-    // have to check more, until no common starting chars
-    for (String key : tail) {
-      if (reqPath.startsWith(key))
-        return key;
-
-      // terminate when there's no match at all.
-      if (countMatches(reqPath, key) == 0)
-        break;
-    }
-    return null;
-  }
-
-  /**
-   * Count number of chars that match in two strings, starting from front.
-   *
-   * @param s1 compare this string
-   * @param s2 compare this string
-   * @return number of matching chars, starting from first char
-   */
-  private int countMatches(String s1, String s2) {
-    int i = 0;
-    while ((i < s1.length()) && (i < s2.length())) {
-      if (s1.charAt(i) != s2.charAt(i)) {
-        break;
-      }
-      i++;
-    }
-    return i;
   }
 
 }

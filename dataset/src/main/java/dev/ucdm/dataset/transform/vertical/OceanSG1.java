@@ -112,7 +112,7 @@ public class OceanSG1 extends AbstractVerticalTransform {
 
   private OceanSG1(CdmDataset ds, String ctvName, String units, String sName, String cName, String etaName,
                    String depthName, String depthCName, int etaRank) throws IOException {
-    super(ds, CF.ocean_s_coordinate_g1, ctvName, units);
+    super(ds, ctvName, units);
 
     this.sName = sName;
     this.cName = cName;
