@@ -400,12 +400,12 @@ public class H4header implements HdfHeaderIF {
     }
 
     if (data == null) {
-      log.error("**no data for dimension TagVGroup= " + group);
+      log.error("**no data for dimension TagVGroup= " + group + "(" + raf.getLocation() + ")");
       return;
     }
 
     if (length <= 0) {
-      log.warn("**dimension length=" + length + " for TagVGroup= " + group + " using data " + data.refno);
+      log.warn("**dimension length=" + length + " for TagVGroup= " + group + " using data " + data.refno + "(" + raf.getLocation() + ")");
     }
 
     boolean isUnlimited = (length == 0);
@@ -555,7 +555,7 @@ public class H4header implements HdfHeaderIF {
       Tag tag = tagMap.get(tagid(tagGroup.elem_ref[i], tagGroup.elem_tag[i]));
       if (tag == null) {
         log.error("Reference tag missing= " + tagGroup.elem_ref[i] + "/" + tagGroup.elem_tag[i] + " for group "
-            + tagGroup.refno);
+            + tagGroup.refno + "(" + raf.getLocation() + ")");
         continue;
       }
 
@@ -565,7 +565,7 @@ public class H4header implements HdfHeaderIF {
           if (v != null)
             addVariableToGroup(group, v, tag);
           else
-            log.error("Missing variable " + tag.refno);
+            log.error("Missing variable " + tag.refno + "(" + raf.getLocation() + ")");
         }
       }
 
@@ -642,7 +642,7 @@ public class H4header implements HdfHeaderIF {
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
       if (tag == null) {
-        log.warn("Image Group " + group.tag() + " has missing tag=" + group.elem_ref[i] + "/" + group.elem_tag[i]);
+        log.warn("Image Group " + group.tag() + " has missing tag=" + group.elem_ref[i] + "/" + group.elem_tag[i] + "(" + raf.getLocation() + ")");
         return null;
       }
 
@@ -656,18 +656,18 @@ public class H4header implements HdfHeaderIF {
         data = tag;
     }
     if (dimTag == null) {
-      log.warn("Image Group " + group.tag() + " missing dimension tag");
+      log.warn("Image Group " + group.tag() + " missing dimension tag" + "(" + raf.getLocation() + ")");
       return null;
     }
     if (data == null) {
-      log.warn("Image Group " + group.tag() + " missing data tag");
+      log.warn("Image Group " + group.tag() + " missing data tag" + "(" + raf.getLocation() + ")");
       return null;
     }
 
     // get the NT tag, referred to from the dimension tag
     Tag tag = tagMap.get(tagid(dimTag.nt_ref, TagEnum.NT.getCode()));
     if (tag == null) {
-      log.warn("Image Group " + group.tag() + " missing NT tag");
+      log.warn("Image Group " + group.tag() + " missing NT tag" + "(" + raf.getLocation() + ")");
       return null;
     }
     ntag = (TagNumberType) tag;
@@ -708,7 +708,7 @@ public class H4header implements HdfHeaderIF {
 
     TagData data = (TagData) tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
     if (data == null) {
-      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
+      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail() + "(" + raf.getLocation() + ")");
       return null;
     }
     vinfo.tags.add(data);
@@ -755,7 +755,7 @@ public class H4header implements HdfHeaderIF {
 
     TagData data = (TagData) tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
     if (data == null) {
-      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
+      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail() + "(" + raf.getLocation() + ")");
       return null;
     }
     vinfo.tags.add(data);
@@ -868,7 +868,7 @@ public class H4header implements HdfHeaderIF {
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
       if (tag == null) {
-        log.error("Reference tag missing= " + group.elem_ref[i] + "/" + group.elem_tag[i]);
+        log.error("Reference tag missing= " + group.elem_ref[i] + "/" + group.elem_tag[i] + "(" + raf.getLocation() + ")");
         continue;
       }
 
@@ -893,15 +893,15 @@ public class H4header implements HdfHeaderIF {
       }
     }
     if (ntag == null) {
-      log.error("ntype tag missing vgroup= " + group.refno);
+      log.error("ntype tag missing vgroup= " + group.refno + "(" + raf.getLocation() + ")");
       return null;
     }
     if (dim == null) {
-      log.error("dim tag missing vgroup= " + group.refno);
+      log.error("dim tag missing vgroup= " + group.refno + "(" + raf.getLocation() + ")");
       return null;
     }
     if (data == null) {
-      log.warn("data tag missing vgroup= " + group.refno + " " + group.name);
+      log.warn("data tag missing vgroup= " + group.refno + " " + group.name + "(" + raf.getLocation() + ")");
       // return null;
     }
     Variable.Builder<?> vb = Variable.builder().setName(group.name);
@@ -919,7 +919,7 @@ public class H4header implements HdfHeaderIF {
       Dimension vdim = vdimensions.get(i);
       if (dim.shape[i] != vdim.getLength()) {
         if (warnings)
-          log.info(dim.shape[i] + " != " + vdim.getLength() + " for " + vb.shortName);
+          log.info(dim.shape[i] + " != " + vdim.getLength() + " for " + vb.shortName + "(" + raf.getLocation() + ")");
         ok = false;
       }
     }
@@ -953,7 +953,7 @@ public class H4header implements HdfHeaderIF {
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
       if (tag == null) {
-        log.error("Cant find tag " + group.elem_ref[i] + "/" + group.elem_tag[i] + " for group=" + group.refno);
+        log.error("Cant find tag " + group.elem_ref[i] + "/" + group.elem_tag[i] + " for group=" + group.refno + "(" + raf.getLocation() + ")");
         continue;
       }
       vinfo.tags.add(tag);

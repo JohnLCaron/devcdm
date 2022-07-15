@@ -148,7 +148,7 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
         }
 
         // _CoordinateSystemFor attribute points to dimensions used by data variables
-        builder.varList.forEach { csysVar ->
+        builder.varList.forEach forEachVar@{ csysVar ->
             val coordinateSystemsFor: String? = csysVar.vds.findAttributeString(_Coordinate.SystemFor, null)
             if (coordinateSystemsFor != null && csysVar.cs != null) {
                 val dimSet: MutableSet<String> = HashSet()
@@ -158,7 +158,7 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                         dimSet.add(wantDim.shortName)
                     } else {
                         builder.info.appendLine("***Cant find Dimension '$dname' referenced from '${csysVar.vds}'")
-                        return@forEach // continue
+                        return@forEachVar // continue
                     }
                 }
 
@@ -241,28 +241,28 @@ class CoordAttrConvention(val builder: CoordinatesBuilder) {
                     }
                 }
             }
+        }
 
 
-            // look for _CoordinateAxisTypes on the CTV, apply to any Coordinate Systems that contain all these axes
-            builder.varList.forEach { vp ->
-                val coordAxisTypes = vp.vds.findAttributeString(_Coordinate.AxisTypes, null)
-                if (vp.isCoordinateTransform && vp.ctv != null && coordAxisTypes != null) {
-                    //  look for Coordinate Systems that contain all these axes
-                    builder.coords.coordSys.forEach { coordSys ->
-                        if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
-                            if (coordSys.addTransformName(vp.ctv!!.name)) {
-                                builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
-                            }
+        // look for _CoordinateAxisTypes on the CTV, apply to any Coordinate Systems that contain all these axes
+        builder.varList.forEach { vp ->
+            val coordAxisTypes = vp.vds.findAttributeString(_Coordinate.AxisTypes, null)
+            if (vp.isCoordinateTransform && vp.ctv != null && coordAxisTypes != null) {
+                //  look for Coordinate Systems that contain all these axes
+                builder.coords.coordSys.forEach { coordSys ->
+                    if (builder.coords.containsAxisTypes(coordSys, coordAxisTypes)) {
+                        if (coordSys.addTransformName(vp.ctv!!.name)) {
+                            builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${coordSys.name}'")
                         }
                     }
-                    // TODO do we need to do both?
-                    //  look for Coordinate Systems Variables that contain all these axes
-                    builder.varList.forEach { csv ->
-                        if (csv.isCoordinateSystem && csv.cs != null) {
-                            if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
-                                if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
-                                    builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
-                                }
+                }
+                // TODO do we need to do both?
+                //  look for Coordinate Systems Variables that contain all these axes
+                builder.varList.forEach { csv ->
+                    if (csv.isCoordinateSystem && csv.cs != null) {
+                        if (builder.coords.containsAxisTypes(csv.cs!!, coordAxisTypes)) {
+                            if (csv.cs!!.addTransformName(vp.ctv!!.name)) {
+                                builder.info.appendLine("Assign (implicit coordAxisType) coordTransform '${vp.ctv!!.name}' to CoordSys '${vp.cs!!.coordAxesNames}'")
                             }
                         }
                     }

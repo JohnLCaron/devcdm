@@ -16,8 +16,6 @@ import dev.ucdm.grib.grib1.record.Grib1Gds;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.protoconvert.Grib1Index;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,6 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * Test misc GRIB1 unpacking
  */
-@RunWith(JUnit4.class)
 public class TestGrib1Unpack {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

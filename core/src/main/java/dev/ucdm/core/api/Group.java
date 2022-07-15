@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.core.util.EscapeStrings;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;

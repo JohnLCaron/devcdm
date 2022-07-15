@@ -6,7 +6,6 @@ import dev.ucdm.dataset.api.CdmDatasetCS
 import dev.ucdm.dataset.api.CdmDatasets
 import dev.ucdm.dataset.api.VariableDS
 import dev.ucdm.dataset.cdmdsl.*
-import dev.ucdm.dataset.coordsysbuild.findCoordSysBuilder
 import dev.ucdm.test.util.datasetLocalDir
 import dev.ucdm.test.util.testFilesIn
 import org.junit.jupiter.api.Test
@@ -17,9 +16,9 @@ class TestCFConventions {
     @Test
     fun testCFConventions() {
         val orgDataset = CdmDatasets.openDataset(cfFile, false, null)
-        println(orgDataset.write())
+        // println(orgDataset.write())
 
-        val convention = findCoordSysBuilder(orgDataset)
+        val convention = chooseCoordSysBuilder(orgDataset)
         val coords = convention.buildCoordinateSystems(orgDataset)
         assertThat(coords).isNotNull()
         println(convention.info)
@@ -29,7 +28,7 @@ class TestCFConventions {
             .setConventionUsed(convention.conventionName)
             .build()
         assertThat(withcs).isNotNull()
-        println(withcs.write())
+        // println(withcs.write())
 
         assertThat(withcs.conventionBuilder).isEqualTo("CFConventions")
         assertThat(withcs.coordinateSystems).hasSize(3)
@@ -41,7 +40,8 @@ class TestCFConventions {
 
         val csys = withcs.findCoordinateSystem("level lat y lon x");
         assertThat(csys).isNotNull()
-        assertThat(csys.projection).isNull()
+        assertThat(csys.projection).isNotNull()
+        assertThat(csys.projection!!.name).isEqualTo("lambert_conformal_conic")
 
         val temp = withcs.findVariable("Temperature") as VariableDS
         assertThat(temp).isNotNull()
@@ -55,7 +55,8 @@ class TestCFConventions {
         assertThat(lat).isNotNull()
         val latCs = withcs.makeCoordinateSystemsFor(lat)
         assertThat(latCs).isNotNull()
-        assertThat(latCs.size).isEqualTo(0)
+        assertThat(latCs.size).isEqualTo(1)
+        assertThat(latCs[0].name).isEqualTo("y x")
 
         println("variables = ${withcs.variables.map {it.fullName}}")
         println("axes = ${withcs.coordinateAxes.map {it.fullName}}")

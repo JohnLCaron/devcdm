@@ -1,6 +1,5 @@
 package dev.ucdm.core.io;
 
-import dev.ucdm.core.util.IO;
 import dev.ucdm.core.util.KMPMatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +23,7 @@ import static dev.ucdm.core.io.TestRandomAccessFile.DATA_AS_LE_FLOATS;
 import static dev.ucdm.core.io.TestRandomAccessFile.DATA_AS_LE_INTS;
 import static dev.ucdm.core.io.TestRandomAccessFile.DATA_AS_LE_LONGS;
 import static dev.ucdm.core.io.TestRandomAccessFile.DATA_AS_LE_SHORTS;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Test {@link InMemoryRandomAccessFile} */
 public class TestInMemoryRandomAccessFile {
@@ -34,10 +33,7 @@ public class TestInMemoryRandomAccessFile {
   // use small buffer size for test cases
   private static final int TEST_BUFFER_SIZE = 10;
 
-  // test file
   private static InMemoryRandomAccessFile testFile;
-  private static RandomAccessFile rafFile;
-  private static final String TEST_FILE_PATH = "src/test/data/preserveLineEndings/testUTF8.txt";
   private static final String TEST_FILE_NAME = "InMemory";
 
   // contents of test file
@@ -46,16 +42,12 @@ public class TestInMemoryRandomAccessFile {
   private static final int TEST_FILE_LENGTH = UTF8_BYTES.length;
 
   @BeforeEach
-  public void setUpTests() throws IOException {
-    rafFile = new RandomAccessFile(TEST_FILE_PATH, "r", TEST_BUFFER_SIZE);
-
-    byte[] contents = IO.readFileToByteArray(TEST_FILE_PATH);
-    testFile = new InMemoryRandomAccessFile(TEST_FILE_NAME, contents);
+  public void setUpTests() {
+    testFile = new InMemoryRandomAccessFile(TEST_FILE_NAME, UTF8_BYTES);
   }
 
   @AfterEach
   public void cleanUpTest() throws IOException {
-    rafFile.close();
     testFile.close();
   }
 
@@ -185,12 +177,7 @@ public class TestInMemoryRandomAccessFile {
     testFile.seek(0);
     len = TEST_FILE_LENGTH + 1;
     byte[] finalBuff = new byte[len];
-    try {
-      testFile.readFully(finalBuff);
-      fail();
-    } catch (Exception ioe) {
-      // expected.
-    }
+    assertThrows(Exception.class, () -> testFile.readFully(finalBuff));
 
     // read fully with offset
     testFile.seek(0);
@@ -405,8 +392,6 @@ public class TestInMemoryRandomAccessFile {
   }
 
   private boolean compareDoubles(double d1, double d2) {
-    double dif = Math.abs(d1 - d2);
-    double threshold = (d1 / Math.pow(10, 16));
     return Math.abs(d1 - d2) < (d1 / Math.pow(10, 15));
   }
 
@@ -466,7 +451,7 @@ public class TestInMemoryRandomAccessFile {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
       open = false;
     }
 
@@ -474,7 +459,7 @@ public class TestInMemoryRandomAccessFile {
       return dest.toByteArray();
     }
 
-    public void reset() throws IOException {
+    public void reset() {
       dest.reset();
     }
   }

@@ -4,6 +4,7 @@
  */
 package dev.ucdm.core.api;
 
+import dev.ucdm.core.util.IO;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class TestCdmFiles {
   public void testOpenWithClassName() throws Exception {
     try (CdmFile ncfile = CdmFiles.open(coreLocalNetcdf3Dir + "longOffset.nc",
         "dev.ucdm.core.netcdf3.N3iosp", -1, null, CdmFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+      assertThat(ncfile).isNotNull();
       System.out.printf("%s%n", ncfile);
     }
   }
@@ -27,6 +29,20 @@ public class TestCdmFiles {
   @Test
   public void testOpenInMemory() throws IOException {
     try (CdmFile ncfile = CdmFiles.openInMemory(coreLocalNetcdf3Dir + "longOffset.nc")) {
+      assertThat(ncfile).isNotNull();
+      System.out.printf("%s%n", ncfile);
+    }
+  }
+
+  @Test
+  public void testOpenInMemoryWithIosp() throws Exception {
+    String filename = coreLocalNetcdf3Dir + "tst_small.nc";
+    byte[] contents = IO.readFileToByteArray(filename);
+
+    // String name, byte[] data, String iospClassName
+    try (CdmFile ncfile = CdmFiles.openInMemory(filename, contents, dev.ucdm.core.netcdf3.N3iosp.class.getName())) {
+      assertThat(ncfile).isNotNull();
+      assertThat(ncfile.findVariable("Times")).isNotNull();
       System.out.printf("%s%n", ncfile);
     }
   }

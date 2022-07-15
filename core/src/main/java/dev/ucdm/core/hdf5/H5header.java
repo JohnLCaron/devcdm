@@ -1366,7 +1366,7 @@ public class H5header implements HdfHeaderIF {
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
       if (warnings)
-        log.warn("transform region Reference: facade=" + facade.name + " variable name=" + vb.shortName);
+        log.warn("{} has transform region Reference: facade={} variable={}", raf.getLocation(), facade.name, vb.shortName);
 
       /*
        * TODO doesnt work yet
@@ -1389,7 +1389,7 @@ public class H5header implements HdfHeaderIF {
     if ((vinfo.mfp != null) && warnings) {
       for (Filter f : vinfo.mfp.getFilters()) {
         if (f.id > KNOWN_FILTERS) {
-          log.warn("  Variable " + facade.name + " has unknown Filter(s) = " + vinfo.mfp);
+          log.warn("  Variable {}  has unknown Filter(s) = {} ({})", facade.name, vinfo.mfp, raf.getLocation());
           break;
         }
       }

@@ -379,8 +379,7 @@ public class NcmlReader {
           throw new IOException(e);
         }
       } else {
-        DatasetUrl durl = DatasetUrl.findDatasetUrl(referencedDatasetUri);
-        this.refFile = CdmDatasets.openFile(durl, buffer_size, cancelTask, null);
+        this.refFile = CdmDatasets.openDataset(referencedDatasetUri, false, cancelTask, null);
       }
     }
 

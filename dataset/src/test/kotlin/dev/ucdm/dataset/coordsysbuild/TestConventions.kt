@@ -229,7 +229,7 @@ class TestConventions {
             "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions/coards/air.2001.ncml"
         openDatasetWithCS(location, true).use { ncd ->
             assertThat(ncd).isNotNull()
-            assertThat(ncd.conventionName).isEqualTo("DefaultConventions")
+            assertThat(ncd.conventionName).isEqualTo("CFConventions")
             assertThat(ncd.coordinateAxes).hasSize(4)
             assertThat(ncd.coordinateSystems).hasSize(1)
 

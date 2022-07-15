@@ -22,7 +22,7 @@ open class CoordinatesBuilder(val conventionName: String = _Coordinate.Conventio
     internal val coordVarsForDimension: BiMap<DimensionWithGroup, VarProcess> = HashBiMap.create();
 
     internal val coords = CoordsHelperBuilder(conventionName)
-    internal val info = StringBuilder()
+    public val info = StringBuilder()
 
     private val helper = CoordAttrConvention(this)
 

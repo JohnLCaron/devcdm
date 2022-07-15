@@ -1,5 +1,6 @@
 package dev.ucdm.core.io;
 
+import dev.ucdm.core.util.IO;
 import dev.ucdm.core.util.KMPMatch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +32,7 @@ public class TestRandomAccessFile {
   private static final String TEST_FILE_PATH = "src/test/data/preserveLineEndings/testUTF8.txt";
 
   // contents of test file
-  private static final String TEST_FILE_STRING = "Hello world, this is a test.\r\nThis is a second line of text.";
+  private static final String TEST_FILE_STRING = "Hello world, this is a test.\nThis is a second line of text.";
   private static final byte[] UTF8_BYTES = TEST_FILE_STRING.getBytes(StandardCharsets.UTF_8);
   private static final long TEST_FILE_LENGTH = UTF8_BYTES.length;
 
@@ -57,6 +58,9 @@ public class TestRandomAccessFile {
   @BeforeAll
   public static void setUpTests() throws IOException {
     testFile = new RandomAccessFile(TEST_FILE_PATH, "r", TEST_BUFFER_SIZE);
+
+    byte[] contents = IO.readFileToByteArray(TEST_FILE_PATH);
+    assertThat(contents).isEqualTo(UTF8_BYTES);
   }
 
   @AfterAll
@@ -387,9 +391,9 @@ public class TestRandomAccessFile {
   public void testReadStringUTF8() throws IOException {
     // read line
     testFile.seek(0);
-    int linebreak = TEST_FILE_STRING.indexOf("\r\n");
+    int linebreak = TEST_FILE_STRING.indexOf("\n");
     assertThat(testFile.readLine()).isEqualTo(TEST_FILE_STRING.substring(0, linebreak));
-    assertThat(testFile.readLine()).isEqualTo(TEST_FILE_STRING.substring(linebreak + 2));
+    assertThat(testFile.readLine()).isEqualTo(TEST_FILE_STRING.substring(linebreak + 1));
 
     // read string
     int nbytes = 11;
@@ -553,9 +557,9 @@ public class TestRandomAccessFile {
     writeFile.writeChar(new char[] {1, 2, 3}, 0, 3, ByteOrder.LITTLE_ENDIAN);
     char[] expectedChars = new char[] {1, 2, 3};
     writeFile.seek(81);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[0]);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[1]);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[2]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[0]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[1]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[2]);
     // 6 bytes written
     // pos = 87
     writeFile.writeChars(TEST_FILE_STRING, ByteOrder.LITTLE_ENDIAN);
@@ -641,9 +645,9 @@ public class TestRandomAccessFile {
     writeFile.writeChar(new char[] {1, 2, 3}, 0, 3, ByteOrder.BIG_ENDIAN);
     char[] expectedChars = new char[] {1, 2, 3};
     writeFile.seek(81);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[0]);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[1]);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[2]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[0]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[1]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[2]);
 
     // 6 bytes written
     // pos = 87
@@ -729,9 +733,9 @@ public class TestRandomAccessFile {
     writeFile.writeChar(new char[] {1, 2, 3}, 0, 3);
     char[] expectedChars = new char[] {1, 2, 3};
     writeFile.seek(81);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[0]);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[1]);
-    assertThat(writeFile.readChar()).isEqualTo((char) expectedChars[2]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[0]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[1]);
+    assertThat(writeFile.readChar()).isEqualTo( expectedChars[2]);
 
     // 6 bytes written
     // pos = 87
@@ -811,9 +815,9 @@ public class TestRandomAccessFile {
 
     // read line
     tempFile.seek(0);
-    int linebreak = TEST_FILE_STRING.indexOf("\r\n");
+    int linebreak = TEST_FILE_STRING.indexOf("\n");
     assertThat(tempFile.readLine(charset)).isEqualTo(TEST_FILE_STRING.substring(0, linebreak));
-    assertThat(tempFile.readLine(charset)).isEqualTo(TEST_FILE_STRING.substring(linebreak + 2));
+    assertThat(tempFile.readLine(charset)).isEqualTo(TEST_FILE_STRING.substring(linebreak + 1));
 
     // read string
     int nbytes = 11;
@@ -859,8 +863,6 @@ public class TestRandomAccessFile {
    * @return true if doubles are equal within threshold
    */
   private boolean compareDoubles(double d1, double d2) {
-    double dif = Math.abs(d1 - d2);
-    double threshold = (d1 / Math.pow(10, 16));
     return Math.abs(d1 - d2) < (d1 / Math.pow(10, 15));
   }
 
@@ -893,7 +895,7 @@ public class TestRandomAccessFile {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
       open = false;
     }
 
@@ -901,7 +903,7 @@ public class TestRandomAccessFile {
       return dest.toByteArray();
     }
 
-    public void reset() throws IOException {
+    public void reset() {
       dest.reset();
     }
   }

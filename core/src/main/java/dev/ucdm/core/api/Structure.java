@@ -14,7 +14,7 @@ import dev.ucdm.array.Range;
 import dev.ucdm.array.Section;
 import dev.ucdm.array.StructureData;
 import dev.ucdm.array.StructureMembers;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;
@@ -228,10 +228,13 @@ public class Structure extends Variable {
       return self();
     }
 
-    /** Add a Variable to the root group. */
+    /** Add a Variable to this Structure. */
     public T addMemberVariable(String shortName, ArrayType dataType, String dimString) {
       Variable.Builder<?> vb = Variable.builder().setName(shortName).setArrayType(dataType)
-          .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
+          .setDimensionsByName(dimString);
+      if (this.parentBuilder != null) {
+        vb.setParentGroupBuilder(this.parentBuilder);
+      }
       addMemberVariable(vb);
       return self();
     }

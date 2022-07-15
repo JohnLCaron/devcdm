@@ -34,7 +34,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
 
         val projType = latVar.attributeContainer.findAttributeString("projectionType", "LAMBERT_CONFORMAL")!!
         if ("LAMBERT_CONFORMAL" == projType) {
-            val proj = makeLCProjection(rootBuilder, latVar)
+            val proj = makeLCProjection(latVar)
             makeXYcoords(rootBuilder, proj, latVar, lonVar)
         }
 
@@ -70,11 +70,11 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
             info.appendLine("*** attribute validTimes doesnt exist for time variable ${timeVar.shortName}")
             return null
         }
-        var timesArray = timesAtt.arrayValues
+        var timesArray = timesAtt.arrayValues!!
 
         // get every other one
         timesArray = try {
-            val n = timesArray!!.size.toInt()
+            val n = timesArray.size.toInt()
             val sectionb = Section.builder()
             sectionb.appendRange(Range(0, n - 1, 2))
             Arrays.section(timesArray, sectionb.build())
@@ -83,8 +83,8 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         }
 
         // make sure it matches the dimension
-        val dtype = timesArray!!.arrayType
-        val nTimesAtt = timesArray!!.size.toInt()
+        val dtype = timesArray.arrayType
+        val nTimesAtt = timesArray.size.toInt()
 
         // create a special dimension and coordinate variable
         val dimTime = timeVar.orgVar.getDimension(0)
@@ -124,7 +124,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         return timeCoord
     }
 
-    private fun makeLCProjection(rootBuilder : Group.Builder, projVar : VariableDS.Builder<*>): Projection {
+    private fun makeLCProjection(projVar : VariableDS.Builder<*>): Projection {
         val latLonOrigin = projVar.getAttributeContainer().findAttributeIgnoreCase("latLonOrigin")
         check(!(latLonOrigin == null || latLonOrigin.isString))
         val centralLon = latLonOrigin.getNumericValue(0)!!.toDouble()

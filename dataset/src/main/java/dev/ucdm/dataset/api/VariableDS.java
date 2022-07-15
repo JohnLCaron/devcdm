@@ -16,7 +16,7 @@ import dev.ucdm.dataset.api.CdmDataset.Enhance;
 import dev.ucdm.dataset.internal.DataEnhancer;
 import dev.ucdm.dataset.internal.EnhanceScaleMissingUnsigned;
 import dev.ucdm.core.util.CancelTask;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;

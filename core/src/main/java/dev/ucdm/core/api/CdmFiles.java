@@ -85,20 +85,6 @@ public class CdmFiles {
   //////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Register an IOServiceProvider, using its class string name.
-   *
-   * @param className Class that implements IOServiceProvider.
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassNotFoundException if class not found.
-   */
-  public static void registerIOProvider(String className) throws NoSuchMethodException, InvocationTargetException,
-          InstantiationException, IllegalAccessException, ClassNotFoundException {
-    Class<?> ioClass = CdmFile.class.getClassLoader().loadClass(className);
-    registerIOProvider(ioClass);
-  }
-
-  /**
    * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
    *
    * @param iospClass Class that implements IOServiceProvider.
@@ -321,11 +307,6 @@ public class CdmFiles {
         raf = new RandomAccessFile(uriString, "r", bufferSize);
       }
     }
-
-    if (raf == null) {
-      throw new IOException("Could not find an appropriate RandomAccessFileProvider to open " + location);
-    }
-
     return raf;
   }
 
@@ -464,10 +445,6 @@ public class CdmFiles {
     // send iospMessage before the iosp is opened
     if (iospMessage != null) {
       spi.sendIospMessage(iospMessage);
-    }
-
-    if (log.isDebugEnabled()) {
-      log.debug("Using IOSP {}", spi.getClass().getName());
     }
 
     CdmFile ncfile = build(spi, raf, location, cancelTask);

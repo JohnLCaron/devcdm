@@ -117,21 +117,23 @@ public class CdmFullNames {
     return dimensions.get(fullName);
   }
 
-  public String makeFullName(Dimension dimension, Group group) {
+  public String makeFullName(Group group, Dimension dimension) {
     return dimensions.inverse().get(new DimensionWithGroup(dimension, group));
   }
 
   public String makeFullName(@Nullable Group group, @Nullable Variable var, Attribute att) {
     StringBuilder sbuff = new StringBuilder();
-    String groupName = groups.inverse().get(group);
-    if (groupName != null && !groupName.isEmpty()) {
-      sbuff.append(groupName);
-      sbuff.append("/");
-    }
     String varName = variables.inverse().get(var);
     if (varName != null && !varName.isEmpty()) {
       sbuff.append(varName);
+    } else {
+      String groupName = groups.inverse().get(group);
+      if (groupName != null && !groupName.isEmpty()) {
+        sbuff.append(groupName);
+        sbuff.append("/");
+      }
     }
+
     sbuff.append("@");
     sbuff.append(att.getName());
     return sbuff.toString();
@@ -167,13 +169,19 @@ public class CdmFullNames {
       return null;
     }
 
-    String path = fullNameEscaped.substring(0, posAtt);
+    Variable v = findVariable(fullNameEscaped.substring(0, posAtt));
     String attName = fullNameEscaped.substring(posAtt + 1);
-    Variable v = findVariable(path);
-    if (v == null) {
-      return null;
+    if (v != null) {
+      return v.findAttribute(attName);
     }
-    return v.findAttribute(attName);
+    // maybe a group attribute
+    String gpath = fullNameEscaped.substring(0, posAtt-1); // group needs trailing / removed
+    Group g = findGroup(gpath); // group needs trailing / removed
+
+    if (g == null) {
+      System.out.printf("HEY");
+    }
+    return g == null ? null : g.findAttribute(attName);
   }
 
 }

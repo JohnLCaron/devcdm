@@ -3,6 +3,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
+    kotlin("jvm") version "1.6.21"
     id("java")
     id("java-library")
 }

@@ -60,4 +60,17 @@ public class TestParsedArraySectionSpec {
     }
   }
 
+  @Test
+  public void testMakeFromVariable() throws Exception {
+    try (CdmFile ncfile = CdmFiles.open(TestCdmFiles.coreLocalNetcdf4Dir + "simple_nc4.nc4")) {
+      Variable v = ncfile.findVariable("grp1/data");
+      assertThat(v).isNotNull();
+
+      ParsedArraySectionSpec spec = ParsedArraySectionSpec.makeFromVariable(v, v.getSection().toString());
+      assertThat(spec.getSection()).isEqualTo(v.getSection());
+      System.out.printf("%s%n", spec.makeSectionSpecString());
+      assertThat(spec.makeSectionSpecString()).isEqualTo("grp1/data(0:5, 0:11)");
+    }
+  }
+
 }

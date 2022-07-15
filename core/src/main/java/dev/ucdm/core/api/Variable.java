@@ -19,7 +19,7 @@ import dev.ucdm.array.StructureMembers;
 import dev.ucdm.core.constants.CDM;
 import dev.ucdm.core.constants.CF;
 import dev.ucdm.core.util.CancelTask;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;

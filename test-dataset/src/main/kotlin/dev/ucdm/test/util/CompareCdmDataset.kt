@@ -11,7 +11,6 @@ import dev.ucdm.dataset.api.CoordinateSystem
 import dev.ucdm.dataset.api.SimpleUnit
 import dev.ucdm.dataset.geoloc.Projection
 import java.util.*
-import javax.measure.Quantity
 
 open class CdmObjFilter {
     // if true, compare attribute, else skip comparision.
@@ -253,8 +252,8 @@ class CompareCdmDataset(
     }
 
     fun compatibleUnits(units1: String?, units2: String?): Boolean {
-        val unit1 : SimpleUnit<out Quantity<*>>?  = SimpleUnit.factory(units1)
-        val unit2 : SimpleUnit<out Quantity<*>>? = SimpleUnit.factory(units2)
+        val unit1 = SimpleUnit.factory(units1)
+        val unit2 = SimpleUnit.factory(units2)
         if (unit1 == null && unit2 == null) {
             return true
         }
@@ -279,7 +278,7 @@ class CompareCdmDataset(
                 out.format(" MISSING '%s' in 2nd file%n", orgV.fullName)
                 false
             } else {
-                ok and compareVariables(orgV, copyVar, null, compareData, true)
+                ok and compareVariables(orgV, copyVar, null, compareData)
             }
         }
         out.format("%n")
@@ -322,7 +321,7 @@ class CompareCdmDataset(
                 out.format(" ** cant find variable %s in 2nd file%n", orgV.fullName)
                 false
             } else {
-                ok and compareVariables(orgV, copyVar, filter, compareData, true)
+                ok and compareVariables(orgV, copyVar, filter, compareData)
             }
         }
         for (copyV in copy.variables) {
@@ -349,12 +348,10 @@ class CompareCdmDataset(
 
 
     fun compareVariable(org: Variable, copy: Variable, filter: CdmObjFilter?): Boolean {
-        return compareVariables(org, copy, filter, compareData, true)
+        return compareVariables(org, copy, filter, compareData)
     }
 
-    private fun compareVariables(
-        org: Variable, copy: Variable, filter: CdmObjFilter?, compareData: Boolean, justOne: Boolean
-    ): Boolean {
+    private fun compareVariables(org: Variable, copy: Variable, filter: CdmObjFilter?, compareData: Boolean): Boolean {
         var ok = true
         if (showCompare) out.format("compare Variable %s to %s %n", org.fullName, copy.fullName)
         if (org.fullName != copy.fullName) {

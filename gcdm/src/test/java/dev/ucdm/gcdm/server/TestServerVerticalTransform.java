@@ -114,12 +114,12 @@ public class TestServerVerticalTransform {
     try (GcdmClient client = new GcdmClient("localhost:16111")) {
       GcdmServerProto.VerticalTransformRequest request = GcdmServerProto.VerticalTransformRequest.newBuilder()
               .setLocation(location)
-              .setVerticalTransform("ocean_s_coordinate_g2")
+              .setVerticalTransform("s_rho")
               .build();
       GcdmServerProto.VerticalTransformResponse response = client.blockingStub.getVerticalTransform(request);
       assertThat(response).isNotNull();
       assertThat(response.getLocation()).isEqualTo(location);
-      assertThat(response.getVerticalTransform()).isEqualTo("ocean_s_coordinate_g2");
+      assertThat(response.getVerticalTransform()).isEqualTo("s_rho");
       assertThat(response.hasError()).isFalse();
       assertThat(response.getData3D()).isNotNull();
       Array<?> data = GcdmConverter.decodeData(response.getData3D());

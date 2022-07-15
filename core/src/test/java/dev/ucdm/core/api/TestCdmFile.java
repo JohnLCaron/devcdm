@@ -6,7 +6,7 @@ package dev.ucdm.core.api;
 
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.ArrayType;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import java.util.Formatter;
 import java.util.List;
@@ -34,7 +34,6 @@ public class TestCdmFile {
     assertThat(ncfile.getId()).isEqualTo("Hid");
     assertThat(ncfile.getLocation()).isEqualTo("location");
     assertThat(ncfile.getTitle()).isEqualTo("title");
-    assertThat(ncfile.getGlobalAttributes()).hasSize(2);
     assertThat(ncfile.getVariables()).hasSize(2);
     assertThat(ncfile.getDimensions()).hasSize(2);
 
@@ -179,7 +178,8 @@ public class TestCdmFile {
         .addAttribute(new Attribute("attName", "mem2"));
 
     Structure.Builder<?> vb = Structure.builder().setName("varName").setArrayType(ArrayType.STRING)
-        .addAttribute(new Attribute("attName", "nestedGroupVariable")).addMemberVariable("memm", ArrayType.STRING, "")
+        .addAttribute(new Attribute("attName", "nestedGroupVariable"))
+        .addMemberVariable("memm", ArrayType.STRING, "")
         .addMemberVariable(mem1).addMemberVariable(mem2);
 
     Group.Builder nested =

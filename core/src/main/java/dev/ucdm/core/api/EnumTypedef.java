@@ -7,7 +7,7 @@ package dev.ucdm.core.api;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import dev.ucdm.array.ArrayType;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;
