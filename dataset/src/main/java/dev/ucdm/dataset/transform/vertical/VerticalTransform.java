@@ -5,6 +5,8 @@
 package dev.ucdm.dataset.transform.vertical;
 
 import dev.ucdm.array.Array;
+import dev.ucdm.array.ArrayType;
+import dev.ucdm.array.Arrays;
 import dev.ucdm.array.InvalidRangeException;
 import dev.ucdm.core.api.AttributeContainer;
 import dev.ucdm.dataset.api.CoordinateSystem;
@@ -20,11 +22,8 @@ import java.util.Optional;
  */
 public interface VerticalTransform {
 
-  /** The name of the Vertical Transform. */
+  /** The name of the Vertical Transform, must be unique in the dataset. */
   String getName();
-
-  /** The name of the Coordinate Variable Transform container. */
-  String getCtvName();
 
   /** The unit string for the vertical coordinate. */
   @Nullable
@@ -48,14 +47,25 @@ public interface VerticalTransform {
    * @param yIndex the y index
    * @return vertical coordinate array
    */
-  Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
+  default Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
+    Array<Number> array3D = getCoordinateArray3D(timeIndex);
+    int nz = array3D.getShape()[0];
+    double[] result = new double[nz];
+
+    int count = 0;
+    for (int z = 0; z < nz; z++) {
+      result[count++] = array3D.get(z, yIndex, xIndex).doubleValue();
+    }
+
+    return Arrays.factory(ArrayType.DOUBLE, new int[] {nz}, result);
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * A Builder of VerticalTransforms.
-   * Note the use of NetcdfDataset and CoordinateSystem. VerticalTransform are only
-   * available on Grids built on NetcdfDataset. GRIB does not have these.
+   * Note the use of CdmDataset and CoordinateSystem. VerticalTransform are only
+   * available on Grids built on CdmDataset and GcdmGridDataset. GRIB does not have these.
    */
   interface Builder {
     Optional<VerticalTransform> create(CdmDataset ds, CoordinateSystem csys, AttributeContainer params,

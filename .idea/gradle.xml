@@ -18,7 +18,8 @@
             <option value="$PROJECT_DIR$/gcdm" />
             <option value="$PROJECT_DIR$/grib" />
             <option value="$PROJECT_DIR$/grid" />
-            <option value="$PROJECT_DIR$/test-utils" />
+            <option value="$PROJECT_DIR$/test-core" />
+            <option value="$PROJECT_DIR$/test-dataset" />
           </set>
         </option>
       </GradleProjectSettings>

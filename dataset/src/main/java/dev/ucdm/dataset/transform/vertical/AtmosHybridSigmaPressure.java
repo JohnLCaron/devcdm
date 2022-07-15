@@ -115,7 +115,7 @@ public class AtmosHybridSigmaPressure extends AbstractVerticalTransform {
 
   AtmosHybridSigmaPressure(CdmDataset ds, String ctvName, String units, String apName, String bName, String psName,
                            String p0Name, int psRank) throws IOException {
-    super(ds, CF.atmosphere_hybrid_sigma_pressure_coordinate, ctvName, units);
+    super(ds, ctvName, units);
 
     this.apName = apName;
     this.bName = bName;

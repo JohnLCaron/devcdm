@@ -114,7 +114,7 @@ public class TestVertical {
       assertThat(gcs).isNotNull();
       VerticalTransform vt = gcs.getVerticalTransform();
       assertThat(vt).isNotNull();
-      System.out.printf(" VerticalTransform new %s%n", vt.getClass().getName());
+      System.out.printf(" VerticalTransform %s class= %s%n", vt.getName(), vt.getClass().getName());
       assertThat(vt.getClass()).isEqualTo(vtClass);
 
       // should be compatible with vunit

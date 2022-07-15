@@ -71,8 +71,9 @@ public class Counters {
     return counter;
   }
 
-  public void addTo(Counters sub) {
-    for (Counter subC : sub.counters) {
+  // merge c2's counters
+  public void addTo(Counters c2) {
+    for (Counter subC : c2.counters) {
       Counter all = map.get(subC.getName());
       if (all == null) {
         all = add(subC.getName());
@@ -81,6 +82,7 @@ public class Counters {
     }
   }
 
+  // make a new Counters with count of 0
   public Counters makeSubCounters() {
     Counters result = new Counters();
     for (Counter c : counters) {
@@ -90,7 +92,7 @@ public class Counters {
   }
 
   /**
-   * A Counter counts an arbitrary set of named "values", typically Strings.
+   * A Counter counts an arbitrary set of "values", typically Strings.
    * Count number of times a value appears.
    * The value may be any Comparable; equals() is used for uniqueness.
    */
@@ -117,13 +119,15 @@ public class Counters {
       set = new HashMap<>();
     }
 
+    // add 1 value to the counter
     public Counter count(Comparable<?> value) {
       set.merge(value, 1, Integer::sum);
       return this;
     }
 
-    public void addTo(Counter sub) {
-      for (Map.Entry<Comparable<?>, Integer> entry : sub.set.entrySet()) {
+    // add all the c2's values and count to this counter.
+    public void addTo(Counter c2) {
+      for (Map.Entry<Comparable<?>, Integer> entry : c2.set.entrySet()) {
         Integer count = this.set.get(entry.getKey());
         if (count == null)
           count = 0;
@@ -131,14 +135,17 @@ public class Counters {
       }
     }
 
+    // get the number of unique values
     public int getUnique() {
       return set.size();
     }
 
+    // get the set of values
     public Set<Comparable<?>> getValues() {
       return set.keySet();
     }
 
+    // get the count for a particular values
     public int getCount(Comparable<?> key) {
       Integer count = set.get(key);
       return count == null ? 0 : count;
@@ -169,6 +176,7 @@ public class Counters {
       return same ? null : mode;
     }
 
+    // get the count for all values
     public int getTotal() {
       int total = 0;
       for (Map.Entry<Comparable<?>, Integer> entry : set.entrySet()) {

@@ -420,13 +420,12 @@ public class GcdmGridConverter {
     GcdmGridProto.VerticalTransform.Builder builder = GcdmGridProto.VerticalTransform.newBuilder();
     builder.setId(vt.hashCode());
     builder.setName(vt.getName());
-    builder.setCtvName(vt.getCtvName());
     builder.setUnits(vt.getUnitString());
     return builder.build();
   }
 
   public static GcdmVerticalTransform decodeVerticalTransform(GcdmGridProto.VerticalTransform proto) {
-    return new GcdmVerticalTransform(proto.getId(), proto.getName(), proto.getCtvName(), proto.getUnits());
+    return new GcdmVerticalTransform(proto.getId(), proto.getName(), proto.getUnits());
   }
 
   public static GcdmGridProto.Grid encodeGrid(Grid grid) {
@@ -491,7 +490,9 @@ public class GcdmGridConverter {
       axes.add(decodeGridAxis(paxis));
     }
     builder.setHorizCoordSys(decodeHorizCS(proto.getHorizCoordinateSystem(), axes, errlog));
-    builder.setTimeCoordSys(decodeTimeCS(proto.getTimeCoordinateSystem(), axes));
+    if (proto.hasTimeCoordinateSystem()) {
+      builder.setTimeCoordSys(decodeTimeCS(proto.getTimeCoordinateSystem(), axes));
+    }
 
     for (GridAxis<?> axis : axes) {
       if (axis.getAxisType().isVert() ) {
@@ -616,57 +617,23 @@ public class GcdmGridConverter {
   public static GcdmGridProto.CdmAxisType convertAxisType(AxisType axis) {
     GcdmGridProto.CdmAxisType cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
     if (axis != null) {
-      switch (axis) {
-        case RunTime: // 0
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_RUN_TIME;
-          break;
-        case Ensemble: // 1
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_ENSEMBLE;
-          break;
-        case Time: // 2
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME;
-          break;
-        case GeoX: // 3
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_X;
-          break;
-        case GeoY: // 4
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_Y;
-          break;
-        case GeoZ: // 5
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_Z;
-          break;
-        case Lat: // 6
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_LAT;
-          break;
-        case Lon: // 7
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_LON;
-          break;
-        case Height: // 8
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_HEIGHT;
-          break;
-        case Pressure: // 9
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_PRESSURE;
-          break;
-        case TimeOffset: // 11
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME_OFFSET;
-          break;
-        case Dimension: // 12
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_DIMENSION;
-          break;
-        case RadialAzimuth: // 10
-        case RadialDistance: // 11
-        case RadialElevation: // 12
-        case Spectral: // 13
-        case SimpleGeometryX: // 16
-        case SimpleGeometryY: // 17
-        case SimpleGeometryZ: // 18
-        case SimpleGeometryID: // 19
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
-          break;
-        default:
-          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
-          break;
-      }
+      cdmAxisType = switch (axis) {
+        case RunTime -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_RUN_TIME;
+        case Ensemble -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_ENSEMBLE;
+        case Time -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME;
+        case GeoX -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_X;
+        case GeoY -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_Y;
+        case GeoZ -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_Z;
+        case Lat -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_LAT;
+        case Lon -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_LON;
+        case Height -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_HEIGHT;
+        case Pressure -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_PRESSURE;
+        case TimeOffset -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME_OFFSET;
+        case Dimension -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_DIMENSION;
+        case RadialAzimuth, RadialDistance, RadialElevation, Spectral, SimpleGeometryX, SimpleGeometryY, SimpleGeometryZ, SimpleGeometryID ->
+                GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
+        default -> GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
+      };
     }
     // TODO - catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw an error to prevent sending a bad message?
     return cdmAxisType;
@@ -677,27 +644,14 @@ public class GcdmGridConverter {
     GridAxisSpacing gridAxisSpacing = null;
     if (proto != null) {
       switch (proto) {
-        case GRID_AXIS_SPACING_REGULAR_POINT: // 1
-          gridAxisSpacing = GridAxisSpacing.regularPoint;
-          break;
-        case GRID_AXIS_SPACING_IRREGULAR_POINT: // 2
-          gridAxisSpacing = GridAxisSpacing.irregularPoint;
-          break;
-        case GRID_AXIS_SPACING_NOMINAL_POINT: // 6
-          gridAxisSpacing = GridAxisSpacing.nominalPoint;
-          break;
-        case GRID_AXIS_SPACING_REGULAR_INTERVAL: // 3
-          gridAxisSpacing = GridAxisSpacing.regularInterval;
-          break;
-        case GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL: // 4
-          gridAxisSpacing = GridAxisSpacing.contiguousInterval;
-          break;
-        case GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL: // 5
-          gridAxisSpacing = GridAxisSpacing.discontiguousInterval;
-          break;
-        case GRID_AXIS_SPACING_UNSPECIFIED: // 0
-          throw new UnsupportedOperationException(
-              "CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxisSpacing.");
+        case GRID_AXIS_SPACING_REGULAR_POINT -> gridAxisSpacing = GridAxisSpacing.regularPoint;
+        case GRID_AXIS_SPACING_IRREGULAR_POINT -> gridAxisSpacing = GridAxisSpacing.irregularPoint;
+        case GRID_AXIS_SPACING_NOMINAL_POINT -> gridAxisSpacing = GridAxisSpacing.nominalPoint;
+        case GRID_AXIS_SPACING_REGULAR_INTERVAL -> gridAxisSpacing = GridAxisSpacing.regularInterval;
+        case GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL -> gridAxisSpacing = GridAxisSpacing.contiguousInterval;
+        case GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL -> gridAxisSpacing = GridAxisSpacing.discontiguousInterval;
+        default -> throw new UnsupportedOperationException(
+                "CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxisSpacing.");
       }
     }
     return gridAxisSpacing;
@@ -706,29 +660,15 @@ public class GcdmGridConverter {
   public static GcdmGridProto.GridAxisSpacing convertAxisSpacing(GridAxisSpacing spacing) {
     GcdmGridProto.GridAxisSpacing gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_UNSPECIFIED;
     if (spacing != null) {
-      switch (spacing) {
-        case regularPoint:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_POINT;
-          break;
-        case irregularPoint:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_IRREGULAR_POINT;
-          break;
-        case nominalPoint:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_NOMINAL_POINT;
-          break;
-        case regularInterval:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_INTERVAL;
-          break;
-        case contiguousInterval:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL;
-          break;
-        case discontiguousInterval:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL;
-          break;
-        default:
-          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_UNSPECIFIED;
-          break;
-      }
+      gridAxisSpacing = switch (spacing) {
+        case regularPoint -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_POINT;
+        case irregularPoint -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_IRREGULAR_POINT;
+        case nominalPoint -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_NOMINAL_POINT;
+        case regularInterval -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_INTERVAL;
+        case contiguousInterval -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL;
+        case discontiguousInterval -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL;
+        default -> GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_UNSPECIFIED;
+      };
     }
 
     // TODO - catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw an error to prevent sending a bad message?
@@ -740,27 +680,14 @@ public class GcdmGridConverter {
     GridAxisDependenceType dependenceType = null;
     if (proto != null) {
       switch (proto) {
-        case GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT: // 1
-          dependenceType = GridAxisDependenceType.independent;
-          break;
-        case GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT: // 2
-          dependenceType = GridAxisDependenceType.dependent;
-          break;
-        case GRID_AXIS_DEPENDENCE_TYPE_SCALAR: // 3
-          dependenceType = GridAxisDependenceType.scalar;
-          break;
-        case GRID_AXIS_DEPENDENCE_TYPE_TWO_D: // 4
-          dependenceType = GridAxisDependenceType.twoD;
-          break;
-        case GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG: // 5
-          dependenceType = GridAxisDependenceType.fmrcReg;
-          break;
-        case GRID_AXIS_DEPENDENCE_TYPE_DIMENSION: // 6
-          dependenceType = GridAxisDependenceType.dimension;
-          break;
-        case GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED: // 0
-          throw new UnsupportedOperationException(
-              "Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxisDependenceType");
+        case GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT -> dependenceType = GridAxisDependenceType.independent;
+        case GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT -> dependenceType = GridAxisDependenceType.dependent;
+        case GRID_AXIS_DEPENDENCE_TYPE_SCALAR -> dependenceType = GridAxisDependenceType.scalar;
+        case GRID_AXIS_DEPENDENCE_TYPE_TWO_D -> dependenceType = GridAxisDependenceType.twoD;
+        case GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG -> dependenceType = GridAxisDependenceType.fmrcReg;
+        case GRID_AXIS_DEPENDENCE_TYPE_DIMENSION -> dependenceType = GridAxisDependenceType.dimension;
+        case GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED -> throw new UnsupportedOperationException(
+                "Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxisDependenceType");
       }
     }
     return dependenceType;
@@ -770,29 +697,15 @@ public class GcdmGridConverter {
     GcdmGridProto.GridAxisDependenceType gridAxisDependenceType =
         GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
     if (dtype != null) {
-      switch (dtype) {
-        case independent:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT;
-          break;
-        case dependent:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT;
-          break;
-        case scalar:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_SCALAR;
-          break;
-        case twoD:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_TWO_D;
-          break;
-        case fmrcReg:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG;
-          break;
-        case dimension:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DIMENSION;
-          break;
-        default:
-          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
-          break;
-      }
+      gridAxisDependenceType = switch (dtype) {
+        case independent -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT;
+        case dependent -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT;
+        case scalar -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_SCALAR;
+        case twoD -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_TWO_D;
+        case fmrcReg -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG;
+        case dimension -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DIMENSION;
+        default -> GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
+      };
     }
     // TODO - catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw an error to prevent sending a bad message?
     return gridAxisDependenceType;

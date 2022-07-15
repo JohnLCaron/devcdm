@@ -34,7 +34,8 @@ dependencies {
     implementation(kotlin("stdlib-common", "1.6.20"))
     implementation(kotlin("stdlib", "1.6.20"))
 
-    testImplementation(project(":test-utils"))
+    testImplementation(project(":test-core"))
+    testImplementation(project(":test-dataset"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")

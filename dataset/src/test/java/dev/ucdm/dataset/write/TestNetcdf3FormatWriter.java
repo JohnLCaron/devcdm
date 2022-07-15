@@ -4,11 +4,11 @@
  */
 package dev.ucdm.dataset.write;
 
+import dev.ucdm.array.CompareArrayToArray;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.CdmFiles;
 import dev.ucdm.core.api.Variable;
 import dev.ucdm.core.write.Netcdf3FormatWriter;
-import dev.ucdm.dataset.testutil.CompareCdmFiles;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
@@ -119,7 +119,7 @@ public class TestNetcdf3FormatWriter {
 
       Array<?> org = var.readArray(new dev.ucdm.array.Section("3,3,:,:"));
       Array<?> data = sliced2.readArray();
-      CompareCdmFiles.compareData(DATA_VARIABLE, org, data);
+      CompareArrayToArray.compareData(DATA_VARIABLE, org, data);
     }
   }
 }

@@ -267,34 +267,6 @@ public class DiskCache {
    *
    * @param cutoff earliest date to allow
    * @param sbuff write results here, null is ok.
-   * @deprecated use cleanCache(CalendarDate cutoff, StringBuilder sbuff)
-   */
-  @Deprecated
-  public static void cleanCache(Date cutoff, StringBuilder sbuff) {
-    if (sbuff != null)
-      sbuff.append("CleanCache files before ").append(cutoff).append("\n");
-    File dir = new File(root);
-    File[] children = dir.listFiles();
-    if (children == null)
-      return;
-    for (File file : children) {
-      Date lastMod = new Date(file.lastModified());
-      if (lastMod.before(cutoff)) {
-        boolean ret = file.delete();
-        if (sbuff != null) {
-          sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
-          if (!ret)
-            sbuff.append("Error deleting ").append(file).append("\n");
-        }
-      }
-    }
-  }
-
-  /**
-   * Remove all files with date < cutoff.
-   *
-   * @param cutoff earliest date to allow
-   * @param sbuff write results here, null is ok.
    */
   public static void cleanCache(Instant cutoff, StringBuilder sbuff) {
     if (sbuff != null)

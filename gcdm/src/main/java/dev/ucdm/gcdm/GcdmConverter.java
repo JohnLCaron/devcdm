@@ -36,87 +36,50 @@ public class GcdmConverter {
   private static final boolean debugSize = false;
 
   public static GcdmProto.ArrayType convertArrayType(ArrayType dtype) {
-    switch (dtype) {
-      case CHAR:
-        return GcdmProto.ArrayType.ARRAY_TYPE_CHAR;
-      case BYTE:
-        return GcdmProto.ArrayType.ARRAY_TYPE_BYTE;
-      case SHORT:
-        return GcdmProto.ArrayType.ARRAY_TYPE_SHORT;
-      case INT:
-        return GcdmProto.ArrayType.ARRAY_TYPE_INT;
-      case LONG:
-        return GcdmProto.ArrayType.ARRAY_TYPE_LONG;
-      case FLOAT:
-        return GcdmProto.ArrayType.ARRAY_TYPE_FLOAT;
-      case DOUBLE:
-        return GcdmProto.ArrayType.ARRAY_TYPE_DOUBLE;
-      case STRING:
-        return GcdmProto.ArrayType.ARRAY_TYPE_STRING;
-      case STRUCTURE:
-        return GcdmProto.ArrayType.ARRAY_TYPE_STRUCTURE;
-      case SEQUENCE:
-        return GcdmProto.ArrayType.ARRAY_TYPE_SEQUENCE;
-      case ENUM1:
-        return GcdmProto.ArrayType.ARRAY_TYPE_ENUM1;
-      case ENUM2:
-        return GcdmProto.ArrayType.ARRAY_TYPE_ENUM2;
-      case ENUM4:
-        return GcdmProto.ArrayType.ARRAY_TYPE_ENUM4;
-      case OPAQUE:
-        return GcdmProto.ArrayType.ARRAY_TYPE_OPAQUE;
-      case UBYTE:
-        return GcdmProto.ArrayType.ARRAY_TYPE_UBYTE;
-      case USHORT:
-        return GcdmProto.ArrayType.ARRAY_TYPE_USHORT;
-      case UINT:
-        return GcdmProto.ArrayType.ARRAY_TYPE_UINT;
-      case ULONG:
-        return GcdmProto.ArrayType.ARRAY_TYPE_ULONG;
-    }
-    throw new IllegalStateException("illegal data type " + dtype);
+    return switch (dtype) {
+      case CHAR -> GcdmProto.ArrayType.ARRAY_TYPE_CHAR;
+      case BYTE -> GcdmProto.ArrayType.ARRAY_TYPE_BYTE;
+      case SHORT -> GcdmProto.ArrayType.ARRAY_TYPE_SHORT;
+      case INT -> GcdmProto.ArrayType.ARRAY_TYPE_INT;
+      case LONG -> GcdmProto.ArrayType.ARRAY_TYPE_LONG;
+      case FLOAT -> GcdmProto.ArrayType.ARRAY_TYPE_FLOAT;
+      case DOUBLE -> GcdmProto.ArrayType.ARRAY_TYPE_DOUBLE;
+      case STRING -> GcdmProto.ArrayType.ARRAY_TYPE_STRING;
+      case STRUCTURE -> GcdmProto.ArrayType.ARRAY_TYPE_STRUCTURE;
+      case SEQUENCE -> GcdmProto.ArrayType.ARRAY_TYPE_SEQUENCE;
+      case ENUM1 -> GcdmProto.ArrayType.ARRAY_TYPE_ENUM1;
+      case ENUM2 -> GcdmProto.ArrayType.ARRAY_TYPE_ENUM2;
+      case ENUM4 -> GcdmProto.ArrayType.ARRAY_TYPE_ENUM4;
+      case OPAQUE -> GcdmProto.ArrayType.ARRAY_TYPE_OPAQUE;
+      case UBYTE -> GcdmProto.ArrayType.ARRAY_TYPE_UBYTE;
+      case USHORT -> GcdmProto.ArrayType.ARRAY_TYPE_USHORT;
+      case UINT -> GcdmProto.ArrayType.ARRAY_TYPE_UINT;
+      case ULONG -> GcdmProto.ArrayType.ARRAY_TYPE_ULONG;
+    };
   }
 
   public static ArrayType convertArrayType(GcdmProto.ArrayType dtype) {
-    switch (dtype) {
-      case ARRAY_TYPE_CHAR:
-        return ArrayType.CHAR;
-      case ARRAY_TYPE_BYTE:
-        return ArrayType.BYTE;
-      case ARRAY_TYPE_SHORT:
-        return ArrayType.SHORT;
-      case ARRAY_TYPE_INT:
-        return ArrayType.INT;
-      case ARRAY_TYPE_LONG:
-        return ArrayType.LONG;
-      case ARRAY_TYPE_FLOAT:
-        return ArrayType.FLOAT;
-      case ARRAY_TYPE_DOUBLE:
-        return ArrayType.DOUBLE;
-      case ARRAY_TYPE_STRING:
-        return ArrayType.STRING;
-      case ARRAY_TYPE_STRUCTURE:
-        return ArrayType.STRUCTURE;
-      case ARRAY_TYPE_SEQUENCE:
-        return ArrayType.SEQUENCE;
-      case ARRAY_TYPE_ENUM1:
-        return ArrayType.ENUM1;
-      case ARRAY_TYPE_ENUM2:
-        return ArrayType.ENUM2;
-      case ARRAY_TYPE_ENUM4:
-        return ArrayType.ENUM4;
-      case ARRAY_TYPE_OPAQUE:
-        return ArrayType.OPAQUE;
-      case ARRAY_TYPE_UBYTE:
-        return ArrayType.UBYTE;
-      case ARRAY_TYPE_USHORT:
-        return ArrayType.USHORT;
-      case ARRAY_TYPE_UINT:
-        return ArrayType.UINT;
-      case ARRAY_TYPE_ULONG:
-        return ArrayType.ULONG;
-    }
-    throw new IllegalStateException("illegal data type " + dtype);
+    return switch (dtype) {
+      case ARRAY_TYPE_CHAR -> ArrayType.CHAR;
+      case ARRAY_TYPE_BYTE -> ArrayType.BYTE;
+      case ARRAY_TYPE_SHORT -> ArrayType.SHORT;
+      case ARRAY_TYPE_INT -> ArrayType.INT;
+      case ARRAY_TYPE_LONG -> ArrayType.LONG;
+      case ARRAY_TYPE_FLOAT -> ArrayType.FLOAT;
+      case ARRAY_TYPE_DOUBLE -> ArrayType.DOUBLE;
+      case ARRAY_TYPE_STRING -> ArrayType.STRING;
+      case ARRAY_TYPE_STRUCTURE -> ArrayType.STRUCTURE;
+      case ARRAY_TYPE_SEQUENCE -> ArrayType.SEQUENCE;
+      case ARRAY_TYPE_ENUM1 -> ArrayType.ENUM1;
+      case ARRAY_TYPE_ENUM2 -> ArrayType.ENUM2;
+      case ARRAY_TYPE_ENUM4 -> ArrayType.ENUM4;
+      case ARRAY_TYPE_OPAQUE -> ArrayType.OPAQUE;
+      case ARRAY_TYPE_UBYTE -> ArrayType.UBYTE;
+      case ARRAY_TYPE_USHORT -> ArrayType.USHORT;
+      case ARRAY_TYPE_UINT -> ArrayType.UINT;
+      case ARRAY_TYPE_ULONG -> ArrayType.ULONG;
+      default -> throw new IllegalStateException("Unexpected value: " + dtype);
+    };
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,9 +119,7 @@ public class GcdmConverter {
   }
 
   public static GcdmProto.Error encodeErrorMessage(String message) {
-    GcdmProto.Error.Builder builder = GcdmProto.Error.newBuilder();
-    builder.setMessage(message);
-    return builder.build();
+    return GcdmProto.Error.newBuilder().setMessage(message).build();
   }
 
   public static GcdmProto.Section encodeSection(Section section) {
@@ -309,68 +270,51 @@ public class GcdmConverter {
     encodeShape(builder, data.getShape());
 
     switch (dataType) {
-      case OPAQUE: {
+      case OPAQUE -> {
         ArrayVlen<Byte> vlen = (ArrayVlen) data;
         int nelems = (int) Arrays.computeSize(data.getShape());
         for (int i = 0; i < nelems; i++) {
           builder.addBdata(encodeByteArray(vlen.get(i)));
         }
-        break;
       }
-
-      case ENUM1:
-      case CHAR:
-      case UBYTE:
-      case BYTE: {
+      case ENUM1, CHAR, UBYTE, BYTE -> {
         builder.addBdata(encodeByteArray((Array<Byte>) data));
-        break;
       }
-      case SHORT:
-      case ENUM2:
-      case USHORT: {
+      case SHORT, ENUM2, USHORT -> {
         // USHORT Idata ratio < 1; Uidata ratio ~2
         Array<Short> idata = (Array<Short>) data;
         idata.forEach(val -> builder.addIdata(val));
-        break;
       }
-      case INT: {
+      case INT -> {
         Array<Integer> idata = (Array<Integer>) data;
         idata.forEach(val -> builder.addIdata(val));
         break;
       }
-      case ENUM4:
-      case UINT: {
+      case ENUM4, UINT -> {
         Array<Integer> idata = (Array<Integer>) data;
         idata.forEach(val -> builder.addUidata(val));
-        break;
       }
-      case LONG: {
+      case LONG -> {
         Array<Long> ldata = (Array<Long>) data;
         ldata.forEach(val -> builder.addLdata(val));
-        break;
       }
-      case ULONG: {
+      case ULONG -> {
         Array<Long> ldata = (Array<Long>) data;
         ldata.forEach(val -> builder.addUldata(val));
-        break;
       }
-      case FLOAT: {
+      case FLOAT -> {
         Array<Float> fdata = (Array<Float>) data;
         fdata.forEach(val -> builder.addFdata(val));
-        break;
       }
-      case DOUBLE: {
+      case DOUBLE -> {
         Array<Double> ddata = (Array<Double>) data;
         ddata.forEach(val -> builder.addDdata(val));
-        break;
       }
-      case STRING: {
+      case STRING -> {
         Array<String> sdata = (Array<String>) data;
         sdata.forEach(val -> builder.addSdata(val));
-        break;
       }
-      default:
-        throw new IllegalStateException("Unkown datatype " + dataType);
+      default -> throw new IllegalStateException("Unkown datatype " + dataType);
     }
     return builder.build();
   }
@@ -609,7 +553,7 @@ public class GcdmConverter {
     ArrayType dataType = convertArrayType(data.getArrayType());
     int[] shape = decodeShape(data);
     switch (dataType) {
-      case OPAQUE: {
+      case OPAQUE -> {
         byte[][] ragged = new byte[data.getBdataCount()][];
         int countOuter = 0;
         for (ByteString nestedBytes : data.getBdataList()) {
@@ -617,17 +561,11 @@ public class GcdmConverter {
         }
         return (Array<T>) ArrayVlen.factory(ArrayType.OPAQUE, shape, ragged);
       }
-
-      case CHAR:
-      case ENUM1:
-      case UBYTE:
-      case BYTE: {
+      case CHAR, ENUM1, UBYTE, BYTE -> {
         byte[] array = data.getBdata(0).toByteArray();
         return Arrays.factory(dataType, shape, array);
       }
-      case SHORT:
-      case ENUM2:
-      case USHORT: {
+      case SHORT, ENUM2, USHORT -> {
         int i = 0;
         short[] array = new short[data.getIdataCount()];
         for (int val : data.getIdataList()) {
@@ -635,7 +573,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case INT: {
+      case INT -> {
         int i = 0;
         int[] array = new int[data.getIdataCount()];
         for (int val : data.getIdataList()) {
@@ -643,8 +581,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case ENUM4:
-      case UINT: {
+      case ENUM4, UINT -> {
         int i = 0;
         int[] array = new int[data.getUidataCount()];
         for (int val : data.getUidataList()) {
@@ -652,7 +589,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case LONG: {
+      case LONG -> {
         int i = 0;
         long[] array = new long[data.getLdataCount()];
         for (long val : data.getLdataList()) {
@@ -660,7 +597,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case ULONG: {
+      case ULONG -> {
         int i = 0;
         long[] array = new long[data.getUldataCount()];
         for (long val : data.getUldataList()) {
@@ -668,7 +605,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case FLOAT: {
+      case FLOAT -> {
         int i = 0;
         float[] array = new float[data.getFdataCount()];
         for (float val : data.getFdataList()) {
@@ -676,7 +613,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case DOUBLE: {
+      case DOUBLE -> {
         int i = 0;
         double[] array = new double[data.getDdataCount()];
         for (double val : data.getDdataList()) {
@@ -684,7 +621,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case STRING: {
+      case STRING -> {
         int i = 0;
         String[] array = new String[data.getSdataCount()];
         for (String val : data.getSdataList()) {
@@ -692,8 +629,7 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      default:
-        throw new IllegalStateException("Unknown datatype " + dataType);
+      default -> throw new IllegalStateException("Unknown datatype " + dataType);
     }
   }
 

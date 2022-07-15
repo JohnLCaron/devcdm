@@ -103,7 +103,7 @@ public class WrfEta extends AbstractVerticalTransform {
 
   private WrfEta(CdmDataset ds, String ctvName, String units, String pertVar, String baseVar, boolean isXStag,
                  boolean isYStag, boolean isZStag) {
-    super(ds, WRF_ETA_COORDINATE, ctvName, units);
+    super(ds, ctvName, units);
 
     this.pertVar = pertVar;
     this.baseVar = baseVar;

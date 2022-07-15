@@ -94,7 +94,7 @@ public class OceanS extends AbstractVerticalTransform {
 
   private OceanS(CdmDataset ds, String ctvName, String units, String etaVar, String sVar, String depthVar,
                  String aVar, String bVar, String depthCVar) throws IOException {
-    super(ds, CF.ocean_s_coordinate, ctvName, units);
+    super(ds, ctvName, units);
 
     this.etaVar = etaVar;
     this.sVar = sVar;

@@ -4,6 +4,7 @@
  */
 package dev.ucdm.dataset.integration;
 
+import dev.ucdm.array.CompareArrayToArray;
 import dev.ucdm.array.PrintArray;
 import dev.ucdm.core.write.Netcdf3FormatWriter;
 import dev.ucdm.dataset.api.CdmDataset;
@@ -11,7 +12,6 @@ import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.api.DatasetUrl;
 import dev.ucdm.dataset.api.VariableDS;
 import dev.ucdm.dataset.api.VariableEnhanced;
-import dev.ucdm.dataset.testutil.CompareCdmFiles;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -343,15 +343,13 @@ public class TestStandardVar {
         logger.debug("Deferred = {}", PrintArray.printArray(deferredData));
 
         Formatter compareOutputFormatter = new Formatter();
-        CompareCdmFiles nc = new CompareCdmFiles(compareOutputFormatter, false, false, true);
-
         logger.debug("Comparison result = {}", compareOutputFormatter);
-        assertThat(nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData)).isFalse();
+        assertThat(CompareArrayToArray.compareData(enhancedVar.getShortName(), enhancedData, deferredData)).isFalse();
 
         dev.ucdm.array.Array<?> processedData = enhancedVar.scaleMissingUnsignedProxy().applyScaleOffset(deferredData);
 
         logger.debug("Processed = {}", PrintArray.printArray(deferredData));
-        assertThat(nc.compareData(enhancedVar.getShortName(), enhancedData, processedData)).isTrue();
+        assertThat(CompareArrayToArray.compareData(enhancedVar.getShortName(), enhancedData, processedData)).isTrue();
       }
     }
   }

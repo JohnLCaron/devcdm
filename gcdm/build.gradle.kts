@@ -57,7 +57,8 @@ dependencies {
     runtimeOnly(libs.grpcNettyShaded)
     runtimeOnly(libs.slf4jJdk14)
 
-    testImplementation(project(":test-utils"))
+    testImplementation(project(":test-core"))
+    testImplementation(project(":test-dataset"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")

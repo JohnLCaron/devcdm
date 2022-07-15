@@ -5,7 +5,8 @@
 package dev.ucdm.dataset.ncml;
 
 import dev.ucdm.core.api.CdmFile;
-import dev.ucdm.dataset.testutil.CompareCdmFiles;
+import dev.ucdm.test.util.CompareCdmDataset;
+import dev.ucdm.test.util.CdmObjFilter;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class TestNcmlEquals {
       String locref = refFile.getLocation();
       try (CdmDataset ncdref = CdmDatasets.openDataset(locref, false, null)) {
         Formatter f = new Formatter();
-        CompareCdmFiles compare = new CompareCdmFiles(f, false, false, false);
+        CompareCdmDataset compare = new CompareCdmDataset(f, false, false, false);
         boolean ok = compare.compare(ncd, ncdref, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         assertThat(ok).isTrue();
@@ -63,7 +64,7 @@ public class TestNcmlEquals {
       String locref = refFile.getLocation();
       try (CdmDataset ncdref = CdmDatasets.openDataset(locref, true, null)) {
         Formatter f = new Formatter();
-        CompareCdmFiles compare = new CompareCdmFiles(f, false, false, false);
+        CompareCdmDataset compare = new CompareCdmDataset(f, false, false, false);
         boolean ok = compare.compare(ncd, ncdref, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         assertThat(ok).isTrue();
@@ -93,7 +94,7 @@ public class TestNcmlEquals {
     }
   }
 
-  public static class CoordsObjFilter implements CompareCdmFiles.ObjFilter {
+  public static class CoordsObjFilter extends CdmObjFilter {
     @Override
     public boolean attCheckOk(Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder) && !att.getShortName().equals(CDM.NCPROPERTIES);

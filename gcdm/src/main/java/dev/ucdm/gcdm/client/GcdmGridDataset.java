@@ -82,8 +82,8 @@ public class GcdmGridDataset implements GridDataset {
   GridReferencedArray readData(GridSubset subset) throws IOException {
     log.info("GcdmGridDataset request data subset " + subset);
     GridDataRequest.Builder requestb = GridDataRequest.newBuilder().setLocation(path);
-    for (Map.Entry<String, Object> entry : subset.getEntries()) {
-      requestb.putSubset(entry.getKey(), entry.getValue().toString());
+    for (Map.Entry<String, String> entry : subset.getMap().entrySet()) {
+      requestb.putSubset(entry.getKey(), entry.getValue());
     }
     final Stopwatch stopwatch = Stopwatch.createStarted();
     long size = 0;
@@ -120,11 +120,11 @@ public class GcdmGridDataset implements GridDataset {
     }
   }
 
-  Array<Number> getVerticalTransform(int id, String name, int timeIndex) {
-    log.info("GcdmGridDataset request getVerticalTransform {} {} {}", id, name, timeIndex);
+  Array<Number> getVerticalTransform(String name, int timeIndex) {
+    log.info("GcdmGridDataset request getVerticalTransform {} {}", name, timeIndex);
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    VerticalTransformRequest request = VerticalTransformRequest.newBuilder().setId(id)
+    VerticalTransformRequest request = VerticalTransformRequest.newBuilder()
         .setLocation(path).setVerticalTransform(name).setTimeIndex(timeIndex).build();
     VerticalTransformResponse response = blockingStub.getVerticalTransform(request);
     if (response.hasError()) {

@@ -23,7 +23,7 @@ public class TestLatLonProjection {
 
   @Test
   public void testBasics() {
-    assertThat(p.getName()).isEqualTo("LatLonProjection");
+    assertThat(p.getName()).isEqualTo("latitude_longitude");
     assertThat(p.getCenterLon()).isEqualTo(0.0);
     assertThat(p.getEarth()).isEqualTo(new Earth());
     assertThat(p.toString()).isEqualTo(

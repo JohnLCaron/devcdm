@@ -93,7 +93,7 @@ public class AtmosSigma extends AbstractVerticalTransform {
 
   private AtmosSigma(CdmDataset ds, String ctvName, String units, String sigma, String ps, String ptop, int psRank)
       throws IOException {
-    super(ds, CF.atmosphere_sigma_coordinate, ctvName, units);
+    super(ds, ctvName, units);
 
     this.sigma = sigma;
     this.ps = ps;
