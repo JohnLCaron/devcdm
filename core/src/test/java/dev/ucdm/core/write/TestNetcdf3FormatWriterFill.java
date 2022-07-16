@@ -27,11 +27,11 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestNetcdf3FormatWriterFill {
 
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   @Test
   public void testCreateWithFill() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testCreateWithFill", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());

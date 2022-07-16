@@ -18,11 +18,11 @@ import java.io.File;
 /** Test {@link Netcdf3FormatWriter} create a new netCDF file with a "record structure" */
 public class TestWriteRecordStructure {
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   @Test
   public void testWriteRecordStructure() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testWriteRecordStructure", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename).setFill(false);
     writerb.addUnlimitedDimension("time");

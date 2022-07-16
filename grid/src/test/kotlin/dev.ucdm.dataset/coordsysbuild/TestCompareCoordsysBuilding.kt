@@ -23,11 +23,13 @@ var showAug = false
 var showInfo = false
 var showResult = false
 
+// dataset testing with grib loaded
 class TestCompareCoordsysBuilding {
     companion object {
         @Throws(IOException::class)
         @JvmStatic
         fun params(): Stream<Arguments> {
+            // return Stream.of(Arguments.of("/home/snake/tmp/testData/transforms/HIRLAMhybrid.ncml"))
             /* return testFilesIn("/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/conventions")
                 .addNameFilter { !it.startsWith("WrfNoTimeVar") && !it.startsWith("0150602_0830_sport_imerg_noHemis_rr.nc")}
                 .addNameFilter(FileFilterSkipSuffixes("cdl pdf txt"))
@@ -44,6 +46,7 @@ class TestCompareCoordsysBuilding {
                     !pname.contains("exclude") && !pname.contains("npoess")}
                 .withRecursion()
                 .build()
+
 
             /* return testFilesIn(TestCdmDatasets.gridTestDir)
                 .addNameFilter { !it.startsWith("WrfNoTimeVar") }
@@ -95,7 +98,7 @@ fun openNewCoordSys(filename: String, enhance: Boolean): CdmDatasetCS {
     val orgDataset = CdmDatasets.openDataset(filename, enhance, null)
     if (showOrg) println("original = ${orgDataset.write()}")
 
-    val coordSysBuilder = findCoordSysBuilder(orgDataset)
+    val coordSysBuilder = chooseCoordSysBuilder(orgDataset)
     val augmentedDataset = coordSysBuilder.augment(orgDataset)
     if (showAug) println("augmented = ${augmentedDataset.write()}")
 

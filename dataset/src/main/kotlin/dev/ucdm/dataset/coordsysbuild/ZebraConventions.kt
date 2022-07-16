@@ -13,7 +13,7 @@ import dev.ucdm.dataset.cdmdsl.cdmdsl
 open class ZebraConventions(name: String = "Zebra") : DefaultConventions(name) {
 
     override fun augment(orgDataset: CdmDataset): CdmDataset {
-        val unitsFromBase = orgDataset.findAttributeFromFullName("base_time@units")
+        val unitsFromBase = orgDataset.findAttribute("base_time@units")
 
         val cdmdsl: CdmdslDataset = cdmdsl {
             attribute(CF.CONVENTIONS).setValue("Zebra")

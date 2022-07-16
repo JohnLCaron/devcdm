@@ -28,7 +28,6 @@ import dev.ucdm.core.api.Sequence;
 import dev.ucdm.core.api.Structure;
 import dev.ucdm.core.api.Variable;
 import dev.ucdm.core.constants.CDM;
-import dev.ucdm.dataset.api.DatasetUrl;
 import dev.ucdm.dataset.api.CdmDataset.Enhance;
 import dev.ucdm.dataset.api.CdmDatasets;
 import dev.ucdm.dataset.api.SequenceDS;
@@ -37,13 +36,10 @@ import dev.ucdm.dataset.api.VariableDS;
 import dev.ucdm.dataset.internal.AliasTranslator;
 import dev.ucdm.core.util.URLnaming;
 import dev.ucdm.core.util.CancelTask;
-import dev.ucdm.core.util.IO;
 import dev.ucdm.core.util.StringUtil2;
 
 import org.jetbrains.annotations.Nullable;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -140,77 +136,6 @@ public class NcmlReader {
     if (debugOpen) {
       System.out.println("***NcmlReader.wrapNcml result= \n" + ncDataset);
     }
-  }
-
-  /**
-   * Use NCML to modify a dataset, getting the NcML document as a resource stream. Uses
-   * ClassLoader.getResourceAsStream(ncmlResourceLocation),
-   * so the NcML can be inside of a jar file, for example.
-   *
-   * @param ncDataset modify this dataset
-   * @param ncmlResourceLocation resource location of NcML
-   * @param cancelTask allow user to cancel task; may be null
-   * @throws IOException on read error
-   */
-  public static void wrapNcmlResource(CdmDataset.Builder<?> ncDataset, String ncmlResourceLocation,
-                                      CancelTask cancelTask) throws IOException {
-    ClassLoader cl = ncDataset.getClass().getClassLoader();
-    try (InputStream is = cl.getResourceAsStream(ncmlResourceLocation)) {
-      if (is == null) {
-        throw new FileNotFoundException(ncmlResourceLocation);
-      }
-
-      if (debugXML) {
-        System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
-        try (InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation)) {
-          System.out.println(" contents=\n" + IO.readContents(is2));
-        }
-      }
-
-      org.jdom2.Document doc;
-      try {
-        SAXBuilder builder = new SAXBuilder();
-        builder.setExpandEntities(false);
-        if (debugURL) {
-          System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
-        }
-        doc = builder.build(is);
-      } catch (JDOMException e) {
-        throw new IOException(e.getMessage());
-      }
-      if (debugXML) {
-        System.out.println(" SAXBuilder done");
-      }
-
-      if (showParsedXML) {
-        XMLOutputter xmlOut = new XMLOutputter();
-        System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
-      }
-
-      Element netcdfElem = doc.getRootElement();
-
-      NcmlReader reader = new NcmlReader();
-      reader.readNetcdf(ncDataset.location, ncDataset, netcdfElem, cancelTask);
-      if (debugOpen) {
-        System.out.println("***NcmlReader.wrapNcml result= \n" + ncDataset);
-      }
-    }
-  }
-
-  /**
-   * Use NCML to modify the referenced dataset, create a new dataset with the merged info.
-   *
-   * @param ref referenced dataset
-   * @param ncmlElem parent element
-   * @return new dataset with the merged info
-   */
-  static CdmDataset.Builder<?> mergeNcml(CdmFile ref, @Nullable Element ncmlElem) {
-    CdmDataset.Builder<?> targetDS = CdmDataset.builder().copyFrom(ref).setOrgFile(ref);
-    if (ncmlElem != null) {
-      NcmlReader reader = new NcmlReader();
-      reader.readGroup(targetDS, null, null, ncmlElem);
-    }
-    return targetDS;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -379,8 +304,7 @@ public class NcmlReader {
           throw new IOException(e);
         }
       } else {
-        DatasetUrl durl = DatasetUrl.findDatasetUrl(referencedDatasetUri);
-        this.refFile = CdmDatasets.openFile(durl, buffer_size, cancelTask, null);
+        this.refFile = CdmDatasets.openDataset(referencedDatasetUri, false, cancelTask, null);
       }
     }
 

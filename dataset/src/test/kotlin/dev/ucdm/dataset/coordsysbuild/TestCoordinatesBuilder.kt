@@ -4,7 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import dev.ucdm.core.constants.AxisType
 import dev.ucdm.dataset.api.CdmDatasetCS
 import dev.ucdm.dataset.cdmdsl.*
-import dev.ucdm.dataset.coordsysbuild.findCoordSysBuilder
 import org.junit.jupiter.api.Test
 
 class TestCoordinatesBuilder {
@@ -88,7 +87,7 @@ class TestCoordinatesBuilder {
         val testDataset = createTestDataset()
         println(testDataset.write())
 
-        val convention = findCoordSysBuilder(testDataset)
+        val convention = chooseCoordSysBuilder(testDataset)
         val coords = convention.buildCoordinateSystems(testDataset)
         assertThat(coords).isNotNull()
         println(convention.info)

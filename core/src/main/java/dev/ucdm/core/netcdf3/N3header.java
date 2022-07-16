@@ -139,7 +139,7 @@ public class N3header {
       raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_DIM)
-        throw new IOException("Misformed netCDF file - dim magic number wrong " + raf.getLocation());
+        throw new IOException("Malformed netCDF file - dim magic number wrong " + raf.getLocation());
       numdims = raf.readInt();
       if (debugOut != null)
         debugOut.format("numdims= %d%n", numdims);
@@ -176,7 +176,7 @@ public class N3header {
       raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_VAR)
-        throw new IOException("Misformed netCDF file  - var magic number wrong " + raf.getLocation());
+        throw new IOException("Malformed netCDF file  - var magic number wrong " + raf.getLocation());
       nvars = raf.readInt();
       if (debugOut != null)
         debugOut.format("numdims= %d%n", numdims);
@@ -295,8 +295,9 @@ public class N3header {
         }
         Vinfo vinfo = (Vinfo) uvar.spiObject;
         if (vsize != vinfo.vsize) {
-          log.info("Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize="
-              + vinfo.vsize + "!= calc size =" + vsize);
+          log.info(String.format(
+                  "Malformed netCDF file (%s): incorrect padding for record variable (CDM-52): fvsize= %d != calc size=%d",
+              raf.getLocation(), vinfo.vsize, vsize));
           recsize = vsize;
           vinfo.vsize = vsize;
         }
@@ -390,7 +391,7 @@ public class N3header {
       raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_ATT)
-        throw new IOException("Misformed netCDF file  - att magic number wrong");
+        throw new IOException("Malformed netCDF file  - att magic number wrong " + raf.getLocation());
       natts = raf.readInt();
     }
     if (fout != null)

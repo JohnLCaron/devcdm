@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.core.util.EscapeStrings;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;
@@ -384,7 +384,7 @@ public class Group {
   @Override
   public String toString() {
     Formatter buf = new Formatter();
-    writeCDL(buf, new Indent(2), false);
+    writeCDL(buf, new Indent(2, 0), false);
     return buf.toString();
   }
 

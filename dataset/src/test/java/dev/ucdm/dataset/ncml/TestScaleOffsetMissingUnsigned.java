@@ -14,6 +14,7 @@ import dev.ucdm.dataset.api.DatasetUrl;
 import dev.ucdm.dataset.api.VariableDS;
 import dev.ucdm.dataset.internal.EnhanceScaleMissingUnsigned;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.ucdm.array.Array;
@@ -40,11 +41,12 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestScaleOffsetMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  @TempDir
+  public static File tempFolder;
+
   @Test
   public void testWrite() throws Exception {
-    String filename = File.createTempFile("temp", "tmp").getAbsolutePath();
-    ScaleOffset so;
-
+    String filename = File.createTempFile("testWrite", ".nc", tempFolder).getCanonicalPath();
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
 
     // define dimensions
@@ -67,7 +69,7 @@ public class TestScaleOffsetMissingUnsigned {
     int nbits = 16;
 
     // convert to packed form
-    so = calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
+    ScaleOffset so = calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
     writerb.addVariable("unpacked", ArrayType.DOUBLE, "lat lon");
     writerb.addVariable("packed", ArrayType.SHORT, "lat lon")
         .addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999))

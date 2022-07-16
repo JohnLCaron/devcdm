@@ -3,9 +3,8 @@ package dev.ucdm.dataset.coordsysbuild
 import dev.ucdm.dataset.api.CdmDataset
 import dev.ucdm.dataset.api.CdmDatasetCS
 import dev.ucdm.dataset.api.CdmDatasets
-import dev.ucdm.dataset.cdmdsl.writeDsl
 
-fun findCoordSysBuilder(dataset: CdmDataset): CoordinatesBuilder {
+fun chooseCoordSysBuilder(dataset: CdmDataset): CoordinatesBuilder {
     var conv = dataset.rootGroup.findAttributeString("Conventions", "none")
     if (conv == "none") {
         conv = dataset.rootGroup.findAttributeString("Convention", "none")
@@ -39,7 +38,7 @@ fun openDatasetWithCoordSys(location : String, enhance : Boolean) : CdmDatasetCS
 }
 
 fun openDatasetWithCoordSys(orgDataset: CdmDataset) : CdmDatasetCS {
-    val coordSysBuilder = findCoordSysBuilder(orgDataset)
+    val coordSysBuilder = chooseCoordSysBuilder(orgDataset)
     val augmentedDataset = coordSysBuilder.augment(orgDataset)
 
     val coords = coordSysBuilder.buildCoordinateSystems(augmentedDataset)

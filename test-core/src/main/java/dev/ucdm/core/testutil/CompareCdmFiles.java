@@ -56,7 +56,7 @@ public class CompareCdmFiles {
         try {
           Array<?> org = vorg.readArray();
           Array<?> array = vnew.readArray();
-          boolean ok1 = CompareArrayToArray.compareData(f, vorg.getShortName(), org, array, justOne, true);
+          boolean ok1 = CompareArrayToArray.compareData(f, vorg.getShortName(), org, array, justOne);
           if (!ok1) {
             System.out.printf("%s%n", f);
           }

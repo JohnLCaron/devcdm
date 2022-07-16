@@ -6,7 +6,7 @@ package dev.ucdm.core.api;
 
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.ArrayType;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import java.util.Formatter;
 import java.util.List;
@@ -34,7 +34,6 @@ public class TestCdmFile {
     assertThat(ncfile.getId()).isEqualTo("Hid");
     assertThat(ncfile.getLocation()).isEqualTo("location");
     assertThat(ncfile.getTitle()).isEqualTo("title");
-    assertThat(ncfile.getGlobalAttributes()).hasSize(2);
     assertThat(ncfile.getVariables()).hasSize(2);
     assertThat(ncfile.getDimensions()).hasSize(2);
 
@@ -82,7 +81,7 @@ public class TestCdmFile {
         + "%n" + "  // global attributes:%n" + "  :attName = \"value\";%n" + "}%n"));
 
     Formatter f = new Formatter();
-    ncfile.writeCDL(f, new Indent(2), true);
+    ncfile.writeCDL(f, new Indent(2, 0), true);
     assertThat(f.toString()).isEqualTo(String.format("netcdf location {%n" + "  dimensions:%n" + "    dimName = 42;%n"
         + "  variables:%n" + "    string varName;%n" + "%n" + "  group: child {%n" + "  }%n" + "%n"
         + "  // global attributes:%n" + "  string :attName = \"value\";%n" + "}%n"));
@@ -179,7 +178,8 @@ public class TestCdmFile {
         .addAttribute(new Attribute("attName", "mem2"));
 
     Structure.Builder<?> vb = Structure.builder().setName("varName").setArrayType(ArrayType.STRING)
-        .addAttribute(new Attribute("attName", "nestedGroupVariable")).addMemberVariable("memm", ArrayType.STRING, "")
+        .addAttribute(new Attribute("attName", "nestedGroupVariable"))
+        .addMemberVariable("memm", ArrayType.STRING, "")
         .addMemberVariable(mem1).addMemberVariable(mem2);
 
     Group.Builder nested =

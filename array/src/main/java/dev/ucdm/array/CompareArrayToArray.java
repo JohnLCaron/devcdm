@@ -13,15 +13,14 @@ public class CompareArrayToArray {
 
   public static boolean compareData(String name, Array<?> org, Array<?> array) {
     Formatter f = new Formatter();
-    boolean ok = compareData(f, name, org, array, false, true);
+    boolean ok = compareData(f, name, org, array, false);
     if (f.toString().isEmpty()) {
       System.out.printf("%s%n", f);
     }
     return ok;
   }
 
-  public static boolean compareData(Formatter f, String name, Array<?> org, Array<?> array, boolean justOne,
-      boolean testTypes) {
+  public static boolean compareData(Formatter f, String name, Array<?> org, Array<?> array, boolean justOne) {
     boolean ok = true;
 
     if (org.length() != array.length()) {
@@ -60,17 +59,13 @@ public class CompareArrayToArray {
       while (iter1.hasNext() && iter2.hasNext()) {
         Array<?> v1 = (Array<?>) iter1.next();
         Array<?> v2 = (Array<?>) iter2.next();
-        ok &= compareData(f, name, v1, v2, justOne, testTypes);
+        ok &= compareData(f, name, v1, v2, justOne);
       }
       return ok;
     }
 
     switch (dt) {
-      case CHAR:
-      case OPAQUE:
-      case BYTE:
-      case ENUM1:
-      case UBYTE: {
+      case CHAR, OPAQUE, BYTE, ENUM1, UBYTE -> {
         Iterator<Byte> iter1 = (Iterator<Byte>) org.iterator();
         Iterator<Byte> iter2 = (Iterator<Byte>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -85,8 +80,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-      case DOUBLE: {
+      case DOUBLE -> {
         Iterator<Double> iter1 = (Iterator<Double>) org.iterator();
         Iterator<Double> iter2 = (Iterator<Double>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -101,8 +95,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-      case FLOAT: {
+      case FLOAT -> {
         Iterator<Float> iter1 = (Iterator<Float>) org.iterator();
         Iterator<Float> iter2 = (Iterator<Float>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -117,10 +110,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-      case INT:
-      case ENUM4:
-      case UINT: {
+      case INT, ENUM4, UINT -> {
         Iterator<Integer> iter1 = (Iterator<Integer>) org.iterator();
         Iterator<Integer> iter2 = (Iterator<Integer>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -135,9 +125,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-      case LONG:
-      case ULONG: {
+      case LONG, ULONG -> {
         Iterator<Long> iter1 = (Iterator<Long>) org.iterator();
         Iterator<Long> iter2 = (Iterator<Long>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -152,6 +140,7 @@ public class CompareArrayToArray {
         }
         break;
       }
+
 
       /*
        * case OPAQUE: {
@@ -178,9 +167,7 @@ public class CompareArrayToArray {
        * }
        */
 
-      case SHORT:
-      case ENUM2:
-      case USHORT: {
+      case SHORT, ENUM2, USHORT -> {
         Iterator<Short> iter1 = (Iterator<Short>) org.iterator();
         Iterator<Short> iter2 = (Iterator<Short>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -195,8 +182,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-      case STRING: {
+      case STRING -> {
         Iterator<String> iter1 = (Iterator<String>) org.iterator();
         Iterator<String> iter2 = (Iterator<String>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
@@ -214,10 +200,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-
-      case STRUCTURE:
-      case SEQUENCE: {
+      case STRUCTURE, SEQUENCE -> {
         Iterator<StructureData> iter1 = (Iterator<StructureData>) org.iterator();
         Iterator<StructureData> iter2 = (Iterator<StructureData>) array.iterator();
         int row = 0;
@@ -227,8 +210,7 @@ public class CompareArrayToArray {
         }
         break;
       }
-
-      default: {
+      default -> {
         ok = false;
         f.format(" %s: Unknown data type %s%n", name, org.getArrayType());
       }
@@ -263,7 +245,7 @@ public class CompareArrayToArray {
       Array<?> data2 = array.getMemberData(m2);
       if (data2 != null) {
         f.format("    compare member %s %s%n", m1.getArrayType(), m1.getName());
-        ok &= compareData(f, m1.getName(), data1, data2, justOne, false);
+        ok &= compareData(f, m1.getName(), data1, data2, justOne);
       }
     }
 

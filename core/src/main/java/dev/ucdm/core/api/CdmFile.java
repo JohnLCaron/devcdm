@@ -8,8 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import dev.ucdm.core.util.CdmFullNames;
-import dev.ucdm.core.util.EscapeStrings;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 import dev.ucdm.array.StructureData;
 import dev.ucdm.core.iosp.IOServiceProvider;
 
@@ -140,74 +139,11 @@ public class CdmFile implements Closeable {
    * @return Attribute or null if not found.
    */
   @Nullable
-  public Attribute findAttributeFromFullName(String fullNameEscaped) {
-    return cdmFullNames().findAttribute(fullNameEscaped);
-  }
-
-  @Nullable
-  public Attribute findAttribute(String fullNameEscaped) {
+  public Attribute findAttribute(@Nullable String fullNameEscaped) {
     if (Strings.isNullOrEmpty(fullNameEscaped)) {
       return null;
     }
-
-    int posAtt = fullNameEscaped.indexOf('@');
-    if (posAtt < 0) {
-      return rootGroup.findAttribute(fullNameEscaped);
-    }
-    if (posAtt == 0) {
-      return rootGroup.findAttribute(fullNameEscaped.substring(1));
-    }
-    if (posAtt == fullNameEscaped.length() - 1) {
-      return null;
-    }
-
-    String path = fullNameEscaped.substring(0, posAtt);
-    String attName = fullNameEscaped.substring(posAtt + 1);
-
-    // find the group
-    Group g = rootGroup;
-    int pos = path.lastIndexOf('/');
-    String varName = (pos > 0 && pos < path.length() - 1) ? path.substring(pos + 1) : null;
-    if (pos >= 0) {
-      String groups = path.substring(0, pos);
-      StringTokenizer stoke = new StringTokenizer(groups, "/");
-      while (stoke.hasMoreTokens()) {
-        String token = CdmFiles.makeNameUnescaped(stoke.nextToken());
-        g = g.findGroupLocal(token);
-        if (g == null) {
-          return null;
-        }
-      }
-    }
-    if (varName == null) { // group attribute
-      return g.findAttribute(attName);
-    }
-
-    // heres var.var - tokenize respecting the possible escaped '.'
-    List<String> snames = EscapeStrings.tokenizeEscapedName(varName);
-    if (snames.isEmpty()) {
-      return null;
-    }
-
-    String varShortName = CdmFiles.makeNameUnescaped(snames.get(0));
-    Variable v = g.findVariableLocal(varShortName);
-    if (v == null) {
-      return null;
-    }
-
-    int memberCount = 1;
-    while (memberCount < snames.size()) {
-      if (!(v instanceof Structure)) {
-        return null;
-      }
-      String name = CdmFiles.makeNameUnescaped(snames.get(memberCount++));
-      v = ((Structure) v).findVariable(name);
-      if (v == null) {
-        return null;
-      }
-    }
-
-    return v.findAttribute(attName);
+    return cdmFullNames().findAttribute(fullNameEscaped);
   }
 
   /**
@@ -221,7 +157,7 @@ public class CdmFile implements Closeable {
    */
 
   @Nullable
-  public Dimension findDimension(String fullName) {
+  public Dimension findDimension(@Nullable String fullName) {
     if (fullName == null || fullName.isEmpty()) {
       return null;
     }
@@ -258,25 +194,11 @@ public class CdmFile implements Closeable {
    * @return Group or null if not found.
    */
   @Nullable
-  public Group findGroupFromFullName(String fullName) {
-    return cdmFullNames().findGroup(fullName);
-  }
-
-  @Nullable
   public Group findGroup(@Nullable String fullName) {
-    if (fullName == null || fullName.isEmpty())
+    if (fullName == null || fullName.isEmpty()) {
       return rootGroup;
-
-    Group g = rootGroup;
-    StringTokenizer stoke = new StringTokenizer(fullName, "/");
-    while (stoke.hasMoreTokens()) {
-      String groupName = CdmFiles.makeNameUnescaped(stoke.nextToken());
-      g = g.findGroupLocal(groupName);
-      if (g == null) {
-        return null;
-      }
     }
-    return g;
+    return cdmFullNames().findGroup(fullName);
   }
 
   /**
@@ -289,64 +211,8 @@ public class CdmFile implements Closeable {
    * @return Variable or null if not found.
    */
   @Nullable
-  public Variable findVariableFromFullName(String fullName) {
+  public Variable findVariable(String fullName) {
     return cdmFullNames().findVariable(fullName);
-  }
-
-  @Nullable
-  public Variable findVariable(String fullNameEscaped) {
-    if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
-      return null;
-    }
-
-    Group g = rootGroup;
-    String vars = fullNameEscaped;
-
-    // break into group/group and var.var
-    int pos = fullNameEscaped.lastIndexOf('/');
-    if (pos >= 0) {
-      String groups = fullNameEscaped.substring(0, pos);
-      vars = fullNameEscaped.substring(pos + 1);
-      StringTokenizer stoke = new StringTokenizer(groups, "/");
-      while (stoke.hasMoreTokens()) {
-        String token = CdmFiles.makeNameUnescaped(stoke.nextToken());
-        g = g.findGroupLocal(token);
-        if (g == null) {
-          return null;
-        }
-      }
-    }
-
-    // heres var.var - tokenize respecting the possible escaped '.'
-    List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
-    if (snames.isEmpty()) {
-      return null;
-    }
-
-    String varShortName = CdmFiles.makeNameUnescaped(snames.get(0));
-    Variable v = g.findVariableLocal(varShortName);
-    if (v == null) {
-      return null;
-    }
-
-    int memberCount = 1;
-    while (memberCount < snames.size()) {
-      if (!(v instanceof Structure)) {
-        return null;
-      }
-      String name = CdmFiles.makeNameUnescaped(snames.get(memberCount++));
-      v = ((Structure) v).findVariable(name);
-      if (v == null) {
-        return null;
-      }
-    }
-    return v;
-  }
-
-
-  /** Get all of the group attributes in the file, in all groups. Alternatively, use groups. */
-  public List<Attribute> getGlobalAttributes() {
-    return allAttributes;
   }
 
   /** Get all shared Dimensions used in this file, in all groups. Alternatively, use groups. */
@@ -554,7 +420,7 @@ public class CdmFile implements Closeable {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    writeCDL(f, new Indent(2), false);
+    writeCDL(f, new Indent(2, 0), false);
     return f.toString();
   }
 
@@ -626,7 +492,6 @@ public class CdmFile implements Closeable {
   // "global view" over all groups.
   private final ImmutableList<Variable> allVariables;
   private final ImmutableList<Dimension> allDimensions;
-  private final ImmutableList<Attribute> allAttributes;
 
   protected CdmFile(Builder<?> builder) {
     this.location = builder.location;
@@ -645,24 +510,20 @@ public class CdmFile implements Closeable {
     this.iosp = builder.iosp;
 
     // all global attributes, dimensions, variables
-    ImmutableList.Builder<Attribute> alist = ImmutableList.builder();
     ImmutableList.Builder<Dimension> dlist = ImmutableList.builder();
     ImmutableList.Builder<Variable> vlist = ImmutableList.builder();
-    extractAll(rootGroup, alist, dlist, vlist);
-    allAttributes = alist.build();
+    extractAll(rootGroup, dlist, vlist);
     allDimensions = dlist.build();
     allVariables = vlist.build();
   }
 
-  private void extractAll(Group group, ImmutableList.Builder<Attribute> alist, ImmutableList.Builder<Dimension> dlist,
-      ImmutableList.Builder<Variable> vlist) {
+  private void extractAll(Group group, ImmutableList.Builder<Dimension> dlist, ImmutableList.Builder<Variable> vlist) {
 
-    alist.addAll(group.attributes());
     group.getDimensions().stream().filter(Dimension::isShared).forEach(dlist::add);
     vlist.addAll(group.getVariables());
 
     for (Group nested : group.getGroups()) {
-      extractAll(nested, alist, dlist, vlist);
+      extractAll(nested, dlist, vlist);
     }
   }
 

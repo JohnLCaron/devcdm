@@ -5,6 +5,7 @@
 package dev.ucdm.core.api;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +25,13 @@ import static com.google.common.truth.Truth.assertThat;
  * Contributed by https://github.com/tayloj
  */
 public class TestOpenInMemoryResourceLeak {
+  private static Path outputDir;
+
+  @BeforeAll
+  public static void makeTempDir() throws IOException {
+    outputDir = Files.createTempDirectory("TestOpenInMemoryResourceLeak");
+    outputDir.toFile().deleteOnExit();
+  }
 
   // holds the tempFile Path object created before each test runs
   Path tempFile;
@@ -34,7 +42,7 @@ public class TestOpenInMemoryResourceLeak {
    */
   @BeforeEach
   public void makeFileToBeDeleted() throws IOException {
-    tempFile = Files.createTempFile("cdmTest_", ".nc");
+    tempFile = Files.createTempFile(outputDir,"cdmTest", ".nc");
     Path ncfileToCopy = Paths.get(TestCdmFiles.coreLocalNetcdf3Dir + "jan.nc");
     Files.copy(ncfileToCopy, tempFile, StandardCopyOption.REPLACE_EXISTING);
   }

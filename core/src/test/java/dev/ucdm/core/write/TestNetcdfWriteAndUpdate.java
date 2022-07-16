@@ -27,12 +27,11 @@ import static org.junit.Assert.assertThrows;
 /** Test successive {@link Netcdf3FormatWriter} Writing and updating */
 public class TestNetcdfWriteAndUpdate {
   @TempDir
-  public File tempFolder;
-  private String writerLocation;
+  public static File tempFolder;
 
   @Test
   public void testWriteAndUpdate() throws Exception {
-    writerLocation = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String writerLocation = File.createTempFile("testWriteAndUpdate", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(writerLocation);
 

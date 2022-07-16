@@ -118,7 +118,7 @@ fun buildDimension(cdim: CdmdslDimension, groupb: Group.Builder) {
         // if (cdim.rename != null) { // LOOK
         //     builder.setName(cdim.rename)
         //}
-        if (cdim.length != null) {
+        if (cdim.length > 0) {
             builder.setLength(cdim.length)
         }
         groupb.replaceDimension(builder.build())
@@ -153,7 +153,7 @@ fun buildVariable(cvar: CdmdslVariable, groupb : Group.Builder) : Variable.Build
     if (org == null) {
         org = VariableDS.builder()
         groupb.vbuilders.add(org)
-        cvar.name?.let { org.setName(cvar.name) }
+        org.setName(cvar.name)
         if (cvar.type == null) {
             // default when not specified for new
             org.setArrayType(ArrayType.CHAR)
@@ -182,7 +182,7 @@ fun buildCoordSystem(csys: CdmdslCoordSystem, groupb : Group.Builder) : Variable
     if (csv == null) {
         csv = VariableDS.builder()
         groupb.vbuilders.add(csv)
-        csys.csysName?.let { csv.setName(csys.csysName) }
+        csv.setName(csys.csysName)
     } else {
         if (csys.action == Action.Remove) {
             groupb.vbuilders.remove(csv)

@@ -1770,13 +1770,16 @@ public class H5objects {
       return FilterType.nameFromId(id);
     }
 
+    @Override
     public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append("   Filter id= ").append(id).append(" flags = ").append(flags).append(" nValues=").append(nValues)
-          .append(" name= ").append(name).append(" data = ");
-      for (int i = 0; i < nValues; i++)
-        sbuff.append(data[i]).append(" ");
-      return sbuff.toString();
+      return "Filter{" +
+              "id=" + id +
+              ", flags=" + flags +
+              ", name='" + name + '\'' +
+              ", nValues=" + nValues +
+              ", data=" + java.util.Arrays.toString(data) +
+              ", filterType=" + filterType +
+              '}';
     }
   }
 

@@ -6,6 +6,8 @@
 package dev.ucdm.grib.grid;
 
 import org.junit.jupiter.api.Test;
+
+import static dev.ucdm.test.util.TestFilesKt.coreLocalNetcdf3Dir;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 import java.io.FileNotFoundException;
@@ -97,7 +99,7 @@ public class TestOpenGribGridDataset {
 
   @Test
   public void testFileNotGrid() throws IOException {
-    String filename = coreLocalDir + "tst_small.nc";
+    String filename = coreLocalNetcdf3Dir + "tst_small.nc";
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(filename, errlog)) {
       assertThat(gds).isNull();

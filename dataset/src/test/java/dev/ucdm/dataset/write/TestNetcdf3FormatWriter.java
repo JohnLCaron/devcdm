@@ -15,6 +15,7 @@ import dev.ucdm.array.Array;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.Arrays;
 import dev.ucdm.array.InvalidRangeException;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,9 +33,12 @@ public class TestNetcdf3FormatWriter {
 
   private static String filePath;
 
+  @TempDir
+  public static File tempFolder;
+
   @BeforeAll
   public static void setUp() throws IOException, InvalidRangeException {
-    filePath = File.createTempFile("temp", ".nc").getAbsolutePath();
+      filePath = File.createTempFile("TestNetcdf3FormatWriter", ".nc", tempFolder).getCanonicalPath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filePath);
     writerb.addDimension("t", DIM_T);

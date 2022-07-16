@@ -87,6 +87,8 @@ public class CdmFullNames {
 
   @Nullable
   public Group findGroup(String fullName) {
+    fullName = fullName.startsWith("/") ? fullName.substring(1) : fullName;
+    fullName = fullName.endsWith("/") ? fullName.substring(0, fullName.length()-1) : fullName;
     return groups.get(fullName);
   }
 
@@ -96,6 +98,7 @@ public class CdmFullNames {
 
   @Nullable
   public Variable findVariable(String fullName) {
+    fullName = fullName.startsWith("/") ? fullName.substring(1) : fullName;
     return variables.get(fullName);
   }
 
@@ -114,24 +117,27 @@ public class CdmFullNames {
    */
   @Nullable
   public DimensionWithGroup findDimension(String fullName) {
+    fullName = fullName.startsWith("/") ? fullName.substring(1) : fullName;
     return dimensions.get(fullName);
   }
 
-  public String makeFullName(Dimension dimension, Group group) {
+  public String makeFullName(Group group, Dimension dimension) {
     return dimensions.inverse().get(new DimensionWithGroup(dimension, group));
   }
 
   public String makeFullName(@Nullable Group group, @Nullable Variable var, Attribute att) {
     StringBuilder sbuff = new StringBuilder();
-    String groupName = groups.inverse().get(group);
-    if (groupName != null && !groupName.isEmpty()) {
-      sbuff.append(groupName);
-      sbuff.append("/");
-    }
     String varName = variables.inverse().get(var);
     if (varName != null && !varName.isEmpty()) {
       sbuff.append(varName);
+    } else {
+      String groupName = groups.inverse().get(group);
+      if (groupName != null && !groupName.isEmpty()) {
+        sbuff.append(groupName);
+        sbuff.append("/");
+      }
     }
+
     sbuff.append("@");
     sbuff.append(att.getName());
     return sbuff.toString();
@@ -147,7 +153,8 @@ public class CdmFullNames {
    * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "attName", "@attName", "var@attname", "struct.member.@attName",
-   *                        "/group/subgroup/@attName", "/group/subgroup/var@attName", or "/group/subgroup/struct.member@attName"
+   *     "group/subgroup/@attName", "/group/subgroup/@attName", "/group/subgroup/var@attName", or
+   *     "/group/subgroup/struct.member@attName"
    * @return Attribute or null if not found.
    */
   @Nullable
@@ -167,13 +174,17 @@ public class CdmFullNames {
       return null;
     }
 
-    String path = fullNameEscaped.substring(0, posAtt);
+    int start = fullNameEscaped.startsWith("/") ? 1 : 0;
+    Variable v = findVariable(fullNameEscaped.substring(start, posAtt));
     String attName = fullNameEscaped.substring(posAtt + 1);
-    Variable v = findVariable(path);
-    if (v == null) {
-      return null;
+    if (v != null) {
+      return v.findAttribute(attName);
     }
-    return v.findAttribute(attName);
+
+    // maybe a group attribute
+    String gpath = posAtt == start ? "" : fullNameEscaped.substring(start, posAtt-1); // group needs trailing / removed
+    Group g = findGroup(gpath); // group needs trailing / removed
+    return g == null ? null : g.findAttribute(attName);
   }
 
 }

@@ -105,13 +105,13 @@ public class TestDimension {
   @Test
   public void testWriteCDL() {
     Dimension dim = Dimension.builder().setName("name").setLength(7).build();
-    assertThat(dim.toString()).isEqualTo("name = 7;");;
+    assertThat(dim.toString()).contains("name = 7;");;
   }
 
   @Test
   public void testWriteCDLunlimited() {
     Dimension dim = Dimension.builder().setName("name").setLength(7).setIsUnlimited(true).build();
-    assertThat(dim.toString()).isEqualTo("name = UNLIMITED;   // (7 currently)");;
+    assertThat(dim.toString()).contains("name = UNLIMITED;   // (7 currently)");;
   }
 
   @Test
@@ -120,7 +120,7 @@ public class TestDimension {
         Dimension.builder().setName("name").setLength(7).setIsUnlimited(true).setIsVariableLength(true).build();
     assertThat(dim.isUnlimited()).isFalse();
     assertThat(dim.isShared()).isFalse();
-    assertThat(dim.toString()).isEqualTo("name = UNKNOWN;");;
+    assertThat(dim.toString()).contains("name = UNKNOWN;");;
   }
 
   @Test

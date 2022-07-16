@@ -27,7 +27,7 @@ import static com.google.common.truth.Truth.assertThat;
 /** Test {@link Netcdf3FormatWriter} */
 public class TestNetcdf3FormatWriter {
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   /*
    * byte Band1(y, x);
@@ -40,7 +40,7 @@ public class TestNetcdf3FormatWriter {
    */
   @Test
   public void testUnsignedAttribute() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testUnsignedAttribute", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addUnlimitedDimension("time");
@@ -91,7 +91,7 @@ public class TestNetcdf3FormatWriter {
 
   @Test
   public void testWriteUnlimited() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testWriteUnlimited", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addUnlimitedDimension("time");
@@ -122,7 +122,7 @@ public class TestNetcdf3FormatWriter {
 
   @Test
   public void testWriteRecordOneAtaTime() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testWriteRecordOneAtaTime", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     // define dimensions, including unlimited
@@ -183,7 +183,7 @@ public class TestNetcdf3FormatWriter {
   // fix for bug introduced 2/9/10, reported by Christian Ward-Garrison cwardgar@usgs.gov
   @Test
   public void testRecordSizeBug() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testRecordSizeBug", ".tmp", tempFolder).getAbsolutePath();
     int size = 10;
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename).setFill(false);
@@ -208,7 +208,7 @@ public class TestNetcdf3FormatWriter {
 
   @Test
   public void testStringWriting() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testStringWriting", ".tmp", tempFolder).getAbsolutePath();
     int strlen = 25;
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename).setFill(false);

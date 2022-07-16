@@ -36,7 +36,7 @@ public class TestNetcdfWriterStrings {
   static String geeks = "geeks";
 
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   @Test
   public void writeNetCDFchar() throws Exception {
@@ -45,7 +45,7 @@ public class TestNetcdfWriterStrings {
     String helloGreek2 = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf(" normalized= %s%n", showBoth(helloGreek2));
 
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("writeNetCDFchar", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addDimension(new Dimension(helloGreek, helloGreekLen));
@@ -87,7 +87,7 @@ public class TestNetcdfWriterStrings {
     // helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf("writeNetCDFcharArray=%s%n", showBoth(helloGreek));
 
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("writeNetCDFcharArray", ".tmp", tempFolder).getAbsolutePath();
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addDimension(new Dimension(geeks, ngreeks));
     writerb.addDimension(new Dimension(helloGreek, helloGreekLen));
@@ -130,7 +130,7 @@ public class TestNetcdfWriterStrings {
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf("writeNetCDFstring=%s%n", showBoth(helloGreek));
 
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("writeNetCDFstring", ".tmp", tempFolder).getAbsolutePath();
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addDimension(new Dimension("nstr", 1));
     writerb.addDimension(new Dimension(helloGreek, helloGreekLen));
@@ -139,6 +139,7 @@ public class TestNetcdfWriterStrings {
 
     try (Netcdf3FormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable(helloGreek);
+      assertThat(v).isNotNull();
       Array<String> data = Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {helloGreek});
       writer.writeStringData(v, Index.ofRank(2), data);
     }
@@ -164,7 +165,7 @@ public class TestNetcdfWriterStrings {
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.printf("testWriteStringData=%s%n", showBoth(helloGreek));
 
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testWriteStringData", ".tmp", tempFolder).getAbsolutePath();
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addDimension(new Dimension(geeks, ngreeks));
     writerb.addDimension(new Dimension(helloGreek, helloGreekLen));
@@ -173,6 +174,7 @@ public class TestNetcdfWriterStrings {
 
     try (Netcdf3FormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable(helloGreek);
+      assertThat(v).isNotNull();
       Index index = Index.ofRank(v.getRank());
       for (int i = 0; i < ngreeks; i++) {
         writer.writeStringData(v, index.set0(i), helloGreek);
@@ -197,7 +199,7 @@ public class TestNetcdfWriterStrings {
   }
 
   ///////////////////////////////////////////
-  private String makeString(int[] codes, boolean debug) throws UnsupportedEncodingException {
+  private String makeString(int[] codes, boolean debug) {
     byte[] b = new byte[codes.length];
     for (int i = 0; i < codes.length; i++)
       b[i] = (byte) codes[i];
@@ -210,7 +212,7 @@ public class TestNetcdfWriterStrings {
   }
 
   private String showBytes(byte[] buff) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < buff.length; i++) {
       byte b = buff[i];
       int ub = (b < 0) ? b + 256 : b;
@@ -222,7 +224,7 @@ public class TestNetcdfWriterStrings {
   }
 
   private String showBytes(Array<Byte> buff) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
       sbuff.append(" ");
@@ -232,7 +234,7 @@ public class TestNetcdfWriterStrings {
   }
 
   private String showString(String s) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
       int c = s.charAt(i);
       if (i > 0)

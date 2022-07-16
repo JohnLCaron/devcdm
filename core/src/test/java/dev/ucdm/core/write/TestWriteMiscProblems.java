@@ -30,11 +30,11 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestWriteMiscProblems {
 
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   @Test
   public void testWriteBigString() throws IOException {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testWriteBigString", ".tmp", tempFolder).getAbsolutePath();
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     int len = 120000;
     char[] carray1 = new char[len];
@@ -54,7 +54,7 @@ public class TestWriteMiscProblems {
 
   @Test
   public void testCharMultidim() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testCharMultidim", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     Dimension Time_dim = writerb.addUnlimitedDimension("Time");
@@ -89,7 +89,7 @@ public class TestWriteMiscProblems {
 
   @Test
   public void testFileHandleReleaseAfterHeaderWriteFailure() throws IOException {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testFileHandleReleaseAfterHeaderWriteFailure", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     Attribute invalidNc3Attr = Attribute.builder().setName("will_fail").setNumericValue(1, true).build();

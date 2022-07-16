@@ -6,7 +6,7 @@ package dev.ucdm.core.api;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;
@@ -182,7 +182,7 @@ public class Dimension implements Comparable<Dimension> {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    writeCDL(f, new Indent(2), false);
+    writeCDL(f, new Indent(2, 0), false);
     return f.toString();
   }
 

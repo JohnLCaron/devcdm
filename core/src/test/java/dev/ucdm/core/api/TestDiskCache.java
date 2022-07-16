@@ -7,6 +7,7 @@ package dev.ucdm.core.api;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.util.DiskCache;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,9 @@ import static com.google.common.truth.Truth.assertThat;
 
 /** Test DiskCache */
 public class TestDiskCache {
+
+  @TempDir
+  public static File tempFolder;
 
   static void make(String filename) throws IOException {
     File want = DiskCache.getCacheFile(filename);
@@ -32,8 +36,7 @@ public class TestDiskCache {
 
   @Test
   public void testDiskCacheCreateNewFile() throws IOException {
-    Path tempDirWithPrefix = Files.createTempDirectory("TestDiskCache");
-    DiskCache.setRootDirectory(tempDirWithPrefix.toString());
+    DiskCache.setRootDirectory(tempFolder.toString());
     make("C:/junk.txt");
     make("C:/some/enchanted/evening/joots+3478.txt");
     make("http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");

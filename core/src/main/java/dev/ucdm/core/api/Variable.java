@@ -19,7 +19,7 @@ import dev.ucdm.array.StructureMembers;
 import dev.ucdm.core.constants.CDM;
 import dev.ucdm.core.constants.CF;
 import dev.ucdm.core.util.CancelTask;
-import dev.ucdm.core.util.Indent;
+import dev.ucdm.array.Indent;
 
 import org.jetbrains.annotations.Nullable;
 import dev.ucdm.array.Immutable;
@@ -718,7 +718,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
   public String toString() {
     Formatter buf = new Formatter();
-    writeCDL(buf, new Indent(2), false, false);
+    writeCDL(buf, new Indent(2, 0), false, false);
     return buf.toString();
   }
 

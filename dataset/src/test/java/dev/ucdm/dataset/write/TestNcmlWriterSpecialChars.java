@@ -15,6 +15,7 @@ import org.jdom2.Element;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.Index;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,9 +28,12 @@ public class TestNcmlWriterSpecialChars {
 
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
+  @TempDir
+  public static File tempFolder;
+
   @Test
   public void testNcmlWriter() throws Exception {
-    String filename = File.createTempFile("temp", ".nc").getAbsolutePath();
+    String filename = File.createTempFile("testNcmlWriter", ".nc", tempFolder).getCanonicalPath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(filename);
     writerb.addAttribute(new Attribute("omy", trouble));
@@ -46,7 +50,7 @@ public class TestNcmlWriterSpecialChars {
       writer.writeStringData(v, Index.ofRank(1), trouble);
     }
 
-    String ncmlFilePath = File.createTempFile("temp", ".ncml").getAbsolutePath();
+    String ncmlFilePath = File.createTempFile("testNcmlWriter", ".ncml", tempFolder).getAbsolutePath();
     try (CdmFile ncfile = CdmDatasets.openDataset(filename)) {
       String val = ncfile.getRootGroup().findAttributeString("omy", null);
       assertThat(val).isNotNull();

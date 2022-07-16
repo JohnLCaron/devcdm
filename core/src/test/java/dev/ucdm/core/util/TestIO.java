@@ -25,10 +25,13 @@ public class TestIO {
   private static String source;
 
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   @BeforeAll
-  public static void setup() {
+  public static void setup() throws IOException {
+    // tempFolder = Files.createTempDirectory("TestIO").toFile();
+    // tempFolder.deleteOnExit();
+
     source = String.format("What%nAre%nYou%nSaying%d%n", 999);
     System.out.printf("pwd = %s%n", System.getProperty("user.dir"));
   }
@@ -83,7 +86,7 @@ public class TestIO {
 
   @Test
   public void testWriteStringToFile() throws IOException {
-    File fileout = tempFolder.createTempFile("temp", "tmp");
+    File fileout = File.createTempFile("testWriteStringToFile", ".tmp", tempFolder);
     IO.writeToFile(source, fileout);
     String copy = IO.readFile(fileout.getAbsolutePath());
     assertThat(copy).isEqualTo(source);
@@ -91,7 +94,7 @@ public class TestIO {
 
   @Test
   public void testWriteStringToFilename() throws IOException {
-    File fileout = tempFolder.createTempFile("temp", "tmp");
+    File fileout = File.createTempFile("testWriteStringToFilename", ".tmp", tempFolder);
     IO.writeToFile(source, fileout.getAbsolutePath());
     String copy = IO.readFile(fileout.getAbsolutePath());
     assertThat(copy).isEqualTo(source);
@@ -99,7 +102,7 @@ public class TestIO {
 
   @Test
   public void testWriteBytesToFile() throws IOException {
-    File fileout = tempFolder.createTempFile("temp", "tmp");
+    File fileout = File.createTempFile("testWriteBytesToFile", ".tmp", tempFolder);
     IO.writeToFile(source.getBytes(), fileout);
     String copy = IO.readFile(fileout.getAbsolutePath());
     assertThat(copy).isEqualTo(source);
@@ -107,7 +110,7 @@ public class TestIO {
 
   @Test
   public void testWriteStreamToFile() throws IOException {
-    File fileout = tempFolder.createTempFile("temp", "tmp");
+    File fileout = File.createTempFile("testWriteStreamToFile", ".tmp", tempFolder);
     ByteArrayInputStream stringIS = new ByteArrayInputStream(source.getBytes());
     IO.writeToFile(stringIS, fileout.getAbsolutePath());
     String copy = IO.readFile(fileout.getAbsolutePath());
@@ -116,7 +119,7 @@ public class TestIO {
 
   @Test
   public void testAppendStreamToFile() throws IOException {
-    File fileout = tempFolder.createTempFile("temp", "tmp");
+    File fileout = File.createTempFile("testAppendStreamToFile", ".tmp", tempFolder);
     ByteArrayInputStream stringIS = new ByteArrayInputStream(source.getBytes());
     IO.writeToFile(stringIS, fileout.getAbsolutePath());
     ByteArrayInputStream stringIS2 = new ByteArrayInputStream(source.getBytes());
@@ -127,7 +130,7 @@ public class TestIO {
 
   @Test
   public void testCopyFilename() throws IOException {
-    String fileout = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String fileout = File.createTempFile("testCopyFilename", ".tmp", tempFolder).getAbsolutePath();
     IO.copyFile(filename, fileout);
 
     String org = IO.readFile(filename);
@@ -137,7 +140,7 @@ public class TestIO {
 
   @Test
   public void testCopyFile() throws IOException {
-    File fileout = tempFolder.createTempFile("temp", "tmp");
+    File fileout = File.createTempFile("testCopyFile", ".tmp", tempFolder);
     File filein = new File(filename);
     IO.copyFile(filein, fileout);
 
@@ -148,7 +151,7 @@ public class TestIO {
 
   @Test
   public void testCopy2File() throws IOException {
-    String fileout = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String fileout = File.createTempFile("testCopy2File", ".tmp", tempFolder).getAbsolutePath();
     IO.copy2File(source.getBytes(), fileout);
 
     String contents = IO.readFile(fileout);
