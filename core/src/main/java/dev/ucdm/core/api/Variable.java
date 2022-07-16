@@ -718,7 +718,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
   public String toString() {
     Formatter buf = new Formatter();
-    writeCDL(buf, new Indent(2), false, false);
+    writeCDL(buf, new Indent(2, 0), false, false);
     return buf.toString();
   }
 

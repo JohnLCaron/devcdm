@@ -70,11 +70,11 @@ import static com.google.common.truth.Truth.assertThat;
  */
 public class TestWriteRecord {
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   @Test
   public void testNC3WriteWithRecordVariables() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testNC3WriteWithRecordVariables", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder writerb = Netcdf3FormatWriter.createNewNetcdf3(filename).setFill(false);
     writerb.addUnlimitedDimension("time");
@@ -237,7 +237,7 @@ public class TestWriteRecord {
   // make an example writing records
   @Test
   public void testNC3WriteWithRecord() throws Exception {
-    String filename = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    String filename = File.createTempFile("testNC3WriteWithRecord", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder writerb = Netcdf3FormatWriter.createNewNetcdf3(filename).setFill(false);
     writerb.addUnlimitedDimension("time");

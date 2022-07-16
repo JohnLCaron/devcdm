@@ -420,7 +420,7 @@ public class CdmFile implements Closeable {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    writeCDL(f, new Indent(2), false);
+    writeCDL(f, new Indent(2, 0), false);
     return f.toString();
   }
 

@@ -5,6 +5,7 @@ import dev.ucdm.core.util.KMPMatch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,7 +15,6 @@ import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
@@ -54,6 +54,8 @@ public class TestRandomAccessFile {
   static final double[] DATA_AS_BE_DOUBLES = new double[] {5.832039480691944e+40,
           1.51450869579011e+243, 3.585961897485533e+246};
 
+  @TempDir
+  public static File tempFolder;
 
   @BeforeAll
   public static void setUpTests() throws IOException {
@@ -431,7 +433,8 @@ public class TestRandomAccessFile {
 
   @Test
   public void testWrite() throws IOException {
-    File tempFile = Files.createTempFile("testWrite", ".nc").toFile();
+    File tempFile = File.createTempFile("testWrite", ".nc", tempFolder);
+
     RandomAccessFile writeFile = new RandomAccessFile(tempFile.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     writeFile.seek(0);
     writeFile.write(0);
@@ -453,7 +456,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testWriteBytes() throws IOException {
-    File tempFile = Files.createTempFile("testWriteBytes", ".nc").toFile();
+    File tempFile = File.createTempFile("testWriteBytes", ".nc", tempFolder);
     RandomAccessFile writeFile = new RandomAccessFile(tempFile.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     writeFile.seek(0);
     // write single byte
@@ -483,7 +486,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testWriteLittleEndian() throws IOException {
-    File tempFile = Files.createTempFile("testWriteLittleEndian", ".nc").toFile();
+    File tempFile = File.createTempFile("testWriteLittleEndian", ".nc", tempFolder);
     RandomAccessFile writeFile = new RandomAccessFile(tempFile.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     writeFile.order(ByteOrder.LITTLE_ENDIAN); // writes are always big endian
     // pos = 0
@@ -571,7 +574,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testWriteBigEndian() throws IOException {
-    File tempFile = Files.createTempFile("testWriteBigEndian", ".nc").toFile();
+    File tempFile = File.createTempFile("testWriteBigEndian", ".nc", tempFolder);
     RandomAccessFile writeFile = new RandomAccessFile(tempFile.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     writeFile.order(ByteOrder.BIG_ENDIAN); // writes are always big endian
     // pos = 0
@@ -660,7 +663,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testWriteDefaultEndian() throws IOException {
-    File tempFile = Files.createTempFile("testWriteDefaultEndian", ".nc").toFile();
+    File tempFile = File.createTempFile("testWriteDefaultEndian", ".nc", tempFolder);
     RandomAccessFile writeFile = new RandomAccessFile(tempFile.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     // pos = 0
     writeFile.seek(0);
@@ -748,7 +751,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testFlush() throws IOException {
-    File temp = Files.createTempFile("testFlush", ".nc").toFile();
+    File temp = File.createTempFile("testWriteLittleEndian", ".nc", tempFolder);
     RandomAccessFile tempFile = new RandomAccessFile(temp.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     tempFile.seek(0);
     tempFile.write(0);
@@ -760,7 +763,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testClose() throws IOException {
-    File temp = Files.createTempFile("testClose", ".nc").toFile();
+    File temp = File.createTempFile("testClose", ".nc", tempFolder);
     RandomAccessFile tempFile = new RandomAccessFile(temp.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
 
     // write a byte
@@ -775,7 +778,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testWriteUTF() throws IOException {
-    File temp = Files.createTempFile("testWriteUTF", ".nc").toFile();
+    File temp = File.createTempFile("testWriteUTF", ".nc", tempFolder);
     RandomAccessFile tempFile = new RandomAccessFile(temp.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     tempFile.writeUTF(TEST_FILE_STRING);
     tempFile.seek(0);
@@ -788,7 +791,7 @@ public class TestRandomAccessFile {
 
   @Test
   public void testReadUTF() throws IOException {
-    File temp = Files.createTempFile("testReadUTF", ".nc").toFile();
+    File temp = File.createTempFile("testReadUTF", ".nc", tempFolder);
     RandomAccessFile tempFile = new RandomAccessFile(temp.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     tempFile.writeShort((int) TEST_FILE_LENGTH);
     tempFile.write(UTF8_BYTES);
@@ -806,7 +809,7 @@ public class TestRandomAccessFile {
   }
 
   private void readAndWriteUTF16(ByteOrder bo, Charset charset) throws IOException {
-    File temp = Files.createTempFile("readAndWriteUTF16", ".nc").toFile();
+    File temp = File.createTempFile("readAndWriteUTF16", ".nc", tempFolder);
     RandomAccessFile tempFile = new RandomAccessFile(temp.getAbsolutePath(), "rw", TEST_BUFFER_SIZE);
     tempFile.order(bo);
 

@@ -87,6 +87,8 @@ public class CdmFullNames {
 
   @Nullable
   public Group findGroup(String fullName) {
+    fullName = fullName.startsWith("/") ? fullName.substring(1) : fullName;
+    fullName = fullName.endsWith("/") ? fullName.substring(0, fullName.length()-1) : fullName;
     return groups.get(fullName);
   }
 
@@ -96,6 +98,7 @@ public class CdmFullNames {
 
   @Nullable
   public Variable findVariable(String fullName) {
+    fullName = fullName.startsWith("/") ? fullName.substring(1) : fullName;
     return variables.get(fullName);
   }
 
@@ -114,6 +117,7 @@ public class CdmFullNames {
    */
   @Nullable
   public DimensionWithGroup findDimension(String fullName) {
+    fullName = fullName.startsWith("/") ? fullName.substring(1) : fullName;
     return dimensions.get(fullName);
   }
 
@@ -149,7 +153,8 @@ public class CdmFullNames {
    * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "attName", "@attName", "var@attname", "struct.member.@attName",
-   *                        "/group/subgroup/@attName", "/group/subgroup/var@attName", or "/group/subgroup/struct.member@attName"
+   *     "group/subgroup/@attName", "/group/subgroup/@attName", "/group/subgroup/var@attName", or
+   *     "/group/subgroup/struct.member@attName"
    * @return Attribute or null if not found.
    */
   @Nullable
@@ -169,18 +174,16 @@ public class CdmFullNames {
       return null;
     }
 
-    Variable v = findVariable(fullNameEscaped.substring(0, posAtt));
+    int start = fullNameEscaped.startsWith("/") ? 1 : 0;
+    Variable v = findVariable(fullNameEscaped.substring(start, posAtt));
     String attName = fullNameEscaped.substring(posAtt + 1);
     if (v != null) {
       return v.findAttribute(attName);
     }
-    // maybe a group attribute
-    String gpath = fullNameEscaped.substring(0, posAtt-1); // group needs trailing / removed
-    Group g = findGroup(gpath); // group needs trailing / removed
 
-    if (g == null) {
-      System.out.printf("HEY");
-    }
+    // maybe a group attribute
+    String gpath = posAtt == start ? "" : fullNameEscaped.substring(start, posAtt-1); // group needs trailing / removed
+    Group g = findGroup(gpath); // group needs trailing / removed
     return g == null ? null : g.findAttribute(attName);
   }
 

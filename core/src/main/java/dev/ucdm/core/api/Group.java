@@ -384,7 +384,7 @@ public class Group {
   @Override
   public String toString() {
     Formatter buf = new Formatter();
-    writeCDL(buf, new Indent(2), false);
+    writeCDL(buf, new Indent(2, 0), false);
     return buf.toString();
   }
 

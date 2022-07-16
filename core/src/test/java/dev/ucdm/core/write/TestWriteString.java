@@ -16,7 +16,7 @@ import java.io.IOException;
 /** Test {@link Netcdf3FormatWriter} some kinda problem dunno what. */
 public class TestWriteString {
   @TempDir
-  public File tempFolder;
+  public static File tempFolder;
 
   private static final String variableName = "dataVar";
   private static final String units = "units";
@@ -36,8 +36,8 @@ public class TestWriteString {
   @Test
   public void testWrite() throws IOException {
     TestWriteString test = new TestWriteString();
-    File tempFile = tempFolder.createTempFile("temp", "tmp");
-    test.createTimeLatLonDataCube(tempFile.getPath(), new double[] {1, 2}, new double[] {10, 20, 30, 40});
+    File tempFile = File.createTempFile("TestWriteString", ".tmp", tempFolder);
+    test.createTimeLatLonDataCube(tempFile.getCanonicalPath(), new double[] {1, 2}, new double[] {10, 20, 30, 40});
   }
 
   private void defineHeader(Netcdf3FormatWriter.Builder writerb, String timeDim, String latDim, String lonDim,

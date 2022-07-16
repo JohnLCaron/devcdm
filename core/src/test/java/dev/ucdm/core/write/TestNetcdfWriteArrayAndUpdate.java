@@ -39,7 +39,7 @@ public class TestNetcdfWriteArrayAndUpdate {
 
   @BeforeAll
   public static void setupClass() throws IOException, InvalidRangeException {
-    writerLocation = tempFolder.createTempFile("temp", "tmp").getAbsolutePath();
+    writerLocation = File.createTempFile("TestNetcdfWriteArrayAndUpdate", ".tmp", tempFolder).getAbsolutePath();
 
     Netcdf3FormatWriter.Builder<?> writerb = Netcdf3FormatWriter.createNewNetcdf3(writerLocation);
 
