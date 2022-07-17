@@ -23,8 +23,8 @@ repositories {
 dependencies {
     api(project(":array"))
     api(project(":core"))
-
     compileOnly("org.jetbrains:annotations:23.0.0")
+
     implementation(libs.guava)
     implementation(libs.jdom2)
     implementation(libs.slf4j)
@@ -33,14 +33,19 @@ dependencies {
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.15")
     implementation(kotlin("stdlib-common", "1.6.20"))
     implementation(kotlin("stdlib", "1.6.20"))
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
 
     testImplementation(project(":test-core"))
     testImplementation(project(":test-dataset"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testImplementation(libs.logbackClassic)
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    testRuntimeOnly(project(":grib"))
+    testRuntimeOnly(project(":grid"))
 }
 
 tasks.getByName<Test>("test") {

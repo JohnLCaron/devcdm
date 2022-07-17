@@ -7,6 +7,7 @@ package dev.ucdm.core.api;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import dev.ucdm.array.Range;
 import dev.ucdm.array.Section;
 
 import java.util.Collection;
@@ -30,24 +31,19 @@ public class Dimensions {
    * Make a Section.Builder from an ordered set of Dimension objects.
    */
   public static Section.Builder makeArraySectionFromDimensions(Iterable<Dimension> dimensions) {
-    try {
-      dev.ucdm.array.Section.Builder builder = dev.ucdm.array.Section.builder();
-      for (Dimension d : dimensions) {
-        int len = d.getLength();
-        if (len > 0) {
-          builder.appendRange(new dev.ucdm.array.Range(d.getShortName(), 0, len - 1));
-        } else if (len == 0) {
-          builder.appendRange(dev.ucdm.array.Range.EMPTY);
-        } else {
-          Preconditions.checkArgument(d.isVariableLength());
-          builder.appendRange(dev.ucdm.array.Range.VLEN);
-        }
+    dev.ucdm.array.Section.Builder builder = dev.ucdm.array.Section.builder();
+    for (Dimension d : dimensions) {
+      int len = d.getLength();
+      if (len > 0) {
+        builder.appendRange(Range.make(d.getShortName(), 0, len - 1, 1));
+      } else if (len == 0) {
+        builder.appendRange(dev.ucdm.array.Range.EMPTY);
+      } else {
+        Preconditions.checkArgument(d.isVariableLength());
+        builder.appendRange(dev.ucdm.array.Range.VLEN);
       }
-      return builder;
-
-    } catch (dev.ucdm.array.InvalidRangeException e) {
-      throw new IllegalStateException(e.getMessage());
     }
+    return builder;
   }
 
   /** Get the total number of elements the dimensions represent. */
@@ -170,7 +166,6 @@ public class Dimensions {
       Preconditions.checkNotNull(v.getParentStructure());
       addDimensionsAll(result, v.getParentStructure());
     }
-
     for (int i = 0; i < v.getRank(); i++) {
       result.add(v.getDimension(i));
     }
@@ -191,33 +186,6 @@ public class Dimensions {
     return true;
   }
 
-  /**
-   * Can this domain be a coordinate system for v?
-   * True if each dimension of v is in this domain, or is 1 dimensional.
-   */
-  public static boolean isCoordinateSystemFor(Collection<Dimension> domain, Variable v) {
-    for (Dimension d : Dimensions.makeDimensionsAll(v)) {
-      if (!domain.contains(d) && (d.getLength() != 1)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Test if all the Strings in subset are in set
-   * 
-   * @param subset is this a subset
-   * @param set of this?
-   */
-  public static boolean isSubset(Set<String> subset, Set<String> set) {
-    for (String d : subset) {
-      if (!(set.contains(d))) {
-        return false;
-      }
-    }
-    return true;
-  }
 
   /** Make the set of Dimensions used by axes. */
   public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes, boolean addAnon) {

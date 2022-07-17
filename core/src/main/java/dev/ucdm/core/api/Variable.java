@@ -756,52 +756,24 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   @Override
-  public boolean equals(Object oo) {
-    if (this == oo)
-      return true;
-    if (!(oo instanceof Variable))
-      return false;
-    Variable o = (Variable) oo;
-
-    if (!getShortName().equals(o.getShortName()))
-      return false;
-    if (isScalar() != o.isScalar())
-      return false;
-    if (getArrayType() != o.getArrayType())
-      return false;
-    if (!getParentGroup().equals(o.getParentGroup()))
-      return false;
-    if ((getParentStructure() != null) && !getParentStructure().equals(o.getParentStructure()))
-      return false;
-    if (isVariableLength() != o.isVariableLength())
-      return false;
-    if (dimensions.size() != o.getDimensions().size())
-      return false;
-    for (int i = 0; i < dimensions.size(); i++) {
-      if (!getDimension(i).equals(o.getDimension(i)))
-        return false;
-    }
-
-    return true;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Variable variable = (Variable) o;
+    return isVariableLength == variable.isVariableLength &&
+            shortName.equals(variable.shortName) &&
+            parentGroup.equals(variable.parentGroup) &&
+            Objects.equals(parentStructure, variable.parentStructure) &&
+            dataType == variable.dataType &&
+            Objects.equals(enumTypedef, variable.enumTypedef) &&
+            Objects.equals(ncfile, variable.ncfile) &&
+            dimensions.equals(variable.dimensions) &&
+            attributes.equals(variable.attributes);
   }
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getShortName().hashCode();
-      if (isScalar())
-        result++;
-      result = 37 * result + getArrayType().hashCode();
-      result = 37 * result + getParentGroup().hashCode();
-      if (getParentStructure() != null)
-        result = 37 * result + getParentStructure().hashCode();
-      if (isVariableLength)
-        result++;
-      result = 37 * result + dimensions.hashCode();
-      hashCode = result;
-    }
-    return hashCode;
+    return Objects.hash(shortName, parentGroup, parentStructure, dataType, enumTypedef, ncfile, dimensions, attributes, isVariableLength);
   }
 
   // Joshua Bloch (Item 9, chapter 3, page 49)
@@ -1164,6 +1136,17 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return self();
     }
 
+    /**
+     * Set the dimensions using all anonymous (unshared) dimensions
+     *
+     * @param shape defines the dimension lengths. must be &gt; 0, or -1 for VLEN
+     * @throws RuntimeException if any shape &lt; 1 and not -1.
+     */
+    public T setDimensionsAnonymous(int[] shape) {
+      this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
+      return self();
+    }
+
     @Nullable
     public String getFirstDimensionName() {
       return getDimensionName(0);
@@ -1178,25 +1161,11 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     public Iterable<String> getDimensionNames() {
-      if (dimensions.size() > 0) {
-        return dimensions.stream().map(Dimension::getShortName).filter(Objects::nonNull).collect(Collectors.toList());
-      }
-      return ImmutableList.of();
+      return dimensions.stream().map(Dimension::getShortName).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public String makeDimensionsString() {
       return Dimensions.makeDimensionsString(this.dimensions);
-    }
-
-    /**
-     * Set the dimensions using all anonymous (unshared) dimensions
-     *
-     * @param shape defines the dimension lengths. must be &gt; 0, or -1 for VLEN
-     * @throws RuntimeException if any shape &lt; 1 and not -1.
-     */
-    public T setDimensionsAnonymous(int[] shape) {
-      this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
-      return self();
     }
 
     public List<Dimension> getDimensions() {
@@ -1207,30 +1176,12 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return this.dimensions.get(idx);
     }
 
-    // Get all dimension names, including parent structure
-    public Set<String> getDimensionNamesAll() {
-      ImmutableSet.Builder<String> dimsAll = new ImmutableSet.Builder<>();
-      addDimensionNamesAll(dimsAll, this);
-      return dimsAll.build();
-    }
-
-    private void addDimensionNamesAll(ImmutableSet.Builder<String> result, Builder<?> v) {
-      if (v.parentStructureBuilder != null) {
-        v.parentStructureBuilder.getDimensionNamesAll().forEach(result::add);
-      }
-      getDimensionNames().forEach(result::add);
-    }
-
     public boolean isUnlimited() {
       for (Dimension d : dimensions) {
         if (d.isUnlimited())
           return true;
       }
       return false;
-    }
-
-    public boolean isVariableLength() {
-      return this.dimensions.stream().anyMatch(Dimension::isVariableLength);
     }
 
     public T setIsScalar() {
@@ -1241,14 +1192,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     // Convenience routines
     public int getRank() {
       return dimensions.size();
-    }
-
-    public int[] getShape() {
-      return Dimensions.makeShape(dimensions);
-    }
-
-    public long getSize() {
-      return Dimensions.getSize(dimensions);
     }
 
     public T setArrayType(ArrayType dataType) {
@@ -1303,17 +1246,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return self();
     }
 
-    public Group.Builder getParentGroupBuilder() {
-      return parentBuilder;
-    }
-
     T setParentStructureBuilder(Structure.Builder<?> structureBuilder) {
       this.parentStructureBuilder = structureBuilder;
       return self();
-    }
-
-    public Structure.Builder<?> getParentStructureBuilder() {
-      return parentStructureBuilder;
     }
 
     // Only the parent Structure should call this.

@@ -109,7 +109,7 @@ public class NcmlWriter {
    *        </pre>
    */
   public NcmlWriter(@Nullable Namespace namespace, @Nullable Format xmlFormat,
-                    @Nullable Predicate<? super Variable> writeValuesPredicate) {
+                    Predicate<? super Variable> writeValuesPredicate) {
     this.namespace = namespace == null ? ncmlDefaultNamespace : namespace;
     this.xmlFormat = xmlFormat == null ? Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX) : xmlFormat;
     this.writeValuesPredicate = writeValuesPredicate == null ? writeMetadataVariablesPredicate : writeValuesPredicate;

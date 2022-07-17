@@ -6,6 +6,7 @@
 package dev.ucdm.dataset.internal;
 
 import dev.ucdm.dataset.api.CdmDatasetCS;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.core.api.Variable;
@@ -51,6 +52,7 @@ public class TestSimpleGeom {
     }
   }
 
+  @Disabled("not supported now")
   @Test
   public void testPolygon() throws IOException {
     String failMessage, found, expected;

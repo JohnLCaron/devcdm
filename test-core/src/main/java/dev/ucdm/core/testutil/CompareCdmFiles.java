@@ -19,7 +19,7 @@ import java.util.Iterator;
  */
 public class CompareCdmFiles {
 
-    public static boolean compareVariable(CdmFile arrayFile1, CdmFile arrayFile2, String varName, boolean justOne) {
+  public static boolean compareVariable(CdmFile arrayFile1, CdmFile arrayFile2, String varName, boolean justOne) {
     boolean ok = true;
 
     Variable vorg = arrayFile1.findVariable(varName);
@@ -72,7 +72,7 @@ public class CompareCdmFiles {
 
   public static boolean compareSequence(String filename) throws IOException {
     try (CdmFile org = CdmFiles.open(filename, -1, null);
-        CdmFile copy = CdmFiles.open(filename, -1, null)) {
+         CdmFile copy = CdmFiles.open(filename, -1, null)) {
       System.out.println("Test CdmFile: " + org.getLocation());
 
       boolean ok = true;
@@ -100,7 +100,7 @@ public class CompareCdmFiles {
   }
 
   public static boolean compareSequence(Formatter f, String name, Iterator<StructureData> org,
-      Iterator<StructureData> array) {
+                                        Iterator<StructureData> array) {
     boolean ok = true;
     int obsrow = 0;
     System.out.printf(" compareSequence %s%n", name);

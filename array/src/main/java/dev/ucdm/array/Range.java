@@ -60,6 +60,14 @@ public class Range implements RangeIterator {
     }
   }
 
+  public static Range make(String name, int first, int last, int stride) {
+    try {
+      return new Range(name, first, last, stride);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen if last >= first
+    }
+  }
+
   ////////////////////////////////////////////////////////
 
   private final int length; // number of elements

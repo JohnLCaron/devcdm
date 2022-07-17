@@ -50,7 +50,7 @@ public class TestNcmlReader {
       try (CdmDataset withBuilder = NcmlReader.readNcml(url, null, null).build()) {
         // System.out.printf("NcMLReaderNew == %s%n", withBuilder);
         Formatter out = new Formatter();
-        boolean ok = new CompareCdmDataset(out, false, false, false).compare(org, withBuilder, new CoordsObjFilter());
+        boolean ok = new CompareCdmDataset(out, false, false, false).compare(org, withBuilder, new NcmlObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", out);
         assertThat(ok).isTrue();
       }
@@ -78,14 +78,14 @@ public class TestNcmlReader {
     try (CdmDataset org = CdmDatasets.openDataset(ncmlLocation)) {
       try (CdmDataset withBuilder = CdmDatasets.openDataset(ncmlLocation)) {
         Formatter out = new Formatter();
-        boolean ok = new CompareCdmDataset(out, false, false, false).compare(org, withBuilder, new CoordsObjFilter());
+        boolean ok = new CompareCdmDataset(out, false, false, false).compare(org, withBuilder, new NcmlObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", out);
         assertThat(ok).isTrue();
       }
     }
   }
 
-  public static class CoordsObjFilter extends CdmObjFilter {
+  public static class NcmlObjFilter extends CdmObjFilter {
     @Override
     public boolean attCheckOk(Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder) && !att.getShortName().equals(CDM.NCPROPERTIES);

@@ -59,7 +59,7 @@ public class GridDatasetFactory {
   /** Open the named dataset using GridNetcdfDataset. */
   @Nullable
   public static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
-    // Otherwise, wrap a CdmDataset
+    // wrap a CdmDataset
     CdmDatasetCS ds = CdmDatasets.openDatasetWithCS(endpoint, true);
     Optional<GridNetcdfDataset> result =
         GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));

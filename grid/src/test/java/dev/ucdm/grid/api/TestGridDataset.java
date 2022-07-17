@@ -36,7 +36,7 @@ public class TestGridDataset {
       Attribute att = grid.attributes().findAttribute("Grib_Variable_Id");
       assertThat(att).isEqualTo(new Attribute("Grib_Variable_Id", "VAR_7-0-2-11_L100"));
 
-      assertThat(grid.toString()).startsWith("float Temperature_isobaric(time=20, isobaric1=6, y=39, x=45);");
+      assertThat(grid.toString()).contains("float Temperature_isobaric(time=20, isobaric1=6, y=39, x=45);");
 
       Optional<Grid> bad = gds.findGridByAttribute("failure", "VAR_7-0-2-11_L100");
       assertThat(bad).isEmpty();
@@ -60,7 +60,7 @@ public class TestGridDataset {
   }
 
   @Test
-  public void testProblem() throws Exception {
+  public void testProblemMaterializedCoordinateSystem() throws Exception {
     String filename = oldTestDir + "ft/grid/echoTops_runtime.nc";
     String gridName = "ECHO_TOP";
     Formatter errlog = new Formatter();
@@ -81,6 +81,23 @@ public class TestGridDataset {
       assertThat(data).isNotNull();
       assertThat(data.materializedCoordinateSystem()).isNotNull();
       assertThat(data.materializedCoordinateSystem().getMaterializedShape()).isEqualTo(List.of(24,1,1,1));
+    }
+  }
+
+  // java.lang.IllegalStateException: Cant find dimension index for lon
+  //	at dev.ucdm.grid.internal.GridIndexPermuter.findDimension(GridIndexPermuter.java:58)
+  @Test
+  public void testProblem() throws Exception {
+    String filename = oldTestDir + "ft/grid/gfs_crossPM_contiguous.nc";
+    String gridName = "Temperature_altitude_above_msl";
+    Formatter errlog = new Formatter();
+
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      System.out.println("readGridDataset: " + gds.getLocation());
+
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      assertThat(grid).isNotNull();
     }
   }
 }

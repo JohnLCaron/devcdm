@@ -24,11 +24,11 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         val rootBuilder = datasetBuilder.rootGroup
 
         // Figure out projection info. Assume the same for all variables
-        val lonVar = rootBuilder.vbuilders.find {it.shortName == "longitude"} as VariableDS.Builder
+        val lonVar = rootBuilder.vbuilders.find { it.shortName == "longitude" } as VariableDS.Builder
         lonVar.setUnits(CDM.LON_UNITS)
         lonVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lon.toString()))
 
-        val latVar = rootBuilder.vbuilders.find {it.shortName == "latitude"} as VariableDS.Builder<*>
+        val latVar = rootBuilder.vbuilders.find { it.shortName == "latitude" } as VariableDS.Builder<*>
         latVar.setUnits(CDM.LAT_UNITS)
         latVar.addAttribute(Attribute(_Coordinate.AxisType, AxisType.Lat.toString()))
 
@@ -60,7 +60,10 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         return datasetBuilder.build()
     }
 
-    private fun createTimeCoordinate(rootBuilder : Group.Builder, timeVar: VariableDS.Builder<*>) : CoordinateAxis1D.Builder<*>? {
+    private fun createTimeCoordinate(
+        rootBuilder: Group.Builder,
+        timeVar: VariableDS.Builder<*>
+    ): CoordinateAxis1D.Builder<*>? {
         // Time coordinate is stored in the attribute validTimes
         // One caveat is that the times have two bounds an upper and a lower
 
@@ -124,7 +127,7 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
         return timeCoord
     }
 
-    private fun makeLCProjection(projVar : VariableDS.Builder<*>): Projection {
+    private fun makeLCProjection(projVar: VariableDS.Builder<*>): Projection {
         val latLonOrigin = projVar.getAttributeContainer().findAttributeIgnoreCase("latLonOrigin")
         check(!(latLonOrigin == null || latLonOrigin.isString))
         val centralLon = latLonOrigin.getNumericValue(0)!!.toDouble()
@@ -139,7 +142,12 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
     }
 
     @Throws(IOException::class)
-    private fun makeXYcoords(rootBuilder : Group.Builder, proj: Projection, latVar: VariableDS.Builder<*>, lonVar: VariableDS.Builder<*>) {
+    private fun makeXYcoords(
+        rootBuilder: Group.Builder,
+        proj: Projection,
+        latVar: VariableDS.Builder<*>,
+        lonVar: VariableDS.Builder<*>
+    ) {
 
         // lat, lon are 2D with same shape
         val latData = latVar.orgVar.readArray() as Array<Number>
@@ -193,6 +201,21 @@ open class IfpsConventions(name: String = "IFPS") : CoordinatesBuilder(name) {
             coords.addCoordinateTransform(projCT!!)
         }
         super.makeCoordinateTransforms()
+    }
+
+    override fun assignCoordinateTransforms() {
+        super.assignCoordinateTransforms()
+        if (projCT == null) {
+            return
+        }
+
+        // any cs with a GeoX, GeoY gets assigned projCT transform
+        coords.coordSys.forEach { cs ->
+            if (coords.containsAxisTypes(cs, "${AxisType.GeoX} ${AxisType.GeoY}")) {
+                coords.addTransformTo(projCT!!.name, cs.name)
+                info.appendLine("Assign coordTransform '${projCT!!.name}' to CoordSys '${cs.name}'")
+            }
+        }
     }
 
     override fun identifyZIsPositive(vds: VariableDS): Boolean {

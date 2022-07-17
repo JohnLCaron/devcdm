@@ -33,7 +33,7 @@ public class TestNcmlWriteAndCompare {
 
   public static Stream<Arguments> params() {
     return testFilesIn(coreLocalNetcdf3Dir)
-            .addNameFilter(new FileFilterSkipSuffixes(".cdl .txt"))
+            .addNameFilter(new FileFilterSkipSuffixes(".cdl .txt WrfNoTimeVar.nc"))
             .withRecursion()
             .build();
   }
@@ -56,7 +56,7 @@ public class TestNcmlWriteAndCompare {
       // read it back in
       try (CdmDataset copy = CdmDatasets.openDataset(outputFile.getCanonicalPath(), true, null, null)) {
         Formatter out = new Formatter();
-        boolean ok = new CompareCdmDataset(out, false, false, false).compare(org, copy);
+        boolean ok = new CompareCdmDataset(out, false, false, false).compare(org, copy, new TestNcmlReader.NcmlObjFilter());
         System.out.printf(  "%s %s%n", ok ? "OK" : "NOT OK", out);
         assertThat(ok).isTrue();
       }

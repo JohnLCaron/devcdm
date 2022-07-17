@@ -8,6 +8,7 @@ import dev.ucdm.core.util.StringUtil2;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 
 /**
@@ -70,8 +71,12 @@ public class MFileOS implements MFile {
 
   @Override
   public String getPath() {
-    // no microsnot
-    return StringUtil2.replace(file.getPath(), '\\', "/");
+    try {
+      // no microsnot
+      return StringUtil2.replace(file.getCanonicalPath(), '\\', "/");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

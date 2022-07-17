@@ -7,6 +7,7 @@ package dev.ucdm.dataset.internal;
 
 import dev.ucdm.core.api.Attribute;
 import dev.ucdm.dataset.api.CdmDatasetCS;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import dev.ucdm.array.Array;
 import dev.ucdm.core.calendar.Calendar;
@@ -84,6 +85,7 @@ public class TestDefaultCalendars {
     }
   }
 
+  @Disabled("not finished")
   @Test
   public void testCoardsDefaultCalendar() throws IOException {
     String failMessage, found, expected;

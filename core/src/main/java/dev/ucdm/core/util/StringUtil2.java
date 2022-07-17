@@ -36,45 +36,6 @@ public class StringUtil2 {
     return new String(bb, 0, count, StandardCharsets.UTF_8);
   }
 
-  public static String cleanup(String s) {
-    if (s == null)
-      return null;
-    return cleanup(s.getBytes(StandardCharsets.UTF_8));
-  }
-
-
-  /**
-   * Remove any char not alphanumeric or in okChars.
-   *
-   * @param x filter this string
-   * @param okChars these are ok.
-   * @return filtered string.
-   */
-  public static String filter(String x, String okChars) {
-    boolean ok = true;
-    for (int pos = 0; pos < x.length(); pos++) {
-      char c = x.charAt(pos);
-      if (!(Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c)))) {
-        ok = false;
-        break;
-      }
-    }
-    if (ok) {
-      return x;
-    }
-
-    // gotta do it
-    StringBuilder sb = new StringBuilder(x.length());
-    for (int pos = 0; pos < x.length(); pos++) {
-      char c = x.charAt(pos);
-      if (Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c))) {
-        sb.append(c);
-      }
-    }
-
-    return sb.toString();
-  }
-
   // remove leading and trailing blanks
   // remove control characters (< 0x20)
   // transform "/" to "_"
@@ -106,22 +67,6 @@ public class StringUtil2 {
         sbuff.append((char) c);
     }
     return sbuff.toString();
-  }
-
-  /**
-   * Pad the given string with padString on the right up to the given length.
-   *
-   * @param s String to pad
-   * @param desiredLength ending length
-   * @param padString String to pad with (e.g, " ")
-   * @return padded String
-   */
-  public static String padRight(String s, int desiredLength, String padString) {
-    StringBuilder ret = new StringBuilder(s);
-    while (ret.length() < desiredLength) {
-      ret.append(padString);
-    }
-    return ret.toString();
   }
 
   /**
@@ -182,13 +127,6 @@ public class StringUtil2 {
     if (len == s.length())
       return s;
     return s.substring(0, len);
-  }
-
-  public static String removeFromEnd(String s, String suffix) {
-    if (s.endsWith(suffix))
-      return s.substring(0, s.length() - suffix.length());
-
-    return s;
   }
 
   /**
@@ -300,28 +238,6 @@ public class StringUtil2 {
   }
 
   /**
-   * Escape any char not alphanumeric or in okChars.
-   * Escape by replacing char with %xx (hex).
-   *
-   * @param x escape this string
-   * @param okChars these are ok.
-   * @return equivilent escaped string.
-   */
-  public static String escape(String x, String okChars) {
-    StringBuilder newname = new StringBuilder();
-    for (char c : x.toCharArray()) {
-      if (c == '%') {
-        newname.append("%%");
-      } else if (!Character.isLetterOrDigit(c) && okChars.indexOf(c) < 0) {
-        newname.append('%');
-        newname.append(Integer.toHexString((0xFF & (int) c)));
-      } else
-        newname.append(c);
-    }
-    return newname.toString();
-  }
-
-  /**
    * This finds any '%xx' and converts to the equivalent char. Inverse of
    * escape().
    *
@@ -378,36 +294,6 @@ public class StringUtil2 {
    */
   public static Iterable<String> split(String source) {
     return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().trimResults().split(source);
-  }
-
-  /**
-   * Find all occurences of match strings in original, and substitute the corresponding
-   * subst string.
-   *
-   * @param original starting string
-   * @param match array of strings to match
-   * @param subst array of strings to substitute
-   * @return a new string with substitutions
-   */
-  public static String substitute(String original, String[] match, String[] subst) {
-
-    boolean ok = true;
-    for (String aMatch : match) {
-      if (original.contains(aMatch)) {
-        ok = false;
-        break;
-      }
-    }
-    if (ok) {
-      return original;
-    }
-
-    // gotta do it;
-    StringBuilder sb = new StringBuilder(original);
-    for (int i = 0; i < match.length; i++) {
-      substitute(sb, match[i], subst[i]);
-    }
-    return sb.toString();
   }
 
   ////////////////////////////////////////////////////
@@ -485,24 +371,5 @@ public class StringUtil2 {
       sbuff.replace(pos, pos + matchLen, subst);
       fromIndex = pos + substLen; // make sure dont get into an infinite loop
     }
-  }
-
-  /**
-   * Remove bad char from beginning or end of string
-   *
-   * @param s operate on this
-   * @return trimmed string
-   */
-  public static String trim(String s, int bad) {
-    int len = s.length();
-    int st = 0;
-
-    while ((st < len) && (s.charAt(st) == bad)) {
-      st++;
-    }
-    while ((st < len) && (s.charAt(len - 1) == bad)) {
-      len--;
-    }
-    return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
   }
 }

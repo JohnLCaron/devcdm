@@ -42,8 +42,9 @@ dependencies {
     api(project(":dataset"))
     api(project(":grid"))
     api(project(":grib"))
-
+    compileOnly(libs.tomcatAnnotationsApi)
     compileOnly("org.jetbrains:annotations:23.0.0")
+
     implementation(platform(libs.grpcBom))
     implementation(libs.grpcProtobuf)
     implementation(libs.grpcStub)
@@ -51,7 +52,6 @@ dependencies {
     implementation(libs.jj2000)
     implementation(libs.protobufJava)
     implementation(libs.slf4j)
-    compileOnly(libs.tomcatAnnotationsApi)
     implementation(libs.uomImpl)
 
     runtimeOnly(libs.grpcNettyShaded)
@@ -64,6 +64,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testImplementation(libs.logbackClassic)
 }
 
 protobuf {

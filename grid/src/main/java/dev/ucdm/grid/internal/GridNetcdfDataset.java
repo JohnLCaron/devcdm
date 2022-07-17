@@ -7,7 +7,9 @@ package dev.ucdm.grid.internal;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import dev.ucdm.array.ArrayType;
 import dev.ucdm.array.Immutable;
+import dev.ucdm.core.api.Group;
 import dev.ucdm.core.constants.AxisType;
 import dev.ucdm.dataset.api.CdmDatasetCS;
 import dev.ucdm.dataset.api.CoordinateTransform;
@@ -130,8 +132,8 @@ public class GridNetcdfDataset implements GridDataset {
           continue; // not used
         }
         GridCoordinateSystem gcs = track.gridCS;
-        Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
-        if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
+        // Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
+        if (gcs != null && gcs.getFeatureType() == featureType && cs.isCoordinateSystemFor(v)) {
           Grid grid = new GridVariable(gcs, vds);
           gridsets.put(gcs, grid);
           alreadyDone.add(v.getFullName());

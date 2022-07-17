@@ -40,7 +40,7 @@ open class CdmObjFilter {
 
     // if true, compare variable, else skip comparision
     open fun ignoreVariable(v: Variable): Boolean {
-        return true
+        return false
     }
 
     // if true, compare variable, else skip comparision
@@ -150,7 +150,7 @@ class CompareCdmDataset(
     val out: Formatter = Formatter(System.out),
     val showCompare: Boolean = false,
     val showEach: Boolean = false,
-    val compareData: Boolean = false,
+    var compareData: Boolean = false,
 ) {
 
     // calling from Java has trouble with the optional arguments
@@ -278,7 +278,7 @@ class CompareCdmDataset(
                 out.format(" MISSING '%s' in 2nd file%n", orgV.fullName)
                 false
             } else {
-                ok and compareVariables(orgV, copyVar, null, compareData)
+                ok and compareVariable(orgV, copyVar, null, compareData)
             }
         }
         out.format("%n")
@@ -321,7 +321,7 @@ class CompareCdmDataset(
                 out.format(" ** cant find variable %s in 2nd file%n", orgV.fullName)
                 false
             } else {
-                ok and compareVariables(orgV, copyVar, filter, compareData)
+                ok and compareVariable(orgV, copyVar, filter, compareData)
             }
         }
         for (copyV in copy.variables) {
@@ -348,10 +348,10 @@ class CompareCdmDataset(
 
 
     fun compareVariable(org: Variable, copy: Variable, filter: CdmObjFilter?): Boolean {
-        return compareVariables(org, copy, filter, compareData)
+        return compareVariable(org, copy, filter, compareData)
     }
 
-    private fun compareVariables(org: Variable, copy: Variable, filter: CdmObjFilter?, compareData: Boolean): Boolean {
+    private fun compareVariable(org: Variable, copy: Variable, filter: CdmObjFilter?, compareData: Boolean): Boolean {
         var ok = true
         if (showCompare) out.format("compare Variable %s to %s %n", org.fullName, copy.fullName)
         if (org.fullName != copy.fullName) {
@@ -376,6 +376,7 @@ class CompareCdmDataset(
         // data
         if (compareData) {
             ok = ok and CompareCdmFiles.compareVariableData(out, org, copy, false)
+            if (showCompare) out.format("  compare variable data ok = %s%n", ok)
         }
 
         /* coordinate systems

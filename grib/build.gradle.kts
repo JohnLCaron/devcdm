@@ -40,14 +40,13 @@ dependencies {
     api(project(":dataset"))
     api(project(":grid"))
     api(platform(libs.protobufBom))
+    compileOnly("org.jetbrains:annotations:23.0.0")
 
     implementation(libs.guava)
-    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.jdom2)
     implementation(libs.jj2000)
     implementation(libs.protobufJava)
     implementation(libs.slf4j)
-    // implementation(libs.uomImpl)
 
     testImplementation(project(":test-core"))
     testImplementation(project(":test-dataset"))
@@ -56,6 +55,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testImplementation(libs.logbackClassic)
 }
 
 tasks.getByName<Test>("test") {

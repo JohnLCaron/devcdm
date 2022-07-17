@@ -388,13 +388,13 @@ class EccodesLocalConcepts {
     Set<String> attNames = new TreeSet<>();
 
     f.format(FORMAT, "code", "name", "shortName", "paramId", "units", "cfName", "cfVarName");
-    f.format("%s%n", StringUtil2.padRight("-", 120, "-"));
+    f.format("%s%n", "-".repeat(120));
     for (LocalConcept lc : sorted) {
       f.format(FORMAT, lc.getCode(), lc.paramName, lc.shortName, lc.paramId, lc.units, lc.cfName, lc.cfVarName);
       lc.bag.show(f);
       attNames.addAll(lc.bag.atts.keySet());
     }
-    f.format("%s%n", StringUtil2.padRight("-", 120, "-"));
+    f.format("%s%n", "-".repeat(120));
     f.format("All attribute names in this table:%n");
     for (String attName : attNames) {
       f.format(" %s%n", attName);
