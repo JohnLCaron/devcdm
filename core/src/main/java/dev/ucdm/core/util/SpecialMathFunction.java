@@ -9,7 +9,9 @@ public final class SpecialMathFunction {
   private static final double log2 = Math.log(2);
 
   /**
-   * Get the log base 2 of a number
+   * Get the log base 2 of a number.
+   * Math.log is log base e
+   * Math.log10 is log base 10
    * 
    * @param x a double value
    * @return The log<sub>2</sub> of x

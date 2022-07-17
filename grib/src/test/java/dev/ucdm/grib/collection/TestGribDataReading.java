@@ -35,8 +35,6 @@ public class TestGribDataReading {
             // PofP ??
             Arguments.of(oldTestDir + "gribCollections/dgex/dgex_46.ncx4", CollectionType.TwoD,
                     "TwoD/Temperature_height_above_ground", List.of(4, 18, 1, 303, 491)),
-            Arguments.of(oldTestDir + "gribCollections/dgex/dgex_46.ncx4", CollectionType.TwoD,
-                    "Best/Temperature_isobaric", List.of(24, 3, 303, 491)),
             Arguments.of(oldTestDir + "gribCollections/gfs_conus80/gfsConus80_dir.ncx4", CollectionType.TwoD,
                     "TwoD/Temperature_tropopause", List.of(6,21,65,93)),
             Arguments.of(oldTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4", CollectionType.TwoD,
@@ -54,7 +52,7 @@ public class TestGribDataReading {
   @ParameterizedTest
   @MethodSource("params")
   public void testGribDataReading(String testfile, CollectionType type, String varName, List<Integer> shape) throws IOException {
-
+    System.out.printf("%s %s%n", testfile, varName);
     try (CdmFile nc = CdmFiles.open(testfile)) {
       Variable var = nc.findVariable(varName);
       if (var == null) {
@@ -63,7 +61,7 @@ public class TestGribDataReading {
       assertThat(var != null);
       Array<Float> data = (Array<Float>) var.readArray();
       assertThat(data != null);
-      System.out.printf("%s%n  %s has shape %s%n", testfile, varName, java.util.Arrays.toString(data.getShape()));
+      System.out.printf("   has shape %s%n", java.util.Arrays.toString(data.getShape()));
       var ll = Ints.asList(data.getShape());
       assertThat(Ints.asList(data.getShape())).isEqualTo(shape);
     }

@@ -8,6 +8,7 @@ package dev.ucdm.grib.grid;
 
 import dev.ucdm.grid.api.*;
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -23,43 +24,39 @@ import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
  */
 public class TestGribGridVsIosp {
 
-  @Ignore("not working")
+  @Disabled("wont open with GridDatasetFactory.openNetcdfAsGrid(): but who would want to?")
   @Test
   public void testTwod() throws IOException {
     String endpoint = oldTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4";
     testOpen(endpoint);
   }
 
-  @Ignore("not working")
   @Test
+  @Disabled("wont open with GridDatasetFactory.openNetcdfAsGrid(): but who would want to?")
   public void testTwodWhyNotMRUTP() throws IOException {
     // TODO why not MRUTP?
     String endpoint = oldTestDir + "tds_index/NCEP/NDFD/CPC/NDFD_CPC_CONUS_CONDUIT.ncx4";
     testOpen(endpoint);
   }
 
-  @Ignore("not working")
   @Test
   public void testTwodRegular() throws IOException {
     String endpoint = oldTestDir + "tds_index/NCEP/NBM/Ocean/NCEP_OCEAN_MODEL_BLEND.ncx4";
     testOpen(endpoint);
   }
 
-  @Ignore("not working")
   @Test
   public void testTwodOrthogonal() throws IOException {
     String endpoint = oldTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     testOpen(endpoint);
   }
 
-  @Ignore("not working")
   @Test
   public void testMRUTC() throws IOException {
     String endpoint = oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.ncx4";
     testOpen(endpoint);
   }
 
-  @Ignore("not working")
   @Test
   public void testMRUTP() throws IOException {
     String endpoint = oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS-Radar.ncx4";

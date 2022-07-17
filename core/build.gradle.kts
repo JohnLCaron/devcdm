@@ -17,10 +17,10 @@ repositories {
 
 dependencies {
     api(project(":array"))
+    compileOnly("org.jetbrains:annotations:23.0.0")
 
     implementation(libs.guava)
     implementation(libs.jdom2)
-    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
 
     testImplementation(project(":test-core"))

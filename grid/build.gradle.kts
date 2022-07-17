@@ -21,9 +21,9 @@ dependencies {
     api(project(":array"))
     api(project(":core"))
     api(project(":dataset"))
+    compileOnly("org.jetbrains:annotations:23.0.0")
 
     implementation(libs.guava)
-    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation(libs.slf4j)
     implementation(libs.uomImpl)
 
@@ -31,9 +31,11 @@ dependencies {
     testImplementation(project(":test-dataset"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation(libs.truth)
     testImplementation(libs.truthJava8Extension)
+    testImplementation(libs.logbackClassic)
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testRuntimeOnly(project(":grib"))
 }
 

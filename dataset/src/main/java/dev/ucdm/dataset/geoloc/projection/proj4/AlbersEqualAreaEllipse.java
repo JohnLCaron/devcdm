@@ -16,7 +16,7 @@ import dev.ucdm.array.Immutable;
 /**
  * Adapted from com.jhlabs.map.proj.AlbersProjection
  *
- * @see "http://www.jhlabs.com/java/maps/proj/index.html"
+ * @see "https://github.com/OSUCartography/JMapProjLib"
  * @see "http://trac.osgeo.org/proj/"
  */
 @Immutable
@@ -92,7 +92,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
     this.e = earth.getEccentricity();
     this.es = earth.getEccentricitySquared();
     this.one_es = 1.0 - es;
-    this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
+    this.totalScale = earth.getMajor() * .001; // scale factor for cartesian coords in km.
 
     if (Math.abs(phi1 + phi2) < EPS10)
       throw new IllegalArgumentException("Math.abs(par1 + par2) < 1.e-10");
@@ -116,7 +116,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
 
       this.ec = 1. - .5 * one_es * Math.log((1. - e) / (1. + e)) / e;
       this.c = m1 * m1 + n * ml1;
-      this.dd = 1. / n;
+      this.dd = 1.0 / n;
       this.rho0 = dd * Math.sqrt(c - n * MapMath.qsfn(Math.sin(lat0rad), e, one_es));
 
     } else { // sphere
@@ -278,8 +278,9 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
     double term = earth.isSpherical() ? 2 * n * Math.sin(fromLat) : n * MapMath.qsfn(Math.sin(fromLat), e, one_es);
     double rho = c - term;
 
-    if (rho < 0.0)
+    if (rho < 0.0) {
       throw new RuntimeException("F");
+    }
 
     rho = dd * Math.sqrt(rho);
 
@@ -313,12 +314,14 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
       if (!earth.isSpherical()) {
         lpphi = (c - lpphi * lpphi) / n;
         if (Math.abs(ec - Math.abs(lpphi)) > TOL7) {
-          if (Math.abs(lpphi) > 2.0)
-            throw new IllegalArgumentException("AlbersEqualAreaEllipse x,y=" + world);
+          if (Math.abs(lpphi) > 2.0) {
+            throw new IllegalArgumentException("AlbersEqualAreaEllipse (lpphi > 2) x,y=" + world);
+          }
 
           lpphi = phi1_(lpphi, e, one_es);
-          if (lpphi == Double.MAX_VALUE)
-            throw new RuntimeException("I");
+          if (lpphi == Double.MAX_VALUE) {
+            throw new IllegalArgumentException("AlbersEqualAreaEllipse (non-converge) x,y=" + world);
+          }
         } else {
           lpphi = (lpphi < 0.) ? -MapMath.HALFPI : MapMath.HALFPI;
         }
@@ -333,7 +336,6 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
       }
 
       toLon = Math.atan2(fromX, fromY) / n;
-      // coverity[swapped_arguments]
       toLat = lpphi;
     }
 
@@ -344,8 +346,9 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
     double phi, sinpi, cospi, con, com, dphi;
 
     phi = Math.asin(.5 * qs);
-    if (Te < EPSILON)
-      return (phi);
+    if (Te < EPSILON) {
+      return phi;
+    }
 
     int countIter = N_ITER;
     do {
@@ -353,7 +356,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
       cospi = Math.cos(phi);
       con = Te * sinpi;
       com = 1. - con * con;
-      dphi = .5 * com * com / cospi * (qs / Tone_es - sinpi / com + .5 / Te * Math.log((1. - con) / (1. + con)));
+      dphi = .5 * com * com / cospi * (qs / Tone_es - sinpi / com + (.5 / Te) * Math.log((1. - con) / (1. + con)));
       phi += dphi;
     } while (Math.abs(dphi) > TOL && --countIter != 0);
 
