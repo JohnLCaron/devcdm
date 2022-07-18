@@ -43,9 +43,9 @@ public abstract class GribCollectionIndexReader {
   protected final GribConfig gribConfig;
   protected GribTables tables;
 
-  protected abstract GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p);
+  public abstract GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p);
 
-  protected abstract GribTables makeCustomizer() throws IOException;
+  public abstract GribTables makeCustomizer() throws IOException;
 
   protected abstract String getLevelNameShort(int levelCode);
 

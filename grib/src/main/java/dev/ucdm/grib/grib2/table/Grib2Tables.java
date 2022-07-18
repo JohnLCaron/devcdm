@@ -174,7 +174,7 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
   }
 
   /**
-   * Make a IOSP Variable name, using the Parameter name is available, otherwise a synthezized name.
+   * Make a IOSP Variable name, using the Parameter name is available, otherwise a synthesized name.
    */
   public String getVariableName(int discipline, int category, int parameter) {
     String s = WmoParamTable.getParameterName(discipline, category, parameter);

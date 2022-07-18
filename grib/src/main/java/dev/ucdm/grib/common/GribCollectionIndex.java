@@ -185,7 +185,7 @@ public class GribCollectionIndex {
     return result;
   }
 
-  private static String makeNameFromIndexFilename(String idxPathname) {
+  public static String makeNameFromIndexFilename(String idxPathname) {
     idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);

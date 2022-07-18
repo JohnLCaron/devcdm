@@ -31,7 +31,7 @@ import java.util.zip.CRC32;
 @Immutable
 public final class Grib1SectionProductDefinition {
 
-  private byte[] rawData;
+  private final byte[] rawData;
 
   /**
    * Read Product Definition section from raf.
@@ -354,12 +354,12 @@ public final class Grib1SectionProductDefinition {
     int timeCoord;
     if (ptime.isInterval()) {
       int[] intv = ptime.getInterval();
-      CalendarDate cdate1 = unit.makeCalendarDate(period.getValue() * intv[0]);
-      CalendarDate cdate2 = unit.makeCalendarDate(period.getValue() * intv[1]);
+      CalendarDate cdate1 = unit.makeCalendarDate((long) period.getValue() * intv[0]);
+      CalendarDate cdate2 = unit.makeCalendarDate((long) period.getValue() * intv[1]);
       return "(" + cdate1 + "," + cdate2 + ")";
     } else {
       timeCoord = ptime.getForecastTime();
-      CalendarDate cdate = unit.makeCalendarDate(period.getValue() * timeCoord);
+      CalendarDate cdate = unit.makeCalendarDate((long) period.getValue() * timeCoord);
       return cdate.toString();
     }
   }
@@ -397,27 +397,22 @@ public final class Grib1SectionProductDefinition {
    */
 
   public boolean isEnsemble() {
-    switch (getCenter()) {
-      case 7:
-        return ((rawData.length >= 43) && (getOctet(41) == 1));
-
-      case 98:
-        return ((rawData.length >= 51) && (getOctet(41) == 1 || getOctet(41) == 30)
-            && (getOctet(43) == 10 || getOctet(43) == 11));
-    }
-    return false;
+    return switch (getCenter()) {
+      case 7 -> ((rawData.length >= 43) && (getOctet(41) == 1));
+      case 98 -> ((rawData.length >= 51) && (getOctet(41) == 1 || getOctet(41) == 30)
+              && (getOctet(43) == 10 || getOctet(43) == 11));
+      default -> false;
+    };
   }
 
   public int getPerturbationType() {
     if (!isEnsemble())
       return GribNumbers.UNDEFINED;
-    switch (getCenter()) {
-      case 7:
-        return getOctet(42);
-      case 98:
-        return getOctet(43);
-    }
-    return GribNumbers.UNDEFINED;
+    return switch (getCenter()) {
+      case 7 -> getOctet(42);
+      case 98 -> getOctet(43);
+      default -> GribNumbers.UNDEFINED;
+    };
   }
 
   public int getPerturbationNumber() {
@@ -437,14 +432,22 @@ public final class Grib1SectionProductDefinition {
       }
       case 98:
         return getOctet(50);
+      default:
+        return GribNumbers.UNDEFINED;
     }
-    return GribNumbers.UNDEFINED;
   }
 
   public long calcCRC() {
     CRC32 crc32 = new CRC32();
     crc32.update(rawData);
     return crc32.getValue();
+  }
+
+  public String toString() {
+    return String.format("%d-%d reference= %s time=%d (%d,%d) level=%d (%d,%d)}",
+            getCenter(), getParameterNumber(), getReferenceDate(),
+            getTimeUnit(), getTimeValue1(), getTimeValue2(),
+            getLevelType(), getLevelValue1(), getLevelValue2());
   }
 
 }

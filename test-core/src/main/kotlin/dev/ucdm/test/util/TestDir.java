@@ -22,12 +22,6 @@ public class TestDir {
 
   private static String testdataDir;
 
-  public static final String datasetLocalDir = "../dataset/src/test/data/";
-  public static final String datasetLocalNcmlDir = "../dataset/src/test/data/ncml/";
-  public static final String coreLocalDir = "../core/src/test/data/netcdf3/";
-  public static final String extraTestDir = "/home/snake/tmp/testData/";
-  public static final String oldTestDir = "/media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/";
-
   /**
    * cdm-test data directory (distributed with code but can depend on data not in github (e.g. NcML files can reference
    * data not in github)

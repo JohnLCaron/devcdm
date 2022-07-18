@@ -1,6 +1,3 @@
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 
@@ -9,6 +6,7 @@ import com.google.protobuf.gradle.protoc
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
+    kotlin("jvm") version "1.6.21"
     id("java")
     id("java-library")
     alias(libs.plugins.protobufPlugin)
@@ -47,6 +45,11 @@ dependencies {
     implementation(libs.jj2000)
     implementation(libs.protobufJava)
     implementation(libs.slf4j)
+
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.15")
+    implementation(kotlin("stdlib-common", "1.6.20"))
+    implementation(kotlin("stdlib", "1.6.20"))
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
 
     testImplementation(project(":test-core"))
     testImplementation(project(":test-dataset"))
