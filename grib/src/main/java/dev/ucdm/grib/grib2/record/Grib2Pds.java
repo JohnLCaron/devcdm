@@ -272,10 +272,10 @@ public abstract class Grib2Pds {
    * }
    */
 
-
-  public void show(Formatter f) {
+  public Formatter show(Formatter f) {
     f.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(),
         getParameterNumber(), template, getForecastTime(), getTimeUnit(), getLevelValue1());
+    return f;
   }
 
   /**
@@ -657,12 +657,13 @@ public abstract class Grib2Pds {
       return crc32.getValue();
     }
 
-    public void show(Formatter f) {
+    public Formatter show(Formatter f) {
       super.show(f);
       f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
       for (TimeInterval ti : getTimeIntervals()) {
         ti.show(f);
       }
+      return f;
     }
   }
 
@@ -736,12 +737,13 @@ public abstract class Grib2Pds {
       return crc32.getValue();
     }
 
-    public void show(Formatter f) {
+    public Formatter show(Formatter f) {
       super.show(f);
       f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
       for (TimeInterval ti : getTimeIntervals()) {
         ti.show(f);
       }
+      return f;
     }
   }
 
@@ -852,12 +854,13 @@ public abstract class Grib2Pds {
       return crc32.getValue();
     }
 
-    public void show(Formatter f) {
+    public Formatter show(Formatter f) {
       super.show(f);
       f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
       for (TimeInterval ti : getTimeIntervals()) {
         ti.show(f);
       }
+      return f;
     }
   }
 
@@ -1165,12 +1168,13 @@ public abstract class Grib2Pds {
       return crc32.getValue();
     }
 
-    public void show(Formatter f) {
+    public Formatter show(Formatter f) {
       super.show(f);
       f.format("%n   Grib2Pds9: endInterval=%s%n", getIntervalTimeEnd());
       for (TimeInterval ti : getTimeIntervals()) {
         ti.show(f);
       }
+      return f;
     }
 
   }
@@ -1235,7 +1239,7 @@ public abstract class Grib2Pds {
       return 46 + getNumberTimeRanges() * 12;
     }
 
-    public void show(Formatter f) {
+    public Formatter show(Formatter f) {
       super.show(f);
       try {
         f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
@@ -1244,6 +1248,7 @@ public abstract class Grib2Pds {
       } catch (Throwable t) {
         f.format("%n   Grib2Pds8: endInterval error=%s%n", t.getMessage());
       }
+      return f;
     }
 
     public long getIntervalHash() {

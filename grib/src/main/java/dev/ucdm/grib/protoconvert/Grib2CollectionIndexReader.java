@@ -48,7 +48,7 @@ public class Grib2CollectionIndexReader extends GribCollectionIndexReader {
   }
 
   @Override
-  protected GribTables makeCustomizer() {
+  public GribTables makeCustomizer() {
     this.cust = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
     return this.cust;
   }
@@ -59,7 +59,7 @@ public class Grib2CollectionIndexReader extends GribCollectionIndexReader {
   }
 
   @Override
-  protected GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds proto) {
+  public GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds proto) {
     byte[] rawGds = proto.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();

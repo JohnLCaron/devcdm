@@ -44,7 +44,7 @@ public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
     return Grib1CollectionIndexWriter.MAGIC_START;
   }
 
-  protected GribTables makeCustomizer() throws IOException {
+  public GribTables makeCustomizer() throws IOException {
     /* so an iosp message must be received before the open()*/
     Grib1ParamTables ptables =
         (gribConfig.paramTable != null) ? Grib1ParamTables.factory(gribConfig.paramTable)
@@ -58,7 +58,7 @@ public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
   }
 
   @Override
-  protected GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p) {
+  public GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p) {
     byte[] rawGds = null;
     Grib1Gds gds;
     int predefined = -1;
