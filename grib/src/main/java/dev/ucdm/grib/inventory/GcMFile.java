@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package dev.ucdm.grib.collection;
+package dev.ucdm.grib.inventory;
 
 import dev.ucdm.core.util.StringUtil2;
 

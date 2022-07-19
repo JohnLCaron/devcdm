@@ -9,14 +9,14 @@ import java.nio.charset.StandardCharsets;
 
 import com.google.protobuf.ByteString;
 import dev.ucdm.grib.collection.CollectionType;
-import dev.ucdm.grib.collection.GcMFile;
+import dev.ucdm.grib.inventory.GcMFile;
 import dev.ucdm.grib.collection.Grib1CollectionBuilder;
 import dev.ucdm.grib.collection.GribCollectionBuilder;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.MCollection;
-import dev.ucdm.grib.collection.MFile;
+import dev.ucdm.grib.inventory.MCollection;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.grib1.record.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;

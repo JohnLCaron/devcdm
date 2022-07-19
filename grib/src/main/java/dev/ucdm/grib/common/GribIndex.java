@@ -8,7 +8,7 @@ package dev.ucdm.grib.common;
 import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.collection.CollectionUpdateType;
-import dev.ucdm.grib.collection.MFile;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.protoconvert.Grib1Index;
 import dev.ucdm.grib.protoconvert.Grib1IndexProto;

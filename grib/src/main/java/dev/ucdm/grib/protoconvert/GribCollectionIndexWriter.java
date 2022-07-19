@@ -6,7 +6,7 @@
 package dev.ucdm.grib.protoconvert;
 
 import com.google.protobuf.ByteString;
-import dev.ucdm.grib.collection.MCollection;
+import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 

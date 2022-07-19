@@ -1,11 +1,11 @@
 package dev.ucdm.grib.common;
 
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.CollectionSingleFile;
+import dev.ucdm.grib.inventory.MCollectionSingleFile;
 import dev.ucdm.grib.collection.GribCollection;
-import dev.ucdm.grib.collection.MCollection;
-import dev.ucdm.grib.collection.MFile;
-import dev.ucdm.grib.collection.MFileOS;
+import dev.ucdm.grib.inventory.MCollection;
+import dev.ucdm.grib.inventory.MFile;
+import dev.ucdm.grib.inventory.MFileOS;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class TestGribCollectionIndex {
     File dataFile = new File(testfile);
     MFile mfile = new MFileOS(dataFile);
     GribConfig config = new GribConfig();
-    MCollection dcm = new CollectionSingleFile(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
+    MCollection dcm = new MCollectionSingleFile(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
     Formatter errlog = new Formatter();
 
     try (GribCollection gc = GribCollectionIndex.readOrCreateCollectionFromIndex(false, dcm,

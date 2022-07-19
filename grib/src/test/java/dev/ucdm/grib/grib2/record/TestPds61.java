@@ -4,8 +4,8 @@
 package dev.ucdm.grib.grib2.record;
 
 import dev.ucdm.core.calendar.CalendarDate;
-import dev.ucdm.grib.collection.MFile;
-import dev.ucdm.grib.collection.MFileOS;
+import dev.ucdm.grib.inventory.MFile;
+import dev.ucdm.grib.inventory.MFileOS;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.common.GribIndex;
 import org.junit.jupiter.api.BeforeAll;

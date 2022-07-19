@@ -1,4 +1,4 @@
-package dev.ucdm.grib.spec
+package dev.ucdm.grib.inventory
 
 /*
 3)<collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$"

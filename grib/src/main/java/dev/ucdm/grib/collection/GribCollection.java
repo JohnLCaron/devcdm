@@ -6,6 +6,8 @@
 package dev.ucdm.grib.collection;
 
 import com.google.common.base.MoreObjects;
+import dev.ucdm.grib.inventory.GcMFile;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.protoconvert.GribHorizCoordSystem;
 import org.jetbrains.annotations.Nullable;
 

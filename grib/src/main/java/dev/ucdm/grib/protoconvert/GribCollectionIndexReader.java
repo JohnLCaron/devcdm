@@ -8,9 +8,9 @@ package dev.ucdm.grib.protoconvert;
 import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.collection.CollectionType;
-import dev.ucdm.grib.collection.GcMFile;
+import dev.ucdm.grib.inventory.GcMFile;
 import dev.ucdm.grib.collection.GribCollection;
-import dev.ucdm.grib.collection.MFile;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.collection.Partitions;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
