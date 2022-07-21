@@ -91,10 +91,10 @@ public abstract class GribCollectionIndexReader {
 
       int size = Streams.readVInt(raf);
       if ((size < 0) || (size > 300 * 1000 * 1000)) { // ncx bigger than 300 MB?
-        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size on file {}", gc.getName(),
+        logger.warn("GribCollectionBuilderFromIndex {}: invalid index size {} on file {}", gc.getName(), size,
             raf.getLocation());
-        throw new IllegalStateException(); // temp debug
-        // return false;
+        // throw new IllegalStateException(); // temp debug
+        return false;
       }
       logger.debug("GribCollectionBuilderFromIndex proto len = {}", size);
 

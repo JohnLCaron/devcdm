@@ -19,11 +19,12 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.grib.collection.GribPartitionIndexKt.createPartitionIndex;
 import static dev.ucdm.grib.common.GribCollectionIndex.NCX_SUFFIX;
+import static dev.ucdm.test.util.TestFilesKt.gribLocalDir;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 public class TestGribCollectionIndex {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
-  private static final String testfile = "/home/snake/tmp/rugley.pds15.grib2";
+  private static final String testfile = gribLocalDir + "rugley.pds15.grib2";
 
   @Test
   public void testReadOrCreateCollectionFromIndex() throws IOException {
@@ -95,32 +96,6 @@ public class TestGribCollectionIndex {
         System.out.printf("errlog = '%s'%n", errlog);
         t.printStackTrace();
       }
-    }
-  }
-
-  @Test
-  public void testCreatePartitionIndex() throws IOException {
-    //     topCollectionName: String,
-    //    collectionDir: Path,
-    //    val isTop: Boolean,
-    //    glob: String?,
-    //    val filter: DirectoryStream.Filter<Path>?,
-    //    olderThanMillis: Long?
-
-    MPartition dcm = new FilePartition("testCreatePartitionIndex",
-            Path.of(oldTestDir + "gribCollections/gfs_conus80/20141025"),
-            true, "*.grib1", null, null);
-
-    GribConfig config = new GribConfig();
-    Formatter errlog = new Formatter();
-
-    // boolean isGrib1, MPartition dcm, CollectionUpdateType update, GribConfig config, Formatter errlog) throws IOException {
-    try (GribCollection gc = createPartitionIndex(true, dcm, CollectionUpdateType.test, config, errlog)) {
-      assertThat(gc).isNotNull();
-      assertThat(gc.center).isEqualTo(7);
-    } catch (Throwable t) {
-      System.out.printf("errlog = '%s'%n", errlog);
-      t.printStackTrace();
     }
   }
 

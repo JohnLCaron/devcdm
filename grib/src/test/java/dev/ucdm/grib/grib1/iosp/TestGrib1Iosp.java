@@ -15,10 +15,10 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.grib.common.GribCollectionIndex.NCX_SUFFIX;
+import static dev.ucdm.test.util.TestFilesKt.gribLocalDir;
 
 public class TestGrib1Iosp {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGrib1Iosp.class);
-  private static final String testfile = "src/test/data/single_point_gds.grib1";
+  private static final String testfile = gribLocalDir + "single_point_gds.grib1";
 
   @Test
   public void testIsValidFile() throws IOException {
@@ -37,7 +37,6 @@ public class TestGrib1Iosp {
 
   @Test
   public void testRafConstructor() throws IOException {
-
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
       Grib1Iosp spi = new Grib1Iosp();
 

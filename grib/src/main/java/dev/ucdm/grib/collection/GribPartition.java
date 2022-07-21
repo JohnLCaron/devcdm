@@ -69,19 +69,12 @@ public class GribPartition {
     }
   }
 
-  public class GroupP implements Comparable<GroupP> {
-    public GribCollection.Dataset ds;
+  public class GroupP {
     public GribHorizCoordSystem horizCoordSys;
     public final List<VariableIndexPartitioned> variList;
     public List<Coordinate> coords; // shared coordinates
     public int[] filenose; // key for GC.fileMap
-    HashMap<Integer, VariableIndexPartitioned> varHashCodes;
-
-    GroupP(GribCollection.Dataset ds) {
-      this.ds = ds;
-      this.variList = new ArrayList<>();
-      this.coords = new ArrayList<>();
-    }
+    HashMap<Object, VariableIndexPartitioned> varHashCodes = new HashMap<>();;
 
     // copy constructor for PartitionBuilder
     GroupP(GribCollection.GroupGC from) {
@@ -90,11 +83,15 @@ public class GribPartition {
       this.coords = new ArrayList<>(from.coords.size()); // empty list
     }
 
-    public VariableIndexPartitioned addVariable(VariableIndexPartitioned vi) {
-      variList.add(vi);
-      return vi;
+    public VariableIndexPartitioned addVariable(VariableIndexPartitioned vip) {
+      VariableIndexPartitioned old = varHashCodes.put(vip.vi.gribVariable, vip);
+      if (old != null) {
+        logger.error("GribPartition has duplicate VariableIndexPartitioned {} == {}", vip, old);
+      } else {
+        variList.add(vip);
+      }
+      return vip;
     }
-
 
     // unique name for Group
     public String getId() {
@@ -106,33 +103,9 @@ public class GribPartition {
       return horizCoordSys.getDescription();
     }
 
-    public Object getGdsHash() {
-      return horizCoordSys.getGdsHash();
-    }
-
-    public GdsHorizCoordSys getGdsHorizCoordSys() {
-      return horizCoordSys.getHcs();
-    }
-
-
-    @Override
-    public int compareTo(GroupP o) {
-      return getDescription().compareTo(o.getDescription());
-    }
-
-    // get the variable in this group that has same object equality as want
-    public VariableIndexPartitioned findVariableByHash(int hashCode) {
-      if (varHashCodes == null) {
-        varHashCodes = new HashMap<>(variList.size() * 2);
-        for (VariableIndexPartitioned vi : variList) {
-          // TODO may not be possible to do hashcode, may need another hash?
-          VariableIndexPartitioned old = varHashCodes.put(vi.hashCode(), vi);
-          if (old != null) {
-            logger.error("GribCollectionMutable has duplicate variable hash {} == {}", vi, old);
-          }
-        }
-      }
-      return varHashCodes.get(hashCode);
+    // get the variable in this group that has same object equality as gribVariable
+    public VariableIndexPartitioned findVariableByHash(Object gribVariable) {
+      return varHashCodes.get(gribVariable);
     }
 
     private CalendarDateRange dateRange;
@@ -223,7 +196,7 @@ public class GribPartition {
       if (partList == null)
         return; // nothing to do
       if (partList.size() > nparts) // might be smaller due to failed partition
-        logger.warn("PartitionCollectionMutable partList.size() > nparts");
+        logger.warn("PartitionCollectionMutable partList.size() > nparts, vi = " + vi.id());
 
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
@@ -242,8 +215,7 @@ public class GribPartition {
       partList = null; // GC
     }
 
-    void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing,
-        VariableIndex vi) {
+    void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing) {
       if (partList == null)
         partList = new ArrayList<>(nparts);
       partList.add(new PartitionForVariable2D(partno, groupno, varno));

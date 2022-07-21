@@ -306,8 +306,9 @@ public abstract class GribCollection implements Closeable {
     public final List<VariableIndex> variList;
     public List<Coordinate> coords; // shared coordinates
     public int[] filenose; // key for GC.fileMap
-    HashMap<Integer, VariableIndex> varHashCodes;
     public boolean isTwoD = true; // true except for Best (?)
+
+    private HashMap<Object, VariableIndex> varHashCodes;
 
     GroupGC(Dataset ds) {
       this.ds = ds;
@@ -366,18 +367,19 @@ public abstract class GribCollection implements Closeable {
       return result;
     }
 
-    // get the variable in this group that has same object equality as want
-    public VariableIndex findVariableByHash(int hashCode) {
+    // get the variable in this group that has same object equality as gribVariable
+    public VariableIndex findVariableByHash(Object gribVariable) {
       if (varHashCodes == null) {
         varHashCodes = new HashMap<>(variList.size() * 2);
         for (VariableIndex vi : variList) {
-          VariableIndex old = varHashCodes.put(vi.hashCode(), vi);
+          VariableIndex old = varHashCodes.put(vi.gribVariable, vi);
           if (old != null) {
-            logger.error("GribCollectionMutable has duplicate variable hash {} == {}", vi, old);
+            logger.error("GribCollection has duplicate variable hash {} ({}) == {} ({})",
+                    vi.gribVariable, vi.gribVariable.hashCode(), old.gribVariable, old.gribVariable.hashCode());
           }
         }
       }
-      return varHashCodes.get(hashCode);
+      return varHashCodes.get(gribVariable);
     }
 
     private CalendarDateRange dateRange;
@@ -447,7 +449,7 @@ public abstract class GribCollection implements Closeable {
       for (GroupGC g : ds.groups) {
         f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {
-          f.format("  %s%n", v.toStringShort());
+          f.format("  %s%n", v.toString());
         }
       }
     }

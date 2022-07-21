@@ -16,6 +16,7 @@ import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.gribLocalDir;
 
 /**
  * Test data provided by github issue https://github.com/Unidata/thredds/issues/834
@@ -29,17 +30,16 @@ import static com.google.common.truth.Truth.assertThat;
  */
 public class TestPds61 {
 
+  private static final String testfile = gribLocalDir + "index/example_pds_61.grib2.gbx9";
   private static Grib2Pds pds;
 
   @BeforeAll
   public static void openTestFile() throws IOException {
-    String testfile = "/home/snake/tmp/example_pds_61.grib2.gbx9";
 
     MFile mfile = MFileOS.getExistingFile(testfile);
     assertThat(mfile).isNotNull();
 
-    dev.ucdm.grib.protoconvert.Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.nocheck, new Formatter());
-
+    dev.ucdm.grib.protoconvert.Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.never, new Formatter());
     assertThat(gi).isNotNull();
     List<Grib2Record> records = gi.getRecords();
     Grib2Record record = records.get(0);

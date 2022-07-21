@@ -264,7 +264,7 @@ public class Partitions implements Closeable {
     }
     for (GribCollection.GroupGC groupHcs : ds2d.getGroups()) {
       if (groupHcs.getGdsHash().equals(hcs.getGdsHash())) {
-        return groupHcs.findVariableByHash(vi.hashCode());
+        return groupHcs.findVariableByHash(vi.gribVariable);
       }
     }
     return null;

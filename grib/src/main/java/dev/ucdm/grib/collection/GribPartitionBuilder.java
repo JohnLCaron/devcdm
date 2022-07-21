@@ -207,13 +207,13 @@ public class GribPartitionBuilder {
 
     void makeVariableIndexPartitioned() {
       // find unique variables across all partitions
-      var variableMap = new HashMap<VariableIndex, VariableIndex>(2 * resultGroup.variList.size());
+      var variableMap = new HashMap<Object, VariableIndex>();
       for (GribCollection.GroupGC group : componentGroups) {
         if (group == null) {
           continue;
         }
         for (VariableIndex vi : group.variList) {
-          variableMap.put(vi, vi); // this will use the last one found
+          variableMap.put(vi.gribVariable, vi); // this will use the last one found
         }
       }
       for (VariableIndex vi : variableMap.values()) {
@@ -343,11 +343,12 @@ public class GribPartitionBuilder {
         // for each variable in this Partition, add reference to it in the vip
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           VariableIndex vi = group.variList.get(varIdx);
-          GribPartition.VariableIndexPartitioned vip = resultGroup.findVariableByHash(vi.hashCode());
+          GribPartition.VariableIndexPartitioned vip = resultGroup.findVariableByHash(vi.gribVariable);
           if (vip == null) {
             System.out.printf("HEY");
+            resultGroup.findVariableByHash(vi.gribVariable);
           }
-          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing, vi);
+          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing);
         } // loop over variable
       } // loop over partition
 
@@ -367,11 +368,13 @@ public class GribPartitionBuilder {
         var unionizer = new CoordinatePartitionUnionizer(vip, intvMap, logger);
         for (int partno = 0; partno < npart; partno++) {
           GribCollection.GroupGC group = gp.componentGroups[partno];
-          if (group == null)
+          if (group == null) {
             continue; // tolerate missing groups
-          VariableIndex vi = group.findVariableByHash(vip.hashCode());
-          if (vi == null)
+          }
+          VariableIndex vi = group.findVariableByHash(vip.vi.gribVariable);
+          if (vi == null) {
             continue; // tolerate missing variables
+          }
           try {
             GribPartition.ChildCollection part = ds2D.gctype.isUniqueTime() ? null : result.getPartition(partno);
             unionizer.addCoords(vi.getCoordinates(), part);

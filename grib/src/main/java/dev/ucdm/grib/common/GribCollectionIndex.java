@@ -167,7 +167,7 @@ public class GribCollectionIndex {
     String name = makeNameFromIndexFilename(indexFilename);
 
     GribCollection result;
-    try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
+    try (RandomAccessFile raf = new RandomAccessFile(indexFilename, "r")) {
       GribCollectionIndex.Type collectionType = getType(raf);
       if (collectionType == Type.none) {
         return null;
@@ -180,13 +180,20 @@ public class GribCollectionIndex {
       if (isGrib1) {
         result = new Grib1Collection(name, null, config);
         Grib1CollectionIndexReader reader = new Grib1CollectionIndexReader(result, config);
-        reader.readIndex(raf);
+        if (!reader.readIndex(raf)) {
+          return null;
+        }
 
       } else {
         result = new Grib2Collection(name, null, config);
         Grib2CollectionIndexReader reader = new Grib2CollectionIndexReader(result, config);
-        reader.readIndex(raf);
+        if (!reader.readIndex(raf)) {
+          return null;
+        }
       }
+    } catch (IOException ioe) {
+      logger.warn("Failed to open index file {} msg = {}", indexFilename, ioe.getMessage());
+      return null;
     }
 
     return result;
