@@ -50,14 +50,10 @@ public class GribCollectionIndex {
 
   public static final String NCX_SUFFIX = ".ncx4";
 
-  private static final Logger classLogger = LoggerFactory.getLogger(GribCollectionIndex.class);
-
   // raf is a single data file or an ncx4 file
   @Nullable
   public static GribCollection openGribCollectionFromRaf(
-          RandomAccessFile raf, CollectionUpdateType updateType, GribConfig config, Formatter errlog) throws IOException {
-
-    GribCollection result = null;
+          RandomAccessFile raf, CollectionUpdateType update, GribConfig config, Formatter errlog) throws IOException {
 
     // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
@@ -68,7 +64,7 @@ public class GribCollectionIndex {
     if (isGrib1 || isGrib2) {
       // TODO close the data file, the ncx raf file is managed by gribCollection ??
       // raf.close();
-      return openGribCollectionFromDataFile(isGrib1, raf, updateType, config, errlog);
+      return openGribCollectionFromDataFile(isGrib1, raf, update, config, errlog);
     }
 
     // check if its a collection dataset
@@ -77,7 +73,7 @@ public class GribCollectionIndex {
     }
 
     // its a collection dataset ncx4 file
-    result = openNcxIndex(raf.getLocation(), config, false);
+    GribCollection result = readCollectionFromIndex(raf.getLocation(), false);
     // TODO close the data file, the ncx raf file is managed by gribCollection ??
     // raf.close();
     return result;
@@ -85,22 +81,24 @@ public class GribCollectionIndex {
 
   /** raf is a grib data file. If the corresponding ncx4 file exists, use it, else create it. */
   public static GribCollection openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf,
-      CollectionUpdateType updateType, GribConfig config, Formatter errlog)
+      CollectionUpdateType update, GribConfig config, Formatter errlog)
       throws IOException {
 
     File dataFile = new File(dataRaf.getLocation());
     MFile mfile = new MFileOS(dataFile);
     MCollection dcm = new MCollectionSingleFile(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
-    return readOrCreateCollectionFromIndex(isGrib1, dcm, updateType, config, errlog);
+    return updateCollectionIndex(isGrib1, dcm, update, config, errlog);
   }
 
   /**
-   * The general case of a collection of Grib data files.
-   * If the corresponding ncx4 file exists, use it, else create it.
+   * The general case of a creating a collection from Grib data or gbx files.
+   * If the corresponding ncx4 file exists, use it, update it, or create it.
    */
   @Nullable
-  public static GribCollection readOrCreateCollectionFromIndex(
-          boolean isGrib1, MCollection dcm, CollectionUpdateType force, GribConfig config, Formatter errlog) throws IOException {
+  public static GribCollection updateCollectionIndex(
+          boolean isGrib1, MCollection dcm, CollectionUpdateType update, GribConfig config, Formatter errlog) throws IOException {
+
+    dcm.setAuxInfo(GribConfig.AUX_CONFIG, config);
 
     String idxPath = dcm.getIndexFilename(NCX_SUFFIX);
     // look to see if the file is in some special cache (eg when cant write to data directory)
@@ -108,13 +106,13 @@ public class GribCollectionIndex {
     boolean idxFileExists = idxFile != null;
 
     GribCollection gribCollection = null;
-    if (idxFileExists && force != CollectionUpdateType.always) { // always create a new index
+    if (idxFileExists && update != CollectionUpdateType.always) { // always create a new index
       // look to see if the index file is older than the collection
       boolean isOlder = CalendarDate.of(idxFile.lastModified()).isBefore(dcm.getLastModified());
 
-      if (force != CollectionUpdateType.nocheck && !isOlder) {
+      if (update != CollectionUpdateType.nocheck && !isOlder) {
         // try to read it
-        gribCollection = openNcxIndex(dcm.getIndexFilename(NCX_SUFFIX), config, false);
+        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(NCX_SUFFIX), false);
       }
     }
 
@@ -126,12 +124,12 @@ public class GribCollectionIndex {
         return null;
       }
 
-      if (!createNcxIndex(isGrib1, dcm, errlog)) {
+      if (!createCollectionIndex(isGrib1, dcm, config, errlog)) {
         logger.warn("  Index writing failed on {} errlog = '{}'", idxFile2, errlog);
 
       } else {
         // read it back in
-        gribCollection = openNcxIndex(dcm.getIndexFilename(NCX_SUFFIX), config, false);
+        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(NCX_SUFFIX), false);
         logger.debug("  Index written: {}", idxPath);
       }
     } else {
@@ -141,8 +139,10 @@ public class GribCollectionIndex {
     return gribCollection;
   }
 
-  /** create ncx4 file */
-  private static boolean createNcxIndex(boolean isGrib1, MCollection dcm, Formatter errlog) throws IOException {
+  /** create ncx4 file. The GribConfig is attached to the MCollection */
+  static boolean createCollectionIndex(boolean isGrib1, MCollection dcm, GribConfig config, Formatter errlog) throws IOException {
+    dcm.setAuxInfo(GribConfig.AUX_CONFIG, config);
+
     if (isGrib1) {
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       if (!builder.createIndex(errlog)) {
@@ -159,20 +159,22 @@ public class GribCollectionIndex {
 
   /** read existing ncx4 file */
   @Nullable
-  public static GribCollection openNcxIndex(String indexFilename, GribConfig config, boolean useCache) throws IOException {
-
+  public static GribCollection readCollectionFromIndex(String indexFilename, boolean useCache) throws IOException {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null)
       return null;
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
 
-    GribCollection result = null;
+    GribCollection result;
     try (RandomAccessFile raf = new RandomAccessFile(indexFilenameInCache, "r")) {
       GribCollectionIndex.Type collectionType = getType(raf);
       if (collectionType == Type.none) {
         return null;
       }
+
+      // TODO read GribConfig from index
+      GribConfig config = new GribConfig();
 
       boolean isGrib1 = (collectionType == Type.GRIB1) || (collectionType == Type.Partition1);
       if (isGrib1) {

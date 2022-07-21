@@ -68,14 +68,19 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       int totalRecords = 0;
       Grib2Index index = null;
 
+      Formatter gbxerrors = new Formatter();
       try {
         CollectionUpdateType update = GribConstants.debugGbxIndexOnly ? CollectionUpdateType.never : CollectionUpdateType.test;
         // LOOK not using the CollectionUpdateType from GribCOllectionINdex
-        index = GribIndex.readOrCreateIndex2(mfile, update, errlog);
+        index = GribIndex.readOrCreateIndex2(mfile, update, gbxerrors);
         allFiles.add(mfile); // add on success
 
       } catch (IOException ioe) {
-        logger.error("Grib2CollectionBuilder {} : reading/Creating gbx9 index for file {} failed {}", name, mfile.getPath(), ioe);
+        logger.error("Grib2CollectionBuilder {} : reading/Creating gbx9 index for file {} failed\n{}", name, mfile.getPath(), ioe);
+        return;
+      }
+      if (index == null) {
+        logger.error("Grib2CollectionBuilder {} : reading/Creating gbx9 index for file {} failed\n{}", name, mfile.getPath(), gbxerrors);
         return;
       }
       int n = index.getNRecords();
@@ -183,7 +188,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
                                List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange)
           throws IOException {
-    Grib2CollectionIndexWriter writer = new Grib2CollectionIndexWriter(dcm, logger);
+    Grib2CollectionIndexWriter writer = new Grib2CollectionIndexWriter(dcm);
     List<Grib2CollectionIndexWriter.Group> groups2 = new ArrayList<>();
     // copy to change GribCollectionBuilder.Group -> GribCollectionPublish.Group
     for (Object g : groups) {
@@ -202,8 +207,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     public CalendarPeriod timeUnit;
 
     public List<Integer> coordIndex;
-    public long pos;
-    public int length;
+    public long pos;    // ncx4 file pos of GribCollectionProto.SparseArray
+    public int length;  // ncx4 file length of GribCollectionProto.SparseArray
 
     private VariableBag(Grib2Record first, Grib2Variable gv) {
       this.first = first;

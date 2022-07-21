@@ -53,7 +53,7 @@ public abstract class GribIndex {
       // look to see if the index file is older than the data file
       boolean isOlder = idxFile.lastModified() < mfile.getLastModified();
 
-      if (force == CollectionUpdateType.nocheck || isOlder) {
+      if (force != CollectionUpdateType.nocheck || isOlder) {
         // try to read it
         index = Grib2IndexProto.readGrib2Index(idxFile.getAbsolutePath());
       }

@@ -263,8 +263,8 @@ public abstract class GribCollection implements Closeable {
   // set from GribCollectionBuilderFromIndex.readFromIndex()
   public File setOrgDirectory(String orgDirectory) {
     this.orgDirectory = orgDirectory;
-    directory = new File(orgDirectory);
-    if (!directory.exists()) {
+    this.directory = new File(orgDirectory);
+    if (!directory.exists()) { // LOOK review
       File indexFile = new File(indexFilename);
       File parent = indexFile.getParentFile();
       if (parent.exists())
@@ -306,7 +306,7 @@ public abstract class GribCollection implements Closeable {
     public final List<VariableIndex> variList;
     public List<Coordinate> coords; // shared coordinates
     public int[] filenose; // key for GC.fileMap
-    HashMap<VariableIndex, VariableIndex> varMap;
+    HashMap<Integer, VariableIndex> varHashCodes;
     public boolean isTwoD = true; // true except for Best (?)
 
     GroupGC(Dataset ds) {
@@ -367,17 +367,17 @@ public abstract class GribCollection implements Closeable {
     }
 
     // get the variable in this group that has same object equality as want
-    public VariableIndex findVariableByHash(VariableIndex want) {
-      if (varMap == null) {
-        varMap = new HashMap<>(variList.size() * 2);
+    public VariableIndex findVariableByHash(int hashCode) {
+      if (varHashCodes == null) {
+        varHashCodes = new HashMap<>(variList.size() * 2);
         for (VariableIndex vi : variList) {
-          VariableIndex old = varMap.put(vi, vi);
+          VariableIndex old = varHashCodes.put(vi.hashCode(), vi);
           if (old != null) {
             logger.error("GribCollectionMutable has duplicate variable hash {} == {}", vi, old);
           }
         }
       }
-      return varMap.get(want);
+      return varHashCodes.get(hashCode);
     }
 
     private CalendarDateRange dateRange;
@@ -412,7 +412,7 @@ public abstract class GribCollection implements Closeable {
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this).add("horizCoordSys", horizCoordSys).add("variList", variList)
-          .add("coords", coords).add("filenose", filenose).add("varMap", varMap).add("isTwoD", isTwoD)
+          .add("coords", coords).add("filenose", filenose).add("varMap", varHashCodes).add("isTwoD", isTwoD)
           .add("dateRange", dateRange).toString();
     }
   }

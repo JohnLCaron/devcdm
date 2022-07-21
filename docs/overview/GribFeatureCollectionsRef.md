@@ -16,15 +16,69 @@ Because of the complexity of how GRIB data is written and stored, the TDS has de
 * Multiple horizontal domains are supported and placed into separate groups.
 * Interval time coordinates are fully supported.
 
-Also see:
+There are two kinds of indexes created for Grib files.
 
-* [Feature Collection overview](feature_collections_ref.html)
-* [GRIB specific configuration](grib_collection_config_ref.html)
-* [GRIB Collection FAQ](tds_grib_faq.html)
-* [GRIB Feature Collection Tutorial](grib_feature_collections.html)
-* [Partitions](partitions_ref.html)
-* [CDM GRIB Collection Processing](https://docs.unidata.ucar.edu/netcdf-java/{{site.netcdf-java_docset_version}}/userguide/grib_files_cdm.html){:target="_blank"}
-* [CDM GRIB Tables](https://docs.unidata.ucar.edu/netcdf-java/{{site.netcdf-java_docset_version}}/userguide/grib_tables.html){:target="_blank"}
+1. For each GRIB file, a grib index (.gbx9) file is created which is essentially the entire GRIB record minus the data. 
+   These are ~200-1000 times smaller (check that) than the original files.
+2. For each collection, a grib collection index (.ncx4) file is created. The size of this file depends on the number
+   of GRIB records in the collection. A rule of thumb is ~13 bytes per record (grib2). So a million record collection has an index of 13Mb.
+
+Once the ncx4 files are created, the gbx9 files are no longer needed (check that). The gbx9 files take a while to gnerate, as the entire data set has to be read.
+Regenerating the ncx4 is fairly fast once the gbx9 files are created. So keep the gbx9 files if possible, so that improvements in the ncs4 can be
+easily made.
+
+1. file collection: each file is a collection, file.ncx  // openGribCollectionFromDataFile()
+2. file partition: all file collections in a directory are a partition, dirName/collectionName-dirName.ncx // readOrCreateCollectionFromIndex
+3. directory collection: all files in a directory are a collection, dirName/collectionName-dirName.ncx
+4. directory partition: recursively build partitions from directory collections, dirName/collectionName-dirName.ncx
+point to a topdir. recurse into subdirectories. default is directory collection. override to make a file collection
+5. subtree collection: all files in a directory subtree are a collection.
+6. subtree partition: build partitions starting from the subtree??
+
+readOrCreateCollectionFromIndex
+1. MCollectionSingleFile
+2. ?
+3. DirectoryMCollection
+4. ?
+5. SubtreeMCollection
+6. ?
+
+GribCollectionIndex.openGribCollectionFromRaf(RandomAccessFile raf, CollectionUpdateType update, GribConfig config, Formatter errlog)      // raf is a single data file or an ncx4 file
+GribCollectionIndex.openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf, CollectionUpdateType update, GribConfig config, Formatter errlog) // raf is a grib data file
+GribCollectionIndex.updateCollectionIndex(boolean isGrib1, MCollection dcm, CollectionUpdateType update, GribConfig config, Formatter errlog)
+GribCollectionIndex.createCollectionIndex(boolean isGrib1, MCollection dcm, GribConfig config?, Formatter errlog)
+GribCollectionIndex.readCollectionFromIndex(String indexFilename, boolean useCache?)
+
+Issues
+* multiple dataset - Best not used anymore. remove, ignore?
+* multiple gds - creates groups, grid only wants one. Can we specify location#group ?
+* time partitioning depends on directory layout. 
+* can we get away with just directory partition?
+* homogeneity: center/subcenter etc.
+* homogeneity: the vertical or ens levels change across the partition.
+  * those show up missing if you try to read them. drill down into the sub collections to possibly find a more accurate inventory.
+  * an interface to show actual inventory
+* 
+* dataset type:
+  * SRC, // GC: Single Runtime Collection [ntimes]
+  * MRC, // GC: Multiple Runtime Collection [nruns, ntimes]
+  * MRUTC, // GC: Multiple Runtime, Unique Time Collection [ntimes] (there are no overlapping times)
+  * TwoD, // PC: TwoD time Partition [nruns, ntimes]
+  * MRUTP; // PC: Multiple Runtime Unique Time Partition [ntimes]
+
+  * // MRSTC, // GC: Multiple Runtime Single Time Collection [nruns, 1]
+  * // MRSTP, // PC: Multiple Runtime Single Time Partition [nruns, 1]
+  * Best, // PC: Best time partition [ntimes]
+  * BestComplete, // PC: Best complete time partition (not done) [ntimes]
+
+GridTimeCoordinateSystem.Type {
+  Observation,    // Observational data, no runtime or unique time MRUTC time(time), optional runtime(time)
+  SingleRuntime,  // Single runtime.  SRC runtime, time(time)
+  Offset,         // Multiple runtimes all having the same time offsets (orthogonal). TwoDOrth
+  OffsetRegular,  // All runtimes, grouped by time since 0z, have the same offsets (regular) TwoDReg
+  OffsetIrregular // Runtimes that have irregular offsets. MRC: time(runtime, time) gets too big
+  }
+
 
 ### Multiple Dataset Collections
 

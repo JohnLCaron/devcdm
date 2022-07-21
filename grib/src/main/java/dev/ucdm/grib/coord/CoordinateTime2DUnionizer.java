@@ -25,7 +25,7 @@ import java.util.*;
  * @author caron
  * @since 11/22/2014
  */
-class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
+public class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   private final boolean isTimeInterval;
   private final boolean makeVals;
   private final CalendarPeriod timeUnit;
@@ -33,8 +33,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   org.slf4j.Logger logger;
   private SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
-  CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code, boolean makeVals,
-      org.slf4j.Logger logger) {
+  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code, boolean makeVals,
+                                   org.slf4j.Logger logger) {
     this.isTimeInterval = isTimeInterval;
     this.timeUnit = timeUnit;
     this.code = code;

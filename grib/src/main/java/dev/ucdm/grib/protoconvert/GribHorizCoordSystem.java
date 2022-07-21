@@ -16,6 +16,7 @@ import dev.ucdm.array.Immutable;
 @Immutable
 public class GribHorizCoordSystem {
   private final GdsHorizCoordSys hcs;
+  private final byte[] rawGds; // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
   private final Object gdsHash;
   private final String id, description;
   private final int predefinedGridDefinition; // grib1
@@ -23,6 +24,7 @@ public class GribHorizCoordSystem {
   public GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHash, String id, String description,
                               int predefinedGridDefinition) {
     this.hcs = hcs;
+    this.rawGds = rawGds;
     this.gdsHash = gdsHash;
     this.predefinedGridDefinition = predefinedGridDefinition;
 
@@ -32,6 +34,10 @@ public class GribHorizCoordSystem {
 
   public GdsHorizCoordSys getHcs() {
     return hcs;
+  }
+
+  public byte[] getRawGds() {
+    return rawGds;
   }
 
   // use this object for hashmaps

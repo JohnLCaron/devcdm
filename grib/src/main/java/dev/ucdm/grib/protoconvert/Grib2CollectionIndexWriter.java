@@ -18,6 +18,8 @@ import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.grib2.record.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +34,14 @@ import java.util.Set;
  * The generated proto code is in dev.ucdm.grib.protogen.GribCollectionProto.
  */
 public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
+  private static final Logger logger = LoggerFactory.getLogger(Grib2CollectionIndexWriter.class);
+
   public static final String MAGIC_START = "Grib2Collectio2Index"; // was Grib2CollectionIndex
   static final int minVersion = 1; // increment this when you want to force index rebuild
   protected static final int version = 3; // increment this as needed, must be backwards compatible through minVersion
 
-  public Grib2CollectionIndexWriter(MCollection dcm, org.slf4j.Logger logger) {
-    super(dcm, logger);
+  public Grib2CollectionIndexWriter(MCollection dcm) {
+    super(dcm);
   }
 
   public static class Group implements GribCollectionBuilder.Group {
@@ -105,8 +109,9 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
       for (Group g : groups) {
         g.fileSet = new HashSet<>();
         for (Grib2CollectionBuilder.VariableBag vb : g.gribVars) {
-          if (first == null)
+          if (first == null) {
             first = vb.first;
+          }
           GribCollectionProto.SparseArray vr = publishSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
           vb.pos = raf.getFilePointer();
@@ -156,7 +161,7 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
       // gds
       for (Object go : groups) {
         Group g = (Group) go;
-        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), -1));
+        indexBuilder.addGds(publishGdsProto(g.gdss.getRawBytes(), -1));
       }
 
       // the GC dataset
@@ -238,7 +243,7 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
   private GribCollectionProto.Group publishGroupProto(Group g) {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds(writeGdsProto(g.gdss.getRawBytes(), -1));
+    b.setGds(publishGdsProto(g.gdss.getRawBytes(), -1));
 
     for (Grib2CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(publishVariableProto(vbag));

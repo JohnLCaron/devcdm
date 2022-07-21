@@ -157,7 +157,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
                                List<? extends Group> groups, List<MFile> files, CalendarDateRange dateRange)
           throws IOException {
-    Grib1CollectionIndexWriter writer = new Grib1CollectionIndexWriter(dcm, logger);
+    Grib1CollectionIndexWriter writer = new Grib1CollectionIndexWriter(dcm);
     List<Grib1CollectionIndexWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups)
       groups2.add((Grib1CollectionIndexWriter.Group) g); // why copy ?

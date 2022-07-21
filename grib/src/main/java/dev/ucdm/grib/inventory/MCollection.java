@@ -7,14 +7,14 @@ package dev.ucdm.grib.inventory;
 import dev.ucdm.core.calendar.CalendarDate;
 import org.jetbrains.annotations.Nullable;
 
+/** Manages collections of MFiles */
 public interface MCollection {
   String getCollectionName();
 
   @Nullable
   CalendarDate getLastModified();
 
-  /** Get common root directory of all MFiles in the collection - TODO may be null? */
-  @Nullable
+  /** Get common root directory of all MFiles in the collection */
   String getRoot();
 
   /** The corresponding ncx4 filename for this collection. */
@@ -28,7 +28,7 @@ public interface MCollection {
   void iterateOverMFiles(Visitor visitor);
 
   ////////////////////////////////////////////////////
-  // ability to pass arbitrary information to users of the mcollection .
+  // ability to pass arbitrary information to users of the MCollection .
 
   Object getAuxInfo(String key);
 

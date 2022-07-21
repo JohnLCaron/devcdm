@@ -40,7 +40,7 @@ public abstract class GribCollectionIndexReader {
   private static final boolean stackTrace = true;
 
   protected GribCollection gc;
-  protected final GribConfig gribConfig;
+  protected final GribConfig gribConfig; // TODO should come from the index file
   protected GribTables tables;
 
   public abstract GribHorizCoordSystem importGribHorizCoordSystem(GribCollectionProto.Gds p);
@@ -120,7 +120,7 @@ public abstract class GribCollectionIndexReader {
       }
 
       // directory always taken from proto, since ncx2 file may be moved, or in cache, etc
-      gc.directory = gc.setOrgDirectory(proto.getTopDir());
+      gc.setOrgDirectory(proto.getTopDir());
       gc.indexVersion = proto.getVersion();
 
       gc.setCalendarDateRange(proto.getStartTime(), proto.getEndTime());

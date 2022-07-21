@@ -42,7 +42,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
   public final int recordsLen;
   public Object gribVariable; // use this to test for object equality
 
-  List<Integer> coordIndex; // indexes into group.coords
+  public List<Integer> coordIndex; // indexes into group.coords
 
   // derived from pds
   public final int category, parameter, levelType, intvType, ensDerivedType, probType, percentile;
@@ -57,7 +57,8 @@ public class VariableIndex implements Comparable<VariableIndex> {
   // stats
   public int ndups, nrecords, nmissing;
 
-  public VariableIndex(boolean isGrib1, GribCollection gribCollection, GribCollection.GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
+  public VariableIndex(boolean isGrib1, GribCollection gribCollection, GribCollection.GroupGC g, GribTables customizer,
+                       int discipline, int center, int subcenter, byte[] rawPds,
                        List<Integer> index, long recordsPos, int recordsLen) {
     this.gribCollection = gribCollection;
     this.group = g;
