@@ -1,7 +1,6 @@
 package dev.ucdm.grib.inventory
 
 import dev.ucdm.core.calendar.CalendarDate
-import dev.ucdm.grib.collection.CollectionUpdateType
 import java.nio.file.DirectoryStream
 import java.nio.file.Path
 
@@ -22,27 +21,25 @@ class FilePartition(
         filter,
         olderThanMillis)
 
-
-    // each file is made into a collection
-    override fun makeCollections(update: CollectionUpdateType): Iterable<MCollection> {
-        val result: MutableList<MCollection> = ArrayList(100)
-        iterateOverMFiles {
-            val part: MCollection = MCollectionSingleFile(it)
-            if (!wasRemoved(part)) result.add(part)
-        }
-        return result
-    }
-
     override fun getLastModified(): CalendarDate? {
-        return directoryMCollection.getLastModified();
+        return directoryMCollection.getLastModified()
     }
 
     override fun getRoot(): String {
-        return directoryMCollection.getRoot();
+        return directoryMCollection.getRoot()
     }
 
     override fun iterateOverMFiles(visitor: MCollection.Visitor) {
-        return directoryMCollection.iterateOverMFiles(visitor);
+        return directoryMCollection.iterateOverMFiles(visitor)
+    }
+
+    override fun iterateOverMCollections(visitor: MPartition.Visitor) {
+        return directoryMCollection.iterateOverMFiles {
+            val mcollect: MCollection = SingleFileMCollection(it)
+            if (!wasRemoved(mcollect)) {
+                visitor.visit(mcollect)
+            }
+        }
     }
 
     /////////////////////////////////////////////////////////////

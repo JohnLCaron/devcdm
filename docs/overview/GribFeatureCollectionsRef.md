@@ -38,21 +38,23 @@ The CDM uses conventions to assemble Grib records into multidimension arrays tha
 a netCDF or HDF file. 
 
 Types of collections
-1. file collection: each file is a collection, file.ncx  // MCollectionSingleFile
-2. file partition: all file collections in a directory are a partition, dirName/collectionName-dirName.ncx // FilePartition
-3. directory collection: all files in a directory are a collection, dirName/collectionName-dirName.ncx // DirectoryMCollection
+1. file collection: each file is a collection, file.ncx  
+2. directory collection: all files in a directory are a collection, dirName/collectionName-dirName.ncx
+3. file partition: all file collections in a directory are a partition, dirName/collectionName-dirName.ncx
+4. directory partition: all subdirs in a directory hold a collection
+5. directory pofp: all subdirs in a directory hold a partition
 
-4. directory partition: recursively build partitions from directory collections, dirName/collectionName-dirName.ncx
+6. recursively build partitions from directory collections, dirName/collectionName-dirName.ncx
 point to a topdir. recurse into subdirectories. default is directory collection. override to make a file collection
 
-5. subtree collection: all files in a directory subtree are a collection.
-6. subtree partition: build partitions starting from the subtree??
+7. subtree collection: all files in a directory subtree are a collection.
+8. subtree partition: build partitions starting from the subtree??
 
 readOrCreateCollectionFromIndex
 1. MCollectionSingleFile
-2. ?
-3. DirectoryMCollection
-4. ?
+2. DirectoryMCollection
+3. FilePartition
+4. DirectoryPartition
 5. SubtreeMCollection
 6. ?
 

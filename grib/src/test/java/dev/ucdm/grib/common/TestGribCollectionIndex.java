@@ -1,26 +1,21 @@
 package dev.ucdm.grib.common;
 
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.inventory.FilePartition;
-import dev.ucdm.grib.inventory.MCollectionSingleFile;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.inventory.MFileOS;
 import dev.ucdm.grib.collection.CollectionUpdateType;
-import dev.ucdm.grib.inventory.MPartition;
+import dev.ucdm.grib.inventory.SingleFileMCollection;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
-import static dev.ucdm.grib.collection.GribPartitionIndexKt.createPartitionIndex;
 import static dev.ucdm.grib.common.GribCollectionIndex.NCX_SUFFIX;
 import static dev.ucdm.test.util.TestFilesKt.gribLocalDir;
-import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 public class TestGribCollectionIndex {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
@@ -32,7 +27,7 @@ public class TestGribCollectionIndex {
     File dataFile = new File(testfile);
     MFile mfile = new MFileOS(dataFile);
     GribConfig config = new GribConfig();
-    MCollection dcm = new MCollectionSingleFile(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
+    MCollection dcm = new SingleFileMCollection(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
     Formatter errlog = new Formatter();
 
     try (GribCollection gc = GribCollectionIndex.updateCollectionIndex(false, dcm,

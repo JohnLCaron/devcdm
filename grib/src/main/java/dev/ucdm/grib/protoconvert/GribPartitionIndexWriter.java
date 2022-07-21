@@ -12,7 +12,7 @@ import dev.ucdm.grib.collection.GribPartition;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
-import dev.ucdm.grib.inventory.MCollection;
+import dev.ucdm.grib.inventory.MPartition;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +27,10 @@ import java.util.Formatter;
 public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
   static final Logger logger = LoggerFactory.getLogger(GribPartitionIndexWriter.class);
 
-  private final MCollection partitionManager; // defines the partition
+  private final MPartition partitionManager; // defines the partition
   protected final String name; // collection name
 
-  public GribPartitionIndexWriter(String name, MCollection tpc) {
-    super(tpc);
+  public GribPartitionIndexWriter(String name, MPartition tpc) {
     this.name = name;
     this.partitionManager = tpc;
   }

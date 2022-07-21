@@ -60,60 +60,6 @@ class DirectoryMCollection(
             }
         }
     }
-
-    /*
-    override fun iterator(): MutableIterator<MFile> {
-        return DirectoryStreamIterator()
-    }
-
-    private inner class DirectoryStreamIterator() : MutableIterator<MFile> {
-        val dirStream: DirectoryStream<Path> =  if (glob != null) Files.newDirectoryStream(collectionDir, glob)
-                                                else if (filter != null) Files.newDirectoryStream(collectionDir, filter)
-                                                else Files.newDirectoryStream(collectionDir)
-        val dirStreamIterator: Iterator<Path> = dirStream.iterator()
-        var nextMFile: MFile? = null
-        val now = System.currentTimeMillis()
-
-        override fun hasNext(): Boolean {
-            while (true) {
-                if (!dirStreamIterator.hasNext()) {
-                    nextMFile = null
-                    close()
-                    return false
-                }
-                return try {
-                    val nextPath = dirStreamIterator.next()
-                    val attr = Files.readAttributes(nextPath, BasicFileAttributes::class.java)
-                    if (attr.isDirectory) continue
-                    val last = attr.lastModifiedTime().toMillis()
-                    lastModified = if (lastModified == null) last else Math.max(lastModified!!, last)
-                    if (olderThanMillis == null || (now - last) >= olderThanMillis) {
-                        nextMFile = MFileOS7(nextPath, attr)
-                    }
-                    true
-                } catch (e: IOException) {
-                    throw RuntimeException(e)
-                }
-            }
-        }
-
-        override fun next(): MFile {
-            if (nextMFile == null) throw NoSuchElementException()
-            return nextMFile!!
-        }
-
-        override fun remove() {
-            throw NotImplementedError()
-        }
-
-        // better alternative is for caller to send in callback (Visitor pattern)
-        // then we could use the try-with-resource
-        fun close() {
-            dirStream.close()
-        }
-    }
-
-     */
 }
 
 fun makeDirectoryCollectionName(topCollectionName: String, dir: Path): String {

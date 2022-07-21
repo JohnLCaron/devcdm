@@ -17,8 +17,7 @@ fun createPartitionIndex(
     config: GribConfig?,
     errlog: Formatter
 ): GribCollection? {
-    dcm.setAuxInfo(GribConfig.AUX_CONFIG, config)
-    val builder = GribPartitionBuilder(dcm.collectionName, File(dcm.root), dcm, isGrib1)
+    val builder = GribPartitionBuilder(dcm.collectionName, File(dcm.root), dcm, config, isGrib1)
 
     if (builder.createPartitionedIndex(update, errlog)) {
         // read it back in

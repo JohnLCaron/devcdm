@@ -6,11 +6,11 @@
 package dev.ucdm.grib.common;
 
 import dev.ucdm.core.calendar.CalendarDate;
+import dev.ucdm.grib.inventory.SingleFileMCollection;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import dev.ucdm.grib.inventory.MCollectionSingleFile;
 import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.collection.Grib1Collection;
 import dev.ucdm.grib.collection.Grib1CollectionBuilder;
@@ -28,8 +28,6 @@ import dev.ucdm.grib.grib1.record.Grib1RecordScanner;
 import dev.ucdm.grib.grib2.record.Grib2RecordScanner;
 import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.GribCollectionIndexWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.core.util.StringUtil2;
@@ -86,7 +84,7 @@ public class GribCollectionIndex {
 
     File dataFile = new File(dataRaf.getLocation());
     MFile mfile = new MFileOS(dataFile);
-    MCollection dcm = new MCollectionSingleFile(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
+    MCollection dcm = new SingleFileMCollection(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
     return updateCollectionIndex(isGrib1, dcm, update, config, errlog);
   }
 

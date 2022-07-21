@@ -8,7 +8,6 @@ package dev.ucdm.grib.collection;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.util.StringUtil2;
-import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.util.GribIndexCache;
@@ -33,7 +32,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * GribPartitionBuilder creates GribPartition which is written by GribPartitionIndexWriter to an index.
@@ -41,9 +39,6 @@ import java.util.Objects;
  */
 public class GribPartition {
   private static final Logger logger = LoggerFactory.getLogger(GribPartition.class);
-  private static final boolean debugIndexOnly = false;
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public class DatasetP {
     public CollectionType gctype;
@@ -74,7 +69,7 @@ public class GribPartition {
     public final List<VariableIndexPartitioned> variList;
     public List<Coordinate> coords; // shared coordinates
     public int[] filenose; // key for GC.fileMap
-    HashMap<Object, VariableIndexPartitioned> varHashCodes = new HashMap<>();;
+    HashMap<Object, VariableIndexPartitioned> varHashCodes = new HashMap<>();
 
     // copy constructor for PartitionBuilder
     GroupP(GribCollection.GroupGC from) {
@@ -440,11 +435,6 @@ public class GribPartition {
     datasets.add(result);
     return result;
   }
-
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // construct - going to write index
 
   /**
    * Create a VariableIndexPartitioned, add it to the given group

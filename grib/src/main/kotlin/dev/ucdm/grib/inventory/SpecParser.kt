@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  * Parses the collection specification string.
  * The idea is that one copies the full path of an example dataset, then edits it.
  *
- * Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/ ** /GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$"
+ * Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$"
  *   rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/
  *   subdirs=true (because ** is present)
  *   dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"
@@ -29,7 +29,7 @@ import java.util.regex.Pattern
 data class SpecParser(
     val spec: String,
     val rootDir: String,
-    val subdirs : Boolean ,// recurse into subdirectories under the root dir
+    val subdirs : Boolean, // recurse into subdirectories under the root dir
     val filterOnName : Boolean, // filter on name, else on entire path
     val regexp : Pattern?, // regexp filter
     val dateFormatMark: String?
@@ -113,5 +113,5 @@ fun createSpecParser(collectionSpec: String, errlog: Formatter?) : SpecParser {
     }
     val filterOnName = true
 
-    return SpecParser(spec, rootDir, subdirs, filterOnName , regexp, dateFormatMark)
+    return SpecParser(spec, rootDir, subdirs, filterOnName, regexp, dateFormatMark)
 }

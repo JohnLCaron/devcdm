@@ -41,8 +41,9 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
   static final int minVersion = 1; // if less than this, force rewrite or at least do not read
   protected static final int version = 3; // increment this as needed, must be backwards compatible through minVersion
 
+  protected final MCollection dcm;
   public Grib1CollectionIndexWriter(MCollection dcm) {
-    super(dcm);
+    this.dcm = dcm;
   }
 
   public static class Group implements GribCollectionBuilder.Group {

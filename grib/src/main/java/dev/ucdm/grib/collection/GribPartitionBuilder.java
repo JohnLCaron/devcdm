@@ -37,11 +37,11 @@ public class GribPartitionBuilder {
   private final GribConfig gribConfig;
   private final boolean isGrib1;
 
-  public GribPartitionBuilder(String name, File directory, MPartition tpc, boolean isGrib1) {
+  public GribPartitionBuilder(String name, File directory, MPartition tpc, GribConfig gribConfig, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
     this.pCollection = tpc;
-    this.gribConfig = (GribConfig) tpc.getAuxInfo(GribConfig.AUX_CONFIG);
+    this.gribConfig = gribConfig;
     this.isGrib1 = isGrib1;
   }
 
@@ -67,17 +67,18 @@ public class GribPartitionBuilder {
   private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
     long collectionLastModified = collectionIndexFile.lastModified();
     Set<String> newFileSet = new HashSet<>();
-    for (MCollection dcm : pCollection.makeCollections(CollectionUpdateType.test)) {
+
+    pCollection.iterateOverMCollections( dcm -> {
       String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCollectionIndex.NCX_SUFFIX), '\\', "/");
       File partitionIndexFile = GribIndexCache.getExistingFileOrCache(partitionIndexFilename);
       if (partitionIndexFile == null) { // make sure each partition has an index
-        return true;
+        return; // true;
       }
       if (collectionLastModified < partitionIndexFile.lastModified()) { // and the partition is earlier collection
-        return true;
+        return; // true;
       }
       newFileSet.add(partitionIndexFilename);
-    }
+    });
 
     if (ff == CollectionUpdateType.testIndexOnly) {
       return false;
@@ -141,11 +142,11 @@ public class GribPartitionBuilder {
       errlog = new Formatter(); // info will be discarded
 
     // create partitions from the MCollection
-    for (MCollection dcmp : pCollection.makeCollections(forcePartition)) {
+    pCollection.iterateOverMCollections( dcmp -> {
       // LOOK shouldnt MPartition do this?
-      dcmp.setAuxInfo(GribConfig.AUX_CONFIG, pCollection.getAuxInfo(GribConfig.AUX_CONFIG));
+      dcmp.setAuxInfo(GribConfig.AUX_CONFIG, gribConfig);
       result.addChildCollection(dcmp);
-    }
+    });
     result.sortChildCollections(); // after this the partition list is immutable
 
     // choose the "canonical" partition, aka prototype, only used in copyInfo
