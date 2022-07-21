@@ -28,9 +28,9 @@ public abstract class GridTimeCoordinateSystem {
     Observation,
     /** Single runtime. */
     SingleRuntime,
-    /** Muliple runtimes all having the same time offsets (orthogonal). */
+    /** Multiple runtimes all having the same time offsets (orthogonal). */
     Offset,
-    /** All runtimes, grouped by time since 0z, have the same offsets (regulat). */
+    /** All runtimes, grouped by time since 0z, have the same offsets (regular). */
     OffsetRegular,
     /** Runtimes that have irregular offsets. */
     OffsetIrregular

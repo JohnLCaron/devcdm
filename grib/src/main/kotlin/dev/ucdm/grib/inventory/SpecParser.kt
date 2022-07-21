@@ -1,4 +1,4 @@
-package dev.ucdm.grib.spec
+package dev.ucdm.grib.inventory
 
 import java.io.File
 import java.nio.file.FileSystems

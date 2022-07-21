@@ -9,17 +9,19 @@ import java.nio.charset.StandardCharsets;
 
 import com.google.protobuf.ByteString;
 import dev.ucdm.grib.collection.CollectionType;
-import dev.ucdm.grib.collection.GcMFile;
+import dev.ucdm.grib.inventory.GcMFile;
 import dev.ucdm.grib.collection.Grib1CollectionBuilder;
 import dev.ucdm.grib.collection.GribCollectionBuilder;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.MCollection;
-import dev.ucdm.grib.collection.MFile;
+import dev.ucdm.grib.inventory.MCollection;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.grib1.record.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,13 +35,14 @@ import java.util.Set;
  * The generated proto code is in dev.ucdm.grib.protogen.GribCollectionProto.
  */
 public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
+  private static final Logger logger = LoggerFactory.getLogger(Grib1CollectionIndexWriter.class);
 
   public static final String MAGIC_START = "Grib1Collectio2Index"; // was Grib1CollectionIndex
   static final int minVersion = 1; // if less than this, force rewrite or at least do not read
   protected static final int version = 3; // increment this as needed, must be backwards compatible through minVersion
 
-  public Grib1CollectionIndexWriter(MCollection dcm, org.slf4j.Logger logger) {
-    super(dcm, logger);
+  public Grib1CollectionIndexWriter(MCollection dcm) {
+    super(dcm);
   }
 
   public static class Group implements GribCollectionBuilder.Group {
@@ -144,38 +147,6 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
       raf.writeLong(countBytes);
       raf.seek(pos); // back to the output.
 
-
-      /*
-       * message GribCollection {
-       * string name = 1; // must be unique - index filename is name.ncx
-       * string topDir = 2; // MFile, Partition filenames are reletive to this
-       * repeated MFile mfiles = 3; // list of grib MFiles
-       * repeated Dataset dataset = 4;
-       * repeated Gds gds = 5; // unique Gds, shared amongst datasets
-       * Coord masterRuntime = 6; // list of runtimes in this GC
-       * 
-       * int32 center = 7; // these 4 fields are to get a GribCustomizer
-       * int32 subcenter = 8;
-       * int32 master = 9;
-       * int32 local = 10; // grib1 table Version
-       * 
-       * int32 genProcessType = 11;
-       * int32 genProcessId = 12;
-       * int32 backProcessId = 13;
-       * int32 version = 14; // >= 3 for proto3 (5.0+)
-       * 
-       * // repeated Parameter params = 20; // not used
-       * FcConfig config = 21;
-       * uint64 startTime = 22; // calendar date, first valid time
-       * uint64 endTime = 23; // calendar date, last valid time
-       * 
-       * // extensions
-       * repeated Partition partitions = 100;
-       * bool isPartitionOfPartitions = 101;
-       * repeated uint32 run2part = 102 [packed=true]; // masterRuntime index to partition index
-       * }
-       */
-
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(name);
       indexBuilder.setTopDir(dcm.getRoot());
@@ -197,7 +168,7 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
 
       // gds
       for (Group g : groups) {
-        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+        indexBuilder.addGds(publishGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
       }
 
       // the GC dataset
@@ -231,24 +202,6 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
       }
     }
   }
-
-  /*
-   * message Record {
-   * uint32 fileno = 1; // which GRIB file ? key into GC.fileMap
-   * uint64 pos = 2; // offset in GRIB file of the start of entire message
-   * uint64 bmsPos = 3; // use alternate bms if non-zero (grib2 only)
-   * uint32 drsOffset = 4; // offset of drs from pos (grib2 only)
-   * }
-   * 
-   * // SparseArray only at the GCs (MRC and SRC) not at the Partitions
-   * // dont need SparseArray in memory until someone wants to read from the variable
-   * message SparseArray {
-   * repeated uint32 size = 2 [packed=true]; // multidim sizes = shape[]
-   * repeated uint32 track = 3 [packed=true]; // 1-based index into record list, 0 == missing
-   * repeated Record records = 4; // List<Record>
-   * uint32 ndups = 5; // duplicates found when creating
-   * }
-   */
   private GribCollectionProto.SparseArray publishSparseArray(Grib1CollectionBuilder.VariableBag vb,
                                                              Set<Integer> fileSet) {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
@@ -275,11 +228,6 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
     return b.build();
   }
 
-  /*
-   * message Dataset {
-   * Type type = 1;
-   * repeated Group groups = 2;
-   */
   private GribCollectionProto.Dataset publishDatasetProto(CollectionType type, List<Group> groups) {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
@@ -293,18 +241,10 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
     return b.build();
   }
 
-  /*
-   * message Group {
-   * Gds gds = 1; // use this to build the HorizCoordSys
-   * repeated Variable variables = 2; // list of variables
-   * repeated Coord coords = 3; // list of coordinates
-   * repeated int32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
-   * }
-   */
-  private GribCollectionProto.Group publishGroupProto(Group g) {
+   private GribCollectionProto.Group publishGroupProto(Group g) {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+    b.setGds(publishGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
     for (Grib1CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(publishVariableProto(vbag));

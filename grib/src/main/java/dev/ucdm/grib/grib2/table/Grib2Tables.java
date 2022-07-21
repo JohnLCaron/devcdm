@@ -191,6 +191,7 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
     return getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
   }
 
+  @Nullable
   public GribTables.Parameter getParameter(int discipline, Grib2Pds pds) {
     return getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
   }

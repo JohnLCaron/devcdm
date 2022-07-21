@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableList;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.GribCollectionIndex;
-import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.PartitionedReaderRecord;
 import dev.ucdm.grib.common.util.SmartArrayInt;
@@ -32,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Stored into, and read back from a partition collection index. */
 public class Partitions implements Closeable {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Partitions.class);
 
@@ -88,7 +88,7 @@ public class Partitions implements Closeable {
   public GribCollection getGribCollectionForPartition(Partition partition) {
     return partitionMap.computeIfAbsent(partition, (p) -> {
       try {
-        return GribCollectionIndex.openNcxIndex(p.getIndexPath(), new GribConfig(), true);
+        return GribCollectionIndex.readCollectionFromIndex(p.getIndexPath(), true);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -264,7 +264,7 @@ public class Partitions implements Closeable {
     }
     for (GribCollection.GroupGC groupHcs : ds2d.getGroups()) {
       if (groupHcs.getGdsHash().equals(hcs.getGdsHash())) {
-        return groupHcs.findVariableByHash(vi);
+        return groupHcs.findVariableByHash(vi.hashCode());
       }
     }
     return null;

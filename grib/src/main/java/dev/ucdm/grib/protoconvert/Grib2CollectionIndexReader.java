@@ -15,12 +15,7 @@ import dev.ucdm.grib.grib2.table.Grib2Tables;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
 /**
- * Build a GribCollection object for Grib-2 files. Only from ncx files.
- * No updating, no nuthin.
- * Data file is not opened.
- *
- * @author caron
- * @since 11/9/13
+ * Build a GribCollection object for Grib-2 files by reading from an ncx files.
  */
 public class Grib2CollectionIndexReader extends GribCollectionIndexReader {
   static final int minVersion = 1; // increment this when you want to force index rebuild

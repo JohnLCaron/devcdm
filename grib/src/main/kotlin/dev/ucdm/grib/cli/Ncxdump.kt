@@ -20,9 +20,10 @@ import dev.ucdm.grib.protoconvert.Grib2CollectionIndexReader
 import dev.ucdm.grib.protoconvert.GribCollectionIndexReader
 import dev.ucdm.grib.protoconvert.Streams
 import dev.ucdm.grib.protogen.GribCollectionProto
-
-import kotlinx.cli.*
-import java.util.*
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.default
+import kotlinx.cli.required
 
 fun main(args: Array<String>) {
     val parser = ArgParser("ncxdump")
@@ -31,8 +32,11 @@ fun main(args: Array<String>) {
         shortName = "in",
         description = "input dataset to dump"
     ).required()
-
-
+    val showSparseArrays by parser.option(
+        ArgType.Boolean,
+        shortName = "sparse",
+        description = "show sparse arrays"
+    ).default(false)
     parser.parse(args)
 
     print("***************\nncxdump ")
@@ -40,15 +44,16 @@ fun main(args: Array<String>) {
     println("\n")
 
     RandomAccessFile(input, "r").use { raf ->
-        val reader = NcxDump(raf)
+        val reader = NcxDump(raf, showSparseArrays)
         reader.dumpIndex()
     }
 }
 
-class NcxDump(val raf: RandomAccessFile) {
+class NcxDump(val raf: RandomAccessFile, val showSparseArrays : Boolean) {
     val indexReader : GribCollectionIndexReader
     val isGrib1 : Boolean
     val custom : GribTables
+    val sparseArrays = mutableListOf<GribCollectionProto.Variable>()
 
     init {
         val name = raf.getLocation()
@@ -57,17 +62,18 @@ class NcxDump(val raf: RandomAccessFile) {
         val collectionType = GribCollectionIndex.getType(raf)
         this.isGrib1 = collectionType == GribCollectionIndex.Type.GRIB1 || collectionType == GribCollectionIndex.Type.Partition1
 
-        this.indexReader = if (isGrib1) {
+        indexReader = if (isGrib1) {
             val gc = Grib1Collection(name, null, config)
             Grib1CollectionIndexReader(gc, config)
         } else {
             val gc = Grib2Collection(name, null, config)
             Grib2CollectionIndexReader(gc, config)
         }
+        indexReader.readIndex(raf)
         this.custom = indexReader.makeCustomizer()
     }
 
-    fun dumpIndex(): Boolean {
+    fun dumpIndex() {
         val indent = Indent(2)
         println("raf = '${raf.getLocation()}'")
         raf.order(RandomAccessFile.BIG_ENDIAN)
@@ -78,11 +84,11 @@ class NcxDump(val raf: RandomAccessFile) {
         val version = raf.readInt()
 
         // these are the variable records
-        val skip = raf.readLong()
-        raf.skipBytes(skip)
+        val sparseArraySize = raf.readLong()
+        raf.skipBytes(sparseArraySize)
 
         val size = Streams.readVInt(raf)
-        println("${indent}'${magic}' version=$version variableSkip=$skip GribCollectionProtoSize=$size")
+        println("${indent}'${magic}' version=$version sparseArraySize=$sparseArraySize GribCollectionProtoSize=$size")
 
         // The GribCollectionProto
         val m = ByteArray(size)
@@ -122,8 +128,34 @@ class NcxDump(val raf: RandomAccessFile) {
                 showPartition(indent.incrNew(), it)
             }
         }
+
+        if (showSparseArrays) {
+            println("${indent}sparseArrays")
+            indent.incr()
+            var totalRecords = 0
+            var totalExpected = 0
+            var saSize = 0L
+            sparseArrays.forEach{ vp ->
+                val b = ByteArray(vp.recordsLen)
+                raf.seek(vp.recordsPos)
+                raf.readFully(b)
+                val saProto = GribCollectionProto.SparseArray.parseFrom(b)
+
+                val pds2 = Grib2SectionProductDefinition(vp.pds.toByteArray()).pds
+                val p = Parameter(vp.discipline, pds2)
+                println("${indent}'${p.name}' shape=${saProto.sizeList} " +
+                        "uniqueRecords=${saProto.trackCount} allRecords=${saProto.recordsCount} ndups=${saProto.ndups}" +
+                        " protoSize=${vp.recordsLen}")
+
+                totalRecords += saProto.trackCount
+                totalExpected += saProto.recordsCount
+                saSize += vp.recordsLen
+            }
+            indent.decr()
+            println()
+            println("${indent}totalUnique=${totalRecords} totalRecords=${totalExpected}  sparseArraySize=${saSize} avgRecordSize = ${saSize/totalRecords}")
+        }
         indent.decr()
-        return true
     }
 
     fun showGroup(indent: Indent, proto: GribCollectionProto.Group) {
@@ -139,6 +171,7 @@ class NcxDump(val raf: RandomAccessFile) {
         println("${indent}variables ")
         proto.variablesList.forEach {
             showVariable(indent.incrNew(), it)
+            sparseArrays.add(it)
         }
         println("${indent}files=${proto.filenoList}")
         println()
@@ -166,7 +199,7 @@ class NcxDump(val raf: RandomAccessFile) {
         } else {
             val pds2 = Grib2SectionProductDefinition(proto.pds.toByteArray()).pds
             val p = Parameter(proto.discipline, pds2)
-            println("${indent}'${p.name}' ${p.id} ${pds2.show(Formatter())} coordIdx=${proto.coordIdxList}")
+            println("${indent}'${p.name}' ${p.id} ${pds2} coordIdx=${proto.coordIdxList}")
         }
         println("${indent}  ndups=${proto.ndups} nrecords=${proto.nrecords} missing=${proto.missing}")
     }
@@ -182,14 +215,19 @@ class NcxDump(val raf: RandomAccessFile) {
 
     inner class Parameter(val discipline : Int, pds : Grib2Pds) {
         val custom2 : Grib2Tables
-        val param : GribTables.Parameter
+        val param : GribTables.Parameter?
         init {
             this.custom2 = custom as Grib2Tables
+            if (custom2.getParameter(discipline, pds) == null) {
+                custom2.getParameter(discipline, pds)
+            }
             this.param =  custom2.getParameter(discipline, pds)
         }
 
-        val id : String = param.id
-        val name : String = custom2.getVariableName(param.discipline, param.category, param.number)
+        val id : String = param?.id ?: "N/A"
+        val name : String =
+            if (param != null) custom2.getVariableName(param.discipline, param.category, param.number)
+            else "N/A"
     }
 
 }

@@ -19,10 +19,7 @@ import dev.ucdm.grib.protogen.GribCollectionProto;
 import java.io.IOException;
 
 /**
- * Grib1-specific reading of ncx files.
- *
- * @author caron
- * @since 2/20/14
+ * Build a GribCollection object for Grib-1 files by reading from an ncx files.
  */
 public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
 

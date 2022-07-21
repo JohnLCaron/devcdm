@@ -8,7 +8,7 @@ package dev.ucdm.grib.common;
 import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.collection.CollectionUpdateType;
-import dev.ucdm.grib.collection.MFile;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.protoconvert.Grib1Index;
 import dev.ucdm.grib.protoconvert.Grib1IndexProto;
@@ -53,7 +53,7 @@ public abstract class GribIndex {
       // look to see if the index file is older than the data file
       boolean isOlder = idxFile.lastModified() < mfile.getLastModified();
 
-      if (force == CollectionUpdateType.nocheck || isOlder) {
+      if (force != CollectionUpdateType.nocheck || isOlder) {
         // try to read it
         index = Grib2IndexProto.readGrib2Index(idxFile.getAbsolutePath());
       }

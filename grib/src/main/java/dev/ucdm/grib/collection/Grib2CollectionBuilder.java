@@ -21,6 +21,8 @@ import dev.ucdm.grib.grib2.record.Grib2Gds;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
+import dev.ucdm.grib.inventory.MCollection;
+import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.Grib2Index;
 
@@ -56,36 +58,30 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     Map<GroupAndRuntime, Grib2CollectionIndexWriter.Group> gdsMap = new HashMap<>();
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
-    int fileno = 0;
     GribRecordStats statsAll = new GribRecordStats(); // debugging
 
     logger.debug(" dcm={}", dcm);
 
     // place each record into its Grib2CollectionPublish.Group, based on Grib2Gds.hashCode
-    int totalRecords = 0;
-    for (MFile mfile : dcm) {
+    dcm.iterateOverMFiles(mfile -> {
+      int fileno = 0;
+      int totalRecords = 0;
       Grib2Index index = null;
 
+      Formatter gbxerrors = new Formatter();
       try {
-        if (GribConstants.debugGbxIndexOnly) {
-          index = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.never, errlog);
-          if (index == null)
-            continue;
-        } else {
-          // LOOK not using the CollectionUpdateType from GribCOllectionINdex
-          index = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.test, errlog);
-        }
+        CollectionUpdateType update = GribConstants.debugGbxIndexOnly ? CollectionUpdateType.never : CollectionUpdateType.test;
+        // LOOK not using the CollectionUpdateType from GribCOllectionINdex
+        index = GribIndex.readOrCreateIndex2(mfile, update, gbxerrors);
         allFiles.add(mfile); // add on success
 
       } catch (IOException ioe) {
-        logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath()
-                + " failed", ioe);
-        continue;
+        logger.error("Grib2CollectionBuilder {} : reading/Creating gbx9 index for file {} failed\n{}", name, mfile.getPath(), ioe);
+        return;
       }
       if (index == null) {
-        logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath()
-                + " failed");
-        continue;
+        logger.error("Grib2CollectionBuilder {} : reading/Creating gbx9 index for file {} failed\n{}", name, mfile.getPath(), gbxerrors);
+        return;
       }
       int n = index.getNRecords();
       totalRecords += n;
@@ -104,8 +100,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         Grib2Gds gds = gr.getGDS(); // use GDS to group records
         // allow external config to muck with gdsHash, because of error in encoding and we need exact hash matching
         int hashCode = gribConfig.convertGdsHash(gds.hashCode());
-        if (0 == hashCode)
+        if (0 == hashCode) {
           continue; // skip this group
+        }
         // GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashCode);
 
         CalendarDate runtimeDate = gr.getReferenceDate();
@@ -122,12 +119,12 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       }
       fileno++;
       statsAll.recordsTotal += index.getRecords().size();
-    }
 
-    if (totalRecords == 0) {
-      logger.warn("No records found in files. Check Grib1/Grib2 for collection {}. If wrong, delete gbx9.", name);
-      throw new IllegalStateException("No records found in dataset " + name);
-    }
+      if (totalRecords == 0) {
+        logger.warn("No records found in files. Check Grib1/Grib2 for collection {}. If wrong, delete gbx9.", name);
+        throw new IllegalStateException("No records found in dataset " + name);
+      }
+    });
 
     // rectilyze each group independently
     List<Grib2CollectionIndexWriter.Group> groups = new ArrayList<>(gdsMap.values());
@@ -191,7 +188,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
                                List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange)
           throws IOException {
-    Grib2CollectionIndexWriter writer = new Grib2CollectionIndexWriter(dcm, logger);
+    Grib2CollectionIndexWriter writer = new Grib2CollectionIndexWriter(dcm);
     List<Grib2CollectionIndexWriter.Group> groups2 = new ArrayList<>();
     // copy to change GribCollectionBuilder.Group -> GribCollectionPublish.Group
     for (Object g : groups) {
@@ -210,8 +207,8 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     public CalendarPeriod timeUnit;
 
     public List<Integer> coordIndex;
-    public long pos;
-    public int length;
+    public long pos;    // ncx4 file pos of GribCollectionProto.SparseArray
+    public int length;  // ncx4 file length of GribCollectionProto.SparseArray
 
     private VariableBag(Grib2Record first, Grib2Variable gv) {
       this.first = first;

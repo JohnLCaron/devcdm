@@ -278,6 +278,11 @@ public abstract class Grib2Pds {
     return f;
   }
 
+  public String toString() {
+    return String.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(),
+            getParameterNumber(), template, getForecastTime(), getTimeUnit(), getLevelValue1());
+  }
+
   /**
    * Get the index'th byte in the PDS as an unsigned integer.
    * INDEX IS ONE BASED (not zero) to correspond with the manual.

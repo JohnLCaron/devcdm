@@ -6,11 +6,11 @@
 package dev.ucdm.grib.protoconvert;
 
 import com.google.protobuf.ByteString;
-import dev.ucdm.grib.collection.MCollection;
+import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
-/** Common superclass for writing Grib ncx files */
+/** Common superclass for writing Grib Collection index (ncx) files */
 public class GribCollectionIndexWriter {
   public static final String PARTITION2_START = "Grib2Partition2Index"; // was Grib2Partition0Index
   public static final String PARTITION1_START = "Grib1Partition2Index"; // was Grib1Partition0Index
@@ -18,14 +18,12 @@ public class GribCollectionIndexWriter {
   static final int currentVersion = 1;
 
   protected final MCollection dcm;
-  protected final org.slf4j.Logger logger;
 
-  public GribCollectionIndexWriter(MCollection dcm, org.slf4j.Logger logger) {
+  public GribCollectionIndexWriter(MCollection dcm) {
     this.dcm = dcm;
-    this.logger = logger;
   }
 
-  static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) {
+  static GribCollectionProto.Gds publishGdsProto(byte[] rawGds, int predefinedGridDefinition) {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
 
     if (predefinedGridDefinition >= 0)
@@ -161,6 +159,5 @@ public class GribCollectionIndexWriter {
       case vert -> GribCollectionProto.GribAxisType.vert;
     };
   }
-
 
 }

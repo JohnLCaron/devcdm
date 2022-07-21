@@ -39,8 +39,43 @@ class TestNcxdump {
     }
 
     @Test
-    fun testHrrr() {
+    fun testHrrrPartition() {
         main(arrayOf("-in", oldTestDir + "gribCollections/hrrr/GSD_HRRR_CONUS_3km_surface.ncx4"))
+    }
+
+    @Test
+    fun testHrrrCollectionOld() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.ncx4"))
+    }
+
+    @Test
+    fun testHrrrCollectionNew() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/hrrr/topdog-hrrr.ncx4"))
+    }
+
+    @Test
+    fun testGbx9CollectionOld() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/namAlaska22/namAlaska22.ncx4"))
+    }
+
+    @Test
+    fun testGbx9CollectionNew() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/namAlaska22/topdog-namAlaska22.ncx4", "-sparse"))
+    }
+
+    @Test
+    fun testPartitionOldSub() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/GFS_CONUS_80km_20141025_0000.grib1.ncx4"))
+    }
+
+    @Test
+    fun testPartitionOld() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/gfsConus80_file-20141025.ncx4"))
+    }
+
+    @Test
+    fun testPartitionNew() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/testCreatePartitionIndex-20141025.ncx4"))
     }
 
 }
