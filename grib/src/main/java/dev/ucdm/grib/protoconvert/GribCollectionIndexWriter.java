@@ -6,7 +6,6 @@
 package dev.ucdm.grib.protoconvert;
 
 import com.google.protobuf.ByteString;
-import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
@@ -16,12 +15,6 @@ public class GribCollectionIndexWriter {
   public static final String PARTITION1_START = "Grib1Partition2Index"; // was Grib1Partition0Index
 
   static final int currentVersion = 1;
-
-  protected final MCollection dcm;
-
-  public GribCollectionIndexWriter(MCollection dcm) {
-    this.dcm = dcm;
-  }
 
   static GribCollectionProto.Gds publishGdsProto(byte[] rawGds, int predefinedGridDefinition) {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();

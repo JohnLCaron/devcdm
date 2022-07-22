@@ -5,12 +5,9 @@
 
 package dev.ucdm.grib.collection;
 
-import javax.annotation.Nonnull;
-;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.calendar.CalendarPeriod;
-import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
@@ -29,6 +26,7 @@ import dev.ucdm.grib.protoconvert.Grib2Index;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Builds ncx indexes for collections of Grib2 files.
@@ -39,10 +37,10 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
   private Grib2Tables cust;
 
   // TODO probable name could just be dcm.getCollectionName()
-  public Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+  public Grib2CollectionBuilder(String name, MCollection dcm, GribConfig config, org.slf4j.Logger logger) {
     super(false, name, dcm, logger);
 
-    this.gribConfig = (GribConfig) dcm.getAuxInfo(GribConfig.AUX_CONFIG);
+    this.gribConfig = config;
   }
 
   /**
@@ -59,20 +57,17 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
     GribRecordStats statsAll = new GribRecordStats(); // debugging
-
-    logger.debug(" dcm={}", dcm);
+    // need a final object holding a mutable integer
+    AtomicInteger fileno = new AtomicInteger(0);
 
     // place each record into its Grib2CollectionPublish.Group, based on Grib2Gds.hashCode
     dcm.iterateOverMFiles(mfile -> {
-      int fileno = 0;
-      int totalRecords = 0;
       Grib2Index index = null;
 
       Formatter gbxerrors = new Formatter();
       try {
-        CollectionUpdateType update = GribConstants.debugGbxIndexOnly ? CollectionUpdateType.never : CollectionUpdateType.test;
-        // LOOK not using the CollectionUpdateType from GribCOllectionINdex
-        index = GribIndex.readOrCreateIndex2(mfile, update, gbxerrors);
+        // here is where gbx9 files get created or updated
+        index = GribIndex.readOrCreateIndex2(mfile, gbxerrors);
         allFiles.add(mfile); // add on success
 
       } catch (IOException ioe) {
@@ -83,8 +78,6 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         logger.error("Grib2CollectionBuilder {} : reading/Creating gbx9 index for file {} failed\n{}", name, mfile.getPath(), gbxerrors);
         return;
       }
-      int n = index.getNRecords();
-      totalRecords += n;
 
       for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
         if (this.cust == null) {
@@ -96,15 +89,13 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           continue; // skip
         }
 
-        gr.setFile(fileno); // each record tracks which file it belongs to
+        gr.setFile(fileno.get()); // each record tracks which file it belongs to
         Grib2Gds gds = gr.getGDS(); // use GDS to group records
         // allow external config to muck with gdsHash, because of error in encoding and we need exact hash matching
         int hashCode = gribConfig.convertGdsHash(gds.hashCode());
         if (0 == hashCode) {
           continue; // skip this group
         }
-        // GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashCode);
-
         CalendarDate runtimeDate = gr.getReferenceDate();
         // separate Groups for each runtime, if singleRuntime == true
         long runtime = singleRuntime ? runtimeDate.getMillisFromEpoch() : 0;
@@ -117,14 +108,14 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
         g.records.add(gr);
         g.runtimes.add(runtimeDate.getMillisFromEpoch());
       }
-      fileno++;
+      fileno.incrementAndGet();
       statsAll.recordsTotal += index.getRecords().size();
-
-      if (totalRecords == 0) {
-        logger.warn("No records found in files. Check Grib1/Grib2 for collection {}. If wrong, delete gbx9.", name);
-        throw new IllegalStateException("No records found in dataset " + name);
-      }
     });
+
+    if (statsAll.recordsTotal == 0) {
+      logger.warn("No Grib1 records found in collection {}.", name);
+      throw new IllegalStateException("No records found in dataset " + name);
+    }
 
     // rectilyze each group independently
     List<Grib2CollectionIndexWriter.Group> groups = new ArrayList<>(gdsMap.values());
@@ -216,7 +207,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     @Override
-    public int compareTo(@Nonnull VariableBag o) {
+    public int compareTo(VariableBag o) {
       return Grib2Utils.getVariableName(first).compareTo(Grib2Utils.getVariableName(o.first));
     }
   }
@@ -255,11 +246,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           logger.warn("Exception on record ", t);
           continue; // keep going
         }
-        VariableBag bag = vbHash.get(gv);
-        if (bag == null) {
-          bag = new VariableBag(gr, gv);
-          vbHash.put(gv, bag);
-        }
+        VariableBag bag = vbHash.computeIfAbsent(gv, g2v -> new VariableBag(gr, g2v));
         bag.atomList.add(gr);
       }
       gribvars = new ArrayList<>(vbHash.values());

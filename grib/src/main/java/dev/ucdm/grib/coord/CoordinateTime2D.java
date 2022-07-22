@@ -577,105 +577,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return (wholeIndex[0] >= 0) && (wholeIndex[1] >= 0);
   }
 
-  /**
-   * Find the index matching a runtime and time coordinate
-   * 
-   * @param runIdx which run
-   * @param value time coordinate
-   * @return index in the time coordinate of the value
-   */
-  public int matchTimeCoordinate(int runIdx, Time2D value) {
-    CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
-    int offset = (int) value.getRefDate().since(getRefDate(runIdx), timeUnit);
-    // int offset = timeUnit.getOffset(getRefDate(runIdx), value.getRefDate());
-
-    Object valueWithOffset;
-    if (isTimeInterval) {
-      valueWithOffset = value.tinv.offset(offset);
-    } else {
-      valueWithOffset = value.time + offset;
-    }
-    int result = time.getIndex(valueWithOffset);
-
-    return result;
-  }
-
   ///////////////////////////////////////////////////////////////////////////////////////
-
-  protected CoordinateTimeAbstract makeBestFromComplete(int[] best, int n) {
-    throw new UnsupportedOperationException();
-  }
-
-  public CoordinateTimeAbstract makeTime2Runtime(CoordinateRuntime master) {
-    if (isTimeInterval) {
-      return makeBestTimeIntv(master);
-    } else {
-      return makeBestTime(master);
-    }
-  }
-
-  public CoordinateTimeAbstract makeBestTimeCoordinate(CoordinateRuntime master) {
-    if (isTimeInterval) {
-      return makeBestTimeIntv(master);
-    } else {
-      return makeBestTime(master);
-    }
-  }
-
-  private CoordinateTimeAbstract makeBestTime(CoordinateRuntime master) {
-    // make complete, unique set of coordinates
-    Set<Long> values = new HashSet<>(); // complete set of values
-    // use times array, passed into constructor, with original inventory, if possible
-    for (int runIdx = 0; runIdx < nruns; runIdx++) {
-      CoordinateTime timeCoord =
-          (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
-      for (Long offset : timeCoord.getOffsetSorted()) {
-        values.add(offset + getOffset(runIdx));
-      }
-    }
-    List<Long> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) {
-      offsetSorted.add((Long) val);
-    }
-    Collections.sort(offsetSorted); // complete set of values
-
-    // fast lookup of offset val in the result CoordinateTime
-    Map<Long, Integer> map = new HashMap<>();
-    int count = 0;
-    for (Long val : offsetSorted) {
-      map.put(val, count++);
-    }
-
-    // fast lookup of the run time in the master
-    int[] run2master = new int[nruns];
-    int masterIdx = 0;
-    for (int run2Didx = 0; run2Didx < nruns; run2Didx++) {
-      while (!master.getRuntimeDate(masterIdx).equals(runtime.getRuntimeDate(run2Didx))) {
-        masterIdx++;
-      }
-      run2master[run2Didx] = masterIdx;
-      masterIdx++;
-    }
-    Preconditions.checkArgument(masterIdx >= nruns);
-
-    // now for each coordinate, use the latest runtime available
-    int[] time2runtime = new int[offsetSorted.size()];
-    for (int runIdx = 0; runIdx < nruns; runIdx++) {
-      CoordinateTime timeCoord =
-          (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
-      Preconditions.checkNotNull(timeCoord);
-      for (Long offset : timeCoord.getOffsetSorted()) {
-        Integer bestValIdx = map.get(offset + getOffset(runIdx));
-        if (bestValIdx == null) {
-          throw new IllegalStateException();
-        }
-        // uses this runtime; later ones override; one based so 0 = missing
-        time2runtime[bestValIdx] = run2master[runIdx] + 1;
-      }
-    }
-
-    return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted, time2runtime);
-  }
 
   // If there are no overlapping times, then we can we make it into an MRUTC.
   public boolean hasUniqueTimes() {
@@ -748,59 +650,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
-  private CoordinateTimeAbstract makeBestTimeIntv(CoordinateRuntime master) {
-    // make unique set of coordinates
-    Set<TimeCoordIntvValue> values = new HashSet<>();
-    for (int runIdx = 0; runIdx < nruns; runIdx++) { // use times array, passed into constructor, with original
-                                                     // inventory, if possible
-      CoordinateTimeIntv timeIntv =
-          (times == null) ? (CoordinateTimeIntv) getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
-      for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-        values.add(tinv.offset(getOffset(runIdx)));
-      }
-    }
-    List<TimeCoordIntvValue> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) {
-      offsetSorted.add((TimeCoordIntvValue) val);
-    }
-    Collections.sort(offsetSorted);
-
-    // fast lookup of offset tinv in the result CoordinateTimeIntv
-    Map<TimeCoordIntvValue, Integer> map = new HashMap<>(); // lookup coord val to index
-    int count = 0;
-    for (TimeCoordIntvValue val : offsetSorted) {
-      map.put(val, count++);
-    }
-
-    // fast lookup of the run time in the master
-    int[] run2master = new int[nruns];
-    int masterIdx = 0;
-    for (int run2Didx = 0; run2Didx < nruns; run2Didx++) {
-      while (!master.getRuntimeDate(masterIdx).equals(runtime.getRuntimeDate(run2Didx))) {
-        masterIdx++;
-      }
-      run2master[run2Didx] = masterIdx;
-      masterIdx++;
-    }
-    Preconditions.checkArgument(masterIdx >= nruns);
-
-    int[] time2runtime = new int[offsetSorted.size()];
-    for (int runIdx = 0; runIdx < nruns; runIdx++) {
-      CoordinateTimeIntv timeIntv =
-          (times == null) ? (CoordinateTimeIntv) getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
-      for (TimeCoordIntvValue bestVal : timeIntv.getTimeIntervals()) {
-        Integer bestValIdx = map.get(bestVal.offset(getOffset(runIdx)));
-        if (bestValIdx == null) {
-          throw new IllegalStateException();
-        }
-        time2runtime[bestValIdx] = run2master[runIdx] + 1; // uses this runtime; later ones override; one based so 0 =
-                                                           // missing
-      }
-    }
-
-    return new CoordinateTimeIntv(getCode(), getTimeUnit(), getRefDate(), offsetSorted, time2runtime);
-  }
-
   ////////////////////////////////////////////////////////
 
   /**
@@ -816,24 +665,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     } else {
       return times;
     }
-  }
-
-  /**
-   * Find index in time coordinate from the time value
-   * 
-   * @param val TimeCoordIntvValue or Integer
-   * @return indx in the time coordinate
-   */
-  public int findTimeIndexFromVal(int runIdx, Object val) {
-    if (isOrthogonal) {
-      return otime.getIndex(val);
-    }
-
-    CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
-    if (time.getNCoords() == 1) {
-      return 0;
-    }
-    return time.getIndex(val); // not sure if its reletive to runtime ??
   }
 
   /**

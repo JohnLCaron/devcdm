@@ -36,8 +36,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /** A mutable class for writing to or reading from ncx indices. */
@@ -114,17 +112,6 @@ public abstract class GribCollection implements Closeable {
       logger.error("GribCollection has null name dir={}%n", directory);
   }
 
-  // for making partition collection
-  void copyInfo(GribCollection from) {
-    this.center = from.center;
-    this.subcenter = from.subcenter;
-    this.master = from.master;
-    this.local = from.local;
-    this.genProcessType = from.genProcessType;
-    this.genProcessId = from.genProcessId;
-    this.backProcessId = from.backProcessId;
-  }
-
   public String getName() {
     return name;
   }
@@ -149,29 +136,6 @@ public abstract class GribCollection implements Closeable {
 
   public boolean isPartitionOfPartitions() {
     return partitions != null && partitions.isPartitionOfPartitions;
-  }
-
-  /**
-   * The files that comprise the collection.
-   * Actual paths, including the grib cache if used.
-   *
-   * @return list of filename.
-   */
-  public List<String> getFilenames() {
-    List<String> result = new ArrayList<>();
-    for (MFile file : fileMap.values())
-      result.add(file.getPath());
-    Collections.sort(result);
-    return result;
-  }
-
-  @Nullable
-  File getIndexParentFile() {
-    if (indexRaf == null)
-      return null;
-    Path index = Paths.get(indexRaf.getLocation());
-    Path parent = index.getParent();
-    return parent.toFile();
   }
 
   public String getFilename(int fileno) {
@@ -306,8 +270,9 @@ public abstract class GribCollection implements Closeable {
     public final List<VariableIndex> variList;
     public List<Coordinate> coords; // shared coordinates
     public int[] filenose; // key for GC.fileMap
-    HashMap<Integer, VariableIndex> varHashCodes;
     public boolean isTwoD = true; // true except for Best (?)
+
+    private HashMap<Object, VariableIndex> varHashCodes;
 
     GroupGC(Dataset ds) {
       this.ds = ds;
@@ -350,34 +315,24 @@ public abstract class GribCollection implements Closeable {
       return horizCoordSys.getHcs();
     }
 
-
     @Override
     public int compareTo(GroupGC o) {
       return getDescription().compareTo(o.getDescription());
     }
 
-    public List<MFile> getFiles() {
-      List<MFile> result = new ArrayList<>();
-      if (filenose == null)
-        return result;
-      for (int fileno : filenose)
-        result.add(fileMap.get(fileno));
-      Collections.sort(result);
-      return result;
-    }
-
-    // get the variable in this group that has same object equality as want
-    public VariableIndex findVariableByHash(int hashCode) {
+    // get the variable in this group that has same object equality as gribVariable
+    public VariableIndex findVariableByHash(Object gribVariable) {
       if (varHashCodes == null) {
         varHashCodes = new HashMap<>(variList.size() * 2);
         for (VariableIndex vi : variList) {
-          VariableIndex old = varHashCodes.put(vi.hashCode(), vi);
+          VariableIndex old = varHashCodes.put(vi.gribVariable, vi);
           if (old != null) {
-            logger.error("GribCollectionMutable has duplicate variable hash {} == {}", vi, old);
+            logger.error("GribCollection has duplicate variable hash {} ({}) == {} ({})",
+                    vi.gribVariable, vi.gribVariable.hashCode(), old.gribVariable, old.gribVariable.hashCode());
           }
         }
       }
-      return varHashCodes.get(hashCode);
+      return varHashCodes.get(gribVariable);
     }
 
     private CalendarDateRange dateRange;
@@ -447,7 +402,7 @@ public abstract class GribCollection implements Closeable {
       for (GroupGC g : ds.groups) {
         f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {
-          f.format("  %s%n", v.toStringShort());
+          f.format("  %s%n", v.toString());
         }
       }
     }

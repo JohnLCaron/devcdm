@@ -30,11 +30,11 @@ public class Grib2IndexProto {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2IndexProto.class);
 
   public static final String MAGIC_START = "Grib2Index";
-  private static final int version = 6; // index must be this version, or else rewrite.
+  private static final int version = 6; // index must be this version, or else force rewrite.
 
   /**
    * Read Grib2 gbx9.
-   * @param idxFile index filename to read an index from.
+   * @param idxFile gbx9 index filename.
    * Return null if version doesnt match or file is malformed.
    */
   @Nullable
@@ -51,12 +51,10 @@ public class Grib2IndexProto {
       }
 
       int protoVersion = Streams.readVInt(fin);
-      if (protoVersion != version) { // here we insist that the version match. so cant use it to detect proto3 without forcing a
-        // rewrite.
-        if ((protoVersion == 0) || (protoVersion > version))
-          throw new IOException("GribIndex found version " + protoVersion + ", want version " + version + " on " + idxFile);
-        if (logger.isDebugEnabled())
+      if (protoVersion != version) {
+        if (logger.isDebugEnabled()) {
           logger.debug("Grib2Index found version " + protoVersion + ", want version " + version + " on " + idxFile);
+        }
         return null;
       }
 

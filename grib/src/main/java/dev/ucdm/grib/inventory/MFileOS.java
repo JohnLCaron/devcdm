@@ -11,12 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-/**
- * Implements thredds.inventory.MFile using regular OS files.
- *
- * @author caron
- * @since Jun 30, 2009
- */
+/** Implements thredds.inventory.MFile using regular OS files. */
 public class MFileOS implements MFile {
 
   /**
@@ -37,15 +32,9 @@ public class MFileOS implements MFile {
 
   private final File file;
   private final long lastModified;
-  private Object auxInfo;
 
   public MFileOS(File file) {
     this.file = file;
-    this.lastModified = file.lastModified();
-  }
-
-  public MFileOS(String filename) {
-    this.file = new File(filename);
     this.lastModified = file.lastModified();
   }
 
@@ -92,16 +81,6 @@ public class MFileOS implements MFile {
   @Override
   public int compareTo(MFile o) {
     return getPath().compareTo(o.getPath());
-  }
-
-  @Override
-  public Object getAuxInfo() {
-    return auxInfo;
-  }
-
-  @Override
-  public void setAuxInfo(Object auxInfo) {
-    this.auxInfo = auxInfo;
   }
 
   @Override

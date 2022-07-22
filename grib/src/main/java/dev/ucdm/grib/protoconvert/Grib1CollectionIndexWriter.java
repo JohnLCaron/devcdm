@@ -41,8 +41,9 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
   static final int minVersion = 1; // if less than this, force rewrite or at least do not read
   protected static final int version = 3; // increment this as needed, must be backwards compatible through minVersion
 
+  protected final MCollection dcm;
   public Grib1CollectionIndexWriter(MCollection dcm) {
-    super(dcm);
+    this.dcm = dcm;
   }
 
   public static class Group implements GribCollectionBuilder.Group {
@@ -115,13 +116,13 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
       int countRecords = 0;
 
       Set<Integer> allFileSet = new HashSet<>();
-      for (Group g : groups) {
-        g.fileSet = new HashSet<>();
-        for (Grib1CollectionBuilder.VariableBag vb : g.gribVars) {
+      for (Group group : groups) {
+        group.fileSet = new HashSet<>();
+        for (Grib1CollectionBuilder.VariableBag vb : group.gribVars) {
           if (first == null) {
             first = vb.first;
           }
-          GribCollectionProto.SparseArray vr = publishSparseArray(vb, g.fileSet);
+          GribCollectionProto.SparseArray vr = publishSparseArray(vb, group.fileSet);
           byte[] b = vr.toByteArray();
           vb.pos = raf.getFilePointer();
           vb.length = b.length;
@@ -129,7 +130,7 @@ public class Grib1CollectionIndexWriter extends GribCollectionIndexWriter {
           countBytes += b.length;
           countRecords += vb.coordND.getSparseArray().countNotMissing();
         }
-        allFileSet.addAll(g.fileSet);
+        allFileSet.addAll(group.fileSet);
       }
       long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
       if (logger.isDebugEnabled()) {

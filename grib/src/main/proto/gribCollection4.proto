@@ -26,6 +26,7 @@ message SparseArray {
 
 ///////////////////////////////////////////////////////////////////////////
 
+// TODO maybe store the hashCode ??
 message Variable {
    uint32 discipline = 1;
    bytes pds = 2;                   // raw pds

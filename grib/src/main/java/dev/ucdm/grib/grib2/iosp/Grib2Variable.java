@@ -10,6 +10,8 @@ import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
 import dev.ucdm.grib.grib2.table.Grib2Tables;
 
+import java.util.Formatter;
+
 /**
  * Used to group records into a CDM variable
  * Herein lies the semantics of variable object identity.
@@ -19,14 +21,6 @@ import dev.ucdm.grib.grib2.table.Grib2Tables;
  * @since 12/28/2014
  */
 public class Grib2Variable {
-
-  public static int cdmVariableHash(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge,
-                                    boolean useGenType) {
-    Grib2Variable gv = new Grib2Variable(cust, gr, gdsHashOverride, intvMerge, useGenType);
-    return gv.hashCode();
-  }
-
-  ////////////////////////////////////////////////////////////////////////
   private final Grib2Tables cust;
   private final int discipline, center, subcenter;
   private final int gdsHash;
@@ -253,4 +247,14 @@ public class Grib2Variable {
     return result;
   }
 
+  @Override
+  public String toString() {
+    try (Formatter sb = new Formatter()) {
+      sb.format("Grib2Variable {%d-%d-%d", discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      sb.format(", levelType=%d", pds.getLevelType1());
+      sb.format(", intvType=%d", pds.getStatisticalProcessType());
+      sb.format(" hashCode=%d}", hashCode());
+      return sb.toString();
+    }
+  }
 }

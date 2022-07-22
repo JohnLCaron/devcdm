@@ -1,11 +1,11 @@
 package dev.ucdm.grib.protoconvert;
 
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
-import dev.ucdm.grib.common.TestGribCollectionIndex;
+import dev.ucdm.grib.common.TestSingleFileMCollection;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,10 +16,9 @@ import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.gribLocalDir;
-import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGribCollectionIndexWriter {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
 
   public static Stream<Arguments> params() {
     return Stream.of(
@@ -37,7 +36,7 @@ public class TestGribCollectionIndexWriter {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(raf,
-              CollectionUpdateType.always, config, errlog)) {
+              CollectionUpdate.always, config, errlog)) {
         assertThat(gc).isNotNull();
       } catch (Throwable t) {
         System.out.printf("errlog = '%s'%n", errlog);

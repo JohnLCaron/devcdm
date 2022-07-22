@@ -167,14 +167,6 @@ public class Grib1Iosp extends GribIosp {
     return (val == null) ? "" : val;
   }
 
-  static String makeVariableUnits(Grib1Customizer cust, GribCollection gribCollection,
-      VariableIndex vindex) {
-    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(),
-        vindex.getTableVersion(), vindex.getParameter());
-    String val = (param == null) ? "" : param.getUnit();
-    return (val == null) ? "" : val;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private Grib1Customizer cust;

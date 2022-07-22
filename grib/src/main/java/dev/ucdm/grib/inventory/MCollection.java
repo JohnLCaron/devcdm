@@ -11,14 +11,13 @@ import org.jetbrains.annotations.Nullable;
 public interface MCollection {
   String getCollectionName();
 
-  @Nullable
   CalendarDate getLastModified();
 
   /** Get common root directory of all MFiles in the collection */
   String getRoot();
 
   /** The corresponding ncx4 filename for this collection. */
-  String getIndexFilename(String suffix);
+  String getIndexFilename();
 
   //// iteration
   interface Visitor {
@@ -28,10 +27,6 @@ public interface MCollection {
   void iterateOverMFiles(Visitor visitor);
 
   ////////////////////////////////////////////////////
-  // ability to pass arbitrary information to users of the MCollection .
-
+  // ability to pass arbitrary information to users of the MCollection.
   Object getAuxInfo(String key);
-
-  // return this for chaining
-  MCollection setAuxInfo(String key, Object value);
 }

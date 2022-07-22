@@ -32,7 +32,7 @@ public class Grib1IndexProto {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1IndexProto.class);
 
   public static final String MAGIC_START = "Grib1Index";
-  private static final int version = 5; // index must be this version, or else rewrite.
+  private static final int version = 5; // index must be this version, or else force rewrite.
 
   /**
    * Read Grib1 gbx9.
@@ -53,10 +53,9 @@ public class Grib1IndexProto {
 
       int protoVersion = Streams.readVInt(fin);
       if (protoVersion != version) {
-        if ((protoVersion == 0) || (protoVersion > version))
-          throw new IOException("Grib1Index found version " + protoVersion + ", want version " + version + " on " + idxFile);
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
           logger.debug("Grib1Index found version " + protoVersion + ", want version " + version + " on " + idxFile);
+        }
         return null;
       }
 

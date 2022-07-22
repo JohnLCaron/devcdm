@@ -4,15 +4,33 @@
  */
 package dev.ucdm.grib.inventory;
 
-import dev.ucdm.grib.collection.CollectionUpdateType;
-
-import java.io.IOException;
+import dev.ucdm.core.calendar.CalendarDate;
 
 /** Manages time partitions of MCollections */
-public interface MPartition extends MCollection {
+public interface MPartition {
+  String getCollectionName();
 
-  Iterable<MCollection> makeCollections(CollectionUpdateType forceCollection) throws IOException;
+  CalendarDate getLastModified();
 
-  void removeCollection(MCollection child);
+  /** Get common root directory of all MFiles in the collection */
+  String getRoot();
 
+  /** The corresponding ncx4 filename for this collection. */
+  String getIndexFilename();
+
+  boolean isPartitionOfPartition();
+
+  // use if isPartitionOfPartition is false
+  void iterateOverMCollections(MPartition.CVisitor visitor);
+  interface CVisitor {
+    void visit(MCollection mfile);
+  }
+
+  // use if isPartitionOfPartition is true
+  void iterateOverMPartitions(MPartition.PVisitor visitor);
+  interface PVisitor {
+    void visit(MPartition mfile);
+  }
+
+  Object getAuxInfo(String key);
 }

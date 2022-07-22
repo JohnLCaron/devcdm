@@ -20,15 +20,6 @@ import dev.ucdm.grib.grib1.table.Grib1Customizer;
  * @since 12/28/2014
  */
 public class Grib1Variable {
-
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHashOverride, boolean useTableVersion,
-                                    boolean intvMerge, boolean useCenter) {
-    Grib1Variable gv = new Grib1Variable(cust, gr, gdsHashOverride, useTableVersion, intvMerge, useCenter);
-    return gv.hashCode();
-  }
-
-  /////////////////////////////////////////
-
   private final Grib1Customizer cust;
   private final Grib1SectionProductDefinition pds;
   private final Grib1Gds gds;

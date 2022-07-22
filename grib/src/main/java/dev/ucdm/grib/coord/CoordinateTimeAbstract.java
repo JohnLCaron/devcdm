@@ -103,32 +103,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public String toString() {
     return name;
   }
-  ////////////////////////////////////////
-
-  /**
-   * Implements coverting a "complete best" to a "monotonic best".
-   * The reftime is not allowed to decrease
-   * 
-   * @return "monotonic best" CoordinateTimeAbstract, based on this one, which is a "complete best"
-   */
-  public CoordinateTimeAbstract makeBestFromComplete() {
-    int[] best = new int[time2runtime.length];
-    int last = -1;
-    int count = 0;
-    for (int i = 0; i < time2runtime.length; i++) {
-      int time = time2runtime[i];
-      if (time >= last) {
-        last = time;
-        best[i] = time;
-        count++;
-      } else {
-        best[i] = -1;
-      }
-    }
-    return makeBestFromComplete(best, count);
-  }
-
-  protected abstract CoordinateTimeAbstract makeBestFromComplete(int[] best, int n);
 
   public abstract CalendarDateRange makeCalendarDateRange();
 

@@ -5,7 +5,6 @@
 
 package dev.ucdm.grib.collection;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.io.RandomAccessFile;
@@ -17,7 +16,6 @@ import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateRuntime;
 import dev.ucdm.grib.coord.CoordinateTime2D;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
-import dev.ucdm.grib.coord.TimeCoordIntvValue;
 
 import dev.ucdm.grib.protoconvert.GribHorizCoordSystem;
 import org.jetbrains.annotations.Nullable;
@@ -199,12 +197,7 @@ public class Partitions implements Closeable {
     }
 
     // translate to coordinates in vindex
-    int[] sourceIndex;
-    if (vi.group.ds.gctype == CollectionType.Best) {
-      sourceIndex = translateIndexBest(vi, indexWanted, vindex2Dpart);
-    } else {
-      sourceIndex = translateIndex2D(vi, indexWanted, vindex2Dpart);
-    }
+    int[] sourceIndex = translateIndex2D(vi, indexWanted, vindex2Dpart);
 
     if (sourceIndex == null) {
       return null; // missing
@@ -264,75 +257,10 @@ public class Partitions implements Closeable {
     }
     for (GribCollection.GroupGC groupHcs : ds2d.getGroups()) {
       if (groupHcs.getGdsHash().equals(hcs.getGdsHash())) {
-        return groupHcs.findVariableByHash(vi.hashCode());
+        return groupHcs.findVariableByHash(vi.gribVariable);
       }
     }
     return null;
-  }
-
-  /**
-   * Best
-   * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which
-   * will be 2D)
-   * by matching coordinate values.
-   *
-   * @param wholeIndex index in VariableIndexPartitioned
-   * @param compVindex2D component 2D VariableIndex
-   * @return corresponding index in compVindex2D, or null if missing
-   */
-  @Nullable
-  private static int[] translateIndexBest(VariableIndex vi, int[] wholeIndex, VariableIndex compVindex2D) {
-    int[] result = new int[wholeIndex.length + 1];
-
-    // figure out the runtime
-    int timeIdx = wholeIndex[0];
-    CoordinateTimeAbstract time = vi.getCoordinateTime();
-    Preconditions.checkNotNull(time);
-    int masterIdx = time.getMasterRuntimeIndex(timeIdx) - 1;
-    int runtimeIdxPart = matchCoordinate(vi.gribCollection.masterRuntime, masterIdx, compVindex2D.getCoordinate(0));
-    if (runtimeIdxPart < 0) {
-      return null; // may be impossible ??
-    }
-    result[0] = runtimeIdxPart;
-
-    // figure out the time and any other dimensions
-    int countDim = 0;
-    while (countDim < wholeIndex.length) {
-      Coordinate wholeCoord1D = vi.getCoordinate(countDim);
-      int idx = wholeIndex[countDim];
-
-      Coordinate compCoord = compVindex2D.getCoordinate(countDim + 1);
-      int resultIdx;
-      if (compCoord.getType() == Coordinate.Type.time2D) {
-        CoordinateTime2D compCoord2D = (CoordinateTime2D) compCoord; // of the component
-        CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;// CoordinateTime or
-        // CoordinateTimeIntv
-        Object wholeVal1D = wholeCoord1D.getValue(idx);
-        if (wholeVal1D == null) // is this possible?
-          return null;
-
-        CoordinateTime2D.Time2D wholeVal2D = compCoord2D.isTimeInterval()
-                ? new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), null, (TimeCoordIntvValue) wholeVal1D)
-                : new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), (Long) wholeVal1D, null);
-
-        resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal2D);
-        // if (resultIdx < 0) resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal,
-        // wholeCoord1Dtime.getRefDate()); // debug
-
-      } else {
-        resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord);
-        // if (resultIdx < 0) resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord); // debug
-      }
-      if (resultIdx < 0) {
-        // logger.info("Couldnt match coordinates ({}) for variable {}", Misc.showInts(wholeIndex),
-        // compVindex2D.toStringFrom());
-        return null;
-      }
-      result[countDim + 1] = resultIdx;
-      countDim++;
-    }
-
-    return result;
   }
 
   /**
@@ -402,16 +330,6 @@ public class Partitions implements Closeable {
    */
   @Nullable
   private static PartitionedReaderRecord getDataRecordPofP(VariableIndex vi, int[] indexWanted, VariableIndex compVindex2Dp) throws IOException {
-    if (vi.group.ds.getType() == CollectionType.Best) {
-      int[] indexWantedP = translateIndexBest(vi, indexWanted, compVindex2Dp);
-      if (GribConstants.debugRead)
-        logger.debug("  (Best) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
-      if (indexWantedP == null) {
-        return null;
-      }
-      return getPartitionedReaderRecord(compVindex2Dp, indexWantedP);
-
-    } else {
       // corresponding index into compVindex2Dp
       int[] indexWantedP = translateIndex2D(vi, indexWanted, compVindex2Dp);
       if (GribConstants.debugRead)
@@ -420,6 +338,5 @@ public class Partitions implements Closeable {
         return null;
       }
       return getPartitionedReaderRecord(compVindex2Dp, indexWantedP);
-    }
   }
 }

@@ -1,4 +1,4 @@
-package dev.ucdm.grib.cli
+package dev.ucdm.grib.cli.ncxdump
 
 import dev.ucdm.test.util.extraTestDir
 import dev.ucdm.test.util.gribLocalDir
@@ -64,18 +64,23 @@ class TestNcxdump {
     }
 
     @Test
-    fun testPartitionOldSub() {
+    fun testPartition1OldSub() {
         main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/GFS_CONUS_80km_20141025_0000.grib1.ncx4"))
     }
 
     @Test
-    fun testPartitionOld() {
+    fun testPartition1Old() {
         main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/gfsConus80_file-20141025.ncx4"))
     }
 
     @Test
-    fun testPartitionNew() {
-        main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/testCreatePartitionIndex-20141025.ncx4"))
+    fun testPartition1New() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/gfs_conus80/20141025/testCreatePartitionGrib1-20141025.ncx4"))
+    }
+
+    @Test
+    fun testPartition2New() {
+        main(arrayOf("-in", oldTestDir + "gribCollections/gfs_2p5deg/testCreatePartitionGrib2-gfs_2p5deg.ncx4"))
     }
 
 }

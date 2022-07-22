@@ -1,5 +1,4 @@
-package dev.ucdm.grib.cli
-
+package dev.ucdm.grib.cli.ncxdump
 
 import dev.ucdm.array.Indent
 import dev.ucdm.core.calendar.CalendarDate
@@ -25,12 +24,19 @@ import kotlinx.cli.ArgType
 import kotlinx.cli.default
 import kotlinx.cli.required
 
+/*
+Usage: ncxdump options_list
+Options:
+    --input, -in -> collection index (.ncx) to dump (always required) { String }
+    --showSparseArrays, -sparse [false] -> show sparse arrays
+    --help, -h -> Usage info
+ */
 fun main(args: Array<String>) {
     val parser = ArgParser("ncxdump")
     val input by parser.option(
         ArgType.String,
         shortName = "in",
-        description = "input dataset to dump"
+        description = "collection index (.ncx) to dump"
     ).required()
     val showSparseArrays by parser.option(
         ArgType.Boolean,

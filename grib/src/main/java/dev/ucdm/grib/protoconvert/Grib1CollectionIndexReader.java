@@ -73,10 +73,12 @@ public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
 
     // check for user defined group names
     String desc = null;
-    if (gribConfig.gdsNamer != null)
+    if (gribConfig.gdsNamer != null) {
       desc = gribConfig.gdsNamer.get(gds.hashCode());
-    if (desc == null)
+    }
+    if (desc == null) {
       desc = (hcs == null) ? hcsName : hcs.makeDescription(); // default desc
+    }
 
     return new GribHorizCoordSystem(hcs, rawGds, gds, hcsName, desc, predefined);
   }

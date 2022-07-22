@@ -5,7 +5,7 @@ import dev.ucdm.array.Array;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.CdmFiles;
 import dev.ucdm.core.api.Variable;
-import dev.ucdm.grib.common.TestGribCollectionIndex;
+import dev.ucdm.grib.common.TestSingleFileMCollection;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +18,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 public class TestGribDataReading {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
 
   public static Stream<Arguments> params() {
     return Stream.of(

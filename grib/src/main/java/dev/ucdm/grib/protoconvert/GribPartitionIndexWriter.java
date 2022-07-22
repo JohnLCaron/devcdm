@@ -9,10 +9,9 @@ import com.google.protobuf.ByteString;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.collection.GribPartition;
-import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
-import dev.ucdm.grib.inventory.MCollection;
+import dev.ucdm.grib.inventory.MPartition;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +26,10 @@ import java.util.Formatter;
 public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
   static final Logger logger = LoggerFactory.getLogger(GribPartitionIndexWriter.class);
 
-  private final MCollection partitionManager; // defines the partition
+  private final MPartition partitionManager; // defines the partition
   protected final String name; // collection name
 
-  public GribPartitionIndexWriter(String name, MCollection tpc) {
-    super(tpc);
+  public GribPartitionIndexWriter(String name, MPartition tpc) {
     this.name = name;
     this.partitionManager = tpc;
   }
@@ -45,7 +43,7 @@ public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
    * GribCollectionProto.GribCollection (sizeIndex bytes)
    */
   public boolean writeIndex(GribPartition pc, boolean isGrib1, Formatter msg) throws IOException {
-    File idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename(GribCollectionIndex.NCX_SUFFIX));
+    File idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename());
     if (idxFile.exists()) {
       // RandomAccessFile.eject(idxFile.getPath());
       if (!idxFile.delete()) {
@@ -72,11 +70,11 @@ public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
 
       // mfiles are the partition indexes
       int count = 0;
-      for (GribPartition.ChildCollection part : pc.getChildCollections()) {
+      for (GribPartition.ChildCollection part : pc.childCollections) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         String pathRS = makeReletiveFilename(pc, part); // reletive to pc.directory
         b.setFilename(pathRS);
-        b.setLastModified(part.lastModified);
+        // b.setLastModified(part.lastModified);
         b.setLength(part.fileSize);
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
@@ -107,7 +105,7 @@ public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
           indexBuilder.addRun2Part(part);
         }
       }
-      for (GribPartition.ChildCollection part : pc.partitions) {
+      for (GribPartition.ChildCollection part : pc.childCollections) {
         indexBuilder.addPartitions(publishPartition(pc, part));
       }
       indexBuilder.setIsPartitionOfPartitions(pc.isPartitionOfPartitions);
@@ -234,7 +232,7 @@ public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
     b.setFilename(pathRS);
     b.setName(p.name);
     // b.setDirectory(p.directory);
-    b.setLastModified(p.lastModified);
+    // b.setLastModified(p.lastModified);
     b.setLength(p.fileSize);
     if (p.partitionDate != null) {
       b.setPartitionDate(p.partitionDate.getMillisFromEpoch()); // TODO what about calendar ??
@@ -245,7 +243,7 @@ public class GribPartitionIndexWriter extends GribCollectionIndexWriter {
 
   private String makeReletiveFilename(GribPartition pc, GribPartition.ChildCollection part) {
     Path topDir = pc.directory.toPath();
-    Path partPath = new File(part.directory, part.filename).toPath();
+    Path partPath = new File(part.directory, part.indexFilename).toPath();
     Path pathRelative = topDir.relativize(partPath);
     return StringUtil2.replace(pathRelative.toString(), '\\', "/");
   }

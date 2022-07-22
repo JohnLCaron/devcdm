@@ -344,13 +344,12 @@ public class VariableIndex implements Comparable<VariableIndex> {
     return (discipline << 16) + (category << 8) + parameter;
   }
 
-  @Override
-  public String toString() {
+  public String toStringLong() {
     return MoreObjects.toStringHelper(this).add("tableVersion", tableVersion).add("discipline", discipline)
             .add("category", category).add("parameter", parameter).add("levelType", levelType).add("intvType", intvType)
             .add("ensDerivedType", ensDerivedType).add("probType", probType).add("intvName", getTimeIntvName())
             .add("probabilityName", probabilityName).add("isLayer", isLayer).add("genProcessType", genProcessType)
-            .add("cdmHash", gribVariable.hashCode()).toString();
+            .add("gribVariable", gribVariable.hashCode()).toString();
   }
 
   public String toStringComplete() {
@@ -363,7 +362,8 @@ public class VariableIndex implements Comparable<VariableIndex> {
             .add("genProcessType", genProcessType).add("spatialStatType", spatialStatType).toString();
   }
 
-  public String toStringShort() {
+  @Override
+  public String toString() {
     try (Formatter sb = new Formatter()) {
       sb.format("Variable {%d-%d-%d", discipline, category, parameter);
       sb.format(", levelType=%d", levelType);
@@ -374,7 +374,7 @@ public class VariableIndex implements Comparable<VariableIndex> {
       if (probabilityName != null && !probabilityName.isEmpty()) {
         sb.format(" prob=%s", probabilityName);
       }
-      sb.format(" cdmHash=%d}", gribVariable.hashCode());
+      sb.format(" gribVariable=%d}", gribVariable.hashCode());
       return sb.toString();
     }
   }

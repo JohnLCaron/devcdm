@@ -9,7 +9,7 @@ permalink: grib_feature_collections_ref.html
 ## Overview
 
 GRIB Feature Collection Datasets are collections of GRIB records, which contain gridded data, typically from numeric model output.
-Because of the complexity of how GRIB data is written and stored, the TDS has developed specialized handling of GRIB datasets called **GRIB Feature Collections**.
+Because of the complexity of how GRIB data is written and stored, the CDM has developed specialized handling of GRIB datasets called **GRIB Feature Collections**.
 
 * The user specifies the collection of GRIB-1 or GRIB-2 files, and the software turns them into a dataset.
 * The indexes, once written, allow fast access and scalability to very large datasets.
@@ -19,29 +19,45 @@ Because of the complexity of how GRIB data is written and stored, the TDS has de
 There are two kinds of indexes created for Grib files.
 
 1. For each GRIB file, a grib index (.gbx9) file is created which is essentially the entire GRIB record minus the data. 
-   These are ~200-1000 times smaller (check that) than the original files.
+   These are ~100-1000 times smaller (depending on data size) than the original files.
 2. For each collection, a grib collection index (.ncx4) file is created. The size of this file depends on the number
    of GRIB records in the collection. A rule of thumb is ~13 bytes per record (grib2). So a million record collection has an index of 13Mb.
 
-Once the ncx4 files are created, the gbx9 files are no longer needed (check that). The gbx9 files take a while to gnerate, as the entire data set has to be read.
-Regenerating the ncx4 is fairly fast once the gbx9 files are created. So keep the gbx9 files if possible, so that improvements in the ncs4 can be
-easily made.
+Once the ncx4 files are created, the gbx9 files are no longer needed (check that). The gbx9 files take a while to generate, 
+as the entire data file has to be scanned. Regenerating the ncx4 is fairly fast once the gbx9 files are created. 
+So keep the gbx9 files if possible, so that the ncx4 can be easily remade if needed.
 
-1. file collection: each file is a collection, file.ncx  // openGribCollectionFromDataFile()
-2. file partition: all file collections in a directory are a partition, dirName/collectionName-dirName.ncx // readOrCreateCollectionFromIndex
-3. directory collection: all files in a directory are a collection, dirName/collectionName-dirName.ncx
-4. directory partition: recursively build partitions from directory collections, dirName/collectionName-dirName.ncx
+Collections
+
+A Grib data file is just a concatenation of GribRecords. There is no structure, no schema, and no limits on the heterogeneity 
+of the records. 
+
+Its up to the data writer to place related records in the same file and same directory.
+
+The CDM uses conventions to assemble Grib records into multidimension arrays that mimic the schema of variables in
+a netCDF or HDF file. 
+
+Types of collections
+1. file collection: each file is a collection, file.ncx  
+2. directory collection: all files in a directory are a collection, dirName/collectionName-dirName.ncx
+3. file partition: all file collections in a directory are a partition, dirName/collectionName-dirName.ncx
+4. directory partition: all subdirs in a directory hold a collection
+5. directory pofp: all subdirs in a directory hold a partition
+
+6. recursively build partitions from directory collections, dirName/collectionName-dirName.ncx
 point to a topdir. recurse into subdirectories. default is directory collection. override to make a file collection
-5. subtree collection: all files in a directory subtree are a collection.
-6. subtree partition: build partitions starting from the subtree??
+
+7. subtree collection: all files in a directory subtree are a collection.
+8. subtree partition: build partitions starting from the subtree??
 
 readOrCreateCollectionFromIndex
-1. MCollectionSingleFile
-2. ?
-3. DirectoryMCollection
-4. ?
-5. SubtreeMCollection
-6. ?
+1. SingleFileMCollection
+2. DirectoryMCollection
+3. FilePartition
+4. DirectoryPartition
+5. DirectoryPofP
+6. SubtreeMCollection
+7. ?
 
 GribCollectionIndex.openGribCollectionFromRaf(RandomAccessFile raf, CollectionUpdateType update, GribConfig config, Formatter errlog)      // raf is a single data file or an ncx4 file
 GribCollectionIndex.openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf, CollectionUpdateType update, GribConfig config, Formatter errlog) // raf is a grib data file

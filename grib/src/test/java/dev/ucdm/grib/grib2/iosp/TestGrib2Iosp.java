@@ -4,7 +4,7 @@ import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.Group;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.collection.GribCollection;
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.GribCollectionIndex;
@@ -30,7 +30,7 @@ public class TestGrib2Iosp {
       assertThat(new Grib2Iosp().isValidFile(raf)).isTrue();
     }
 
-    try (RandomAccessFile raf = new RandomAccessFile(testfile + GribIndex.GBX9_IDX, "r")) {
+    try (RandomAccessFile raf = new RandomAccessFile(testfile + GribIndex.GBX_SUFFIX, "r")) {
       assertThat(new Grib2Iosp().isValidFile(raf)).isFalse();
     }
   }
@@ -63,7 +63,7 @@ public class TestGrib2Iosp {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile + NCX_SUFFIX, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.test, config, new Formatter())) {
+              raf, CollectionUpdate.test, config, new Formatter())) {
 
         Grib2Iosp spi = new Grib2Iosp(gc);
 

@@ -8,7 +8,6 @@ package dev.ucdm.grib.collection;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.util.StringUtil2;
-import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.util.GribIndexCache;
@@ -18,8 +17,8 @@ import dev.ucdm.grib.coord.CoordinateRuntime;
 import dev.ucdm.grib.coord.CoordinateTimeAbstract;
 import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.inventory.MFile;
+import dev.ucdm.grib.inventory.MPartition;
 import dev.ucdm.grib.protoconvert.GribHorizCoordSystem;
-import dev.ucdm.grib.protogen.GribCollectionProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +28,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * GribPartitionBuilder creates GribPartition which is written by GribPartitionIndexWriter to an index.
@@ -41,9 +38,6 @@ import java.util.Objects;
  */
 public class GribPartition {
   private static final Logger logger = LoggerFactory.getLogger(GribPartition.class);
-  private static final boolean debugIndexOnly = false;
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public class DatasetP {
     public CollectionType gctype;
@@ -69,19 +63,12 @@ public class GribPartition {
     }
   }
 
-  public class GroupP implements Comparable<GroupP> {
-    public GribCollection.Dataset ds;
+  public class GroupP {
     public GribHorizCoordSystem horizCoordSys;
     public final List<VariableIndexPartitioned> variList;
     public List<Coordinate> coords; // shared coordinates
     public int[] filenose; // key for GC.fileMap
-    HashMap<Integer, VariableIndexPartitioned> varHashCodes;
-
-    GroupP(GribCollection.Dataset ds) {
-      this.ds = ds;
-      this.variList = new ArrayList<>();
-      this.coords = new ArrayList<>();
-    }
+    HashMap<Object, VariableIndexPartitioned> varHashCodes = new HashMap<>();
 
     // copy constructor for PartitionBuilder
     GroupP(GribCollection.GroupGC from) {
@@ -90,11 +77,15 @@ public class GribPartition {
       this.coords = new ArrayList<>(from.coords.size()); // empty list
     }
 
-    public VariableIndexPartitioned addVariable(VariableIndexPartitioned vi) {
-      variList.add(vi);
-      return vi;
+    public VariableIndexPartitioned addVariable(VariableIndexPartitioned vip) {
+      VariableIndexPartitioned old = varHashCodes.put(vip.vi.gribVariable, vip);
+      if (old != null) {
+        logger.error("GribPartition has duplicate VariableIndexPartitioned {} == {}", vip, old);
+      } else {
+        variList.add(vip);
+      }
+      return vip;
     }
-
 
     // unique name for Group
     public String getId() {
@@ -106,33 +97,9 @@ public class GribPartition {
       return horizCoordSys.getDescription();
     }
 
-    public Object getGdsHash() {
-      return horizCoordSys.getGdsHash();
-    }
-
-    public GdsHorizCoordSys getGdsHorizCoordSys() {
-      return horizCoordSys.getHcs();
-    }
-
-
-    @Override
-    public int compareTo(GroupP o) {
-      return getDescription().compareTo(o.getDescription());
-    }
-
-    // get the variable in this group that has same object equality as want
-    public VariableIndexPartitioned findVariableByHash(int hashCode) {
-      if (varHashCodes == null) {
-        varHashCodes = new HashMap<>(variList.size() * 2);
-        for (VariableIndexPartitioned vi : variList) {
-          // TODO may not be possible to do hashcode, may need another hash?
-          VariableIndexPartitioned old = varHashCodes.put(vi.hashCode(), vi);
-          if (old != null) {
-            logger.error("GribCollectionMutable has duplicate variable hash {} == {}", vi, old);
-          }
-        }
-      }
-      return varHashCodes.get(hashCode);
+    // get the variable in this group that has same object equality as gribVariable
+    public VariableIndexPartitioned findVariableByHash(Object gribVariable) {
+      return varHashCodes.get(gribVariable);
     }
 
     private CalendarDateRange dateRange;
@@ -201,29 +168,11 @@ public class GribPartition {
       return vi.getVarid();
     }
 
-    public void setPartitions(List<GribCollectionProto.PartitionVariable> pvList) {
-      int[] partno = new int[nparts];
-      int[] groupno = new int[nparts];
-      int[] varno = new int[nparts];
-      int count = 0;
-      for (GribCollectionProto.PartitionVariable part : pvList) {
-        partno[count] = part.getPartno();
-        groupno[count] = part.getGroupno();
-        varno[count] = part.getVarno();
-        count++;
-      }
-      this.partnoSA = new SmartArrayInt(partno);
-      this.groupnoSA = new SmartArrayInt(groupno);
-      this.varnoSA = new SmartArrayInt(varno);
-
-      partList = null; // GC
-    }
-
     public void finish() {
       if (partList == null)
         return; // nothing to do
       if (partList.size() > nparts) // might be smaller due to failed partition
-        logger.warn("PartitionCollectionMutable partList.size() > nparts");
+        logger.warn("PartitionCollectionMutable partList.size() > nparts, vi = " + vi.id());
 
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
@@ -242,35 +191,13 @@ public class GribPartition {
       partList = null; // GC
     }
 
-    void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing,
-        VariableIndex vi) {
+    void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing) {
       if (partList == null)
         partList = new ArrayList<>(nparts);
       partList.add(new PartitionForVariable2D(partno, groupno, varno));
       this.ndups += ndups;
       this.nrecords += nrecords;
       this.nmissing += nmissing;
-    }
-
-    public String toStringComplete() {
-      Formatter sb = new Formatter();
-      sb.format("VariableIndexPartitioned%n");
-      sb.format(" partno=");
-      this.partnoSA.show(sb);
-      sb.format("%n groupno=");
-      this.groupnoSA.show(sb);
-      sb.format("%n varno=");
-      this.varnoSA.show(sb);
-      sb.format("%n");
-      int count = 0;
-      sb.format("     %7s %3s %3s %6s %3s%n", "N", "dups", "Miss", "density", "partition");
-      for (int i = 0; i < nparts; i++) {
-        int partWant = this.partnoSA.get(i);
-        ChildCollection part = partitions.get(partWant);
-        sb.format("   %2d: %7d %s%n", count++, partWant, part.filename);
-      }
-      sb.format("%n");
-      return sb.toString();
     }
 
     @Override
@@ -293,25 +220,21 @@ public class GribPartition {
   public class ChildCollection implements Comparable<ChildCollection> {
     public final String name;
     public final String directory;
-    public final String filename;
-    public long lastModified;
+    // public long lastModified;
     public long fileSize;
     public CalendarDate partitionDate;
-    public MCollection dcm;
+    public String indexFilename;
 
     // constructor from a MCollection object
     public ChildCollection(MCollection dcm) {
-      GribConfig config = (GribConfig) dcm.getAuxInfo(GribConfig.AUX_CONFIG);
-      if (config == null)
-        logger.warn("Partition missing GribConfig {}", dcm);
-
-      this.dcm = dcm;
+      this.indexFilename = dcm.getIndexFilename();
       this.name = dcm.getCollectionName();
-      this.lastModified = dcm.getLastModified().getMillisFromEpoch();
+      // this.lastModified = dcm.getLastModified().getMillisFromEpoch();
       this.directory = StringUtil2.replace(dcm.getRoot(), '\\', "/");
       // LOOK this.partitionDate = dcm.getPartitionDate();
 
-      String indexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCollectionIndex.NCX_SUFFIX), '\\', "/");
+      /*
+      String indexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
       //if (partitionDate == null) {
       //  partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename); // TODO dicey
       //}
@@ -322,12 +245,35 @@ public class GribPartition {
         if (indexFilename.startsWith("/"))
           indexFilename = indexFilename.substring(1);
       }
-      filename = indexFilename;
+      filename = indexFilename; */
+    }
+
+    // constructor from a MPartition object
+    public ChildCollection(MPartition tpm) {
+      this.indexFilename = tpm.getIndexFilename();
+      this.name = tpm.getCollectionName();
+      // this.lastModified = tpm.getLastModified().getMillisFromEpoch();
+      this.directory = StringUtil2.replace(tpm.getRoot(), '\\', "/");
+      // LOOK this.partitionDate = dcm.getPartitionDate();
+
+      /*
+      String indexFilename = StringUtil2.replace(tpm.getIndexFilename(), '\\', "/");
+      //if (partitionDate == null) {
+      //  partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename); // TODO dicey
+      //}
+
+      // now remove the directory
+      if (indexFilename.startsWith(directory)) {
+        indexFilename = indexFilename.substring(directory.length());
+        if (indexFilename.startsWith("/"))
+          indexFilename = indexFilename.substring(1);
+      }
+      filename = indexFilename; */
     }
 
     @Nullable
     String getIndexFilenameInCache() {
-      File file = new File(directory, filename);
+      File file = new File(directory, indexFilename);
       File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
       /* LOOK if (existingFile == null) {
         // try reletive to index file
@@ -344,12 +290,13 @@ public class GribPartition {
     // the children must already exist
     @Nullable
     public GribCollection makeGribCollection() throws IOException {
-      GribCollection result = GribCollectionIndex.readCollectionFromIndex(dcm.getIndexFilename(GribCollectionIndex.NCX_SUFFIX), true);
+      GribCollection result = GribCollectionIndex.readCollectionFromIndex(indexFilename, true);
       if (result == null) {
-        logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename(GribCollectionIndex.NCX_SUFFIX));
+        logger.error("Failed on readCollectionFromIndex {}", indexFilename);
         return null;
       }
-      lastModified = result.lastModified;
+
+      // lastModified = result.lastModified;
       fileSize = result.fileSize;
       if (result.masterRuntime != null) {
         partitionDate = result.masterRuntime.getFirstDate();
@@ -359,16 +306,16 @@ public class GribPartition {
 
     @Override
     public int compareTo(@Nonnull ChildCollection o) {
-      if (partitionDate != null && o.partitionDate != null)
+      if (partitionDate != null && o.partitionDate != null) {
         return partitionDate.compareTo(o.partitionDate);
+      }
       return name.compareTo(o.name);
     }
 
     @Override
     public String toString() {
-      return "Partition{" + "dcm=" + dcm + ", name='" + name + '\'' + ", directory='" + directory + '\''
-          + ", filename='" + filename + '\'' + ", partitionDate='" + partitionDate + '\'' + ", lastModified='"
-          + CalendarDate.of(lastModified) + '\'' + '}';
+      return String.format("Partition{name='%s', directory='%s', indexFilename='%s' partitionDate='%s'",
+              name, directory, indexFilename, partitionDate);
     }
 
   }
@@ -382,7 +329,7 @@ public class GribPartition {
   public final List<DatasetP> datasets = new ArrayList<>();
 
   public GribCollection canonicalGC;
-  public List<ChildCollection> partitions;
+  public List<ChildCollection> childCollections;
   public boolean isPartitionOfPartitions;
   public CoordinateRuntime masterRuntime;
   public Map<Integer, MFile> fileMap;
@@ -394,7 +341,7 @@ public class GribPartition {
     this.directory = directory;
     this.config = config;
     this.isGrib1 = isGrib1;
-    this.partitions = new ArrayList<>();
+    this.childCollections = new ArrayList<>();
   }
 
   public int getCenter() {
@@ -425,34 +372,35 @@ public class GribPartition {
     return canonicalGC.backProcessId;
   }
 
-  /**
-   * Use partition names as the file names
-   */
-  public List<String> getFilenames() {
-    List<String> result = new ArrayList<>();
-    for (ChildCollection p : getChildCollections()) {
-      result.add(p.getIndexFilenameInCache());
-    }
-    Collections.sort(result);
-    return result;
-  }
-
   public void addChildCollection(MCollection dcm) {
     ChildCollection partition = new ChildCollection(dcm);
     try (GribCollection gc = partition.makeGribCollection()) { // make sure we can open the collection
       if (gc == null) {
-        logger.warn("failed to open partition {} =skipping", dcm.getCollectionName());
+        logger.warn("failed to open collection {} =skipping", dcm.getIndexFilename());
       } else {
-        partitions.add(partition);
+        childCollections.add(partition);
       }
     } catch (Exception e) {
-      logger.warn("failed to open partition {} -skipping", dcm.getCollectionName(), e);
+      logger.warn("failed to open collection {} -skipping", dcm.getIndexFilename(), e);
+    }
+  }
+
+  public void addChildCollection(MPartition tcp) {
+    ChildCollection partition = new ChildCollection(tcp);
+    try (GribCollection gc = partition.makeGribCollection()) { // make sure we can open the collection
+      if (gc == null) {
+        logger.warn("failed to open partition {} =skipping", tcp.getIndexFilename());
+      } else {
+        childCollections.add(partition);
+      }
+    } catch (Exception e) {
+      logger.warn("failed to open partition {} -skipping", tcp.getIndexFilename(), e);
     }
   }
 
   void sortChildCollections() {
-    Collections.sort(partitions);
-    partitions = Collections.unmodifiableList(partitions);
+    Collections.sort(childCollections);
+    childCollections = Collections.unmodifiableList(childCollections);
   }
 
   public String showLocation() {
@@ -468,11 +416,6 @@ public class GribPartition {
     datasets.add(result);
     return result;
   }
-
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // construct - going to write index
 
   /**
    * Create a VariableIndexPartitioned, add it to the given group
@@ -500,38 +443,8 @@ public class GribPartition {
     return vip;
   }
 
-  public Iterable<ChildCollection> getChildCollections() {
-    return partitions;
-  }
-
   ChildCollection getPartition(int idx) {
-    return partitions.get(idx);
-  }
-
-  int getPartitionSize() {
-    return partitions.size();
-  }
-
-  public void showIndex(Formatter f) {
-    int count = 0;
-    f.format("isPartitionOfPartitions=%s%n", isPartitionOfPartitions);
-    f.format("Partitions%n");
-    for (ChildCollection p : getChildCollections())
-      f.format("%d:  %s%n", count++, p);
-    f.format("%n");
-
-    if (run2part == null)
-      f.format("run2part null%n");
-    else {
-      f.format(" master runtime -> partition %n");
-      for (int idx = 0; idx < masterRuntime.getSize(); idx++) {
-        int partno = run2part[idx];
-        ChildCollection part = getPartition(partno);
-        f.format(" %d:  %s -> part %3d %s%n", count, masterRuntime.getRuntimeDate(idx), partno, part);
-        count++;
-      }
-      f.format("%n");
-    }
+    return childCollections.get(idx);
   }
 
 }

@@ -8,14 +8,17 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.attribute.BasicFileAttributes
 
-class DirectoryMCollection(
+import dev.ucdm.grib.common.GribCollectionIndex.NCX_SUFFIX
+
+// all files in a directory are a collection,
+data class DirectoryMCollection(
     val topCollectionName: String,
     val collectionDir: Path,
     val isTop: Boolean,
     val glob: String?,
     val filter: DirectoryStream.Filter<Path>?,
     val olderThanMillis: Long?
-) : AbstractMCollection(makeDirectoryCollectionName(topCollectionName, collectionDir)) {
+) : AbstractMCollection(makeDirectoryCollectionName(topCollectionName, collectionDir)), MCollection {
     private var lastModified : Long? = null
 
     override fun getLastModified(): CalendarDate {
@@ -29,12 +32,11 @@ class DirectoryMCollection(
         return collectionDir.toString()
     }
 
-    override fun getIndexFilename(suffix: String): String {
-        if (isTop) return super.getIndexFilename(suffix)
+    override fun getIndexFilename(): String {
+        if (isTop) return super.getIndexFilename()
         val indexPath: Path = makeCollectionIndexPath(
             topCollectionName,
             collectionDir,
-            suffix
         )
         return indexPath.toString()
     }
@@ -54,66 +56,12 @@ class DirectoryMCollection(
                     val last = fileAttrs.lastModifiedTime().toMillis()
                     lastModified = if (lastModified == null) last else Math.max(lastModified!!, last)
                     if (olderThanMillis == null ||  (now - last) >= olderThanMillis) {
-                        visitor.visit(MFileOS7(p))
+                        visitor.visit(MFileNio(p))
                     }
                 }
             }
         }
     }
-
-    /*
-    override fun iterator(): MutableIterator<MFile> {
-        return DirectoryStreamIterator()
-    }
-
-    private inner class DirectoryStreamIterator() : MutableIterator<MFile> {
-        val dirStream: DirectoryStream<Path> =  if (glob != null) Files.newDirectoryStream(collectionDir, glob)
-                                                else if (filter != null) Files.newDirectoryStream(collectionDir, filter)
-                                                else Files.newDirectoryStream(collectionDir)
-        val dirStreamIterator: Iterator<Path> = dirStream.iterator()
-        var nextMFile: MFile? = null
-        val now = System.currentTimeMillis()
-
-        override fun hasNext(): Boolean {
-            while (true) {
-                if (!dirStreamIterator.hasNext()) {
-                    nextMFile = null
-                    close()
-                    return false
-                }
-                return try {
-                    val nextPath = dirStreamIterator.next()
-                    val attr = Files.readAttributes(nextPath, BasicFileAttributes::class.java)
-                    if (attr.isDirectory) continue
-                    val last = attr.lastModifiedTime().toMillis()
-                    lastModified = if (lastModified == null) last else Math.max(lastModified!!, last)
-                    if (olderThanMillis == null || (now - last) >= olderThanMillis) {
-                        nextMFile = MFileOS7(nextPath, attr)
-                    }
-                    true
-                } catch (e: IOException) {
-                    throw RuntimeException(e)
-                }
-            }
-        }
-
-        override fun next(): MFile {
-            if (nextMFile == null) throw NoSuchElementException()
-            return nextMFile!!
-        }
-
-        override fun remove() {
-            throw NotImplementedError()
-        }
-
-        // better alternative is for caller to send in callback (Visitor pattern)
-        // then we could use the try-with-resource
-        fun close() {
-            dirStream.close()
-        }
-    }
-
-     */
 }
 
 fun makeDirectoryCollectionName(topCollectionName: String, dir: Path): String {
@@ -123,7 +71,7 @@ fun makeDirectoryCollectionName(topCollectionName: String, dir: Path): String {
     return "$topCollectionName-$lastDirName"
 }
 
-fun makeCollectionIndexPath(topCollectionName: String, dir: Path, suffix: String): Path {
+fun makeCollectionIndexPath(topCollectionName: String, dir: Path): Path {
     val collectionName = makeDirectoryCollectionName(topCollectionName, dir)
-    return Paths.get(dir.toString(), collectionName + suffix)
+    return Paths.get(dir.toString(), collectionName + NCX_SUFFIX)
 }
