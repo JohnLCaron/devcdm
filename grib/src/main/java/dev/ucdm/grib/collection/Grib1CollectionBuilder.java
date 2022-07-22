@@ -13,7 +13,6 @@ import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
 import dev.ucdm.grib.grib1.iosp.Grib1Iosp;
-import dev.ucdm.grib.grib1.iosp.Grib1Utils;
 import dev.ucdm.grib.grib1.iosp.Grib1Variable;
 import dev.ucdm.grib.grib1.record.*;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
@@ -187,7 +186,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     @Override
     public int compareTo(VariableBag o) {
-      return Grib1Utils.extractParameterCode(first).compareTo(Grib1Utils.extractParameterCode(o.first));
+      return extractParameterCode(first).compareTo(extractParameterCode(o.first));
     }
 
     @Override
@@ -195,6 +194,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       return "VariableBag{" + ", variable=" + gv.makeVariableName(new GribConfig()) + ", coordND=" + coordND
               + ", timeUnit=" + timeUnit + ", coordIndex=" + coordIndex + ", pos=" + pos + ", length=" + length + '}';
     }
+  }
+
+  private static String extractParameterCode(Grib1Record record) {
+    Grib1SectionProductDefinition pds = record.getPDSsection();
+    return pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion() + "-" + pds.getParameterNumber();
   }
 
   // for a single group, create multidimensional (rectangular) variables

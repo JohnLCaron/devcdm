@@ -21,7 +21,6 @@ import java.util.Formatter;
  * @since 9/3/11
  */
 public class Grib1Record {
-
   private final Grib1SectionIndicator is;
   private final Grib1SectionGridDefinition gdss;
   private final Grib1SectionProductDefinition pdss;
@@ -198,37 +197,6 @@ public class Grib1Record {
 
   // debugging, do not use
   public static Grib1Record lastRecordRead;
-
-  /*
-   * Read data array: use when you want to be independent of the GribRecord
-   *
-   * @param raf from this RandomAccessFile
-   * 
-   * @param bmPos bitmap.start
-   * 
-   * @param decimalScale pds.decimalScale
-   * 
-   * @param scanMode gds.scanMode
-   * 
-   * @param nx gds.nx
-   * 
-   * @param ny gds.ny
-   * 
-   * @return data as float[] array
-   * 
-   * @throws IOException on read error
-   *
-   * public static float[] readData(RandomAccessFile raf, long bmPos, int decimalScale, int scanMode, int nx, int ny)
-   * throws IOException {
-   * raf.seek(bmPos);
-   * Grib1SectionBitMap bms = new Grib1SectionBitMap(raf);
-   * Grib1DataReader reader = new Grib1DataReader(decimalScale, scanMode, nx, ny, raf.getFilePointer());
-   * 
-   * boolean[] bitmap = bms.getBitmap(raf);
-   * 
-   * return reader.getData(raf, bitmap);
-   * }
-   */
 
   public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     GribData.Info info = dataSection.getBinaryDataInfo(raf);

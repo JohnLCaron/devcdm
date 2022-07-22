@@ -19,7 +19,6 @@ public class Grib1RecordScanner {
 
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
   private static final KMPMatch matcher = new KMPMatch(new byte[] {'G', 'R', 'I', 'B'});
-  private static final boolean debug = false;
   private static final boolean debugGds = false;
   private static final int maxScan = 16000;
 

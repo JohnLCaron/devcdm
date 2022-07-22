@@ -173,22 +173,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return result;
   }
 
-  protected CoordinateTimeIntv makeBestFromComplete(int[] best, int n) {
-    List<TimeCoordIntvValue> timeIntervalsBest = new ArrayList<>(timeIntervals.size());
-    int[] time2runtimeBest = new int[n];
-    int count = 0;
-    for (int i = 0; i < best.length; i++) {
-      int time = best[i];
-      if (time >= 0) {
-        time2runtimeBest[count] = time;
-        timeIntervalsBest.add(timeIntervals.get(i));
-        count++;
-      }
-    }
-
-    return new CoordinateTimeIntv(code, timeUnit, refDate, timeIntervalsBest, time2runtimeBest);
-  }
-
   ///////////////////////////////////////////////////////////
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
