@@ -85,10 +85,11 @@ public class Partitions implements Closeable {
   // reader must close
   public GribCollection getGribCollectionForPartition(Partition partition) {
     return partitionMap.computeIfAbsent(partition, (p) -> {
+      Formatter errlog = new Formatter();
       try {
-        return GribCollectionIndex.readCollectionFromIndex(p.getIndexPath(), true);
+        return GribCollectionIndex.readCollectionFromIndex(p.getIndexPath(), true, errlog);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException(errlog.toString(), e);
       }
     }); // not closing (!)
   }

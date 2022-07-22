@@ -24,9 +24,9 @@ public class QuasiRegular {
    * @return regular grid
    */
   public static float[] convertQuasiGrid(float[] quasi, int[] linePts, int nx, int ny,
-      GribData.InterpolationMethod interpolationMethod) {
+      GribDataUtils.InterpolationMethod interpolationMethod) {
 
-    if (interpolationMethod == GribData.InterpolationMethod.none)
+    if (interpolationMethod == GribDataUtils.InterpolationMethod.none)
       return quasi;
 
 
@@ -56,7 +56,7 @@ public class QuasiRegular {
 
     float[] data = new float[nx * ny];
 
-    if (interpolationMethod == GribData.InterpolationMethod.cubic) {
+    if (interpolationMethod == GribDataUtils.InterpolationMethod.cubic) {
 
       for (int j = 0; j < ny; j++) { // Note - assumes varies by x
         // int inrow; /* input row to use */
@@ -103,7 +103,7 @@ public class QuasiRegular {
         inputIdx += npoints;
       }
 
-    } else if (interpolationMethod == GribData.InterpolationMethod.linear) { // =>
+    } else if (interpolationMethod == GribDataUtils.InterpolationMethod.linear) { // =>
       // USE_LINEAR
 
       for (int j = 0; j < ny; j++) { // Note - assumes varies by x

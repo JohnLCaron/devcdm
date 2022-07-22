@@ -71,7 +71,7 @@ public class GribCollectionIndex {
     }
 
     // its a collection dataset ncx4 file
-    GribCollection result = readCollectionFromIndex(raf.getLocation(), false);
+    GribCollection result = readCollectionFromIndex(raf.getLocation(), false, errlog);
     // TODO close the data file, the ncx raf file is managed by gribCollection ??
     // raf.close();
     return result;
@@ -107,7 +107,7 @@ public class GribCollectionIndex {
       boolean indexIsOlder = CalendarDate.of(idxFile.lastModified()).isBefore(dcm.getLastModified());
       // dont read it if index is older
       if (update == CollectionUpdate.nocheck || update == CollectionUpdate.never || !indexIsOlder) {
-        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(), false);
+        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(), false, errlog);
       }
     }
 
@@ -128,7 +128,7 @@ public class GribCollectionIndex {
 
       } else {
         // read it back in
-        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(), false);
+        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(), false, errlog);
         logger.debug("  Index written: {}", idxPath);
       }
     } else {
@@ -157,17 +157,22 @@ public class GribCollectionIndex {
   /** read existing ncx4 file */
   // LOOK what is useCache??
   @Nullable
-  public static GribCollection readCollectionFromIndex(String indexFilename, boolean useCache) throws IOException {
+  public static GribCollection readCollectionFromIndex(String indexFilename, boolean useCache, Formatter errlog) throws IOException {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
-    if (indexFileInCache == null)
+    if (indexFileInCache == null) {
+      errlog.format("indexFilename %s not found in cache%n", indexFilename);
       return null;
+    }
+
+    // LOOK shouldnt we be using this?
     String indexFilenameInCache = indexFileInCache.getPath();
-    String name = makeNameFromIndexFilename(indexFilename);
+    String dataName = makeNameFromIndexFilename(indexFilename);
 
     GribCollection result;
     try (RandomAccessFile raf = new RandomAccessFile(indexFilename, "r")) {
       GribCollectionIndex.Type collectionType = getType(raf);
       if (collectionType == Type.none) {
+        errlog.format("indexFilename %s not a GribCollectionIndex%n", indexFilename);
         return null;
       }
 
@@ -176,21 +181,25 @@ public class GribCollectionIndex {
 
       boolean isGrib1 = (collectionType == Type.GRIB1) || (collectionType == Type.Partition1);
       if (isGrib1) {
-        result = new Grib1Collection(name, null, config);
+        result = new Grib1Collection(dataName, null, config);
         Grib1CollectionIndexReader reader = new Grib1CollectionIndexReader(result, config);
         if (!reader.readIndex(raf)) {
+          errlog.format("indexFilename %s Grib1CollectionIndexReader failed%n", indexFilename);
           return null;
         }
 
       } else {
-        result = new Grib2Collection(name, null, config);
+        result = new Grib2Collection(dataName, null, config);
         Grib2CollectionIndexReader reader = new Grib2CollectionIndexReader(result, config);
         if (!reader.readIndex(raf)) {
+          errlog.format("indexFilename %s Grib2CollectionIndexReader failed%n", indexFilename);
           return null;
         }
       }
     } catch (IOException ioe) {
-      logger.warn("Failed to open index file {} msg = {}", indexFilename, ioe.getMessage());
+      logger.warn("Failed to open index file {} msg = '{}'", indexFilename, ioe.getMessage());
+      errlog.format("indexFilename %s ioe failed '%s'%n", indexFilename, ioe.getMessage());
+      ioe.printStackTrace();
       return null;
     }
 

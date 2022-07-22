@@ -8,7 +8,7 @@ package dev.ucdm.grib.grib2.record;
 import com.google.common.base.MoreObjects;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.BitReader;
-import dev.ucdm.grib.common.util.GribData;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.common.util.GribNumbers;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public abstract class Grib2Drs {
   }
 
   // for debugging
-  abstract GribData.Info getBinaryDataInfo(RandomAccessFile raf);
+  abstract GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf);
 
   public int getNGroups() {
     return 1;
@@ -78,9 +78,9 @@ public abstract class Grib2Drs {
       this.originalType = raf.read();
     }
 
-    public GribData.Info getBinaryDataInfo(RandomAccessFile raf) {
+    public GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf) {
 
-      GribData.Info info = new GribData.Info();
+      GribDataUtils.Info info = new GribDataUtils.Info();
       info.referenceValue = this.referenceValue;
       info.binaryScaleFactor = this.binaryScaleFactor;
       info.decimalScaleFactor = this.decimalScaleFactor;
@@ -477,9 +477,9 @@ public abstract class Grib2Drs {
     }
 
     @Override
-    public GribData.Info getBinaryDataInfo(RandomAccessFile raf) {
+    public GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf) {
 
-      GribData.Info info = new GribData.Info();
+      GribDataUtils.Info info = new GribDataUtils.Info();
       info.referenceValue = this.referenceValue;
       info.binaryScaleFactor = this.binaryScaleFactor;
       info.decimalScaleFactor = this.decimalScaleFactor;

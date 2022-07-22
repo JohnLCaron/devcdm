@@ -9,7 +9,7 @@ import com.google.common.base.MoreObjects;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.core.util.StringUtil2;
-import dev.ucdm.grib.common.util.GribData;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
 import org.jetbrains.annotations.Nullable;
@@ -221,7 +221,7 @@ public class Grib2Record {
 
     if (gds.isThin())
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(),
-          GribData.getInterpolationMethod());
+          GribDataUtils.getInterpolationMethod());
 
     lastRecordRead = this;
     return data;
@@ -280,7 +280,7 @@ public class Grib2Record {
 
     if (gds.isThin())
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(),
-          GribData.getInterpolationMethod());
+          GribDataUtils.getInterpolationMethod());
 
     lastRecordRead = this;
     return data;
@@ -316,7 +316,7 @@ public class Grib2Record {
     float[] data = reader.getData(raf, bms, gdrs);
 
     if (nptsInLine != null)
-      data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny, GribData.getInterpolationMethod());
+      data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny, GribDataUtils.getInterpolationMethod());
 
     if (getlastRecordRead)
       lastRecordRead = Grib2RecordScanner.findRecordByDrspos(raf, drsPos);
@@ -363,8 +363,8 @@ public class Grib2Record {
 
   }
 
-  public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
-    GribData.Info info = this.drss.getDrs(raf).getBinaryDataInfo(raf);
+  public GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    GribDataUtils.Info info = this.drss.getDrs(raf).getBinaryDataInfo(raf);
     info.bitmapLength = (bms == null) ? 0 : bms.getLength(raf);
     info.msgLength = is.getMessageLength();
     info.dataLength = dataSection.getMsgLength();

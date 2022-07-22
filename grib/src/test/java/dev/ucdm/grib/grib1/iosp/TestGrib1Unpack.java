@@ -10,7 +10,7 @@ import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.inventory.MFileOS;
 import dev.ucdm.grib.common.GribIndex;
-import dev.ucdm.grib.common.util.GribData;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.grib1.record.Grib1Gds;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.protoconvert.Grib1Index;
@@ -91,21 +91,21 @@ public class TestGrib1Unpack {
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
       for (Grib1Record gr : index.getRecords()) {
-        getData(raf, gr, GribData.InterpolationMethod.none, lineno);
-        getData(raf, gr, GribData.InterpolationMethod.linear, lineno);
-        getData(raf, gr, GribData.InterpolationMethod.cubic, lineno);
+        getData(raf, gr, GribDataUtils.InterpolationMethod.none, lineno);
+        getData(raf, gr, GribDataUtils.InterpolationMethod.linear, lineno);
+        getData(raf, gr, GribDataUtils.InterpolationMethod.cubic, lineno);
       }
     }
   }
 
-  private float[] getData(RandomAccessFile raf, Grib1Record gr, GribData.InterpolationMethod method,
+  private float[] getData(RandomAccessFile raf, Grib1Record gr, GribDataUtils.InterpolationMethod method,
       int lineno) throws IOException, InvalidRangeException {
     float[] data;
     data = gr.readData(raf, method);
 
     System.out.printf("%s%n", method);
     Grib1Gds gds = gr.getGDS();
-    if (method == GribData.InterpolationMethod.none) {
+    if (method == GribDataUtils.InterpolationMethod.none) {
       int[] lines = gds.getNptsInLine();
       int count = 0;
       for (int line = 0; line < lines.length; line++) {

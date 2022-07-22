@@ -31,7 +31,7 @@ public class TestGribGridTimeCS {
 
   @Test
   public void testMRUTC() throws IOException {
-    String endpoint = oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.ncx4";
+    String endpoint = oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.gbx9.ncx4";
     String gridName = "VIL_altitude_above_msl";
     testObservation(endpoint, gridName, new int[] {30}, CalendarPeriod.Field.Minute);
   }
@@ -87,7 +87,7 @@ public class TestGribGridTimeCS {
 
   @Test
   public void testSRC() throws IOException {
-    String endpoint = oldTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4";
+    String endpoint = oldTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.gbx9.ncx4";
     String gridName = "Temperature_isobaric";
     testSingleRuntime(endpoint, gridName, new int[] {1, 11}, CalendarPeriod.Field.Hour);
   }

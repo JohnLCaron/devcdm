@@ -5,6 +5,8 @@ import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.TestSingleFileMCollection;
 import dev.ucdm.grib.inventory.CollectionUpdate;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,9 +24,9 @@ public class TestGribPartitionReading {
 
   public static Stream<Arguments> params() {
     return Stream.of(
-            Arguments.of(oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.ncx4", CollectionType.MRUTC),
+            Arguments.of(oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.gbx9.ncx4", CollectionType.MRUTC),
             Arguments.of(oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS-Radar.ncx4", CollectionType.MRUTP),
-            Arguments.of(oldTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4", CollectionType.SRC),
+            Arguments.of(oldTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.gbx9.ncx4", CollectionType.SRC),
             Arguments.of(oldTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib", CollectionType.SRC),
             Arguments.of(oldTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB.ncx4", CollectionType.SRC),
             Arguments.of(oldTestDir + "tds_index/NCEP/NBM/Ocean/NCEP_OCEAN_MODEL_BLEND.ncx4", CollectionType.TwoD),
@@ -55,5 +57,17 @@ public class TestGribPartitionReading {
         t.printStackTrace();
       }
     }
+  }
+
+  @BeforeAll
+  public static void startup() {
+    RandomAccessFile.setDebugLeaks(true);
+  }
+
+  @AfterAll
+  public static void shutdown() {
+    RandomAccessFile.setDebugLeaks(false);
+    System.out.printf("%s%n", RandomAccessFile.showDebugLeaks(new Formatter(), false));
+    assertThat(RandomAccessFile.leftOpen()).isEqualTo(0);
   }
 }

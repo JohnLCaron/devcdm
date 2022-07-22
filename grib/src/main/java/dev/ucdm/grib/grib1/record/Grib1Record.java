@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import dev.ucdm.grib.common.util.GribData;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.grib.common.util.QuasiRegular;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
@@ -128,16 +128,16 @@ public class Grib1Record {
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf) throws IOException {
-    return readData(raf, GribData.getInterpolationMethod());
+    return readData(raf, GribDataUtils.getInterpolationMethod());
   }
 
   // dont convertQuasiGrid
   public float[] readDataRaw(RandomAccessFile raf) throws IOException {
-    return readData(raf, GribData.InterpolationMethod.none);
+    return readData(raf, GribDataUtils.InterpolationMethod.none);
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
-  public float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
+  public float[] readData(RandomAccessFile raf, GribDataUtils.InterpolationMethod method) throws IOException {
     Grib1Gds gds = getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(),
         gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
@@ -163,7 +163,7 @@ public class Grib1Record {
     f.format("          Npts = %d%n", gds.getNpts());
     f.format("        isThin = %s%n", gdss.isThin());
 
-    GribData.Info info = getBinaryDataInfo(raf);
+    GribDataUtils.Info info = getBinaryDataInfo(raf);
     f.format("   dataLength = %d%n", info.dataLength);
 
     // octet 4, 1st half (packing flag)
@@ -198,8 +198,8 @@ public class Grib1Record {
   // debugging, do not use
   public static Grib1Record lastRecordRead;
 
-  public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
-    GribData.Info info = dataSection.getBinaryDataInfo(raf);
+  public GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    GribDataUtils.Info info = dataSection.getBinaryDataInfo(raf);
     info.decimalScaleFactor = pdss.getDecimalScale();
     info.bitmapLength = (bitmap == null) ? 0 : bitmap.getLength(raf);
     info.nPoints = getGDS().getNpts();
