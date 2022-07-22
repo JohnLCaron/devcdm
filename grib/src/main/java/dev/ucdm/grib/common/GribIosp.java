@@ -16,7 +16,7 @@ import dev.ucdm.core.iosp.AbstractIOServiceProvider;
 import dev.ucdm.core.util.CancelTask;
 import dev.ucdm.dataset.ncml.NcmlReader;
 import dev.ucdm.grib.collection.CollectionType;
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
 import dev.ucdm.grib.common.util.SectionIterable;
@@ -88,7 +88,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected GribCollection gribCollection;
   protected GribCollection.GroupGC gHcs;
   protected CollectionType gtype; // only used if gHcs was set
-  protected boolean isPartitioned = false;
   protected boolean owned; // if Iosp is owned by GribCollection; affects close() TODO get rid of this
   protected GribTables gribTable;
 
@@ -115,9 +114,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
-      //if (this.gribCollection instanceof PartitionCollectionImmutable) {
-      //  isPartitioned = true;
-      //}
       gribTable = createCustomizer();
       GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
 
@@ -126,12 +122,11 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } else if (gribCollection == null) { // may have been set in the constructor
       Formatter errlog = new Formatter();
       this.gribCollection =
-          GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.testIndexOnly, gribConfig, errlog);
+          GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdate.test, gribConfig, errlog);
       if (gribCollection == null) {
         throw new IllegalStateException(String.format("Fail to openGribCollectionFromRaf  %s err = %s", raf.getLocation(), errlog));
       }
 
-      // isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);
       gribTable = createCustomizer();
       GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
 

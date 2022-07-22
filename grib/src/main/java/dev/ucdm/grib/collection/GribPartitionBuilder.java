@@ -6,12 +6,8 @@
 package dev.ucdm.grib.collection;
 
 import dev.ucdm.core.calendar.CalendarDateRange;
-import dev.ucdm.core.util.StringUtil2;
-import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
-import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
-import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.inventory.MPartition;
 import dev.ucdm.grib.protoconvert.GribPartitionIndexWriter;
 import org.slf4j.Logger;
@@ -23,16 +19,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class GribPartitionBuilder {
   private static final Logger logger = LoggerFactory.getLogger(GribPartitionBuilder.class);
 
   protected final String name;
-  private final MPartition pCollection;
+  private final MPartition mpartition;
   private final File directory;
   private final GribConfig gribConfig;
   private final boolean isGrib1;
@@ -40,124 +34,40 @@ public class GribPartitionBuilder {
   public GribPartitionBuilder(String name, File directory, MPartition tpc, GribConfig gribConfig, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    this.pCollection = tpc;
+    this.mpartition = tpc;
     this.gribConfig = gribConfig;
     this.isGrib1 = isGrib1;
   }
-
-  boolean updateNeeded(CollectionUpdateType ff) throws IOException {
-    if (ff == CollectionUpdateType.never)
-      return false;
-    if (ff == CollectionUpdateType.always)
-      return true;
-
-    File collectionIndexFile =
-            GribIndexCache.getExistingFileOrCache(pCollection.getIndexFilename(GribCollectionIndex.NCX_SUFFIX));
-    if (collectionIndexFile == null)
-      return true;
-
-    if (ff == CollectionUpdateType.nocheck)
-      return false;
-
-    // now check children
-    return needsUpdate(ff, collectionIndexFile);
-  }
-
-  // TODO need an option to only scan latest last partition or something
-  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
-    long collectionLastModified = collectionIndexFile.lastModified();
-    Set<String> newFileSet = new HashSet<>();
-
-    pCollection.iterateOverMCollections( dcm -> {
-      String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCollectionIndex.NCX_SUFFIX), '\\', "/");
-      File partitionIndexFile = GribIndexCache.getExistingFileOrCache(partitionIndexFilename);
-      if (partitionIndexFile == null) { // make sure each partition has an index
-        return; // true;
-      }
-      if (collectionLastModified < partitionIndexFile.lastModified()) { // and the partition is earlier collection
-        return; // true;
-      }
-      newFileSet.add(partitionIndexFilename);
-    });
-
-    if (ff == CollectionUpdateType.testIndexOnly) {
-      return false;
-    }
-
-    /* LOOK now see if any files were deleted
-    List<MFile> oldFiles = new ArrayList<>();
-    readMFiles(collectionIndexFile.toPath(), oldFiles);
-    Set<String> oldFileSet = new HashSet<>();
-    for (MFile oldFile : oldFiles) {
-      if (!newFileSet.contains(oldFile.getPath()))
-        return true; // got deleted - must recreate the index
-      oldFileSet.add(oldFile.getPath());
-    }
-
-
-    // now see if any files were added
-    for (String newFilename : newFileSet) {
-      if (!oldFileSet.contains(newFilename))
-        return true; // got added - must recreate the index
-    }
-
-     */
-    return false;
-  }
-
-  /*
-  public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
-    logger.debug("GribCdmIndex.readMFiles {}", indexFile);
-    try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
-      // GribCollectionType type = getType(raf);
-      // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
-      if (openIndex(raf, logger)) {
-        File protoDir = new File(gribCollectionIndex.getTopDir());
-        int n = gribCollectionIndex.getMfilesCount();
-        for (int i = 0; i < n; i++) {
-          GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-          result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getLength(),
-                  mfilep.getIndex()));
-        }
-      }
-      return true;
-      // }
-    }
-    // return false;
-  }
-
-   */
 
   ///////////////////////////////////////////////////
   // build the index
   private GribPartition result;
 
-
   // return true if changed, exception on failure
-  public boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
+  public boolean createPartitionedIndex(Formatter errlog) throws IOException {
     this.result = new GribPartition(name, directory, gribConfig, true);
 
-    // build this object
-    if (errlog == null)
-      errlog = new Formatter(); // info will be discarded
+    if (mpartition.isPartitionOfPartition()) {
+      mpartition.iterateOverMPartitions(tpc -> {
+        result.addChildCollection(tpc);
+      });
+    } else {
+      mpartition.iterateOverMCollections(dcmp -> {
+        result.addChildCollection(dcmp);
+      });
+    }
 
-    // create partitions from the MCollection
-    pCollection.iterateOverMCollections( dcmp -> {
-      // LOOK shouldnt MPartition do this?
-      dcmp.setAuxInfo(GribConfig.AUX_CONFIG, gribConfig);
-      result.addChildCollection(dcmp);
-    });
     result.sortChildCollections(); // after this the partition list is immutable
 
     // choose the "canonical" partition, aka prototype, only used in copyInfo
-    int n = result.getPartitionSize();
+    int n = result.childCollections.size();
     if (n == 0) {
       errlog.format("ERR Nothing in this partition = %s%n", result.showLocation());
       throw new IllegalStateException("Nothing in this partition =" + result.showLocation());
     }
     // LOOK removed: int idx = pCollection.getCanonicalIndex(n);
     GribPartition.ChildCollection canon = result.getPartition(0);
-    logger.debug("     Using canonical partition {}", canon.dcm.getCollectionName());
+    logger.debug("     Using canonical partition {}", canon.name);
 
     try (GribCollection gc = canon.makeGribCollection()) {
       if (gc == null) {
@@ -187,7 +97,7 @@ public class GribPartitionBuilder {
     // makeTime2runtime(ds2D, false);
 
     // write the partition index file
-    var writer = new GribPartitionIndexWriter(name, pCollection);
+    var writer = new GribPartitionIndexWriter(name, mpartition);
     return writer.writeIndex(result, isGrib1, errlog);
   }
 
@@ -229,7 +139,7 @@ public class GribPartitionBuilder {
   private GribPartition.DatasetP makeDataset2D(Formatter f) throws IOException {
     GribConfig.GribIntvFilter intvMap = (gribConfig != null) ? gribConfig.intvFilter : null;
     GribPartition.DatasetP ds2D = result.makeDataset(CollectionType.TwoD);
-    int npart = result.getPartitionSize();
+    int npart = result.childCollections.size();
 
     // make a list of unique groups across all partitions as well as component groups for each group
     List<CoordinateRuntime> masterRuntimes = new ArrayList<>();
@@ -240,7 +150,7 @@ public class GribPartitionBuilder {
     int countPartition = 0;
     CalendarDateRange dateRangeAll = null;
     boolean rangeOverlaps = false;
-    for (GribPartition.ChildCollection tpp : result.getChildCollections()) {
+    for (GribPartition.ChildCollection tpp : result.childCollections) {
       // TODO open/close each child partition. could leave open ? they are NOT in cache
       try (GribCollection gc = tpp.makeGribCollection()) {
         if (gc == null) {
@@ -428,59 +338,4 @@ public class GribPartitionBuilder {
     CoordinateTimeAbstract.cdf = null; // LOOK wtf ?
     return ds2D;
   }
-
-/*  private void makeDatasetBest(GribCollection.Dataset ds2D, boolean isComplete) {
-    GribCollection.Dataset dsBest =
-        result.makeDataset(isComplete ? CollectionType.BestComplete : CollectionType.Best);
-
-    int npart = result.getPartitionSize();
-
-    // for each 2D group
-    for (GribCollection.GroupGC group2D : ds2D.groups) {
-      GribCollection.GroupGC groupB = dsBest.addGroupCopy(group2D); // make copy of group, add to Best dataset
-      groupB.isTwoD = false;
-
-      // for each time2D, create the best time coordinates
-      HashMap<Coordinate, CoordinateTimeAbstract> map2DtoBest = new HashMap<>(); // associate 2D coord with best
-      CoordinateSharerBest sharer = new CoordinateSharerBest();
-      for (Coordinate coord : group2D.coords) {
-        if (coord instanceof CoordinateRuntime)
-          continue; // skip it
-        if (coord instanceof CoordinateTime2D) {
-          CoordinateTimeAbstract best = ((CoordinateTime2D) coord).makeBestTimeCoordinate(result.masterRuntime);
-          if (!isComplete)
-            best = best.makeBestFromComplete();
-          sharer.addCoordinate(best);
-          map2DtoBest.put(coord, best);
-        } else {
-          sharer.addCoordinate(coord);
-        }
-      }
-      groupB.coords = sharer.finish(); // these are the unique coords for group Best
-
-      // transfer variables to Best group, set shared Coordinates
-      for (VariableIndex vi2d : group2D.variList) {
-        // copy vi2d and add to groupB
-        GribPartition.VariableIndexPartitioned vip =
-            result.makeVariableIndexPartitioned(groupB, vi2d, npart);
-        vip.finish();
-
-        // set shared coordinates
-        List<Coordinate> newCoords = new ArrayList<>();
-        for (Integer groupIndex : vi2d.coordIndex) {
-          Coordinate coord2D = group2D.coords.get(groupIndex);
-          if (coord2D instanceof CoordinateRuntime)
-            continue; // skip runtime;
-          if (coord2D instanceof CoordinateTime2D) {
-            newCoords.add(map2DtoBest.get(coord2D)); // add the best coordinate for that CoordinateTime2D
-          } else {
-            newCoords.add(coord2D);
-          }
-        }
-        vip.coordIndex = sharer.reindex(newCoords);
-      }
-
-    } // loop over groups
-  } */
-
 }

@@ -12,41 +12,38 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
-/**
- * Use Java 7 nio Paths
- */
-public class MFileOS7 implements MFile {
+/** Use Java nio Paths */
+public class MFileNio implements MFile {
 
   /**
-   * Make MFileOS7 if file exists, otherwise return null
-   * 
+   * Make MFile if file exists, otherwise return null
+   *
    * @param filename full path name
-   * @return MFileOS or null
+   * @return MFile or null
    */
-  public static MFileOS7 getExistingFile(String filename) throws IOException {
+  public static MFileNio getExistingFile(String filename) throws IOException {
     if (filename == null)
       return null;
     Path path = Paths.get(filename);
     if (Files.exists(path))
-      return new MFileOS7(path);
+      return new MFileNio(path);
     return null;
   }
 
   private final Path path;
   private final BasicFileAttributes attr;
-  private Object auxInfo;
 
-  public MFileOS7(Path path) throws IOException {
+  public MFileNio(Path path) throws IOException {
     this.path = path;
     this.attr = Files.readAttributes(path, BasicFileAttributes.class);
   }
 
-  public MFileOS7(Path path, BasicFileAttributes attr) {
+  public MFileNio(Path path, BasicFileAttributes attr) {
     this.path = path;
     this.attr = attr;
   }
 
-  public MFileOS7(String filename) throws IOException {
+  public MFileNio(String filename) throws IOException {
     this.path = Paths.get(filename);
     this.attr = Files.readAttributes(path, BasicFileAttributes.class);
   }
@@ -84,22 +81,12 @@ public class MFileOS7 implements MFile {
 
   @Override
   public MFile getParent() throws IOException {
-    return new MFileOS7(path.getParent());
+    return new MFileNio(path.getParent());
   }
 
   @Override
   public int compareTo(MFile o) {
     return getPath().compareTo(o.getPath());
-  }
-
-  @Override
-  public Object getAuxInfo() {
-    return auxInfo;
-  }
-
-  @Override
-  public void setAuxInfo(Object auxInfo) {
-    this.auxInfo = auxInfo;
   }
 
   @Override

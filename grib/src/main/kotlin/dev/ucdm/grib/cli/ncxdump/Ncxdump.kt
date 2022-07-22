@@ -1,4 +1,4 @@
-package dev.ucdm.grib.cli
+package dev.ucdm.grib.cli.ncxdump
 
 import dev.ucdm.array.Indent
 import dev.ucdm.core.calendar.CalendarDate

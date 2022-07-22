@@ -1,7 +1,7 @@
 package dev.ucdm.grib.common;
 
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.collection.GribCollection;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,8 +14,8 @@ import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class TestValidCollection {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
+public class TestOpenGribCollectionFromRaf {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
   private static final String gridTestDir = "../grib/src/test/data/";
 
   public static Stream<Arguments> params() {
@@ -36,7 +36,7 @@ public class TestValidCollection {
     System.out.printf("TestValidCollection %s%n", filename);
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
       GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.never, new GribConfig(), new Formatter());
+              raf, CollectionUpdate.never, new GribConfig(), new Formatter());
       if (gc == null) {
         if (!expectFail) fail();
         return;
@@ -51,4 +51,5 @@ public class TestValidCollection {
       }
     }
   }
+
 }

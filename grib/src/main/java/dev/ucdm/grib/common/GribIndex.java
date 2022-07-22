@@ -7,7 +7,6 @@ package dev.ucdm.grib.common;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.protoconvert.Grib1Index;
@@ -25,7 +24,7 @@ import java.util.Formatter;
 public abstract class GribIndex {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
 
-  public static final String GBX9_IDX = ".gbx9";
+  public static final String GBX_SUFFIX = ".gbx9";
   public static final boolean debug = false;
 
   /**
@@ -33,28 +32,24 @@ public abstract class GribIndex {
    * Use the existing index if it already exists and is not older than the data file.
    *
    * @param mfile the grib data or gbx9 file
-   * @param force force writing index
    * @return the resulting GribIndex
    * @throws IOException on io error
    */
   @Nullable
-  public static Grib2Index readOrCreateIndex2(MFile mfile, CollectionUpdateType force, Formatter errlog) throws IOException {
+  public static Grib2Index readOrCreateIndex2(MFile mfile, Formatter errlog) throws IOException {
 
     String idxPath = mfile.getPath();
-    if (!idxPath.endsWith(GBX9_IDX)) {
-      idxPath += GBX9_IDX;
+    if (!idxPath.endsWith(GBX_SUFFIX)) {
+      idxPath += GBX_SUFFIX;
     }
     // look to see if the file is in some special cache (eg when cant write to data directory)
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
     boolean idxFileExists = idxFile != null;
 
     Grib2Index index = null;
-    if (idxFileExists && force != CollectionUpdateType.always) { // always create a new index
-      // look to see if the index file is older than the data file
-      boolean isOlder = idxFile.lastModified() < mfile.getLastModified();
-
-      if (force != CollectionUpdateType.nocheck || isOlder) {
-        // try to read it
+    if (idxFileExists) {
+      // read existing if its not older than the data file
+      if (idxFile.lastModified() <= mfile.getLastModified()) {
         index = Grib2IndexProto.readGrib2Index(idxFile.getAbsolutePath());
       }
     }
@@ -89,28 +84,23 @@ public abstract class GribIndex {
    * Use the existing index if it already exists and is not older than the data file.
    *
    * @param mfile the grib data or gbx9 file
-   * @param force force writing index
    * @return the resulting GribIndex
    * @throws IOException on io error
    */
   @Nullable
-  public static Grib1Index readOrCreateIndex1(MFile mfile, CollectionUpdateType force, Formatter errlog) throws IOException {
+  public static Grib1Index readOrCreateIndex1(MFile mfile, Formatter errlog) throws IOException {
 
     String idxPath = mfile.getPath();
-    if (!idxPath.endsWith(GBX9_IDX)) {
-      idxPath += GBX9_IDX;
+    if (!idxPath.endsWith(GBX_SUFFIX)) {
+      idxPath += GBX_SUFFIX;
     }
     // look to see if the file is in some special cache (eg when cant write to data directory)
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
     boolean idxFileExists = idxFile != null;
 
     Grib1Index index = null;
-    if (idxFileExists && force != CollectionUpdateType.always) { // always create a new index
-      // look to see if the index file is older than the data file
-      boolean isOlder = idxFile.lastModified() < mfile.getLastModified();
-
-      if (force == CollectionUpdateType.nocheck || isOlder) {
-        // try to read it
+    if (idxFileExists) {
+      if (idxFile.lastModified() < mfile.getLastModified()) {
         index = Grib1IndexProto.readGrib1Index(idxFile.getAbsolutePath());
       }
     }

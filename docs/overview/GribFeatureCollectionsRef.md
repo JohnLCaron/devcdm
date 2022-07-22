@@ -51,12 +51,13 @@ point to a topdir. recurse into subdirectories. default is directory collection.
 8. subtree partition: build partitions starting from the subtree??
 
 readOrCreateCollectionFromIndex
-1. MCollectionSingleFile
+1. SingleFileMCollection
 2. DirectoryMCollection
 3. FilePartition
 4. DirectoryPartition
-5. SubtreeMCollection
-6. ?
+5. DirectoryPofP
+6. SubtreeMCollection
+7. ?
 
 GribCollectionIndex.openGribCollectionFromRaf(RandomAccessFile raf, CollectionUpdateType update, GribConfig config, Formatter errlog)      // raf is a single data file or an ncx4 file
 GribCollectionIndex.openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf, CollectionUpdateType update, GribConfig config, Formatter errlog) // raf is a grib data file

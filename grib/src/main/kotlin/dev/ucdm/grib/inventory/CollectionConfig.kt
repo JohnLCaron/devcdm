@@ -5,7 +5,6 @@ import java.nio.file.DirectoryStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 /*
@@ -29,6 +28,7 @@ data class CollectionConfig(
     val name: String,
     val topDir: String,
     val glob: String,
+    val info: Map<String, Any>,
     val makeCollection : (MCollection) -> String,
     val makePartition : (MPartition) -> String,
     val olderThan: Int? = null,
@@ -60,13 +60,20 @@ data class CollectionConfig(
 
         // if theres only one subdir, i dont think we need to build another index ?? ??
         if (countDirs.get() > 1) {
-            println("$indent subdirs = ${countDirs.get()} leafFiles = ${leafFiles.get()}")
-
             // by checking there are leaf files, we eliminate spurious directories
             if (leafFiles.get() > 0) {
-                val dirPartition = DirectoryPartition(name, dirPath, false, glob, null, null)
-                val status = makePartition(dirPartition)
-                println("${indent}DirectoryPartition(${dirPath}) on ${countDirs.get()} directories status= '$status'")
+                if (partition == PartitionType.directory) {
+                    val dirPartition = DirectoryPartition(name, dirPath, false, glob, null, null)
+                    dirPartition.addAuxInfo(info)
+                    val status = makePartition(dirPartition)
+                    println("${indent}$status DirectoryPartition with ${countDirs.get()} directories, ${leafFiles.get()} leafFiles")
+                } else if (partition == PartitionType.file) {
+                    val dirPartition = DirectoryPofP(name, dirPath, false, glob, null, null)
+                    dirPartition.addAuxInfo(info)
+                    val status = makePartition(dirPartition)
+                    println("${indent}$status DirectoryPofP with ${countDirs.get()} directories, ${leafFiles.get()} leafFiles")
+
+                }
             } // else PofP
         }
 
@@ -83,9 +90,10 @@ data class CollectionConfig(
                     // println("$indent${p.fileName}")
                     count.incrementAndGet();
                     if (partition == PartitionType.file) {
-                        val singleFile = SingleFileMCollection(MFileOS7(p))
+                        val singleFile = SingleFileMCollection(MFileNio(p))
+                        singleFile.addAuxInfo(info)
                         val status = makeCollection(singleFile)
-                        println("${indent}SingleFileMCollection(${p.fileName}) status= '$status'")
+                        println("${indent}$status SingleFileMCollection")
                     }
                 }
             }
@@ -96,15 +104,16 @@ data class CollectionConfig(
             if (partition == PartitionType.directory) {
                 // look what about testing if the collection needs updating??
                 val dirCollect = DirectoryMCollection(name, dirPath, false, glob, null, null)
+                dirCollect.addAuxInfo(info)
                 val status = makeCollection(dirCollect)
-                println("${indent}DirectoryMCollection(${dirPath}) status= '$status'")
+                println("${indent}$status DirectoryMCollection with ${count.get()} files")
 
             } else if (partition == PartitionType.file) {
                 val filePartition = FilePartition(name, dirPath, false, glob, null, null)
+                filePartition.addAuxInfo(info)
                 val status = makePartition(filePartition)
-                println("${indent}FilePartition(${dirPath}) status= '$status'")
+                println("${indent}$status FilePartition with ${count.get()} files")
             }
-            println("$indent${count.get()} files")
         }
         return count.get()
     }

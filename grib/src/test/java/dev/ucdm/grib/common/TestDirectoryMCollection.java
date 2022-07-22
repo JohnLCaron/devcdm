@@ -1,8 +1,7 @@
-package dev.ucdm.grib.collection;
+package dev.ucdm.grib.common;
 
-import dev.ucdm.grib.common.GribCollectionIndex;
-import dev.ucdm.grib.common.GribConfig;
-import dev.ucdm.grib.common.TestGribCollectionIndex;
+import dev.ucdm.grib.inventory.CollectionUpdate;
+import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.inventory.DirectoryMCollection;
 import dev.ucdm.grib.inventory.MCollection;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,8 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
-public class TestGribMCollectionDirectory {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
+public class TestDirectoryMCollection {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
 
   @Test
   public void testGribMCollectionDirectory() throws IOException {
@@ -26,7 +25,7 @@ public class TestGribMCollectionDirectory {
     MCollection dcm = new DirectoryMCollection("topdog", collectionDir, true, "*.grib2", null, null);
 
       try (GribCollection gc = GribCollectionIndex.updateCollectionIndex(false,
-              dcm, CollectionUpdateType.always, config, errlog)) {
+              dcm, CollectionUpdate.always, config, errlog)) {
         assertThat(gc).isNotNull();
       } catch (Throwable t) {
         System.out.printf("errlog = '%s'%n", errlog);
@@ -43,7 +42,7 @@ public class TestGribMCollectionDirectory {
     MCollection dcm = new DirectoryMCollection("topdog", collectionDir, true, "*.gbx9", null, null);
 
     try (GribCollection gc = GribCollectionIndex.updateCollectionIndex(false,
-            dcm, CollectionUpdateType.always, config, errlog)) {
+            dcm, CollectionUpdate.always, config, errlog)) {
       assertThat(gc).isNotNull();
 
       // assertThat(gc.fileSize)

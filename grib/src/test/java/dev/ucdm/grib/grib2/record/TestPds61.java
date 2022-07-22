@@ -6,7 +6,6 @@ package dev.ucdm.grib.grib2.record;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.inventory.MFileOS;
-import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.common.GribIndex;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ public class TestPds61 {
     MFile mfile = MFileOS.getExistingFile(testfile);
     assertThat(mfile).isNotNull();
 
-    dev.ucdm.grib.protoconvert.Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.never, new Formatter());
+    dev.ucdm.grib.protoconvert.Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, new Formatter());
     assertThat(gi).isNotNull();
     List<Grib2Record> records = gi.getRecords();
     Grib2Record record = records.get(0);

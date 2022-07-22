@@ -7,7 +7,6 @@ package dev.ucdm.grib.grib1.iosp;
 import dev.ucdm.array.*;
 import dev.ucdm.core.api.*;
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.inventory.MFileOS;
 import dev.ucdm.grib.common.GribIndex;
@@ -85,7 +84,7 @@ public class TestGrib1Unpack {
     final String testfile = "../grib/src/test/data/HPPI89_KWBC.grib1";
 
     MFile mfile = MFileOS.getExistingFile(testfile);
-    Grib1Index index = GribIndex.readOrCreateIndex1(mfile, CollectionUpdateType.test, new Formatter());
+    Grib1Index index = GribIndex.readOrCreateIndex1(mfile, new Formatter());
 
     int lineno = 0;
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {

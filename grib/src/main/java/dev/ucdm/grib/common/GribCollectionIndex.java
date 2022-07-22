@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.collection.Grib1Collection;
 import dev.ucdm.grib.collection.Grib1CollectionBuilder;
 import dev.ucdm.grib.collection.Grib2Collection;
@@ -51,7 +51,7 @@ public class GribCollectionIndex {
   // raf is a single data file or an ncx4 file
   @Nullable
   public static GribCollection openGribCollectionFromRaf(
-          RandomAccessFile raf, CollectionUpdateType update, GribConfig config, Formatter errlog) throws IOException {
+          RandomAccessFile raf, CollectionUpdate update, GribConfig config, Formatter errlog) throws IOException {
 
     // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
@@ -79,42 +79,43 @@ public class GribCollectionIndex {
 
   /** raf is a grib data file. If the corresponding ncx4 file exists, use it, else create it. */
   public static GribCollection openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf,
-      CollectionUpdateType update, GribConfig config, Formatter errlog)
+                                                              CollectionUpdate update, GribConfig config, Formatter errlog)
       throws IOException {
 
     File dataFile = new File(dataRaf.getLocation());
     MFile mfile = new MFileOS(dataFile);
-    MCollection dcm = new SingleFileMCollection(mfile).setAuxInfo(GribConfig.AUX_CONFIG, config);
+    MCollection dcm = new SingleFileMCollection(mfile);
     return updateCollectionIndex(isGrib1, dcm, update, config, errlog);
   }
 
   /**
-   * The general case of a creating a collection from Grib data or gbx files.
+   * The general case of creating a collection from Grib data or gbx files.
    * If the corresponding ncx4 file exists, use it, update it, or create it.
    */
   @Nullable
   public static GribCollection updateCollectionIndex(
-          boolean isGrib1, MCollection dcm, CollectionUpdateType update, GribConfig config, Formatter errlog) throws IOException {
+          boolean isGrib1, MCollection dcm, CollectionUpdate update, GribConfig config, Formatter errlog) throws IOException {
 
-    dcm.setAuxInfo(GribConfig.AUX_CONFIG, config);
-
-    String idxPath = dcm.getIndexFilename(NCX_SUFFIX);
+    String idxPath = dcm.getIndexFilename();
     // look to see if the file is in some special cache (eg when cant write to data directory)
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
     boolean idxFileExists = idxFile != null;
 
     GribCollection gribCollection = null;
-    if (idxFileExists && update != CollectionUpdateType.always) { // always create a new index
+    if (idxFileExists && update != CollectionUpdate.always) { // always create a new index
       // look to see if the index file is older than the collection
-      boolean isOlder = CalendarDate.of(idxFile.lastModified()).isBefore(dcm.getLastModified());
-
-      if (update != CollectionUpdateType.nocheck && !isOlder) {
-        // try to read it
-        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(NCX_SUFFIX), false);
+      boolean indexIsOlder = CalendarDate.of(idxFile.lastModified()).isBefore(dcm.getLastModified());
+      // dont read it if index is older
+      if (update == CollectionUpdate.nocheck || update == CollectionUpdate.never || !indexIsOlder) {
+        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(), false);
       }
     }
 
     if (gribCollection == null) {
+      if (update == CollectionUpdate.never) {
+        errlog.format("Failed to open existing index for '%s'", idxPath);
+        return null;
+      }
       // may not exist, overwrite if it does.
       File idxFile2 = GribIndexCache.getFileOrCache(idxPath);
       if (idxFile2 == null) {
@@ -127,7 +128,7 @@ public class GribCollectionIndex {
 
       } else {
         // read it back in
-        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(NCX_SUFFIX), false);
+        gribCollection = readCollectionFromIndex(dcm.getIndexFilename(), false);
         logger.debug("  Index written: {}", idxPath);
       }
     } else {
@@ -138,16 +139,14 @@ public class GribCollectionIndex {
   }
 
   /** create ncx4 file. The GribConfig is attached to the MCollection */
-  static boolean createCollectionIndex(boolean isGrib1, MCollection dcm, GribConfig config, Formatter errlog) throws IOException {
-    dcm.setAuxInfo(GribConfig.AUX_CONFIG, config);
-
+  public static boolean createCollectionIndex(boolean isGrib1, MCollection dcm, GribConfig config, Formatter errlog) throws IOException {
     if (isGrib1) {
-      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, config, logger);
       if (!builder.createIndex(errlog)) {
         return false;
       }
     } else {
-      Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+      Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, config, logger);
       if (!builder.createIndex(errlog)) {
         return false;
       }
@@ -156,6 +155,7 @@ public class GribCollectionIndex {
   }
 
   /** read existing ncx4 file */
+  // LOOK what is useCache??
   @Nullable
   public static GribCollection readCollectionFromIndex(String indexFilename, boolean useCache) throws IOException {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);

@@ -3,7 +3,7 @@ package dev.ucdm.grib.common;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.CdmFiles;
 import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.collection.GribCollection;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ public class TestGribIospNames {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(
-              raf, CollectionUpdateType.test, config, errlog)) {
+              raf, CollectionUpdate.test, config, errlog)) {
         assertThat(gc).isNotNull();
         GribIosp iosp = gc.makeIosp();
         assertThat(iosp).isNotNull();

@@ -12,7 +12,7 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import dev.ucdm.grib.collection.GribCollection;
 import dev.ucdm.grib.collection.VariableIndex;
-import dev.ucdm.grib.collection.CollectionUpdateType;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import dev.ucdm.grib.common.GdsHorizCoordSys;
 import dev.ucdm.grib.coord.Coordinate;
 import dev.ucdm.grib.coord.CoordinateTime2D;
@@ -68,7 +68,7 @@ public class GribGridDataset implements GridDataset {
     try {
       raf = new RandomAccessFile(endpoint, "r");
       // TODO how do you pass in a non-standard GribConfig ? Or is that needed only when you are creating?
-      gc = GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdateType.nocheck, new GribConfig(), errLog);
+      gc = GribCollectionIndex.openGribCollectionFromRaf(raf, CollectionUpdate.nocheck, new GribConfig(), errLog);
 
       if (gc == null) {
         raf.close();

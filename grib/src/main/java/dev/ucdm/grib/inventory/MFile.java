@@ -56,9 +56,4 @@ public interface MFile extends Comparable<MFile> {
   MFile getParent() throws IOException;
 
   int compareTo(MFile o);
-
-  // does not survive serialization ??
-  Object getAuxInfo();
-
-  void setAuxInfo(Object info);
 }

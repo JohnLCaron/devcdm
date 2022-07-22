@@ -1,4 +1,4 @@
-package dev.ucdm.grib.cli
+package dev.ucdm.grib.cli.ncxdump
 
 import dev.ucdm.test.util.extraTestDir
 import dev.ucdm.test.util.gribLocalDir

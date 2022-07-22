@@ -9,7 +9,6 @@ import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.grib.common.GribConfig;
-import dev.ucdm.grib.common.GribConstants;
 import dev.ucdm.grib.common.GribIndex;
 import dev.ucdm.grib.common.util.GribIndexCache;
 import dev.ucdm.grib.coord.*;
@@ -39,9 +38,9 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private final GribConfig gribConfig;
   private Grib1Customizer cust;
 
-  public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+  public Grib1CollectionBuilder(String name, MCollection dcm, GribConfig config, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
-    this.gribConfig = (GribConfig) dcm.getAuxInfo(GribConfig.AUX_CONFIG);
+    this.gribConfig = config;
   }
 
   // read all records in all files,
@@ -60,9 +59,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     dcm.iterateOverMFiles(mfile -> {
       Grib1Index index;
       try {
-        CollectionUpdateType update = GribConstants.debugGbxIndexOnly ? CollectionUpdateType.never : CollectionUpdateType.test;
-        // here is where gbx9 files get recreated
-        index = GribIndex.readOrCreateIndex1(mfile, update, errlog);
+        // here is where gbx9 files get created or updated
+        index = GribIndex.readOrCreateIndex1(mfile, errlog);
         allFiles.add(mfile); // add on success
 
       } catch (IOException ioe) {

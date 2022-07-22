@@ -36,8 +36,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /** A mutable class for writing to or reading from ncx indices. */
@@ -114,17 +112,6 @@ public abstract class GribCollection implements Closeable {
       logger.error("GribCollection has null name dir={}%n", directory);
   }
 
-  // for making partition collection
-  void copyInfo(GribCollection from) {
-    this.center = from.center;
-    this.subcenter = from.subcenter;
-    this.master = from.master;
-    this.local = from.local;
-    this.genProcessType = from.genProcessType;
-    this.genProcessId = from.genProcessId;
-    this.backProcessId = from.backProcessId;
-  }
-
   public String getName() {
     return name;
   }
@@ -149,29 +136,6 @@ public abstract class GribCollection implements Closeable {
 
   public boolean isPartitionOfPartitions() {
     return partitions != null && partitions.isPartitionOfPartitions;
-  }
-
-  /**
-   * The files that comprise the collection.
-   * Actual paths, including the grib cache if used.
-   *
-   * @return list of filename.
-   */
-  public List<String> getFilenames() {
-    List<String> result = new ArrayList<>();
-    for (MFile file : fileMap.values())
-      result.add(file.getPath());
-    Collections.sort(result);
-    return result;
-  }
-
-  @Nullable
-  File getIndexParentFile() {
-    if (indexRaf == null)
-      return null;
-    Path index = Paths.get(indexRaf.getLocation());
-    Path parent = index.getParent();
-    return parent.toFile();
   }
 
   public String getFilename(int fileno) {
@@ -351,20 +315,9 @@ public abstract class GribCollection implements Closeable {
       return horizCoordSys.getHcs();
     }
 
-
     @Override
     public int compareTo(GroupGC o) {
       return getDescription().compareTo(o.getDescription());
-    }
-
-    public List<MFile> getFiles() {
-      List<MFile> result = new ArrayList<>();
-      if (filenose == null)
-        return result;
-      for (int fileno : filenose)
-        result.add(fileMap.get(fileno));
-      Collections.sort(result);
-      return result;
     }
 
     // get the variable in this group that has same object equality as gribVariable

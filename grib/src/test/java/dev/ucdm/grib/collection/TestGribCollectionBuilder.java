@@ -3,7 +3,8 @@ package dev.ucdm.grib.collection;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
-import dev.ucdm.grib.common.TestGribCollectionIndex;
+import dev.ucdm.grib.common.TestSingleFileMCollection;
+import dev.ucdm.grib.inventory.CollectionUpdate;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,7 +17,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGribCollectionBuilder {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestGribCollectionIndex.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
 
   public static Stream<Arguments> params() {
     return testFilesIn("src/test/data/")
@@ -33,7 +34,7 @@ public class TestGribCollectionBuilder {
 
     try (RandomAccessFile raf = new RandomAccessFile(testfile, "r")) {
       try (GribCollection gc = GribCollectionIndex.openGribCollectionFromRaf(raf,
-              CollectionUpdateType.always, config, errlog)) {
+              CollectionUpdate.always, config, errlog)) {
         assertThat(gc).isNotNull();
       } catch (Throwable t) {
         System.out.printf("errlog = '%s'%n", errlog);

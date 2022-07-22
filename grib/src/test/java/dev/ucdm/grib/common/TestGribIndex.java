@@ -1,6 +1,5 @@
 package dev.ucdm.grib.common;
 
-import dev.ucdm.grib.collection.CollectionUpdateType;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.inventory.MFileOS;
 import dev.ucdm.grib.grib2.record.Grib2Gds;
@@ -10,11 +9,13 @@ import dev.ucdm.grib.protoconvert.Grib2Index;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.grib.common.GribIndex.GBX_SUFFIX;
 
 public class TestGribIndex {
 
@@ -27,7 +28,11 @@ public class TestGribIndex {
     MFile mfile = MFileOS.getExistingFile(testfile);
     assertThat(mfile).isNotNull();
 
-    Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, CollectionUpdateType.always, new Formatter());
+    File idxFile =  new File(testfile + GBX_SUFFIX);
+    if (idxFile.exists()) {
+      idxFile.delete();
+    }
+    Grib2Index gi = GribIndex.readOrCreateIndex2(mfile, new Formatter());
 
     assertThat(gi).isNotNull();
     List<Grib2Record> records = gi.getRecords();

@@ -79,7 +79,6 @@ public class GcMFile implements MFile {
     return shortName;
   }
 
-  @Override
   public MFile getParent() {
     return new MFileOS(directory);
   }
@@ -88,15 +87,6 @@ public class GcMFile implements MFile {
   public int compareTo(MFile o) {
     return shortName.compareTo(o.getShortName());
   }
-
-  @Override
-  @Nullable
-  public Object getAuxInfo() {
-    return null;
-  }
-
-  @Override
-  public void setAuxInfo(Object info) {}
 
   public File getDirectory() {
     return directory;
