@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,24 +51,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author john caron
  */
 public class RandomAccessFile implements DataInput, DataOutput, Closeable {
-
   public static final int BIG_ENDIAN = 0;
   public static final int LITTLE_ENDIAN = 1;
 
   protected static final int defaultBufferSize = 8092; // The default buffer size, in bytes.
-
-  ///////////////////////////////////////////////////////////////////////
-  // debug leaks - keep track of open files
-  protected static boolean debugLeaks;
-  protected static boolean debugAccess;
-  protected static Set<String> allFiles;
-  protected static List<String> openFiles = Collections.synchronizedList(new ArrayList<>()); // could keep map on file
-                                                                                             // hashcode
-  private static final AtomicLong count_openFiles = new AtomicLong();
-  private static final AtomicInteger maxOpenFiles = new AtomicInteger();
-  private static AtomicInteger debug_nseeks = new AtomicInteger();
-  private static AtomicLong debug_nbytes = new AtomicLong();
-
   protected static boolean showOpen;
   protected static boolean showRead;
 
@@ -2173,5 +2161,44 @@ public class RandomAccessFile implements DataInput, DataOutput, Closeable {
     return false;
   }
 
+  ///////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+  // debug leaks - keep track of open files
+  protected static boolean debugLeaks;
+  protected static boolean debugAccess;
+  protected static Set<String> allFiles;
+  protected static List<String> openFiles = Collections.synchronizedList(new ArrayList<>());
+  private static final AtomicLong count_openFiles = new AtomicLong();
+  private static final AtomicInteger maxOpenFiles = new AtomicInteger();
+  private static AtomicInteger debug_nseeks = new AtomicInteger();
+  private static AtomicLong debug_nbytes = new AtomicLong();
+
+  public static void setDebugLeaks(boolean b) {
+    if (b) {
+      count_openFiles.set(0);
+      maxOpenFiles.set(0);
+      allFiles = new HashSet<>(1000);
+    }
+    debugLeaks = b;
+  }
+
+  public static Formatter showDebugLeaks(Formatter f, boolean showAll) {
+    f.format("%nRandomAccesFile showDebugLeaks%n", maxOpenFiles.get());
+    f.format("  max open at a time = %d%n", maxOpenFiles.get());
+    f.format("  # opens = %d%n", count_openFiles.get());
+    if (openFiles.size() > 0) {
+      f.format("  openFiles (%d)%n", openFiles.size());
+      openFiles.forEach(name -> f.format("   %s%n", name));
+    }
+    if (showAll) {
+      f.format("  allFiles (%d)%n", allFiles.size());
+      allFiles.forEach(name -> f.format("   %s%n", name));
+    }
+    return f;
+  }
+
+  public static int leftOpen() {
+    return openFiles.size();
+  }
 }
 

@@ -5,6 +5,8 @@ import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.TestSingleFileMCollection;
 import dev.ucdm.grib.inventory.CollectionUpdate;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,7 +19,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGribCollectionBuilder {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
 
   public static Stream<Arguments> params() {
     return testFilesIn("src/test/data/")
@@ -41,5 +42,17 @@ public class TestGribCollectionBuilder {
         t.printStackTrace();
       }
     }
+  }
+
+  @BeforeAll
+  public static void startup() {
+    RandomAccessFile.setDebugLeaks(true);
+  }
+
+  @AfterAll
+  public static void shutdown() {
+    RandomAccessFile.setDebugLeaks(false);
+    System.out.printf("%s%n", RandomAccessFile.showDebugLeaks(new Formatter(), false));
+    assertThat(RandomAccessFile.leftOpen()).isEqualTo(0);
   }
 }

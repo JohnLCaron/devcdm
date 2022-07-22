@@ -160,8 +160,7 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
       indexBuilder.setMasterRuntime(publishCoordinateRuntime(masterRuntime));
 
       // gds
-      for (Object go : groups) {
-        Group g = (Group) go;
+      for (Group g : groups) {
         indexBuilder.addGds(publishGdsProto(g.gdss.getRawBytes(), -1));
       }
 

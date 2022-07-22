@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -290,9 +291,11 @@ public class GribPartition {
     // the children must already exist
     @Nullable
     public GribCollection makeGribCollection() throws IOException {
-      GribCollection result = GribCollectionIndex.readCollectionFromIndex(indexFilename, true);
+      Formatter errlog = new Formatter();
+
+      GribCollection result = GribCollectionIndex.readCollectionFromIndex(indexFilename, true, errlog);
       if (result == null) {
-        logger.error("Failed on readCollectionFromIndex {}", indexFilename);
+        logger.error("Failed on readCollectionFromIndex {} '{}'", indexFilename, errlog);
         return null;
       }
 

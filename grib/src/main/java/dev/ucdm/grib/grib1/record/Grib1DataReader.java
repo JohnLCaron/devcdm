@@ -7,7 +7,7 @@ package dev.ucdm.grib.grib1.record;
 
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.util.BitReader;
-import dev.ucdm.grib.common.util.GribData;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.common.util.GribNumbers;
 
 import java.io.EOFException;
@@ -86,7 +86,7 @@ public class Grib1DataReader {
   }
 
   public float[] getData(RandomAccessFile raf, byte[] bitmap) throws IOException {
-    GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
+    GribDataUtils.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
     if (!info.isGridPointData()) {
       logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data for {}", raf.getLocation());
@@ -108,7 +108,7 @@ public class Grib1DataReader {
    */
 
   // raf will be positioned at byte 12
-  private float[] readSimplePacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
+  private float[] readSimplePacking(RandomAccessFile raf, byte[] bitmap, GribDataUtils.Info info) throws IOException {
     boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
 
@@ -236,7 +236,7 @@ public class Grib1DataReader {
 
   // TODO readComplexPacking doesnt work.
   // raf will be at byte 12
-  private float[] readComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
+  private float[] readComplexPacking(RandomAccessFile raf, byte[] bitmap, GribDataUtils.Info info) throws IOException {
 
     // First-order descriptors width stored at the equivalent place of bit number for ordinary packing
     int foWidth = info.numberOfBits;
@@ -360,7 +360,7 @@ public class Grib1DataReader {
 
   // TODO not clear if this works - needs testing.
   // raf will be at byte 12
-  private float[] readExtendedComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info)
+  private float[] readExtendedComplexPacking(RandomAccessFile raf, byte[] bitmap, GribDataUtils.Info info)
       throws IOException {
 
     int N1 = GribNumbers.uint2(raf);
@@ -589,7 +589,7 @@ public class Grib1DataReader {
   }
 
   public static void showComplexPackingInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
-    GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
+    GribDataUtils.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
     if (!info.isGridPointData() || info.isSimplePacking())
       return;

@@ -180,11 +180,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
                                List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange)
           throws IOException {
     Grib2CollectionIndexWriter writer = new Grib2CollectionIndexWriter(dcm);
-    List<Grib2CollectionIndexWriter.Group> groups2 = new ArrayList<>();
-    // copy to change GribCollectionBuilder.Group -> GribCollectionPublish.Group
-    for (Object g : groups) {
-      groups2.add((Grib2CollectionIndexWriter.Group) g);
-    }
+    var groups2 = groups.stream().map(it -> (Grib2CollectionIndexWriter.Group) it).toList();
     File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type, dateRange);
   }

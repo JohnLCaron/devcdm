@@ -100,7 +100,7 @@ public abstract class GribIndex {
 
     Grib1Index index = null;
     if (idxFileExists) {
-      if (idxFile.lastModified() < mfile.getLastModified()) {
+      if (idxFile.lastModified() <= mfile.getLastModified()) {
         index = Grib1IndexProto.readGrib1Index(idxFile.getAbsolutePath());
       }
     }

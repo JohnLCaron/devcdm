@@ -20,8 +20,8 @@ import java.util.zip.Deflater;
  * Abstraction for handling Grib 1 and 2 data in a uniform way.
  * Doesnt really belong here, except for Info
  */
-public class GribData {
-  private static Logger logger = LoggerFactory.getLogger(GribData.class);
+public class GribDataUtils {
+  private static Logger logger = LoggerFactory.getLogger(GribDataUtils.class);
 
   public enum InterpolationMethod {
     none, cubic, linear

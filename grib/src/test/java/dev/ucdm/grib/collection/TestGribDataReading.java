@@ -5,12 +5,16 @@ import dev.ucdm.array.Array;
 import dev.ucdm.core.api.CdmFile;
 import dev.ucdm.core.api.CdmFiles;
 import dev.ucdm.core.api.Variable;
+import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.grib.common.TestSingleFileMCollection;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -47,6 +51,18 @@ public class TestGribDataReading {
             Arguments.of(oldTestDir + "gribCollections/hrrr/GSD_HRRR_CONUS_3km_surface.ncx4", CollectionType.MRUTP,
                     "DPT_P0_L103_GLC0_height_above_ground", List.of(57,1,1059,1799))
     );
+  }
+
+  @BeforeAll
+  public static void startup() {
+    RandomAccessFile.setDebugLeaks(true);
+  }
+
+  @AfterAll
+  public static void shutdown() {
+    RandomAccessFile.setDebugLeaks(false);
+    System.out.printf("%s%n", RandomAccessFile.showDebugLeaks(new Formatter(), false));
+    assertThat(RandomAccessFile.leftOpen()).isEqualTo(0);
   }
 
   @ParameterizedTest

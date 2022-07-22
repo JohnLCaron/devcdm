@@ -9,12 +9,7 @@ import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarPeriod;
 import dev.ucdm.core.util.StringUtil2;
 
-/**
- * General Utilities used by GRIB code.
- *
- * @author caron
- * @since 11/16/11
- */
+/** General Utilities used by GRIB code. */
 public class GribUtils {
   public static final String CENTER = "Originating_or_generating_Center";
   public static final String SUBCENTER = "Originating_or_generating_Subcenter";

@@ -23,7 +23,7 @@ fun createPartitionIndex(
 
     if (builder.createPartitionedIndex(errlog)) {
         // read it back in
-        return readCollectionFromIndex(dcm.indexFilename, false)
+        return readCollectionFromIndex(dcm.indexFilename, false, errlog)
     } else {
         errlog.format("failed")
         return null
@@ -49,7 +49,7 @@ fun updatePartitionIndex(
         val indexIsOlder = CalendarDate.of(idxFile!!.lastModified()).isBefore(dcm.lastModified)
         // dont read it if index is older
         if ((update == CollectionUpdate.nocheck) || (update == CollectionUpdate.never) || !indexIsOlder) {
-            gribCollection = readCollectionFromIndex(dcm.indexFilename, false)
+            gribCollection = readCollectionFromIndex(dcm.indexFilename, false, errlog)
         }
     }
 
@@ -69,7 +69,7 @@ fun updatePartitionIndex(
             logger.warn("  Index writing failed on {} errlog = '{}'", idxFile2, errlog)
         } else {
             // read it back in
-            gribCollection = readCollectionFromIndex(dcm.indexFilename, false)
+            gribCollection = readCollectionFromIndex(dcm.indexFilename, false, errlog)
             logger.debug("  Index written: {}", idxPath)
         }
     } else {

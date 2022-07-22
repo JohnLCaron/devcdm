@@ -21,6 +21,7 @@ import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.protoconvert.Grib1CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.Grib1Index;
+import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,13 +58,19 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     // place each record into its group
     dcm.iterateOverMFiles(mfile -> {
       Grib1Index index;
+      Formatter gbxerrors = new Formatter();
+
       try {
         // here is where gbx9 files get created or updated
-        index = GribIndex.readOrCreateIndex1(mfile, errlog);
+        index = GribIndex.readOrCreateIndex1(mfile, gbxerrors);
         allFiles.add(mfile); // add on success
 
       } catch (IOException ioe) {
         logger.error("Grib1CollectionBuilder {} : reading/Creating gbx9 index for file {} failed {}", name, mfile.getPath(), ioe);
+        return;
+      }
+      if (index == null) {
+        logger.error("Grib1CollectionBuilder {} : reading/Creating gbx9 index for file {} failed\n{}", name, mfile.getPath(), gbxerrors);
         return;
       }
 
@@ -160,9 +167,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
                                List<? extends Group> groups, List<MFile> files, CalendarDateRange dateRange)
           throws IOException {
     Grib1CollectionIndexWriter writer = new Grib1CollectionIndexWriter(dcm);
-    List<Grib1CollectionIndexWriter.Group> groups2 = new ArrayList<>();
-    for (Object g : groups)
-      groups2.add((Grib1CollectionIndexWriter.Group) g); // why copy ?
+    var groups2 = groups.stream().map(it -> (Grib1CollectionIndexWriter.Group) it).toList();
     File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type, dateRange);
   }

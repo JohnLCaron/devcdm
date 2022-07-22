@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import dev.ucdm.grib.common.util.GribData;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.array.Immutable;
@@ -66,14 +66,14 @@ public class Grib1SectionBinaryData {
   }
 
   // for debugging
-  GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+  GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     return getBinaryDataInfo(raf, startingPosition);
   }
 
-  public static GribData.Info getBinaryDataInfo(RandomAccessFile raf, long start) throws IOException {
+  public static GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf, long start) throws IOException {
     raf.seek(start); // go to the data section
 
-    GribData.Info info = new GribData.Info();
+    GribDataUtils.Info info = new GribDataUtils.Info();
 
     info.dataLength = GribNumbers.uint3(raf); // // octets 1-3 (section length)
 

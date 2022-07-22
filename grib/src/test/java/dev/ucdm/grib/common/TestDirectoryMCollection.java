@@ -14,7 +14,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static dev.ucdm.test.util.TestFilesKt.oldTestDir;
 
 public class TestDirectoryMCollection {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestSingleFileMCollection.class);
 
   @Test
   public void testGribMCollectionDirectory() throws IOException {

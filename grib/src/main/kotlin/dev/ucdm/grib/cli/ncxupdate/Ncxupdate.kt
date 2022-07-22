@@ -95,9 +95,9 @@ class NcxUpdate(val name: String, val topdir: String, val glob: String, val isGr
         val gribConfig = mcollection.getAuxInfo("GribConfig") as GribConfig
         val update = mcollection.getAuxInfo("CollectionUpdate") as CollectionUpdate
         val gc = GribCollectionIndex.updateCollectionIndex(isGrib1, mcollection, update, gribConfig, errlog)
-        if (gc != null) {
-            println("$errlog")
-            return "Failed to create ${mcollection.indexFilename}"
+        if (gc == null) {
+            println("errlog = '$errlog'")
+            return "Failed to create mcollection ${mcollection.indexFilename}"
         } else {
             gc?.close();
             return "Updated ${mcollection.indexFilename}"
@@ -113,8 +113,8 @@ class NcxUpdate(val name: String, val topdir: String, val glob: String, val isGr
 
         val gc = updatePartitionIndex(isGrib1, mpartition, update, gribConfig, errlog)
         if (gc == null) {
-            println("$errlog")
-            return "Failed to create ${mpartition.indexFilename}"
+            println("errlog = '$errlog'")
+            return "Failed to create mpartition ${mpartition.indexFilename}"
         } else {
             gc.close()
             return "Created ${mpartition.indexFilename}"
