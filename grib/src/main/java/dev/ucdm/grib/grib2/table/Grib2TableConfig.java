@@ -8,7 +8,6 @@ package dev.ucdm.grib.grib2.table;
 import com.google.common.collect.ImmutableList;
 import dev.ucdm.core.util.StringUtil2;
 
-import dev.ucdm.array.Immutable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +24,9 @@ import java.util.Objects;
  * @author caron
  * @since 8/1/2014
  */
-@Immutable
-class Grib2TableConfig {
+record Grib2TableConfig(String name, int center, int subCenter, int masterVersion, int localVersion,
+                        int genProcessId, String path, Grib2TablesId.Type type) {
+
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TableConfig.class);
   private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
   private static ImmutableList<Grib2TableConfig> tables;
@@ -87,12 +87,13 @@ class Grib2TableConfig {
   }
 
   static Grib2TableConfig matchTable(Grib2TablesId id) {
-    if (tables == null)
+    if (tables == null) {
       tables = init();
+    }
 
     // first match wins
     for (Grib2TableConfig table : tables) {
-      if (table.id.match(id))
+      if (table.id().match(id))
         return table;
     }
 
@@ -105,20 +106,6 @@ class Grib2TableConfig {
       tables = init();
 
     return tables;
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////////
-  private final String name;
-  private final Grib2TablesId.Type type;
-  private final Grib2TablesId id;
-  private String path;
-
-  private Grib2TableConfig(String name, int center, int subCenter, int masterVersion, int localVersion,
-      int genProcessId, String path, Grib2TablesId.Type type) {
-    this.name = name;
-    this.path = path;
-    this.type = type;
-    this.id = new Grib2TablesId(center, subCenter, masterVersion, localVersion, genProcessId);
   }
 
   String getPath() {
@@ -135,7 +122,11 @@ class Grib2TableConfig {
 
   // The id in the configuration, will match but maybe not equal the Grib2Record's id.
   Grib2TablesId getConfigId() {
-    return id;
+    return id();
+  }
+
+  public Grib2TablesId id() {
+    return new Grib2TablesId(center, subCenter, masterVersion, localVersion, genProcessId);
   }
 
   @Override
@@ -147,28 +138,27 @@ class Grib2TableConfig {
 
     Grib2TableConfig that = (Grib2TableConfig) o;
 
-    if (!id.equals(that.id))
+    if (!id().equals(that.id()))
       return false;
     if (!name.equals(that.name))
       return false;
     if (!Objects.equals(path, that.path))
       return false;
     return type == that.type;
-
   }
 
   @Override
   public int hashCode() {
     int result = name.hashCode();
     result = 31 * result + type.hashCode();
-    result = 31 * result + id.hashCode();
+    result = 31 * result + id().hashCode();
     result = 31 * result + (path != null ? path.hashCode() : 0);
     return result;
   }
 
   @Override
   public String toString() {
-    return "Grib2TableConfig{" + "name='" + name + '\'' + ", type=" + type + ", id=" + id + ", path='" + path + '\''
+    return "Grib2TableConfig{" + "name='" + name + '\'' + ", type=" + type + ", id=" + id() + ", path='" + path + '\''
         + '}';
   }
 }

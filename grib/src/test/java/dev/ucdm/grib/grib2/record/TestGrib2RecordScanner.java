@@ -1,7 +1,5 @@
 package dev.ucdm.grib.grib2.record;
 
-import dev.ucdm.core.io.RandomAccessFile;
-import dev.ucdm.grib.common.util.GribDataUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,13 +9,10 @@ import java.util.Formatter;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.grib.grib2.record.TestGrib2Records.readFile;
 import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGrib2RecordScanner {
-  interface Callback {
-    void call(RandomAccessFile raf, Grib2Record gr) throws IOException;
-  }
-
   public static Stream<Arguments> params() {
     return testFilesIn("src/test/data/")
             .addNameFilter(it -> it.endsWith("grib2"))
@@ -27,7 +22,6 @@ public class TestGrib2RecordScanner {
   @ParameterizedTest
   @MethodSource("params")
   public void testRead(String filename) throws IOException {
-
     readFile(filename, (raf, gr) -> {
       assertThat(gr.getGDS()).isNotNull();
       assertThat(gr.getPDSsection()).isNotNull();
@@ -38,21 +32,5 @@ public class TestGrib2RecordScanner {
               gr.getPDSsection().getPDSTemplateNumber(), data.length, gr.getReferenceDate());
     });
   }
-
-  private void readFile(String path, Callback callback) throws IOException {
-    try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
-      raf.order(RandomAccessFile.BIG_ENDIAN);
-      raf.seek(0);
-
-      Grib2RecordScanner reader = new Grib2RecordScanner(raf);
-      while (reader.hasNext()) {
-        Grib2Record gr = reader.next();
-        if (gr == null)
-          break;
-        callback.call(raf, gr);
-      }
-    }
-  }
-
 
 }

@@ -85,42 +85,6 @@ public abstract class Grib2Drs {
           .add("binaryScaleFactor", binaryScaleFactor).add("decimalScaleFactor", decimalScaleFactor)
           .add("numberOfBits", numberOfBits).add("originalType", originalType).toString();
     }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-
-      SimplePacking type0 = (SimplePacking) o;
-
-      if (binaryScaleFactor != type0.binaryScaleFactor) {
-        return false;
-      }
-      if (decimalScaleFactor != type0.decimalScaleFactor) {
-        return false;
-      }
-      if (numberOfBits != type0.numberOfBits) {
-        return false;
-      }
-      if (originalType != type0.originalType) {
-        return false;
-      }
-      return Float.compare(type0.referenceValue, referenceValue) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
-      result = 31 * result + binaryScaleFactor;
-      result = 31 * result + decimalScaleFactor;
-      result = 31 * result + numberOfBits;
-      result = 31 * result + originalType;
-      return result;
-    }
   }
 
   /*
@@ -213,71 +177,6 @@ public abstract class Grib2Drs {
           .add("referenceGroupLength", referenceGroupLength).add("lengthIncrement", lengthIncrement)
           .add("lengthLastGroup", lengthLastGroup).add("bitsScaledGroupLength", bitsScaledGroupLength).toString();
     }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-
-      ComplexPacking type2 = (ComplexPacking) o;
-
-      if (bitsGroupWidths != type2.bitsGroupWidths) {
-        return false;
-      }
-      if (bitsScaledGroupLength != type2.bitsScaledGroupLength) {
-        return false;
-      }
-      if (lengthIncrement != type2.lengthIncrement) {
-        return false;
-      }
-      if (lengthLastGroup != type2.lengthLastGroup) {
-        return false;
-      }
-      if (missingValueManagement != type2.missingValueManagement) {
-        return false;
-      }
-      if (numberOfGroups != type2.numberOfGroups) {
-        return false;
-      }
-      if (Float.compare(type2.primaryMissingValue, primaryMissingValue) != 0) {
-        return false;
-      }
-      if (referenceGroupLength != type2.referenceGroupLength) {
-        return false;
-      }
-      if (referenceGroupWidths != type2.referenceGroupWidths) {
-        return false;
-      }
-      if (Float.compare(type2.secondaryMissingValue, secondaryMissingValue) != 0) {
-        return false;
-      }
-      return splittingMethod == type2.splittingMethod;
-
-    }
-
-    @Override
-    public int hashCode() {
-      int result = super.hashCode();
-      result = 31 * result + (secondaryMissingValue != +0.0f ? Float.floatToIntBits(secondaryMissingValue) : 0);
-      result = 31 * result + (primaryMissingValue != +0.0f ? Float.floatToIntBits(primaryMissingValue) : 0);
-      result = 31 * result + missingValueManagement;
-      result = 31 * result + splittingMethod;
-      result = 31 * result + numberOfGroups;
-      result = 31 * result + referenceGroupWidths;
-      result = 31 * result + bitsGroupWidths;
-      result = 31 * result + referenceGroupLength;
-      result = 31 * result + lengthIncrement;
-      result = 31 * result + lengthLastGroup;
-      result = 31 * result + bitsScaledGroupLength;
-      return result;
-    }
   }
 
   /*
@@ -317,34 +216,6 @@ public abstract class Grib2Drs {
       return MoreObjects.toStringHelper(this).add("orderSpatial", orderSpatial)
           .add("descriptorSpatial", descriptorSpatial).toString();
     }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-
-      SpatialDifferencing type3 = (SpatialDifferencing) o;
-
-      if (descriptorSpatial != type3.descriptorSpatial) {
-        return false;
-      }
-      return orderSpatial == type3.orderSpatial;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = super.hashCode();
-      result = 31 * result + orderSpatial;
-      result = 31 * result + descriptorSpatial;
-      return result;
-    }
   }
 
   /**
@@ -380,33 +251,6 @@ public abstract class Grib2Drs {
           .add("hasSignedProblem", hasSignedProblem).toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-
-      Jpeg2000 type40 = (Jpeg2000) o;
-
-      if (compressionMethod != type40.compressionMethod) {
-        return false;
-      }
-      return compressionRatio == type40.compressionRatio;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = super.hashCode();
-      result = 31 * result + compressionMethod;
-      result = 31 * result + compressionRatio;
-      return result;
-    }
   }
 
   // Special ECMWF packing format
@@ -472,99 +316,6 @@ public abstract class Grib2Drs {
           .add("widthOfSPD", widthOfSPD).add("spd", spd).add("lengthOfSection6", lengthOfSection6)
           .add("section6", section6).add("bitMapIndicator", bitMapIndicator).add("lengthOfSection7", lengthOfSection7)
           .add("section7", section7).toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-
-      Ecmwf50002 type50002 = (Ecmwf50002) o;
-
-      if (Float.compare(type50002.referenceValue, referenceValue) != 0) {
-        return false;
-      }
-      if (binaryScaleFactor != type50002.binaryScaleFactor) {
-        return false;
-      }
-      if (decimalScaleFactor != type50002.decimalScaleFactor) {
-        return false;
-      }
-      if (numberOfBits != type50002.numberOfBits) {
-        return false;
-      }
-      if (widthOfFirstOrderValues != type50002.widthOfFirstOrderValues) {
-        return false;
-      }
-      if (p1 != type50002.p1) {
-        return false;
-      }
-      if (p2 != type50002.p2) {
-        return false;
-      }
-      if (widthOfWidth != type50002.widthOfWidth) {
-        return false;
-      }
-      if (widthOfLength != type50002.widthOfLength) {
-        return false;
-      }
-      if (boustrophonic != type50002.boustrophonic) {
-        return false;
-      }
-      if (orderOfSPD != type50002.orderOfSPD) {
-        return false;
-      }
-      if (widthOfSPD != type50002.widthOfSPD) {
-        return false;
-      }
-      for (int i = 0; i < spd.length; i++) {
-        if (spd[i] != type50002.spd[i]) {
-          return false;
-        }
-      }
-      if (lengthOfSection6 != type50002.lengthOfSection6) {
-        return false;
-      }
-      if (section6 != type50002.section6) {
-        return false;
-      }
-      if (bitMapIndicator != type50002.bitMapIndicator) {
-        return false;
-      }
-      if (lengthOfSection7 != type50002.lengthOfSection7) {
-        return false;
-      }
-      return section7 == type50002.section7;
-
-    }
-
-    @Override
-    public int hashCode() {
-      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
-      result = 31 * result + binaryScaleFactor;
-      result = 31 * result + decimalScaleFactor;
-      result = 31 * result + numberOfBits;
-      result = 31 * result + widthOfFirstOrderValues;
-      result = 31 * result + p1;
-      result = 31 * result + p2;
-      result = 31 * result + widthOfWidth;
-      result = 31 * result + widthOfLength;
-      result = 31 * result + boustrophonic;
-      result = 31 * result + orderOfSPD;
-      result = 31 * result + widthOfSPD;
-      for (int i1 : spd) {
-        result = 31 * result + i1;
-      }
-      result = 31 * result + lengthOfSection6;
-      result = 31 * result + section6;
-      result = 31 * result + section6;
-      result = 31 * result + lengthOfSection7;
-      result = 31 * result + section7;
-      return result;
     }
   }
 

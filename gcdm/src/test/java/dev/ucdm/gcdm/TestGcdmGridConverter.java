@@ -40,12 +40,12 @@ public class TestGcdmGridConverter {
             Arguments.of(oldTestDir + "conventions/nuwg/avn-x.nc"),
 
             Arguments.of(
-                    oldTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4"),
+                    oldTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.gbx9.ncx4"),
             Arguments.of(oldTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB.ncx4"),
             Arguments.of(oldTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4"),
 
             Arguments.of(oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS-Radar.ncx4"),
-            Arguments.of(oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.ncx4"),
+            Arguments.of(oldTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.gbx9.ncx4"),
 
             // Offset (orthogonal)
             Arguments.of(oldTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4"),

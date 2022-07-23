@@ -341,16 +341,12 @@ public class WmoTemplateTables {
     }
 
     private int value(byte[] pds) {
-      switch (nbytes) {
-        case 1:
-          return get(pds, start);
-        case 2:
-          return GribNumbers.int2(get(pds, start), get(pds, start + 1));
-        case 4:
-          return GribNumbers.int4(get(pds, start), get(pds, start + 1), get(pds, start + 2), get(pds, start + 3));
-        default:
-          return -9999;
-      }
+      return switch (nbytes) {
+        case 1 -> get(pds, start);
+        case 2 -> GribNumbers.int2(get(pds, start), get(pds, start + 1));
+        case 4 -> GribNumbers.int4(get(pds, start), get(pds, start + 1), get(pds, start + 2), get(pds, start + 3));
+        default -> -9999;
+      };
     }
 
     private int get(byte[] pds, int offset) {

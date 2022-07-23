@@ -56,13 +56,6 @@ public class Grib2SectionData {
     return msgLength;
   }
 
-  public byte[] getBytes(RandomAccessFile raf) throws IOException {
-    raf.seek(startingPosition); // go to the data section
-    byte[] data = new byte[msgLength];
-    raf.readFully(data);
-    return data;
-  }
-
   @Override
   public String toString() {
     return "Grib2SectionData{" + "startingPosition=" + startingPosition + ", msgLength=" + msgLength + '}';

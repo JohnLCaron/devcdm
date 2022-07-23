@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
+import static dev.ucdm.test.util.TestFilesKt.gribLocalDir;
 
 public class TestDataTemplate {
   // Tests reading data using template 5.0
@@ -97,6 +98,19 @@ public class TestDataTemplate {
       Array<Float> data = (Array<Float>) var.readArray();
       assertThat(data.get(0, 0, 0, 13)).isWithin(1e-6f).of(0.36976f);
       assertThat(data.get(0, 0, 0, 15)).isNaN();
+    }
+  }
+
+  // Tests reading data using template 5.41
+  @Test
+  public void test50002() throws IOException {
+    final String testfile = gribLocalDir + "extract.50002.grib2";
+    try (CdmFile nc = CdmFiles.open(testfile)) {
+      Variable var = nc.findVariable("Temperature_hybrid");
+      assertThat(var).isNotNull();
+
+      Array<Float> data = (Array<Float>) var.readArray();
+      assertThat(data.get(0, 0, 0, 0)).isWithin(1e-6f).of(245.00328f);
     }
   }
 }

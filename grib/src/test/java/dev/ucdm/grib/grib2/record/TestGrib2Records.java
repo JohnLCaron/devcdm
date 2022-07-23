@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import static com.google.common.truth.Truth.assertThat;
 
 public class TestGrib2Records {
-  interface Callback {
+  public interface Callback {
     void call(RandomAccessFile raf, Grib2Record gr) throws IOException;
   }
 
@@ -23,6 +23,7 @@ public class TestGrib2Records {
 
   public static Stream<Arguments> params() {
     return Stream.of(
+            Arguments.of(testdir + "extract.50002.grib2", 0, 0, 111069, "2014-10-09T00:00Z"),
             Arguments.of(testdir + "HLYA10.grib2", 0, 0, 259920, "2014-01-15T00:00:00Z"),
             Arguments.of(testdir + "MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2", 0, 0, 24500000,
                     "2014-12-07T07:20:38Z"),
@@ -68,7 +69,7 @@ public class TestGrib2Records {
 
       Grib2SectionData dataSection = gr.getDataSection();
       float[] data = gr.readData(raf);
-      assertThat(nGridPoints).isEqualTo(data.length);
+      assertThat(data.length).isEqualTo(nGridPoints);
 
       if (pds.isSatellite()) {
         Grib2Pds.PdsSatellite sat = (Grib2Pds.PdsSatellite) pds;
@@ -95,39 +96,26 @@ public class TestGrib2Records {
     });
   }
 
-  private void readFile(String path, Callback callback) throws IOException {
+  public static void readFile(String path, Callback callback) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
-      int count = 0;
       Grib2RecordScanner reader = new Grib2RecordScanner(raf);
       while (reader.hasNext()) {
         Grib2Record gr = reader.next();
         if (gr == null)
           break;
         callback.call(raf, gr);
-        count++;
       }
-      System.out.printf("count records = %d%n", count);
     }
   }
 
-  private HashSet<Grib2Drs> drsses = new HashSet<>();
   private void testDrs(RandomAccessFile raf, Grib2SectionDataRepresentation drss) throws IOException {
     Grib2Drs drs = drss.getDrs(raf);
     assertThat(drs).isNotNull();
     System.out.printf("%s%n", drs);
     assertThat(drs.getBinaryDataInfo(raf)).isNotNull();
-    // lame but better than nothing
-    assertThat(drs.equals(drs)).isTrue();
-    assertThat(drs.hashCode()).isEqualTo(drs.hashCode());
-
-    drsses.stream().forEach(prev -> {
-      if (prev.equals(drs)) {
-        System.out.printf("***dup %s%n", drs);
-      }
-    });
-    drsses.add(drs);
+    assertThat(drs.toString()).contains(drs.getClass().getSimpleName());
   }
 
 }

@@ -119,12 +119,6 @@ public class FslHrrrLocalTables extends NcepLocalTables {
     localParams = readCsv(config.getPath(), f);
   }
 
-  // debugging
-  @Override
-  public void lookForProblems(Formatter f) {
-    initLocalTable(f);
-  }
-
   private static Grib2Parameter parseVersion4(String[] flds, Formatter f) {
     // V4:
     // Record, MasterTable, LocalTable, Discipline, Category, Parameter, WGrib2Name, NCLName,
