@@ -182,29 +182,33 @@ public class Grib2RecordScanner {
       // look for duplicate gds
       long crc = gds.calcCRC();
       Grib2SectionGridDefinition gdsCached = gdsMap.get(crc);
-      if (gdsCached != null)
+      if (gdsCached != null) {
         gds = gdsCached; // hmmmm why ??
-      else
+      } else {
         gdsMap.put(crc, gds);
+      }
 
       // check to see if we have a repeating record
       long pos = raf.getFilePointer();
       long ending = is.getEndPos();
       if (pos + 34 < ending) { // give it 30 bytes of slop
-        if (debugRepeat)
+        if (debugRepeat) {
           logger.debug(" REPEAT AT {} != {}", pos + 4, ending);
+        }
         repeatPos = pos;
         // this assumes immutable sections
         repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, scanModeMissing);
         // track bms in case its a repeat
-        if (bms.getBitMapIndicator() == 0)
+        if (bms.getBitMapIndicator() == 0) {
           repeatBms = bms;
+        }
         return new Grib2Record(repeatRecord); // GribRecord isnt immutable; still, may not be necessary
       }
 
-      if (debug)
+      if (debug) {
         logger.debug(" read until {} grib ending at {} header ='{}'", raf.getFilePointer(), ending,
-            StringUtil2.cleanup(header));
+                StringUtil2.cleanup(header));
+      }
 
       // check that end section is correct
       boolean foundEnding = true;
@@ -296,12 +300,14 @@ public class Grib2RecordScanner {
     Grib2SectionBitMap bms = repeatRecord.getBitmapSection();
     if (bms.getBitMapIndicator() == 254) {
       // replace BMS with last good one
-      if (repeatBms == null)
+      if (repeatBms == null) {
         throw new IllegalStateException("No bms in repeating section");
+      }
       repeatRecord.setBms(repeatBms, true);
       // debug
-      if (debugRepeat)
+      if (debugRepeat) {
         logger.debug("replaced bms {}", section);
+      }
       repeatRecord.repeat += 1000;
 
     } else if (bms.getBitMapIndicator() == 0) {
@@ -315,10 +321,11 @@ public class Grib2RecordScanner {
       Grib2SectionGridDefinition gds = repeatRecord.getGDSsection();
       long crc = gds.calcCRC();
       Grib2SectionGridDefinition gdsCached = gdsMap.get(crc);
-      if (gdsCached != null)
+      if (gdsCached != null) {
         repeatRecord.setGdss(gdsCached);
-      else
+      } else {
         gdsMap.put(crc, gds);
+      }
     }
 
     // check to see if we are at the end
@@ -340,8 +347,9 @@ public class Grib2RecordScanner {
     for (int i = 0; i < 4; i++) {
       if (raf.read() != 55) {
         String clean = StringUtil2.cleanup(header);
-        if (clean.length() > 40)
+        if (clean.length() > 40) {
           clean = clean.substring(0, 40) + "...";
+        }
         logger.warn("  REPEAT Missing End of GRIB message at pos= {}, header={} for= {}", ending, clean,
             raf.getLocation());
         break;

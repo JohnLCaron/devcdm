@@ -39,8 +39,9 @@ public class Grib2SectionProductDefinition {
 
     // octet 5
     int section = raf.read();
-    if (section != 4)
+    if (section != 4) {
       throw new IllegalArgumentException("Not a GRIB-2 PDS section");
+    }
 
     // octets 8-9
     raf.skipBytes(2);
@@ -73,17 +74,13 @@ public class Grib2SectionProductDefinition {
 
   /**
    * Calculate the CRC of the entire byte array
-   * 
+   *
    * @return CRC
    */
   public long calcCRC() {
     CRC32 crc32 = new CRC32();
     crc32.update(rawData);
     return crc32.getValue();
-  }
-
-  public int getLength() {
-    return rawData.length;
   }
 
   /**

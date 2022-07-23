@@ -279,8 +279,7 @@ public abstract class Grib2Pds {
   }
 
   public String toString() {
-    return String.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(),
-            getParameterNumber(), template, getForecastTime(), getTimeUnit(), getLevelValue1());
+    return show(new Formatter()).toString();
   }
 
   /**

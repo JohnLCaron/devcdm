@@ -17,6 +17,8 @@ import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
 import dev.ucdm.array.Immutable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Formatter;
 import java.util.Objects;
 
@@ -67,6 +69,7 @@ public abstract class Grib2Gds {
   public int earthShape;
 
   private int nx, ny; // raw
+  @Nullable
   protected int[] nptsInLine; // thin grids, else null
   protected int lastOctet;
 
@@ -101,15 +104,17 @@ public abstract class Grib2Gds {
 
   // number of points along nx, adjusted for thin grid
   public int getNx() {
-    if (nptsInLine == null || nx > 0)
+    if (nptsInLine == null || nx > 0) {
       return nx;
+    }
     return QuasiRegular.getMax(nptsInLine);
   }
 
   // number of points along ny, adjusted for thin grid
   public int getNy() {
-    if (nptsInLine == null || ny > 0)
+    if (nptsInLine == null || ny > 0) {
       return ny;
+    }
     return QuasiRegular.getMax(nptsInLine);
   }
 
@@ -211,9 +216,16 @@ public abstract class Grib2Gds {
     return isThin;
   }
 
+  /*
+  (Note 2) An optional list of numbers may be used to document a quasi-regular grid.
+  In such a case, octet 11 is non zero and gives the number of octets used per item on the list.
+  For all other cases, such as regular grids, octets 11 and 12 are zero and no list is appended to the grid definition template.
+   */
   private void readNptsInLine() {
-    int numOctetsPerNumber = getOctet(11);
-    int octet12 = getOctet(12);
+    int numOctetsPerItem = getOctet(11);
+    // removed to allow miscoded CDO files
+    // see https://github.com/Unidata/netcdf-java/issues/993
+    // int octet12 = getOctet(12);
     // if (octet12 != 1)
     //  throw new IllegalArgumentException("Thin grid octet 12 =" + octet12);
 
@@ -221,7 +233,7 @@ public abstract class Grib2Gds {
     int[] parallels = new int[numPts];
     int offset = lastOctet;
     for (int i = 0; i < numPts; i++) {
-      switch (numOctetsPerNumber) {
+      switch (numOctetsPerItem) {
         case 1:
           parallels[i] = getOctet(offset++);
           break;
@@ -232,7 +244,7 @@ public abstract class Grib2Gds {
           parallels[i] = getOctet4(offset);
           offset += 4;
         default:
-          throw new IllegalArgumentException("Illegal numOctetsPerNumber in thin grid =" + numOctetsPerNumber);
+          throw new IllegalArgumentException("Illegal numOctetsPerNumber in thin grid =" + numOctetsPerItem);
       }
     }
     nptsInLine = parallels;
@@ -371,19 +383,22 @@ public abstract class Grib2Gds {
 
     public void testScanMode(Formatter f) {
       if (GribUtils.scanModeYisPositive(scanMode)) {
-        if (la1 > la2)
+        if (la1 > la2) {
           f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, deltaLat, la1, la2);
+        }
       } else {
-        if (la1 < la2)
+        if (la1 < la2) {
           f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, deltaLat, la1, la2);
+        }
       }
     }
 
     protected void finish() {
       super.finish();
 
-      if (lo2 < lo1)
+      if (lo2 < lo1) {
         lo2 += 360.0F;
+      }
       if (NumericCompare.nearlyEquals(lo1, lo2)) { // canadian met has global with lo1 = lo2 = 180
         lo1 -= 360.0F;
       }
@@ -439,10 +454,10 @@ public abstract class Grib2Gds {
       return NumericCompare.nearlyEqualsAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon);
     }
 
+    // Two equal objects must have the same hashCode() value. LOOK
     @Override
     public int hashCode() {
-      int useLat1 = (int) Math.round(la1 / (maxReletiveErrorPos * deltaLat)); // Two equal objects must have the same
-      // hashCode() value
+      int useLat1 = (int) Math.round(la1 / (maxReletiveErrorPos * deltaLat));
       int useLon1 = (int) Math.round(lo1 / (maxReletiveErrorPos * deltaLon));
       int useLat2 = (int) Math.round(la2 / (maxReletiveErrorPos * deltaLat));
       int useLon2 = (int) Math.round(lo2 / (maxReletiveErrorPos * deltaLon));
@@ -459,17 +474,6 @@ public abstract class Grib2Gds {
       if (basicAngle == 0 || basicAngle == GribNumbers.UNDEFINED || basicAngleSubdivisions == GribNumbers.UNDEFINED)
         return scale6;
       return ((float) basicAngle) / basicAngleSubdivisions;
-    }
-
-    public int[] getOptionalPoints() {
-      int[] optionalPoints = null;
-      int n = getOctet(11); // Number of octets for optional list of numbers
-      if (n > 0) {
-        optionalPoints = new int[n / 4];
-        for (int i = 0; i < optionalPoints.length; i++)
-          optionalPoints[i] = getOctet4(lastOctet + 4 * n);
-      }
-      return optionalPoints;
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {

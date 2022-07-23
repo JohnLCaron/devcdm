@@ -1,6 +1,7 @@
 package dev.ucdm.grib.grib2.record;
 
 import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,7 +15,7 @@ import static dev.ucdm.test.util.TestFilesKt.testFilesIn;
 
 public class TestGrib2RecordScanner {
   interface Callback {
-    boolean call(RandomAccessFile raf, Grib2Record gr) throws IOException;
+    void call(RandomAccessFile raf, Grib2Record gr) throws IOException;
   }
 
   public static Stream<Arguments> params() {
@@ -33,10 +34,8 @@ public class TestGrib2RecordScanner {
       gr.getGDS().testHorizCoordSys(new Formatter());
 
       float[] data = gr.readData(raf);
-
       System.out.printf("%s: template,param,len=  %d, %d, %d, \"%s\" %n", filename, gr.getGDS().template,
               gr.getPDSsection().getPDSTemplateNumber(), data.length, gr.getReferenceDate());
-      return true;
     });
   }
 

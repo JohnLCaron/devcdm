@@ -75,7 +75,7 @@ public class Grib1SectionBinaryData {
 
     GribDataUtils.Info info = new GribDataUtils.Info();
 
-    info.dataLength = GribNumbers.uint3(raf); // // octets 1-3 (section length)
+    info.dataMsgLength = GribNumbers.uint3(raf); // // octets 1-3 (section length)
 
     // octet 4, 1st half (packing flag)
     info.flag = raf.read();

@@ -54,8 +54,9 @@ public class Grib2SectionGridDefinition {
 
     // octet 5
     int section = raf.read(); // This is section 3
-    if (section != 3)
+    if (section != 3) {
       throw new IllegalArgumentException("Not a GRIB-2 GDS section");
+    }
 
     // octets 13-14
     raf.skipBytes(7);
@@ -98,22 +99,11 @@ public class Grib2SectionGridDefinition {
     return crc32.getValue();
   }
 
-  public int getLength() {
-    return rawData.length;
-  }
-
-  public long getOffset() {
-    return startingPosition;
-  }
-
   /**
    * octet 6
    * source of grid definition (Code Table 3.0)
    * "If octet 6 is not zero, octets 15–xx (15–nn if octet 11 is zero) may not be supplied. This should be documented
-   * with all
-   * bits set to 1 (missing value) in the grid definition template number."
-   * 
-   * @return source
+   * with all bits set to 1 (missing value) in the grid definition template number."
    */
   public int getSource() {
     return getOctet(6);
@@ -122,8 +112,6 @@ public class Grib2SectionGridDefinition {
   /**
    * octets 7-10
    * number of data points .
-   *
-   * @return numberPoints
    */
   public int getNumberPoints() {
     return GribNumbers.int4(getOctet(7), getOctet(8), getOctet(9), getOctet(10));
@@ -151,8 +139,9 @@ public class Grib2SectionGridDefinition {
   private Grib2Gds gds2;
 
   public synchronized Grib2Gds getGDS() {
-    if (gds2 == null)
+    if (gds2 == null) {
       gds2 = Grib2Gds.factory(templateNumber, rawData);
+    }
     return gds2;
   }
 

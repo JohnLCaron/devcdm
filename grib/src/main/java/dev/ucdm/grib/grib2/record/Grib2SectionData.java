@@ -26,13 +26,14 @@ public class Grib2SectionData {
   public Grib2SectionData(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
-    // octets 1-4 (Length of section)
+    // octets 1-4 (Length of section in bytes)
     msgLength = GribNumbers.int4(raf);
 
     // octet 5
     int section = raf.read();
-    if (section != 7)
+    if (section != 7) {
       throw new IllegalStateException("Not a Grib2SectionData (section 7)");
+    }
 
     // skip to end of the data section
     raf.seek(startingPosition + msgLength);

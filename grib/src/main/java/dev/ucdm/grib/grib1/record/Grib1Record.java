@@ -164,7 +164,7 @@ public class Grib1Record {
     f.format("        isThin = %s%n", gdss.isThin());
 
     GribDataUtils.Info info = getBinaryDataInfo(raf);
-    f.format("   dataLength = %d%n", info.dataLength);
+    f.format("   dataLength = %d%n", info.dataMsgLength);
 
     // octet 4, 1st half (packing flag)
     f.format("    ----flag = %s%n", Long.toBinaryString(info.flag));
@@ -202,15 +202,15 @@ public class Grib1Record {
     GribDataUtils.Info info = dataSection.getBinaryDataInfo(raf);
     info.decimalScaleFactor = pdss.getDecimalScale();
     info.bitmapLength = (bitmap == null) ? 0 : bitmap.getLength(raf);
-    info.nPoints = getGDS().getNpts();
+    info.nGridPoints = getGDS().getNpts();
     info.msgLength = is.getMessageLength();
 
     if (bitmap == null) {
-      info.ndataPoints = info.nPoints;
+      info.ndataPoints = info.nGridPoints;
     } else {
       byte[] bm = bitmap.getBitmap(raf);
       if (bm == null) {
-        info.ndataPoints = info.nPoints;
+        info.ndataPoints = info.nGridPoints;
       } else { // have to count the bits to see how many data values are stored
         info.ndataPoints = GribNumbers.countBits(bm);
       }
