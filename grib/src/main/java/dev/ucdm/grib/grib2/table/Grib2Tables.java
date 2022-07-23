@@ -274,30 +274,19 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
    * 255: Missing
    */
   public String getProbabilityNameShort(int id) {
-    switch (id) {
-      case 0:
-        return "unweightedMean";
-      case 1:
-        return "weightedMean";
-      case 2:
-        return "stdDev";
-      case 3:
-        return "stdDevNormalized";
-      case 4:
-        return "spread";
-      case 5:
-        return "largeAnomalyIndex";
-      case 6:
-        return "unweightedMeanCluster";
-      case 7:
-        return "interquartileRange";
-      case 8:
-        return "minimumEnsemble";
-      case 9:
-        return "maximumEnsemble";
-      default:
-        return "UnknownProbType" + id;
-    }
+    return switch (id) {
+      case 0 -> "unweightedMean";
+      case 1 -> "weightedMean";
+      case 2 -> "stdDev";
+      case 3 -> "stdDevNormalized";
+      case 4 -> "spread";
+      case 5 -> "largeAnomalyIndex";
+      case 6 -> "unweightedMeanCluster";
+      case 7 -> "interquartileRange";
+      case 8 -> "minimumEnsemble";
+      case 9 -> "maximumEnsemble";
+      default -> "UnknownProbType" + id;
+    };
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -359,72 +348,40 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
   @Override
   public String getLevelNameShort(int id) {
 
-    switch (id) {
-      case 1:
-        return "surface";
-      case 2:
-        return "cloud_base";
-      case 3:
-        return "cloud_tops";
-      case 4:
-        return "zeroDegC_isotherm";
-      case 5:
-        return "adiabatic_condensation_lifted";
-      case 6:
-        return "maximum_wind";
-      case 7:
-        return "tropopause";
-      case 8:
-        return "atmosphere_top";
-      case 9:
-        return "sea_bottom";
-      case 10:
-        return "entire_atmosphere";
-      case 11:
-        return "cumulonimbus_base";
-      case 12:
-        return "cumulonimbus_top";
-      case 20:
-        return "isotherm";
-      case 100:
-        return "isobaric";
-      case 101:
-        return "msl";
-      case 102:
-        return "altitude_above_msl";
-      case 103:
-        return "height_above_ground";
-      case 104:
-        return "sigma";
-      case 105:
-        return "hybrid";
-      case 106:
-        return "depth_below_surface";
-      case 107:
-        return "isentrope";
-      case 108:
-        return "pressure_difference";
-      case 109:
-        return "potential_vorticity_surface";
-      case 111:
-        return "eta";
-      case 113:
-        return "log_hybrid";
-      case 117:
-        return "mixed_layer_depth";
-      case 118:
-        return "hybrid_height";
-      case 119:
-        return "hybrid_pressure";
-      case 120:
-        return "pressure_thickness";
-      case 160:
-        return "depth_below_sea";
-      case GribNumbers.UNDEFINED:
-        return "none";
-      default:
-        return "UnknownLevelType-" + id;
-    }
+    return switch (id) {
+      case 1 -> "surface";
+      case 2 -> "cloud_base";
+      case 3 -> "cloud_tops";
+      case 4 -> "zeroDegC_isotherm";
+      case 5 -> "adiabatic_condensation_lifted";
+      case 6 -> "maximum_wind";
+      case 7 -> "tropopause";
+      case 8 -> "atmosphere_top";
+      case 9 -> "sea_bottom";
+      case 10 -> "entire_atmosphere";
+      case 11 -> "cumulonimbus_base";
+      case 12 -> "cumulonimbus_top";
+      case 20 -> "isotherm";
+      case 100 -> "isobaric";
+      case 101 -> "msl";
+      case 102 -> "altitude_above_msl";
+      case 103 -> "height_above_ground";
+      case 104 -> "sigma";
+      case 105 -> "hybrid";
+      case 106 -> "depth_below_surface";
+      case 107 -> "isentrope";
+      case 108 -> "pressure_difference";
+      case 109 -> "potential_vorticity_surface";
+      case 111 -> "eta";
+      case 113 -> "log_hybrid";
+      case 117 -> "mixed_layer_depth";
+      case 118 -> "hybrid_height";
+      case 119 -> "hybrid_pressure";
+      case 120 -> "pressure_thickness";
+      case 160 -> "depth_below_sea";
+      case GribNumbers.UNDEFINED -> "none";
+      default -> "UnknownLevelType-" + id;
+    };
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -473,85 +430,6 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
     return gr.getReferenceDate().add(val, period);
   }
 
-  /*
-   * Code Table Code table 4.11 - Type of time intervals (4.11)
-   * 0: Reserved
-   * 1: Successive times processed have same forecast time, start time of forecast is incremented
-   * 2: Successive times processed have same start time of forecast, forecast time is incremented
-   * 3: Successive times processed have start time of forecast incremented and forecast time decremented so that valid
-   * time remains constant
-   * 4: Successive times processed have start time of forecast decremented and forecast time incremented so that valid
-   * time remains constant
-   * 5: Floating subinterval of time between forecast time and end of overall time interval
-   *
-   * public static class TimeInterval {
-   * public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the
-   * field at each time increment during the time range
-   * public int timeIncrementType; // (code table 4.11) Type of time increment between successive fields used in the
-   * statistical processing
-   * public int timeRangeUnit; // (code table 4.4) Indicator of unit of time for time range over which statistical
-   * processing is done
-   * public int timeRangeLength; // Length of the time range over which statistical processing is done, in units defined
-   * by the previous octet
-   * public int timeIncrementUnit; // (code table 4.4) Indicator of unit of time for the increment between the
-   * successive fields used
-   * public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
-   *
-   * from NDFD site:
-   * timeRangeUnit: 8-14 Day Outlooks = 2 (days); Monthly and Seasonal Outlooks = 3 (months)
-   * timeRangeLength: 8-14 Day Outlooks = 6 (days); Monthly Outlooks = 1 (month); Seasonal Outlooks = 3 (months)
-   */
-  @Nullable
-  public TimeCoordIntvDateValue getForecastTimeIntervalOld(Grib2Record gr) {
-    // note from Arthur Taylor (degrib):
-    /*
-     * If there was a range I used:
-     *
-     * End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
-     * C1) End of Interval = EI;
-     * Begin of Interval = EI - range
-     *
-     * and if there was no interval then I used:
-     * C2) End of Interval = Begin of Interval = Ref + ForeT.
-     */
-    if (!gr.getPDS().isTimeInterval())
-      return null;
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-    int timeUnitOrg = gr.getPDS().getTimeUnit();
-
-    // calculate total "range"
-    int range = 0;
-    for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if (ti.timeRangeUnit == 255)
-        continue;
-      if ((ti.timeRangeUnit != timeUnitOrg)
-          || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-        if (!timeUnitWarnWasSent) {
-          logger.warn(
-              "TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
-          timeUnitWarnWasSent = true;
-          // throw new RuntimeException("TimeInterval(2) has different units");
-        }
-      }
-
-      range += ti.timeRangeLength;
-      if (ti.timeIncrementUnit != 255)
-        range += ti.timeIncrement;
-    }
-
-    CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-    if (unitPeriod == null)
-      return null;
-    CalendarPeriod period = unitPeriod.withValue(range * unitPeriod.getValue());
-
-    // End of Interval as date
-    if (pdsIntv.hasUnknownIntervalEnd()) { // all values were set to zero: guessing!
-      return new TimeCoordIntvDateValue(gr.getReferenceDate(), period);
-    } else {
-      return new TimeCoordIntvDateValue(period, pdsIntv.getIntervalTimeEnd());
-    }
-  }
-
   public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     if (!gr.getPDS().isTimeInterval())
       return null;
@@ -586,39 +464,6 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
     } else {
       return new TimeCoordIntvDateValue(period, pdsIntv.getIntervalTimeEnd());
     }
-  }
-
-  /**
-   * Get the time interval in units of gr.getPDS().getTimeUnit()
-   *
-   * @param gr Grib record, must have pds that is a time interval.
-   * @return time interval in units of gr.getPDS().getTimeUnit()
-   */
-  @Nullable
-  public TimeCoordIntvDateValue getForecastTimeIntervalNew(Grib2Record gr) {
-    if (!gr.getPDS().isTimeInterval()) {
-      return null;
-    }
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-
-    // the time "range" in units of pdsIntv timeUnits
-    TimeIntervalAndUnits intvu = getForecastTimeInterval(pdsIntv);
-
-    // convert time "range" to units of pds timeUnits
-    int timeUnitOrg = gr.getPDS().getTimeUnit();
-    CalendarPeriod wantPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-    if (wantPeriod == null) {
-      return null;
-    }
-    CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
-    double fac2 = intvu.timeRange * GribUtils.getConvertFactor(havePeriod, wantPeriod); // wantPeriod.getConvertFactor(havePeriod);
-    CalendarPeriod range = wantPeriod.withValue((int) fac2 * wantPeriod.getValue());
-
-    // Seems like it should be
-    // Begin of Interval = Ref + ForeT
-    // End = Begin + range
-    CalendarDate forecastDate = getForecastDateBeg(gr);
-    return new TimeCoordIntvDateValue(forecastDate, range);
   }
 
   /**

@@ -96,12 +96,12 @@ public class Grib2DataReader {
     raf.seek(startPos + 5); // skip past first 5 bytes in data section, now ready to read
 
     float[] data = switch (dataTemplate) {
-      case 0 -> getData0(raf, (Grib2Drs.Type0) gdrs);
-      case 2 -> getData2(raf, (Grib2Drs.Type2) gdrs);
-      case 3 -> getData3(raf, (Grib2Drs.Type3) gdrs);
-      case 40 -> getData40(raf, (Grib2Drs.Type40) gdrs);
-      case 41 -> getData41(raf, (Grib2Drs.Type0) gdrs);
-      case 50002 -> getData50002(raf, (Grib2Drs.Type50002) gdrs);
+      case 0 -> getData0(raf, (Grib2Drs.SimplePacking) gdrs);
+      case 2 -> getData2(raf, (Grib2Drs.ComplexPacking) gdrs);
+      case 3 -> getData3(raf, (Grib2Drs.SpatialDifferencing) gdrs);
+      case 40 -> getData40(raf, (Grib2Drs.Jpeg2000) gdrs);
+      case 41 -> getData41(raf, (Grib2Drs.SimplePacking) gdrs);
+      case 50002 -> getData50002(raf, (Grib2Drs.Ecmwf50002) gdrs);
       default -> throw new UnsupportedOperationException("Unsupported DRS type = " + dataTemplate);
     };
 
@@ -132,13 +132,13 @@ public class Grib2DataReader {
     }
 
     // jpeg2k only
-    return getData40raw(raf, (Grib2Drs.Type40) gdrs);
+    return getData40raw(raf, (Grib2Drs.Jpeg2000) gdrs);
   }
 
   private static final boolean staticMissingValueInUse = true;
   private static final float staticMissingValue = Float.NaN;
 
-  private float getMissingValue(Grib2Drs.Type2 gdrs) {
+  private float getMissingValue(Grib2Drs.ComplexPacking gdrs) {
     int mvm = gdrs.missingValueManagement;
 
     float mv;
@@ -194,7 +194,7 @@ public class Grib2DataReader {
 
 
   // Grid point data - simple packing
-  private float[] getData0(RandomAccessFile raf, Grib2Drs.Type0 gdrs) throws IOException {
+  private float[] getData0(RandomAccessFile raf, Grib2Drs.SimplePacking gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     int D = gdrs.decimalScaleFactor;
     float DD = (float) Math.pow( 10, D);
@@ -262,7 +262,7 @@ public class Grib2DataReader {
    * from data representation template.
    * (4) For groups with a constant value, associated field width is 0, and no incremental data are physically present.
    */
-  private float[] getData2(RandomAccessFile raf, Grib2Drs.Type2 gdrs) throws IOException {
+  private float[] getData2(RandomAccessFile raf, Grib2Drs.ComplexPacking gdrs) throws IOException {
     int mvm = gdrs.missingValueManagement;
     float mv = getMissingValue(gdrs);
 
@@ -448,7 +448,7 @@ public class Grib2DataReader {
    * (4) Overall minimum will be negative in most cases. First bit should indicate the sign: 0 if positive, 1 if
    * negative.
    */
-  private float[] getData3(RandomAccessFile raf, Grib2Drs.Type3 gdrs) throws IOException {
+  private float[] getData3(RandomAccessFile raf, Grib2Drs.SpatialDifferencing gdrs) throws IOException {
     int mvm = gdrs.missingValueManagement;
     float mv = getMissingValue(gdrs);
 
@@ -724,7 +724,7 @@ public class Grib2DataReader {
   }
 
   // Grid point data - JPEG 2000 code stream format
-  private float[] getData40(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
+  private float[] getData40(RandomAccessFile raf, Grib2Drs.Jpeg2000 gdrs) throws IOException {
     // 6-xx jpeg2000 data block to decode
 
     // dataPoints are number of points encoded, it could be less than the
@@ -794,7 +794,7 @@ public class Grib2DataReader {
 
   // Grid point data - JPEG 2000 code stream format
   @Nullable
-  private int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
+  private int[] getData40raw(RandomAccessFile raf, Grib2Drs.Jpeg2000 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     if (nb == 0) {
       return null;
@@ -841,7 +841,7 @@ public class Grib2DataReader {
   // Loosely based on code by earl.barker.ctr AT us.af.mil, but moved from
   // ancient version of Grib support.
   // Code taken from esupport ticket ZVT-415274
-  private float[] getData41(RandomAccessFile raf, Grib2Drs.Type0 gdrs) throws IOException {
+  private float[] getData41(RandomAccessFile raf, Grib2Drs.SimplePacking gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     int D = gdrs.decimalScaleFactor;
     float DD = (float) Math.pow( 10,  D);
@@ -942,7 +942,7 @@ public class Grib2DataReader {
   // by jkaehler@meteomatics.com
   // ported from
   // https://github.com/erdc-cm/grib_api/blob/master/src/grib_accessor_class_data_g1second_order_general_extended_packing.c
-  private float[] getData50002(RandomAccessFile raf, Grib2Drs.Type50002 gdrs) throws IOException {
+  private float[] getData50002(RandomAccessFile raf, Grib2Drs.Ecmwf50002 gdrs) throws IOException {
 
     BitReader reader;
 

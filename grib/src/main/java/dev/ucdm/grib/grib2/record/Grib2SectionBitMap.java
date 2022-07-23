@@ -83,11 +83,13 @@ public class Grib2SectionBitMap {
   @Nullable
   public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     // no bitMap
-    if (bitMapIndicator == 255)
+    if (bitMapIndicator == 255) {
       return null;
+    }
 
-    if (bitMapIndicator == 254)
+    if (bitMapIndicator == 254) {
       logger.debug("bitMapIndicator=254 previously defined bitmap");
+    }
 
     if (bitMapIndicator != 0) {
       throw new UnsupportedOperationException(

@@ -18,7 +18,47 @@ import java.util.zip.CRC32;
  * Abstract superclass for GRIB2 PDS handling.
  * Inner classes are specific to each template.
  */
+/*
+Section 4 – Product definition section
+Octet No. Contents
+  1–4       Length of section in octets (nn)
+  5         Number of section (4)
+  6–7       Number of coordinate values after template or number of information according to 3D
+            vertical coordinate GRIB2 message (see Notes 1 and 5)
+  8–9       Product definition template number (see Code table 4.0)
+  10–xx     Product definition template (see template 4.X, where X is the product definition template number given in octets 8–9)
+  [xx+1]–nn Optional list of coordinate values or vertical grid information (see Notes 2, 3, 4 and 5)
 
+Notes:
+(1) Coordinate values are intended to document the vertical discretization associated with model data on hybrid coordinate
+vertical levels. A number of zero in octets 6–7 indicates that no such values are present. Otherwise the number
+corresponds to the whole set of values.
+
+(2) Hybrid systems, in this context, employ a means of representing vertical coordinates in terms of a mathematical
+combination of pressure and sigma coordinates. When used in conjunction with a surface pressure field and an
+appropriate mathematical expression, the vertical coordinate parameters may be used to interpret the hybrid vertical
+coordinate.
+
+(3) Hybrid coordinate values, if present, should be encoded in IEEE 32-bit floating point format. They are intended to be
+encoded as pairs.
+
+(4) Two distinct pressure-based hybrid coordinate formulations can be expressed in GRIB Edition 2. If the hybrid coordinate
+being used is based on pressure, then level type 105 (Code table 4.5) shall be used to specify the vertical level type. If the
+formulation is based on the natural logarithm of pressure then level type 113 (Code table 4.5) shall be used. In both cases
+Notes 1 to 3 (above) apply fully.
+
+(5) In the case of a generalized vertical height coordinate (fixed surface type 150), no pairs of coordinate values follow after
+the template, but six sets of additional information (each 4 octets long and encoded in IEEE 32-bit floating point format)
+follow, starting with the number of vertical levels and the identification number of the used vertical system in the additional
+GRIB2 message with the 3D vertical system. This identification number together with an UUID (Universally Unique IDentifier)
+in four parts allows a unique identification of the grid.
+    [xx+1] – [xx+4] Number of vertical levels
+    [xx+5] – [xx+8] Identification number of 3D vertical grid GRIB2 message
+    [xx+9] – [xx+12] UUID part 1 of 4
+    [xx+13] – [xx+16] UUID part 2 of 4
+    [xx+17] – [xx+20] UUID part 3 of 4
+    [xx+21] – [xx+24] UUID part 4 of 4
+ */
 @Immutable
 public abstract class Grib2Pds {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
@@ -84,19 +124,16 @@ public abstract class Grib2Pds {
     template = GribNumbers.int2(getOctet(8), getOctet(9));
   }
 
-  // optional coordinates start after this
+  /**  length of template. optional coordinates start after this */
   public abstract int templateLength();
 
-  /**
-   * Number of coordinate values at end of template.
-   *
-   * @return Coordinates number
-   */
+  /** Number of coordinate values at end of template. */
   public int getExtraCoordinatesCount() {
     return GribNumbers.int2(getOctet(6), getOctet(7));
   }
 
-  final float[] getExtraCoordinates() {
+  /** The coordinate values at end of template. */
+  public float[] getExtraCoordinates() {
     int n = getExtraCoordinatesCount();
     if (n == 0)
       return new float[0];
@@ -108,82 +145,42 @@ public abstract class Grib2Pds {
     return result;
   }
 
-  /**
-   * product Definition template, Table 4.0
-   *
-   * @return ProductDefinition
-   */
+  /** Product definition template number (see Code table 4.0) */
   public final int getTemplateNumber() {
     return template;
   }
 
-  /**
-   * Parameter Category
-   *
-   * @return parameterCategory as int
-   */
+  /** Parameter Category */
   public final int getParameterCategory() {
     return getOctet(10);
   }
 
-  /**
-   * Parameter Number
-   *
-   * @return ParameterNumber
-   */
+  /** Parameter Number */
   public final int getParameterNumber() {
     return getOctet(11);
   }
 
-  /**
-   * Type of Generating Process (Code Table 4.3)
-   *
-   * @return Type of Generating Process
-   */
-  public int getGenProcessType() {
-    return GribNumbers.UNDEFINED;
-  }
+  /** Type of Generating Process (Code Table 4.3) */
+  public abstract int getGenProcessType();
 
   /**
    * Forecast/Analysis generating process identifier (defined by originating centre).
-   * <p/>
-   * For NCEP, apparently
-   * http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
-   * as linked from here:
-   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_temp4-0.shtml
-   *
-   * @return generating process id
+   * For NCEP, apparently <a href="http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html">TableA</a>
    */
-  public int getGenProcessId() {
-    return GribNumbers.UNDEFINED;
-  }
+  public abstract int getGenProcessId();
 
-  /**
-   * Get Background generating process identifier (defined by originating centre)
-   *
-   * @return Background generating process identifier
-   */
-  public int getBackProcessId() {
-    return GribNumbers.UNDEFINED;
-  }
+  /** Background generating process identifier (defined by originating centre) */
+  public int getBackProcessId() { return GribNumbers.UNDEFINED; }
 
-  /**
-   * Indicator of unit of time range (see Code table 4.4)
-   *
-   * @return unit of time range
-   */
+  /** Indicator of unit of time range (see Code table 4.4) */
   public abstract int getTimeUnit();
 
-  /**
-   * Forecast time in units of getTimeUnit()
-   * forecast time for points, should not be used for intervals
-   *
-   * @return Forecast time
-   */
+  /** Forecast time in units of getTimeUnit() forecast time for points, should not be used for intervals. */
   public int getForecastTime() {
     return GribNumbers.int4(getOctet(19), getOctet(20), getOctet(21), getOctet(22));
   }
 
+  /** Value of first fixed surface, with scale factor already applied. */
   public double getLevelValue1() {
     return GribNumbers.UNDEFINED;
   }
@@ -192,14 +189,17 @@ public abstract class Grib2Pds {
     return GribNumbers.UNDEFINED;
   }
 
+  /** Value of second fixed surface, with scale factor already applied. */
   public double getLevelValue2() {
     return GribNumbers.UNDEFINED;
   }
 
+  /** Type of first fixed surface (see Code table 4.5) */
   public int getLevelType1() {
     return GribNumbers.UNDEFINED;
   }
 
+  /** Type of second fixed surface (see Code table 4.5) */
   public int getLevelType2() {
     return GribNumbers.UNDEFINED;
   }
@@ -279,8 +279,7 @@ public abstract class Grib2Pds {
   }
 
   public String toString() {
-    return String.format("Grib2Pds{ id=%d-%d template=%d, forecastTime= %d timeUnit=%s vertLevel=%f}", getParameterCategory(),
-            getParameterNumber(), template, getForecastTime(), getTimeUnit(), getLevelValue1());
+    return show(new Formatter()).toString();
   }
 
   /**
@@ -307,21 +306,20 @@ public abstract class Grib2Pds {
     return input.length;
   }
 
-
   protected double getScaledValue(int start) {
     int scale = getOctetSigned(start++);
     int value = GribNumbers.int4(getOctet(start++), getOctet(start++), getOctet(start++), getOctet(start));
     return applyScaleFactor(scale, value);
   }
 
+  /** Statistical process used to calculate the processed field from the field at each time increment
+   * during the time range (code table 4.10) . */
   public int getStatisticalProcessType() {
-    if (!(this instanceof PdsInterval))
+    if (!(this instanceof PdsInterval pint))
       return -1;
-    PdsInterval pint = (PdsInterval) this;
     TimeInterval[] ti = pint.getTimeIntervals();
     if (ti.length > 0) {
-      TimeInterval ti0 = ti[0];
-      return ti0.statProcessType;
+      return ti[0].statProcessType;
     }
     return -1;
   }
@@ -329,33 +327,46 @@ public abstract class Grib2Pds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   public interface PdsAerosol {
+    /** Aerosol type (see Common Code table C–14) */
     int getAerosolType();
 
+    /** Type of interval for first and second size (see Code table 4.91). */
     double getAerosolIntervalSizeType();
 
+    /** Scaled value of first aerosol size in metres. */
     double getAerosolSize1();
 
+    /** Scaled value of second aerosol size in metres. */
     double getAerosolSize2();
 
+    /** Type of interval for first and second wavelength (see Code table 4.91). */
     double getAerosolIntervalWavelengthType();
 
+    /** Scaled value of first wavelength in metres. */
     double getAerosolWavelength1();
 
+    /** Scaled value of seconf wavelength in metres. */
     double getAerosolWavelength2();
   }
 
   public interface PdsInterval {
+    /** Statistical process used to calculate the processed field from the field at each time increment
+     * during the time range (code table 4.10) . */
     int getStatisticalProcessType();
 
+    /** End of overall time interval */
     CalendarDate getIntervalTimeEnd();
 
+    /** End of overall time interval is miscoded or not understood. */
     boolean hasUnknownIntervalEnd();
 
-    int getForecastTime();
-
+    /** number of time range specifications describing the time intervals used to calculate the statistically-processed field */
     int getNumberTimeRanges();
 
+    /** Total number of data values missing in statistical process. */
     int getNumberMissing();
+
+    int getForecastTime();
 
     TimeInterval[] getTimeIntervals();
 
@@ -363,59 +374,76 @@ public abstract class Grib2Pds {
   }
 
   public interface PdsEnsemble {
+    /**  ype of ensemble forecast (see Code table 4.6). */
     int getPerturbationType();
 
+    /**  Perturbation Number - which member of the ensemble is this ? */
     int getPerturbationNumber();
 
+    /**  Number of forecasts in ensemble. */
     int getNumberEnsembleForecasts();
   }
 
   public interface PdsEnsembleDerived {
+    /** Derived forecast Type (see Code table 4.7). */
     int getDerivedForecastType();
 
+    /** Number of forecasts in ensemble. */
     int getNumberEnsembleForecasts();
   }
 
   public interface PdsPercentile {
+    /** Percentile - from 0 to 100 */
     int getPercentileValue();
   }
 
   public interface PdsSpatialInterval {
+    /** Statistical process used within the spatial area defined by octet 36 (see Code table 4.10) */
     int getSpatialStatisticalProcessType();
 
+    /** Type of spatial processing used to arrive at given data value from the source data (see Code table 4.15) */
     int getSpatialProcessType();
 
+    /** Number of data points used in spatial processing defined by getSpatialProcessType() */
     int getNSpatialDataPoints();
   }
 
   public interface PdsProbability {
+    /** Forecast probability number. */
     int getForecastProbabilityNumber();
 
+    /** Number of forecasts probabilities. */
     int getNumberForecastProbabilities();
 
+    /** Probability type (see Code table 4.9). */
     int getProbabilityType();
 
+    /** Scaled value of probability lower limit. */
     double getProbabilityLowerLimit();
 
+    /** Scaled value of probability upper limit. */
     double getProbabilityUpperLimit();
 
+    /** used in Grib2Variable. */
     int getProbabilityHashcode();
 
+    /** human readable description of the probabilty interval. */
     String getProbabilityName();
   }
 
   public interface PdsSatellite {
+    /** Number of contributing spectral bands (NB) */
     int getNumSatelliteBands();
 
+    /** The SatelliteBands */
     SatelliteBand[] getSatelliteBands();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Product definition template 4.0 - analysis or forecast at a horizontal level or in a horizontal layer at a point in
-   * time
-   * Many other templates (1-14) have same fields in sameplaces, so can use this as the superclass.
+   * Product definition template 4.0 - analysis or forecast at a horizontal level or in a horizontal layer at a point in time.
+   * Many other templates (1-14) have same fields in same places, so can use this as the superclass.
    */
   private static class Grib2Pds0 extends Grib2Pds {
 
@@ -428,11 +456,6 @@ public abstract class Grib2Pds {
       return getOctet(12);
     }
 
-    /**
-     * Background generating process identifier (defined by originating centre)
-     *
-     * @return Background generating process id
-     */
     @Override
     public int getBackProcessId() {
       return getOctet(13);
@@ -443,80 +466,47 @@ public abstract class Grib2Pds {
       return getOctet(14);
     }
 
-    /**
-     * Hours after reference time of data cutoff
-     *
-     * @return HoursAfter
-     */
+    /** Hours after reference time of data cutoff */
     public int getHoursAfterCutoff() {
       return GribNumbers.int2(getOctet(15), getOctet(16));
     }
 
-    /**
-     * Minutes after reference time of data cutoff
-     *
-     * @return MinutesAfter
-     */
+    /** Minutes after reference time of data cutoff */
     public int getMinutesAfterCutoff() {
       return getOctet(17);
     }
 
-    /**
-     * Indicator of unit of time range (see Code table 4.4)
-     *
-     * @return TimeRangeUnit
-     */
     @Override
     public int getTimeUnit() {
       return getOctet(18);
     }
 
-    /**
-     * Type of first fixed surface (see Code table 4.5)
-     *
-     * @return Type of first fixed surface
-     */
+    @Override
     public int getLevelType1() {
       return getOctet(23);
     }
 
-    /**
-     * Value of first fixed surface, with scale factor already applied
-     *
-     * @return float FirstFixedSurfaceValue
-     */
+    @Override
     public double getLevelValue1() {
       return getScaledValue(24);
     }
 
-    // debug
+    // unscaled level 1 value
     public int getLevelScale() {
       return getOctet(24);
     }
 
-    /**
-     * Type of second fixed surface (see Code table 4.5)
-     *
-     * @return Type of second fixed surface
-     */
+    @Override
     public int getLevelType2() {
       return getOctet(29);
     }
 
-    /**
-     * Value of second fixed surface, with scale factor already applied
-     *
-     * @return float FirstFixedSurfaceValue
-     */
+    @Override
     public double getLevelValue2() {
       return getScaledValue(30);
     }
 
-    /**
-     * length of template (next byte starts info after template, if any
-     *
-     * @return length of template
-     */
+    @Override
     public int templateLength() {
       return 34;
     }
@@ -550,13 +540,11 @@ public abstract class Grib2Pds {
 
   }
 
-
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Product definition template 4.1 -
-   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in
-   * time
+   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time
    */
   private static class Grib2Pds1 extends Grib2Pds0 implements PdsEnsemble {
     Grib2Pds1(byte[] input) {
@@ -567,29 +555,17 @@ public abstract class Grib2Pds {
       return true;
     }
 
-    /**
-     * Type of ensemble forecast (see Code table 4.6)
-     *
-     * @return Type of ensemble forecast
-     */
+    @Override
     public int getPerturbationType() {
       return getOctet(35);
     }
 
-    /**
-     * Perturbation Number - which member of the ensemble is this ?
-     *
-     * @return Perturbation Number
-     */
+    @Override
     public int getPerturbationNumber() {
       return getOctet(36);
     }
 
-    /**
-     * Number of forecasts in ensemble
-     *
-     * @return Number of forecasts in ensemble
-     */
+    @Override
     public int getNumberEnsembleForecasts() {
       return getOctet(37);
     }
@@ -614,11 +590,7 @@ public abstract class Grib2Pds {
       super(input);
     }
 
-    /**
-     * End of overall time interval
-     *
-     * @return End of overall time interval
-     */
+    @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(38);
     }
@@ -628,21 +600,12 @@ public abstract class Grib2Pds {
       return hasUnknownTime(38);
     }
 
-    /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed
-     * field
-     *
-     * @return number of time range
-     */
+    @Override
     public int getNumberTimeRanges() {
       return getOctet(45);
     }
 
-    /**
-     * Total number of data values missing in statistical process
-     *
-     * @return Total number of data values missing in statistical process
-     */
+    @Override
     public final int getNumberMissing() {
       return GribNumbers.int4(getOctet(46), getOctet(47), getOctet(48), getOctet(49));
     }
@@ -676,8 +639,8 @@ public abstract class Grib2Pds {
 
   /**
    * Product definition template 4.61 -
-   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous
-   * or non-continuous time interval
+   * individual ensemble reforecast, control and perturbed, at a horizontal level or in a horizontal layer,
+   * in a continuous or non-continuous time interval
    */
   private static class Grib2Pds61 extends Grib2Pds1 implements PdsInterval {
 
@@ -686,19 +649,13 @@ public abstract class Grib2Pds {
     }
 
     /**
-     * Model version date
-     *
-     * @return Model version date
+     * Year of model version date. This is the date when the reforecast is produced with a particular version of the model.
      */
     public CalendarDate getModelVersionDate() {
       return calcTime(38);
     }
 
-    /**
-     * End of overall time interval
-     *
-     * @return End of overall time interval
-     */
+    @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(45);
     }
@@ -708,21 +665,12 @@ public abstract class Grib2Pds {
       return hasUnknownTime(45);
     }
 
-    /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed
-     * field
-     *
-     * @return number of time range
-     */
+    @Override
     public int getNumberTimeRanges() {
       return getOctet(52);
     }
 
-    /**
-     * Total number of data values missing in statistical process
-     *
-     * @return Total number of data values missing in statistical process
-     */
+    @Override
     public final int getNumberMissing() {
       return GribNumbers.int4(getOctet(53), getOctet(54), getOctet(55), getOctet(56));
     }
@@ -765,24 +713,17 @@ public abstract class Grib2Pds {
       super(input);
     }
 
+    @Override
     public boolean isEnsembleDerived() {
       return true;
     }
 
-    /**
-     * Derived forecast Type (see Code table 4.7)
-     *
-     * @return Derived forecast Type
-     */
+    @Override
     public int getDerivedForecastType() {
       return getOctet(35);
     }
 
-    /**
-     * Number of forecasts in ensemble
-     *
-     * @return Number of forecasts in ensemble
-     */
+    @Override
     public int getNumberEnsembleForecasts() {
       return getOctet(36);
     }
@@ -791,7 +732,6 @@ public abstract class Grib2Pds {
     public int templateLength() {
       return 36;
     }
-
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -802,20 +742,12 @@ public abstract class Grib2Pds {
    * continuous or non-continuous time interval
    */
   private static class Grib2Pds12 extends Grib2Pds2 implements PdsInterval {
-    // CalendarDate endInterval; // Date msecs
-    // int ft;
 
     Grib2Pds12(byte[] input) {
       super(input);
-      // endInterval = calcTime(37);
-      // ft = makeForecastTime(endInterval, getTimeUnit());
     }
 
-    /**
-     * End of overall time interval
-     *
-     * @return End of overall time interval
-     */
+    @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(37);
     }
@@ -825,21 +757,12 @@ public abstract class Grib2Pds {
       return hasUnknownTime(37);
     }
 
-    /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed
-     * field
-     *
-     * @return number of time range
-     */
+    @Override
     public int getNumberTimeRanges() {
       return getOctet(44);
     }
 
-    /**
-     * Total number of data values missing in statistical process
-     *
-     * @return Total number of data values missing in statistical process
-     */
+    @Override
     public final int getNumberMissing() {
       return GribNumbers.int4(getOctet(45), getOctet(46), getOctet(47), getOctet(48));
     }
@@ -909,45 +832,34 @@ public abstract class Grib2Pds {
       return true;
     }
 
-    /**
-     * Forecast probability number
-     *
-     * @return Forecast probability number
-     */
+    @Override
     public int getForecastProbabilityNumber() {
       return getOctet(35);
     }
 
-    /**
-     * Number of forecasts probabilities
-     *
-     * @return Number of forecasts probabilities
-     */
+    @Override
     public int getNumberForecastProbabilities() {
       return getOctet(36);
     }
 
-    /**
-     * Probability type (see Code table 4.9)
-     *
-     * @return Probability type
-     */
+    @Override
     public int getProbabilityType() {
       return getOctet(37);
     }
 
+    @Override
     public double getProbabilityLowerLimit() {
       int scale = getOctetSigned(38);
       int value = GribNumbers.int4(getOctet(39), getOctet(40), getOctet(41), getOctet(42));
       return applyScaleFactor(scale, value);
     }
 
+    @Override
     public double getProbabilityUpperLimit() {
       int scale = getOctetSigned(43);
       int value = GribNumbers.int4(getOctet(44), getOctet(45), getOctet(46), getOctet(47));
       return applyScaleFactor(scale, value);
     }
-
 
     @Override
     public int getProbabilityHashcode() {
@@ -957,30 +869,26 @@ public abstract class Grib2Pds {
         double prob1, prob2;
 
         switch (getProbabilityType()) {
-          case 0:
-          case 3:
+          case 0, 3 -> {
             prob1 = getProbabilityLowerLimit();
             temp = prob1 != +0.0d ? Double.doubleToLongBits(prob1) : 0L;
             result = (int) (temp ^ (temp >>> 32));
-            break;
-
-          case 1:
-          case 4:
+          }
+          case 1, 4 -> {
             prob2 = getProbabilityUpperLimit();
             temp = prob2 != +0.0d ? Double.doubleToLongBits(prob2) : 0L;
             result = (int) (temp ^ (temp >>> 32));
-            break;
-
-          case 2:
+          }
+          case 2 -> {
             prob1 = getProbabilityLowerLimit();
             prob2 = getProbabilityUpperLimit();
             temp = prob1 != +0.0d ? Double.doubleToLongBits(prob1) : 0L;
             result = (int) (temp ^ (temp >>> 32));
             temp = prob2 != +0.0d ? Double.doubleToLongBits(prob2) : 0L;
             result = 31 * result + (int) (temp ^ (temp >>> 32));
-            break;
-
-          default:
+          }
+          default -> {
+          }
         }
         result = 31 * result + getProbabilityType();
         probHash = result;
@@ -1108,20 +1016,11 @@ public abstract class Grib2Pds {
    * then processed using these reference and forecast times as the initial reference and forecast times.
    */
   private static class Grib2Pds9 extends Grib2Pds5 implements PdsInterval {
-    // CalendarDate endInterval; // Date msecs
-    // int ft;
 
     Grib2Pds9(byte[] input) {
       super(input);
-      // endInterval = calcTime(48);
-      // ft = makeForecastTime(endInterval, getTimeUnit());
     }
 
-    /**
-     * End of overall time interval
-     *
-     * @return End of overall time interval
-     */
     @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(48);
@@ -1132,32 +1031,17 @@ public abstract class Grib2Pds {
       return hasUnknownTime(48);
     }
 
-    /*
-     * @Override
-     * public int getForecastTime() {
-     * return ft;
-     * }
-     */
-
-    /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed
-     * field
-     *
-     * @return number of time range
-     */
+    @Override
     public int getNumberTimeRanges() {
       return getOctet(55);
     }
 
-    /**
-     * Total number of data values missing in statistical process
-     *
-     * @return Total number of data values missing in statistical process
-     */
+    @Override
     public final int getNumberMissing() {
       return GribNumbers.int4(getOctet(56), getOctet(57), getOctet(58), getOctet(59));
     }
 
+    @Override
     public TimeInterval[] getTimeIntervals() {
       return readTimeIntervals(getNumberTimeRanges(), 60);
     }
@@ -1192,43 +1076,26 @@ public abstract class Grib2Pds {
    * horizontal layer in a continuous or non-continuous time interval
    */
   private static class Grib2Pds8 extends Grib2Pds0 implements PdsInterval {
-    // CalendarDate endInterval; // Date msecs
 
     Grib2Pds8(byte[] input) {
       super(input);
-      // endInterval = calcTime(35);
     }
 
-    /**
-     * End of overall time interval
-     *
-     * @return End of overall time interval
-     */
     @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(35);
     }
 
+    @Override
     public boolean hasUnknownIntervalEnd() {
       return hasUnknownTime(35);
     }
 
-    /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed
-     * field
-     *
-     * @return number of time range
-     */
     @Override
     public int getNumberTimeRanges() {
       return getOctet(42);
     }
 
-    /**
-     * Total number of data values missing in statistical process
-     *
-     * @return Total number of data values missing in statistical process
-     */
     @Override
     public final int getNumberMissing() {
       return GribNumbers.int4(getOctet(43), getOctet(44), getOctet(45), getOctet(46));
@@ -1278,11 +1145,12 @@ public abstract class Grib2Pds {
       super(input);
     }
 
+    @Override
     public boolean isPercentile() {
       return true;
     }
 
-    /** Percentile - from 0 to 100 */
+    @Override
     public int getPercentileValue() {
       return getOctet(35);
     }
@@ -1298,18 +1166,11 @@ public abstract class Grib2Pds {
    * percentile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
    */
   private static class Grib2Pds10 extends Grib2Pds6 implements PdsInterval {
-    // CalendarDate endInterval;
 
     Grib2Pds10(byte[] input) {
       super(input);
-      // endInterval = calcTime(36);
     }
 
-    /**
-     * End of overall time interval
-     *
-     * @return End of overall time interval
-     */
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(36);
     }
@@ -1319,21 +1180,10 @@ public abstract class Grib2Pds {
       return hasUnknownTime(36);
     }
 
-    /**
-     * number of time range specifications describing the time intervals used to calculate the statistically-processed
-     * field
-     *
-     * @return number of time range
-     */
     public int getNumberTimeRanges() {
       return getOctet(43);
     }
 
-    /**
-     * Total number of data values missing in statistical process
-     *
-     * @return Total number of data values missing in statistical process
-     */
     public final int getNumberMissing() {
       return GribNumbers.int4(getOctet(44), getOctet(45), getOctet(46), getOctet(47));
     }
@@ -1381,29 +1231,22 @@ public abstract class Grib2Pds {
       return 0;
     }
 
-    /**
-     * Observation generating process identifier (defined by originating centre)
-     *
-     * @return GenProcess
-     */
+    @Override
+    public int getGenProcessType() {
+      return getOctet(12);
+    }
+
+    @Override
     public int getGenProcessId() {
       return getOctet(13);
     }
 
-    /**
-     * Number of contributing spectral bands (NB)
-     *
-     * @return Number of contributing spectral
-     */
+    @Override
     public int getNumSatelliteBands() {
       return getOctet(14);
     }
 
-    /**
-     * SatelliteBand
-     *
-     * @return SatelliteBands
-     */
+    @Override
     public SatelliteBand[] getSatelliteBands() {
       int nb = getNumSatelliteBands();
       SatelliteBand[] result = new SatelliteBand[nb];
@@ -1422,6 +1265,7 @@ public abstract class Grib2Pds {
       return result;
     }
 
+    @Override
     public int templateLength() {
       return 14 + getNumSatelliteBands() * 10;
     }
@@ -1457,29 +1301,21 @@ public abstract class Grib2Pds {
       return 0;
     }
 
-    /**
-     * Observation generating process identifier (defined by originating centre)
-     *
-     * @return GenProcess
-     */
+    @Override
+    public int getGenProcessType() {
+      return getOctet(12);
+    }
+
+    @Override
     public int getGenProcessId() {
       return getOctet(13);
     }
 
-    /**
-     * Number of contributing spectral bands (NB)
-     *
-     * @return Number of contributing spectral
-     */
+    @Override
     public int getNumSatelliteBands() {
       return getOctet(14);
     }
 
-    /**
-     * SatelliteBand
-     *
-     * @return SatelliteBands
-     */
     public SatelliteBand[] getSatelliteBands() {
       int nb = getNumSatelliteBands();
       SatelliteBand[] result = new SatelliteBand[nb];
@@ -1498,6 +1334,7 @@ public abstract class Grib2Pds {
       return result;
     }
 
+    @Override
     public int templateLength() {
       return 14 + getNumSatelliteBands() * octetsPerBand;
     }
@@ -1539,24 +1376,17 @@ public abstract class Grib2Pds {
       return getOctet(17);
     }
 
+    @Override
     public int getTimeUnit() {
       return getOctet(18);
     }
 
-    /**
-     * Number of contributing spectral bands (NB)
-     *
-     * @return Number of contributing spectral
-     */
+    @Override
     public int getNumSatelliteBands() {
       return getOctet(23);
     }
 
-    /**
-     * SatelliteBand
-     *
-     * @return SatelliteBands
-     */
+    @Override
     public SatelliteBand[] getSatelliteBands() {
       int nb = getNumSatelliteBands();
       SatelliteBand[] result = new SatelliteBand[nb];
@@ -1575,6 +1405,7 @@ public abstract class Grib2Pds {
       return result;
     }
 
+    @Override
     public int templateLength() {
       return 24 + getNumSatelliteBands() * octetsPerBand;
     }
@@ -1622,40 +1453,47 @@ public abstract class Grib2Pds {
     }
 
     // 12–13 Aerosol type (see Common Code table C–14)
+    @Override
     public int getAerosolType() {
       return GribNumbers.uint2(getOctet(12), getOctet(13));
     }
 
     // 14 Type of interval for first and second size (see Code table 4.91)
+    @Override
     public double getAerosolIntervalSizeType() {
       return getOctet(14);
     }
 
     // 15 Scale factor of first size
     // 16–19 Scaled value of first size in metres
+    @Override
     public double getAerosolSize1() {
       return getScaledValue(15);
     }
 
     // 20 Scale factor of second size
     // 21–24 Scaled value of second size in metres
+    @Override
     public double getAerosolSize2() {
       return getScaledValue(20);
     }
 
     // 25 Type of interval for first and second wavelength (see Code table 4.91)
+    @Override
     public double getAerosolIntervalWavelengthType() {
       return getOctet(25);
     }
 
     // 26 Scale factor of first wavelength
     // 27–30 Scaled value of first wavelength in metres
+    @Override
     public double getAerosolWavelength1() {
       return getScaledValue(26);
     }
 
     // 31 Scale factor of second wavelength
     // 32–35 Scaled value of second wavelength in metres
+    @Override
     public double getAerosolWavelength2() {
       return getScaledValue(31);
     }
@@ -1696,6 +1534,7 @@ public abstract class Grib2Pds {
     }
 
     // 43–46 Forecast time in units defined by octet 42
+    @Override
     public int getForecastTime() {
       return GribNumbers.int4(getOctet(43), getOctet(44), getOctet(45), getOctet(46));
     }
@@ -1736,6 +1575,7 @@ public abstract class Grib2Pds {
       return getScaledValue(54);
     }
 
+    @Override
     public int templateLength() {
       return 58;
     }

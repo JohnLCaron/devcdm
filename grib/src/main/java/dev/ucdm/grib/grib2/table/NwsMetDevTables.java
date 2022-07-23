@@ -41,8 +41,9 @@ public class NwsMetDevTables extends NcepLocalTables {
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
       needOverride = (ti.timeRangeUnit == 255);
     }
-    if (!needOverride)
+    if (!needOverride) {
       return super.getForecastTimeInterval(gr);
+    }
 
     CalendarDate intvEnd = pdsIntv.getIntervalTimeEnd();
     int ftime = pdsIntv.getForecastTime();

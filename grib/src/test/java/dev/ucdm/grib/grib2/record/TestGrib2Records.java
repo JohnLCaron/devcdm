@@ -2,25 +2,28 @@ package dev.ucdm.grib.grib2.record;
 
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.io.RandomAccessFile;
+import dev.ucdm.grib.common.util.GribDataUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 
 public class TestGrib2Records {
-  interface Callback {
-    boolean call(RandomAccessFile raf, Grib2Record gr) throws IOException;
+  public interface Callback {
+    void call(RandomAccessFile raf, Grib2Record gr) throws IOException;
   }
 
-  private static String testdir = "src/test/data/";
+  private static final String testdir = "src/test/data/";
 
   public static Stream<Arguments> params() {
     return Stream.of(
+            Arguments.of(testdir + "extract.50002.grib2", 0, 0, 111069, "2014-10-09T00:00Z"),
             Arguments.of(testdir + "HLYA10.grib2", 0, 0, 259920, "2014-01-15T00:00:00Z"),
             Arguments.of(testdir + "MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2", 0, 0, 24500000,
                     "2014-12-07T07:20:38Z"),
@@ -47,26 +50,26 @@ public class TestGrib2Records {
 
   @ParameterizedTest
   @MethodSource("params")
-  public void testRead(String filename, int gdsTemplate, int pdsTemplate, long datalen, String refdateIso) throws IOException {
+  public void testRead(String filename, int gdsTemplate, int pdsTemplate, long nGridPoints, String refdateIso) throws IOException {
     CalendarDate refdate = CalendarDate.fromUdunitIsoDate("ISO8601", refdateIso).orElseThrow();
 
     readFile(filename, (raf, gr) -> {
+      Grib2SectionGridDefinition gdss = gr.getGDSsection();
       Grib2Gds gds = gr.getGDS();
-      assertThat(gdsTemplate).isEqualTo(gds.template);
+      assertThat(gds.template).isEqualTo(gdss.getGDSTemplateNumber());
+      assertThat(gds.template).isEqualTo(gdsTemplate);
       gds.testHorizCoordSys(new Formatter());
+      assertThat(gdss.getSource()).isEqualTo(0);
 
       Grib2SectionProductDefinition pdss = gr.getPDSsection();
       Grib2Pds pds = pdss.getPDS();
-      assertThat(pdsTemplate).isEqualTo(pdss.getPDSTemplateNumber());
-      Formatter f = new Formatter();
-      pds.show(f);
-      assertThat(f.toString()).contains(String.format("template=%d", pdsTemplate));
-      assertThat(refdate).isEqualTo(gr.getReferenceDate());
+      assertThat(pdss.getPDSTemplateNumber()).isEqualTo(pdsTemplate);
+      assertThat(pds.show(new Formatter()).toString()).contains(String.format("template=%d", pdsTemplate));
+      assertThat(gr.getReferenceDate()).isEqualTo(refdate);
 
+      Grib2SectionData dataSection = gr.getDataSection();
       float[] data = gr.readData(raf);
-      assertThat(datalen).isEqualTo(data.length);
-      System.out.printf("%s: template,param,len=  %d, %d, %d, \"%s\" %n", filename, gds.template,
-              pdss.getPDSTemplateNumber(), data.length, gr.getReferenceDate());
+      assertThat(data.length).isEqualTo(nGridPoints);
 
       if (pds.isSatellite()) {
         Grib2Pds.PdsSatellite sat = (Grib2Pds.PdsSatellite) pds;
@@ -74,15 +77,29 @@ public class TestGrib2Records {
         assertThat(numBands).isNotEqualTo(0);
         assertThat(numBands).isEqualTo(sat.getSatelliteBands().length);
       }
-      return true;
+
+      Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+      assertThat(drss.readLength(raf)).isEqualTo(drss.length);
+      GribDataUtils.Info info = gr.getBinaryDataInfo(raf);
+      assertThat(info).isNotNull();
+
+      assertThat(info.dataMsgLength).isEqualTo(dataSection.getMsgLength());
+      assertThat(info.ndataPoints).isEqualTo(drss.getDataPoints());
+      assertThat(info.nGridPoints).isEqualTo(nGridPoints);
+      if (!gr.hasBitmap() && !gds.isThin()) {
+        assertThat(info.nGridPoints).isEqualTo(info.ndataPoints);
+      }
+
+      assertThat(gr.check(raf, new Formatter()).toString()).contains("IS OK");
+
+      testDrs(raf, drss);
     });
   }
 
-  private void readFile(String path, Callback callback) throws IOException {
+  public static void readFile(String path, Callback callback) throws IOException {
     try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
-
       Grib2RecordScanner reader = new Grib2RecordScanner(raf);
       while (reader.hasNext()) {
         Grib2Record gr = reader.next();
@@ -93,5 +110,12 @@ public class TestGrib2Records {
     }
   }
 
+  private void testDrs(RandomAccessFile raf, Grib2SectionDataRepresentation drss) throws IOException {
+    Grib2Drs drs = drss.getDrs(raf);
+    assertThat(drs).isNotNull();
+    System.out.printf("%s%n", drs);
+    assertThat(drs.getBinaryDataInfo(raf)).isNotNull();
+    assertThat(drs.toString()).contains(drs.getClass().getSimpleName());
+  }
 
 }

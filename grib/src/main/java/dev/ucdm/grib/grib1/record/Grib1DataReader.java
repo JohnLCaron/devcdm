@@ -143,7 +143,7 @@ public class Grib1DataReader {
         if (nxRaw > 0 && nyRaw > 0) {
           values = new float[nxRaw * nyRaw];
         } else {
-          int nptsExpected = (int) ((info.dataLength - 11) * 8 - unusedbits) / info.numberOfBits; // count bits
+          int nptsExpected = (int) ((info.dataMsgLength - 11) * 8 - unusedbits) / info.numberOfBits; // count bits
           if (!Grib1RecordScanner.allowBadDsLength && nptsExpected != nPts)
             logger.warn("nptsExpected {} != npts {}", nptsExpected, nPts);
           values = new float[nPts];
@@ -523,7 +523,7 @@ public class Grib1DataReader {
     }
     int data_bytes = (total_nbits + 7) / 8;
     f.format(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
-    f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
+    f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataMsgLength);
     int simplepackSizeInBits = nPts * info.numberOfBits;
     int simplepackSizeInBytes = (simplepackSizeInBits + 7) / 8;
     f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
@@ -547,7 +547,7 @@ public class Grib1DataReader {
     }
 
     int offset4 = (int) (raf.getFilePointer() - this.startPos);
-    showOffset(f, "MessageEnd", raf, (int) info.dataLength, 82091);
+    showOffset(f, "MessageEnd", raf, (int) info.dataMsgLength, 82091);
 
     f.format("nbytes= %d%n", (total_nbits + 7) / 8);
     f.format("actual= %d%n", offset4 - offset3);
@@ -673,7 +673,7 @@ public class Grib1DataReader {
     }
     int data_bytes = (total_nbits + 7) / 8;
     f.format(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
-    f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
+    f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataMsgLength);
     // int simplepackSizeInBits = nPts * info.numberOfBits;
     // int simplepackSizeInBytes = (simplepackSizeInBits +7) / 8;
     // f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);

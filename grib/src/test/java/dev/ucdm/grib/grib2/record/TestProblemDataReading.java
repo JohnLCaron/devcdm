@@ -24,7 +24,6 @@ public class TestProblemDataReading {
       Grib2SectionData ds = gr.getDataSection();
       System.out.printf("Grib2SectionData %s end %d%n", ds, ds.getEndingPosition());
       float[] data = gr.readData(raf);
-      return true;
     });
   }
 

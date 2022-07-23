@@ -22,7 +22,7 @@ public class Grib2SectionDataRepresentation {
   private final long startingPosition;
   private final int dataPoints;
   private final int dataTemplate;
-  private final int length; // dont have length in index
+  final int length; // dont have length in index
 
   public Grib2SectionDataRepresentation(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
@@ -73,7 +73,7 @@ public class Grib2SectionDataRepresentation {
   }
 
   // debug
-  public long getLength(RandomAccessFile raf) throws IOException {
+  public long readLength(RandomAccessFile raf) throws IOException {
     if (length == 0) {
       raf.seek(startingPosition);
       return GribNumbers.int4(raf);

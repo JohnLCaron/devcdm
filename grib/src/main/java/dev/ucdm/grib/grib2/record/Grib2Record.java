@@ -107,6 +107,10 @@ public class Grib2Record {
     return lus != null && lus.getRawBytes() != null;
   }
 
+  public boolean hasBitmap() {
+    return (bms.getBitMapIndicator() == 0) || (bms.getBitMapIndicator() == 254);
+  }
+
   public Grib2SectionLocalUse getLocalUseSection() {
     return lus;
   }
@@ -242,16 +246,16 @@ public class Grib2Record {
 
   // debugging - do not use
   @Nullable
-  public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
+  public Grib2Drs.Jpeg2000 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
     Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
         getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
-    if (gdrs instanceof Grib2Drs.Type40) {
+    if (gdrs instanceof Grib2Drs.Jpeg2000) {
       reader.getData(raf, bms, gdrs);
-      return (Grib2Drs.Type40) gdrs;
+      return (Grib2Drs.Jpeg2000) gdrs;
     }
     return null;
   }
@@ -305,8 +309,9 @@ public class Grib2Record {
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
     Grib2SectionData dataSection = new Grib2SectionData(raf);
 
-    if (bmsPos > 0)
+    if (bmsPos > 0) {
       bms = Grib2SectionBitMap.factory(raf, bmsPos);
+    }
 
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(), scanMode,
         nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
@@ -315,15 +320,17 @@ public class Grib2Record {
 
     float[] data = reader.getData(raf, bms, gdrs);
 
-    if (nptsInLine != null)
+    if (nptsInLine != null) {
       data = QuasiRegular.convertQuasiGrid(data, nptsInLine, nx, ny, GribDataUtils.getInterpolationMethod());
+    }
 
-    if (getlastRecordRead)
+    if (getlastRecordRead) {
       lastRecordRead = Grib2RecordScanner.findRecordByDrspos(raf, drsPos);
+    }
     return data;
   }
 
-  public void check(RandomAccessFile raf, Formatter f) throws IOException {
+  public Formatter check(RandomAccessFile raf, Formatter f) throws IOException {
     long messLen = is.getMessageLength();
     long startPos = is.getStartPos();
     long endPos = is.getEndPos();
@@ -331,7 +338,7 @@ public class Grib2Record {
     if (endPos > raf.length()) {
       f.format("End of GRIB message (start=%d len=%d) end=%d > file.length=%d for %s%n", startPos, messLen, endPos,
           raf.length(), raf.getLocation());
-      return;
+      return f;
     }
 
     raf.seek(endPos - 4);
@@ -353,7 +360,7 @@ public class Grib2Record {
     if (dataEnd > raf.length()) {
       f.format("GRIB data section (start=%d len=%d) end=%d > file.length=%d for %s%n", dataStart, dataLen, dataEnd,
           raf.length(), raf.getLocation());
-      return;
+      return f;
     }
 
     if (dataEnd > endPos) {
@@ -361,16 +368,18 @@ public class Grib2Record {
           endPos, raf.getLocation());
     }
 
+    f.format(" IS OK");
+    return f;
   }
 
   public GribDataUtils.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
     GribDataUtils.Info info = this.drss.getDrs(raf).getBinaryDataInfo(raf);
     info.bitmapLength = (bms == null) ? 0 : bms.getLength(raf);
     info.msgLength = is.getMessageLength();
-    info.dataLength = dataSection.getMsgLength();
+    info.dataMsgLength = dataSection.getMsgLength();
     info.ndataPoints = drss.getDataPoints();
     Grib2Gds gds = getGDS();
-    info.nPoints = gds.getNx() * gds.getNy();
+    info.nGridPoints = gds.getNx() * gds.getNy();
     return info;
   }
 
