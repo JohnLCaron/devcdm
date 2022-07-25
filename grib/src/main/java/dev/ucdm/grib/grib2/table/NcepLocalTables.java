@@ -10,7 +10,7 @@ import dev.ucdm.core.constants.CDM;
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribResourceReader;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -201,18 +201,18 @@ class NcepLocalTables extends LocalTables {
   // Vert
 
   @Override
-  public VertCoordType getVertUnit(int code) {
+  public VertCoordUnit getVertUnit(int code) {
 
     switch (code) {
       case 235:
-        return new VertCoordType(code, "0.1 C", null, true);
+        return new VertCoordUnit(code, "0.1 C", null, true);
 
       case 237:
       case 238:
-        return new VertCoordType(code, "m", null, true);
+        return new VertCoordUnit(code, "m", null, true);
 
       case 241:
-        return new VertCoordType(code, "count", null, true); // eg see NCEP World Watch datasets
+        return new VertCoordUnit(code, "count", null, true); // eg see NCEP World Watch datasets
 
       default:
         return super.getVertUnit(code);

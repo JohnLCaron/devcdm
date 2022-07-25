@@ -105,7 +105,7 @@ class Time2DLazyCoordinate {
           int timeIdx = 0;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             // use upper bounds for coord value
-            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx);
             timeIdx++;
           }
         }
@@ -117,7 +117,7 @@ class Time2DLazyCoordinate {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             // use upper bounds for coord value
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx);
           }
         }
         break;
@@ -147,9 +147,9 @@ class Time2DLazyCoordinate {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes * 2 + timeIdx] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes * 2 + timeIdx] = timeUnit.getValue() * tinv.bounds1() + time2D.getOffset(runIdx);
             data[runIdx * ntimes * 2 + timeIdx + 1] =
-                timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+                timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx);
             timeIdx += 2;
           }
         }
@@ -160,8 +160,8 @@ class Time2DLazyCoordinate {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.bounds1() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx);
           }
         }
         break;

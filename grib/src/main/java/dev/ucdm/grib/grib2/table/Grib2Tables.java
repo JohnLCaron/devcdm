@@ -13,7 +13,7 @@ import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.coord.TimeCoordIntvDateValue;
 import dev.ucdm.grib.coord.TimeCoordIntvValue;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.grib2.record.Grib2Pds;
 import dev.ucdm.grib.grib2.record.Grib2Record;
@@ -301,37 +301,37 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
    * @return level unit, default is empty unit string
    */
   @Override
-  public VertCoordType getVertUnit(int code) {
+  public VertCoordUnit getVertUnit(int code) {
     // VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean
     // isLayer)
     return switch (code) {
-      case 11, 12, 117, 237, 238 -> new VertCoordType(code, "m", null, true);
-      case 20 -> new VertCoordType(code, "K", null, false);
-      case 100, 119 -> new VertCoordType(code, "Pa", null, false);
-      case 102 -> new VertCoordType(code, "m", "mean sea level", true);
-      case 103 -> new VertCoordType(code, "m", "ground", true);
-      case 104, 105 -> new VertCoordType(code, "sigma", null, false); // positive?
+      case 11, 12, 117, 237, 238 -> new VertCoordUnit(code, "m", null, true);
+      case 20 -> new VertCoordUnit(code, "K", null, false);
+      case 100, 119 -> new VertCoordUnit(code, "Pa", null, false);
+      case 102 -> new VertCoordUnit(code, "m", "mean sea level", true);
+      case 103 -> new VertCoordUnit(code, "m", "ground", true);
+      case 104, 105 -> new VertCoordUnit(code, "sigma", null, false); // positive?
 
-      case 106 -> new VertCoordType(code, "m", "land surface", false);
-      case 107 -> new VertCoordType(code, "K", null, true); // positive?
+      case 106 -> new VertCoordUnit(code, "m", "land surface", false);
+      case 107 -> new VertCoordUnit(code, "K", null, true); // positive?
 
-      case 108 -> new VertCoordType(code, "Pa", "ground", true);
-      case 109 -> new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
+      case 108 -> new VertCoordUnit(code, "Pa", "ground", true);
+      case 109 -> new VertCoordUnit(code, "K m2 kg-1 s-1", null, true); // positive?
 
-      case 111 -> new VertCoordType(code, "eta", null, false);
-      case 114 -> new VertCoordType(code, "numeric", null, false);// ??
+      case 111 -> new VertCoordUnit(code, "eta", null, false);
+      case 114 -> new VertCoordUnit(code, "numeric", null, false);// ??
 
-      case 160 -> new VertCoordType(code, "m", "sea level", false);
-      case 161 -> new VertCoordType(code, "m", "water surface", false);
+      case 160 -> new VertCoordUnit(code, "m", "sea level", false);
+      case 161 -> new VertCoordUnit(code, "m", "water surface", false);
 
       // NCEP specific
-      case 235 -> new VertCoordType(code, "0.1 C", null, true);
-      default -> new VertCoordType(code, null, null, true);
+      case 235 -> new VertCoordUnit(code, "0.1 C", null, true);
+      default -> new VertCoordUnit(code, null, null, true);
     };
   }
 
   public boolean isLevelUsed(int code) {
-    VertCoordType vunit = getVertUnit(code);
+    VertCoordUnit vunit = getVertUnit(code);
     return vunit.isVerticalCoordinate();
   }
 
@@ -408,7 +408,7 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
       TimeCoordIntvDateValue intv = getForecastTimeInterval(gr);
-      return intv == null ? null : intv.getEnd();
+      return intv == null ? null : intv.end();
 
     } else {
       int val = pds.getForecastTime();
@@ -551,8 +551,8 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
     if (tinv == null)
       return null;
     int[] result = new int[2];
-    result[0] = tinv.getBounds1();
-    result[1] = tinv.getBounds2();
+    result[0] = tinv.bounds1();
+    result[1] = tinv.bounds2();
     return result;
   }
 

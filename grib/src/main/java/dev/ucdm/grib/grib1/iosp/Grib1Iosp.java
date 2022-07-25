@@ -19,7 +19,7 @@ import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1RecordScanner;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
-import dev.ucdm.grib.grib1.table.Grib1ParamTables;
+import dev.ucdm.grib.grib1.table.Grib1ParamLookup;
 import dev.ucdm.grib.common.GribCollectionIndex;
 import dev.ucdm.grib.common.GribConfig;
 import dev.ucdm.grib.common.GribIosp;
@@ -221,9 +221,9 @@ public class Grib1Iosp extends GribIosp {
   @Override
   public GribTables createCustomizer() throws IOException {
     // so, an iosp message must be received before the open()
-    Grib1ParamTables tables =
-        (gribConfig.paramTable != null) ? Grib1ParamTables.factory(gribConfig.paramTable)
-            : Grib1ParamTables.factory(gribConfig.paramTablePath, gribConfig.lookupTablePath);
+    Grib1ParamLookup tables =
+        (gribConfig.paramTable != null) ? Grib1ParamLookup.factory(gribConfig.paramTable)
+            : Grib1ParamLookup.factory(gribConfig.paramTablePath, gribConfig.lookupTablePath);
 
     cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(),
         gribCollection.getMaster(), tables);

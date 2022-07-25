@@ -28,7 +28,7 @@ public class NcepRfcTables extends NcepTables {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepRfcTables.class);
   private static Map<Integer, String> nwsoSubCenter;
 
-  NcepRfcTables(Grib1ParamTables tables) {
+  NcepRfcTables(Grib1ParamLookup tables) {
     super(8, tables);
   }
 

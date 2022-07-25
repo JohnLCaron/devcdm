@@ -32,10 +32,10 @@ public class CoordinateVert implements Coordinate {
   private final List<VertCoordValue> levelSorted;
   private final int code; // Grib1 - code table 3; Grib2 - Code table 4.5
   private String name;
-  private final VertCoordType vunit;
+  private final VertCoordUnit vunit;
   private final boolean isLayer;
 
-  public CoordinateVert(int code, VertCoordType vunit, List<VertCoordValue> levelSorted) {
+  public CoordinateVert(int code, VertCoordUnit vunit, List<VertCoordValue> levelSorted) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
     this.code = code;
     this.vunit = vunit;
@@ -84,10 +84,10 @@ public class CoordinateVert implements Coordinate {
   @Override
   @Nullable
   public String getUnit() {
-    return vunit == null ? null : vunit.getUnits();
+    return vunit == null ? null : vunit.units();
   }
 
-  public VertCoordType getVertUnit() {
+  public VertCoordUnit getVertUnit() {
     return vunit;
   }
 
@@ -182,9 +182,9 @@ public class CoordinateVert implements Coordinate {
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
-    VertCoordType vunit;
+    VertCoordUnit vunit;
 
-    public Builder2(int code, VertCoordType vunit) {
+    public Builder2(int code, VertCoordUnit vunit) {
       this.code = code;
       this.vunit = vunit;
     }

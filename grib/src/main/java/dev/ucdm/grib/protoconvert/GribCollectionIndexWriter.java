@@ -70,8 +70,8 @@ public class GribCollectionIndexWriter {
     b.addMsecs(coord.getRefDate().getMillisFromEpoch());
 
     for (TimeCoordIntvValue tinv : coord.getTimeIntervals()) {
-      b.addValues(tinv.getBounds1());
-      b.addBound(tinv.getBounds2());
+      b.addValues(tinv.bounds1());
+      b.addBound(tinv.bounds2());
     }
 
     int[] time2runtime = coord.getTime2runtime();
@@ -108,8 +108,8 @@ public class GribCollectionIndexWriter {
     if (coord.getUnit() != null)
       b.setUnit(coord.getUnit());
     for (EnsCoordValue level : coord.getEnsSorted()) {
-      b.addValues((float) level.getCode()); // lame
-      b.addBound((float) level.getEnsMember());
+      b.addValues((float) level.code()); // lame
+      b.addBound((float) level.ensMember());
     }
     return b.build();
   }

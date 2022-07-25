@@ -23,7 +23,7 @@ import static dev.ucdm.grib.grib2.table.EccodesCodeTable.LATEST_VERSION;
 /**
  * The results of EcmwfParamTableCompare indicate there are no significant differences of the parameter tables with WMO.
  * The results of EcmwfCodeTableCompare indicate there are some differences of the code tables with WMO.
- * See the comments at in EcmwfCodeTable.java.
+ * See the comments in EcmwfCodeTable.java.
  *
  * 1) This change in ECMWF table 1.0 implies that if master table = 255, then all WMO entries may be overridden.
  * Havent seen this in practice; in particular I wonder if any ECMWF GRIB2 files do this.

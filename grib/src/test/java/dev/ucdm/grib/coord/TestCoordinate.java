@@ -47,7 +47,7 @@ public class TestCoordinate implements Coordinate {
         List<VertCoordValue> vert = new ArrayList<>(nvals);
         for (int i = 0; i < nvals; i++)
           vert.add(new VertCoordValue((double) (i + 1), (double) (i + 2)));
-        return new CoordinateVert(1, new VertCoordType(11, "m", null, true), vert); // random vert unit
+        return new CoordinateVert(1, new VertCoordUnit(11, "m", null, true), vert); // random vert unit
     }
     return null;
   }

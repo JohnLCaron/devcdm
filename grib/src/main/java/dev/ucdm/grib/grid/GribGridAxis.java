@@ -16,7 +16,7 @@ import dev.ucdm.grib.coord.CoordinateTimeIntv;
 import dev.ucdm.grib.coord.CoordinateVert;
 import dev.ucdm.grib.coord.EnsCoordValue;
 import dev.ucdm.grib.coord.TimeCoordIntvValue;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import dev.ucdm.grib.coord.VertCoordValue;
 import dev.ucdm.core.api.Attribute;
 import dev.ucdm.core.calendar.CalendarDateUnit;
@@ -132,10 +132,10 @@ public class GribGridAxis {
 
     axis.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
     axis.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
-    VertCoordType vu = vc.getVertUnit();
+    VertCoordUnit vu = vc.getVertUnit();
     if (vu != null) {
-      if (vu.getDatum() != null) {
-        axis.addAttribute(new Attribute("datum", vu.getDatum()));
+      if (vu.datum() != null) {
+        axis.addAttribute(new Attribute("datum", vu.datum()));
       }
     }
   }
@@ -186,7 +186,7 @@ public class GribGridAxis {
       public T setEnsCoordinate(CoordinateEns ensCoord) {
         this.gribCoord = ensCoord;
         List<Number> values =
-            ensCoord.getValues().stream().map(ens -> ((EnsCoordValue) ens).getEnsMember()).collect(Collectors.toList());
+            ensCoord.getValues().stream().map(ens -> ((EnsCoordValue) ens).ensMember()).collect(Collectors.toList());
         RegularValues regular = calcPointIsRegular(values);
         if (regular != null) {
           setRegular(regular.ncoords, regular.start, regular.increment);
@@ -295,8 +295,8 @@ public class GribGridAxis {
       public T setTimeOffsetIntervalCoordinate(CoordinateTimeIntv timeOffsetIntv) {
         List<Number> ivalues = new ArrayList<>();
         for (TimeCoordIntvValue intvValues : timeOffsetIntv.getTimeIntervals()) {
-          ivalues.add(intvValues.getBounds1());
-          ivalues.add(intvValues.getBounds2());
+          ivalues.add(intvValues.bounds1());
+          ivalues.add(intvValues.bounds2());
         }
         setNcoords(timeOffsetIntv.getNCoords());
 

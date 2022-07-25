@@ -55,7 +55,7 @@ public class CoordinateEns implements Coordinate {
   public int getIndexByMember(double need) {
     for (int i = 0; i < ensSorted.size(); i++) {
       EnsCoordValue coord = ensSorted.get(i);
-      if (NumericCompare.nearlyEquals(need, coord.getEnsMember()))
+      if (NumericCompare.nearlyEquals(need, coord.ensMember()))
         return i;
     }
     return -1;
@@ -122,7 +122,7 @@ public class CoordinateEns implements Coordinate {
     counters.add("resol");
 
     for (int i = 0; i < ensSorted.size() - 1; i++) {
-      int diff = ensSorted.get(i + 1).getEnsMember() - ensSorted.get(i).getEnsMember();
+      int diff = ensSorted.get(i + 1).ensMember() - ensSorted.get(i).ensMember();
       counters.count("resol", diff);
     }
 

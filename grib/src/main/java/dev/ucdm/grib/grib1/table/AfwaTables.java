@@ -8,7 +8,7 @@ package dev.ucdm.grib.grib1.table;
 import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.common.util.GribNumbers;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import dev.ucdm.grib.grib1.record.Grib1ParamLevel;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 
@@ -23,11 +23,11 @@ import java.util.Map;
  * @since 7/31/13
  */
 public class AfwaTables extends Grib1Customizer {
-  private static Map<Integer, VertCoordType> levelTypesMap; // shared by all instances
+  private static Map<Integer, VertCoordUnit> levelTypesMap; // shared by all instances
   private static Map<Integer, String> genProcessMap; // shared by all instances
   private static Map<Integer, String> subcenterMap; // shared by all instances
 
-  AfwaTables(Grib1ParamTables tables) {
+  AfwaTables(Grib1ParamLookup tables) {
     super(57, tables);
   }
 
@@ -138,10 +138,10 @@ public class AfwaTables extends Grib1Customizer {
   }
 
   @Override
-  protected VertCoordType getLevelType(int code) {
+  protected VertCoordUnit getLevelType(int code) {
     if (levelTypesMap == null)
       makeLevelTypesMap();
-    VertCoordType levelType = levelTypesMap.get(code);
+    VertCoordUnit levelType = levelTypesMap.get(code);
     if (levelType != null)
       return levelType;
     return super.getLevelType(code);
@@ -150,33 +150,33 @@ public class AfwaTables extends Grib1Customizer {
   private static void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(100);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
-    levelTypesMap.put(21, new VertCoordType(21, "RTNEPH cloud layer", "RTNEPH", "", null, true, true));
-    levelTypesMap.put(210, new VertCoordType(210, "Isobaric Surface", "ISBP", "", null, false, false));
-    levelTypesMap.put(211, new VertCoordType(211, "Boundary layer cloud bottom level", "BCBL", "", null, false, false));
-    levelTypesMap.put(212, new VertCoordType(212, "Boundary layer cloud top level", "BCTL", "", null, false, false));
-    levelTypesMap.put(213, new VertCoordType(213, "Boundary layer cloud layer", "BCY", "", null, false, true));
-    levelTypesMap.put(214, new VertCoordType(214, "Low cloud bottom level", "LCBL", "", null, false, false));
-    levelTypesMap.put(215, new VertCoordType(215, "Low cloud top level", "LCTL", "", null, false, false));
-    levelTypesMap.put(216, new VertCoordType(216, "Low cloud layer", "LCY", "", null, false, true));
+    levelTypesMap.put(21, new VertCoordUnit(21, "RTNEPH cloud layer", "RTNEPH", "", null, true, true));
+    levelTypesMap.put(210, new VertCoordUnit(210, "Isobaric Surface", "ISBP", "", null, false, false));
+    levelTypesMap.put(211, new VertCoordUnit(211, "Boundary layer cloud bottom level", "BCBL", "", null, false, false));
+    levelTypesMap.put(212, new VertCoordUnit(212, "Boundary layer cloud top level", "BCTL", "", null, false, false));
+    levelTypesMap.put(213, new VertCoordUnit(213, "Boundary layer cloud layer", "BCY", "", null, false, true));
+    levelTypesMap.put(214, new VertCoordUnit(214, "Low cloud bottom level", "LCBL", "", null, false, false));
+    levelTypesMap.put(215, new VertCoordUnit(215, "Low cloud top level", "LCTL", "", null, false, false));
+    levelTypesMap.put(216, new VertCoordUnit(216, "Low cloud layer", "LCY", "", null, false, true));
     levelTypesMap.put(217,
-        new VertCoordType(217, "Highest tropospheric freezing level", "HTFL", "K", null, false, false));
+        new VertCoordUnit(217, "Highest tropospheric freezing level", "HTFL", "K", null, false, false));
     levelTypesMap.put(218,
-        new VertCoordType(218, "Layer between two temperature levels", "DEGY", "K", null, false, true));
-    levelTypesMap.put(222, new VertCoordType(222, "Middle cloud bottom level", "MCBL", "", null, false, false));
-    levelTypesMap.put(223, new VertCoordType(223, "Middle cloud top level", "MCTL", "", null, false, false));
-    levelTypesMap.put(224, new VertCoordType(224, "Middle cloud layer", "MCY", "", null, false, true));
-    levelTypesMap.put(232, new VertCoordType(232, "High cloud bottom level", "HCBL", "", null, false, false));
-    levelTypesMap.put(233, new VertCoordType(233, "High cloud top level", "HCTL", "", null, false, false));
-    levelTypesMap.put(234, new VertCoordType(234, "High cloud layer", "HCY", "", null, false, true));
-    levelTypesMap.put(242, new VertCoordType(242, "Convective cloud bottom level", "CCBL", "", null, false, false));
-    levelTypesMap.put(243, new VertCoordType(243, "Convective cloud top level", "CCTL", "", null, false, false));
-    levelTypesMap.put(244, new VertCoordType(244, "Convective cloud layer", "CCY", "", null, false, true));
+        new VertCoordUnit(218, "Layer between two temperature levels", "DEGY", "K", null, false, true));
+    levelTypesMap.put(222, new VertCoordUnit(222, "Middle cloud bottom level", "MCBL", "", null, false, false));
+    levelTypesMap.put(223, new VertCoordUnit(223, "Middle cloud top level", "MCTL", "", null, false, false));
+    levelTypesMap.put(224, new VertCoordUnit(224, "Middle cloud layer", "MCY", "", null, false, true));
+    levelTypesMap.put(232, new VertCoordUnit(232, "High cloud bottom level", "HCBL", "", null, false, false));
+    levelTypesMap.put(233, new VertCoordUnit(233, "High cloud top level", "HCTL", "", null, false, false));
+    levelTypesMap.put(234, new VertCoordUnit(234, "High cloud layer", "HCY", "", null, false, true));
+    levelTypesMap.put(242, new VertCoordUnit(242, "Convective cloud bottom level", "CCBL", "", null, false, false));
+    levelTypesMap.put(243, new VertCoordUnit(243, "Convective cloud top level", "CCTL", "", null, false, false));
+    levelTypesMap.put(244, new VertCoordUnit(244, "Convective cloud layer", "CCY", "", null, false, true));
     levelTypesMap.put(246,
-        new VertCoordType(246, "Specified height level above MSL", "HTIO", "km", "msl", false, false));
+        new VertCoordUnit(246, "Specified height level above MSL", "HTIO", "km", "msl", false, false));
     levelTypesMap.put(251,
-        new VertCoordType(251, "Layer between ground and 850 hPa level", "PTLR", "", null, false, true));
+        new VertCoordUnit(251, "Layer between ground and 850 hPa level", "PTLR", "", null, false, true));
     levelTypesMap.put(252,
-        new VertCoordType(252, "Layer between lowest soil layer (layer 112) and 800cm", "SBLR", "", null, false, true));
+        new VertCoordUnit(252, "Layer between lowest soil layer (layer 112) and 800cm", "SBLR", "", null, false, true));
   }
 
 }

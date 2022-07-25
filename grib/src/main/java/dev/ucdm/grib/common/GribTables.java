@@ -5,7 +5,7 @@
 
 package dev.ucdm.grib.common;
 
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public interface GribTables {
   @Nullable
   GribStatType getStatType(int intvType);
 
-  VertCoordType getVertUnit(int code);
+  VertCoordUnit getVertUnit(int code);
 
   @Nullable
   String getGeneratingProcessName(int code);

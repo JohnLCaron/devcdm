@@ -154,7 +154,7 @@ public class Grib1IndexProto {
       return false;
     }
 
-    // write to the index file TODO write to temp file and switch
+    // write to the index file TODO write to temp file and switch?
     try (FileOutputStream fout = new FileOutputStream(idxFile)) {
       //// header message
       fout.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));

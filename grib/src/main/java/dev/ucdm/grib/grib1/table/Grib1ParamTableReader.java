@@ -110,7 +110,7 @@ public class Grib1ParamTableReader {
   }
 
   public int getKey() {
-    return Grib1ParamTables.makeKey(center_id, subcenter_id, version);
+    return Grib1ParamLookup.makeKey(center_id, subcenter_id, version);
   }
 
   public String getPath() {

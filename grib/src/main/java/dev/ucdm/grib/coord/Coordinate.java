@@ -18,19 +18,17 @@ import java.util.List;
 public interface Coordinate {
   /** Coordinate types */
   enum Type {
-    runtime(0, AxisType.RunTime), //
-    time(1, AxisType.Time), //
-    timeIntv(1, AxisType.Time), //
-    vert(3, AxisType.Height), // TODO what about Pressure or GeoZ ??
-    time2D(1, AxisType.TimeOffset), //
-    ens(2, AxisType.Ensemble); // cant change order, protobuf uses the ordinal
+    runtime(0), //
+    time(1), //
+    timeIntv(1), //
+    vert(3), //
+    time2D(1), //
+    ens(2);
 
     public final int order;
-    public final AxisType axisType;
 
-    Type(int order, AxisType axisType) {
+    Type(int order) {
       this.order = order;
-      this.axisType = axisType;
     }
   }
 

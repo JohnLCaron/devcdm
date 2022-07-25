@@ -1,10 +1,9 @@
 package dev.ucdm.grib.grib1.record
 
 import com.google.common.truth.Truth
-import dev.ucdm.core.api.CdmFile
 import dev.ucdm.grib.common.GribStatType
 import dev.ucdm.grib.grib1.table.Grib1Customizer
-import dev.ucdm.grib.grib1.table.Grib1ParamTables
+import dev.ucdm.grib.grib1.table.Grib1ParamLookup
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.params.ParameterizedTest
@@ -14,7 +13,7 @@ import java.io.IOException
 import java.util.stream.Stream
 
 class TestGrib1ParamTime {
-    val cust = Grib1Customizer.factory(0, 0, 0, Grib1ParamTables())
+    val cust = Grib1Customizer.factory(0, 0, 0, Grib1ParamLookup())
 
     companion object {
         @Throws(IOException::class)

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.util.GribResourceReader;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
 import org.jdom2.Element;
@@ -31,13 +31,13 @@ public class NcepTables extends Grib1Customizer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
   private static Map<Integer, String> genProcessMap; // shared by all instances
-  private static Map<Integer, VertCoordType> levelTypesMap; // shared by all instances
+  private static Map<Integer, VertCoordUnit> levelTypesMap; // shared by all instances
 
-  NcepTables(Grib1ParamTables tables) {
+  NcepTables(Grib1ParamLookup tables) {
     super(7, tables);
   }
 
-  protected NcepTables(int center, Grib1ParamTables tables) {
+  protected NcepTables(int center, Grib1ParamLookup tables) {
     super(center, tables);
   }
 
@@ -214,7 +214,7 @@ public class NcepTables extends Grib1Customizer {
   }
 
   ///////////////////////////////////////// levels
-  protected VertCoordType getLevelType(int code) {
+  protected VertCoordUnit getLevelType(int code) {
     if (code < 129) {
       // Dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
       return super.getLevelType(code);
@@ -225,7 +225,7 @@ public class NcepTables extends Grib1Customizer {
     if (levelTypesMap == null)
       return super.getLevelType(code);
 
-    VertCoordType levelType = levelTypesMap.get(code);
+    VertCoordUnit levelType = levelTypesMap.get(code);
     if (levelType != null)
       return levelType;
 

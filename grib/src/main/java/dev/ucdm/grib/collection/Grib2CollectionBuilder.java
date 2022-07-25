@@ -264,7 +264,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
         }
 
-        VertCoordType vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
+        VertCoordUnit vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
           coordNBuilder.addBuilder(
                   new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));

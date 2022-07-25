@@ -194,7 +194,7 @@ public class NumericCompare {
 }
 
 
-// TODO consider using this instead of Misc
+// consider using this instead of Misc
 // https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
 // bool nearly_equal(
 // float a, float b,
