@@ -561,7 +561,7 @@ class GribIospBuilder {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use
+            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx); // use
             // upper bounds for coord value
             timeIdx++;
           }
@@ -573,7 +573,7 @@ class GribIospBuilder {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for
+            data[count++] = timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx); // use upper bounds for
             // coord value
           }
         }
@@ -604,9 +604,9 @@ class GribIospBuilder {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes * 2 + timeIdx] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes * 2 + timeIdx] = timeUnit.getValue() * tinv.bounds1() + time2D.getOffset(runIdx);
             data[runIdx * ntimes * 2 + timeIdx + 1] =
-                timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+                timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx);
             timeIdx += 2;
           }
         }
@@ -617,8 +617,8 @@ class GribIospBuilder {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.bounds1() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.bounds2() + time2D.getOffset(runIdx);
           }
         }
         break;
@@ -694,7 +694,7 @@ class GribIospBuilder {
 
     // use upper bounds for coord value
     for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getBounds2();
+      data[count++] = tinv.bounds2();
     }
     v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes}, data));
 
@@ -710,8 +710,8 @@ class GribIospBuilder {
     data = new double[ntimes * 2];
     count = 0;
     for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
-      data[count++] = tinv.getBounds1();
-      data[count++] = tinv.getBounds2();
+      data[count++] = tinv.bounds1();
+      data[count++] = tinv.bounds2();
     }
     bounds.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes, 2}, data));
 
@@ -736,10 +736,10 @@ class GribIospBuilder {
     }
 
     v.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
-    VertCoordType vu = vc.getVertUnit();
+    VertCoordUnit vu = vc.getVertUnit();
     if (vu != null) {
-      if (vu.getDatum() != null) {
-        v.addAttribute(new Attribute("datum", vu.getDatum()));
+      if (vu.datum() != null) {
+        v.addAttribute(new Attribute("datum", vu.datum()));
       }
     }
 
@@ -792,7 +792,7 @@ class GribIospBuilder {
     int[] data = new int[n];
     int count = 0;
     for (EnsCoordValue ecc : ec.getEnsSorted()) {
-      data[count++] = ecc.getEnsMember();
+      data[count++] = ecc.ensMember();
     }
     v.setSourceData(Arrays.factory(ArrayType.INT, new int[] {n}, data));
   }
@@ -822,9 +822,9 @@ class GribIospBuilder {
       int countb = 0;
       for (Object offset : offsets) {
         TimeCoordIntvValue tinv = (TimeCoordIntvValue) offset;
-        midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
-        bounds[countb++] = tinv.getBounds1();
-        bounds[countb++] = tinv.getBounds2();
+        midpoints[count++] = (tinv.bounds1() + tinv.bounds2()) / 2.0;
+        bounds[countb++] = tinv.bounds1();
+        bounds[countb++] = tinv.bounds2();
       }
     } else {
       int count = 0;
@@ -888,9 +888,9 @@ class GribIospBuilder {
           int count = offsetidx * noffsets;
           int countb = 2 * offsetidx * noffsets;
           for (TimeCoordIntvValue tinv : timeCoord.getTimeIntervals()) {
-            midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
-            bounds[countb++] = tinv.getBounds1();
-            bounds[countb++] = tinv.getBounds2();
+            midpoints[count++] = (tinv.bounds1() + tinv.bounds2()) / 2.0;
+            bounds[countb++] = tinv.bounds1();
+            bounds[countb++] = tinv.bounds2();
           }
           offsetidx++;
         }

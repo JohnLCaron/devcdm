@@ -1,57 +1,17 @@
 package dev.ucdm.grib.coord;
 
-import java.util.Objects;
-import javax.annotation.Nonnull;
-import dev.ucdm.array.Immutable;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarPeriod;
 
-/**
- * Time intervals represented by start and end CalendarDate.
- */
-@Immutable
-public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue> {
-
-  private final CalendarDate start, end;
+/** Time intervals represented by start and end CalendarDate. */
+public record TimeCoordIntvDateValue(CalendarDate start, CalendarDate end) implements Comparable<TimeCoordIntvDateValue> {
 
   public TimeCoordIntvDateValue(CalendarPeriod period, CalendarDate end) {
-    this.end = end;
-    this.start = end.add(-1, period);
+    this(end.add(-1, period), end);
   }
 
   public TimeCoordIntvDateValue(CalendarDate start, CalendarPeriod period) {
-    this.start = start;
-    this.end = start.add(period);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    TimeCoordIntvDateValue that = (TimeCoordIntvDateValue) o;
-    return start.equals(that.start) && end.equals(that.end);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(start, end);
-  }
-
-  public TimeCoordIntvDateValue(CalendarDate start, CalendarDate end) {
-    this.start = start;
-    this.end = end;
-  }
-
-  public CalendarDate getStart() {
-    return start;
-  }
-
-  public CalendarDate getEnd() {
-    return end;
+    this(start, start.add(period));
   }
 
   // Calculate the offset in units of timeUnit from the given reference date?
@@ -65,7 +25,7 @@ public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue
     return new TimeCoordIntvValue(startOffset, endOffset);
   }
 
-  public int compareTo(@Nonnull TimeCoordIntvDateValue that) { // first compare start, then end
+  public int compareTo(TimeCoordIntvDateValue that) { // first compare start, then end
     int c1 = start.compareTo(that.start);
     return (c1 == 0) ? end.compareTo(that.end) : c1;
   }

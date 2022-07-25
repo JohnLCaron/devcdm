@@ -129,7 +129,7 @@ public class CoordinatePartitionUnionizer {
       return coord.getTimeIntervals();
     List<TimeCoordIntvValue> result = new ArrayList<>();
     for (TimeCoordIntvValue tinv : coord.getTimeIntervals()) {
-      if (!intvFilter.filter(vi.getVarid(), tinv.getBounds1(), tinv.getBounds2(), Integer.MIN_VALUE)) {
+      if (!intvFilter.filter(vi.getVarid(), tinv.bounds1(), tinv.bounds2(), Integer.MIN_VALUE)) {
         result.add(tinv);
       }
     }

@@ -69,7 +69,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public int estMemorySize() {
-    return 616 + getSize() * (24); // TODO wrong
+    return 616 + getSize() * (24); // LOOK probably wrong
   }
 
   @Override
@@ -86,7 +86,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     // are they the same length ?
     int firstValue = -1;
     for (TimeCoordIntvValue tinv : timeIntervals) {
-      int value = (tinv.getBounds2() - tinv.getBounds1());
+      int value = (tinv.bounds2() - tinv.bounds1());
       if (firstValue < 0)
         firstValue = value;
       else if (value != firstValue)
@@ -105,8 +105,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   @Override
   public CalendarDateRange makeCalendarDateRange() {
     CalendarDateUnit cdu = CalendarDateUnit.of(timeUnit, false, refDate);
-    CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(0).getBounds2());
-    CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(getSize() - 1).getBounds2());
+    CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(0).bounds2());
+    CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(getSize() - 1).bounds2());
     return CalendarDateRange.of(start, end);
   }
 
@@ -124,7 +124,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   public void showCoords(Formatter info) {
     info.format("Time Interval offsets: (%s) ref=%s%n", getTimeUnit(), getRefDate());
     for (TimeCoordIntvValue cd : timeIntervals)
-      info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
+      info.format("   (%3d - %3d)  %d%n", cd.bounds1(), cd.bounds2(), cd.bounds2() - cd.bounds1());
   }
 
   @Override
@@ -135,10 +135,10 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     List<TimeCoordIntvValue> offsets = getTimeIntervals();
     for (int i = 0; i < offsets.size(); i++) {
-      int intv = offsets.get(i).getBounds2() - offsets.get(i).getBounds1();
+      int intv = offsets.get(i).bounds2() - offsets.get(i).bounds1();
       counters.count("intv", intv);
       if (i < offsets.size() - 1) {
-        int resol = offsets.get(i + 1).getBounds1() - offsets.get(i).getBounds1();
+        int resol = offsets.get(i + 1).bounds1() - offsets.get(i).bounds1();
         counters.count("resol", resol);
       }
     }

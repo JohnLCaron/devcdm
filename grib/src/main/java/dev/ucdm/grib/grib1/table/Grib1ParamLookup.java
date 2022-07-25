@@ -31,13 +31,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p/>
  * Allow different table versions in the same file.
  * Allow overriding standard grib1 tables on the dataset level.
- *
- * @author caron
- * @since 9/13/11
  */
 @Immutable
-public class Grib1ParamTables {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
+public class Grib1ParamLookup {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamLookup.class);
 
   private static final Object lock = new Object();
   private static int standardTablesStart; // heres where the standard tables start - keep track so user additions
@@ -86,7 +83,7 @@ public class Grib1ParamTables {
    * @param strict true for strict mode.
    */
   public static void setStrict(boolean strict) {
-    Grib1ParamTables.strict = strict;
+    Grib1ParamLookup.strict = strict;
   }
 
   public static Grib1ParamTableReader getDefaultWmoTable() {
@@ -125,9 +122,9 @@ public class Grib1ParamTables {
    * @return Grib1Tables
    * @throws IOException on read error
    */
-  public static Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
+  public static Grib1ParamLookup factory(String paramTablePath, String lookupTablePath) throws IOException {
     if (paramTablePath == null && lookupTablePath == null)
-      return new Grib1ParamTables();
+      return new Grib1ParamLookup();
     Lookup lookup = null;
     Grib1ParamTableReader override = null;
 
@@ -147,7 +144,7 @@ public class Grib1ParamTables {
         throw new FileNotFoundException("cant read lookup table=" + lookupTablePath);
     }
 
-    return new Grib1ParamTables(lookup, override);
+    return new Grib1ParamLookup(lookup, override);
   }
 
   /**
@@ -156,10 +153,10 @@ public class Grib1ParamTables {
    * @param paramTableElem parameter table in XML
    * @return Grib1Tables
    */
-  public static Grib1ParamTables factory(org.jdom2.Element paramTableElem) {
+  public static Grib1ParamLookup factory(org.jdom2.Element paramTableElem) {
     if (paramTableElem == null)
-      return new Grib1ParamTables();
-    return new Grib1ParamTables(null, new Grib1ParamTableReader(paramTableElem));
+      return new Grib1ParamLookup();
+    return new Grib1ParamLookup(null, new Grib1ParamTableReader(paramTableElem));
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -167,14 +164,14 @@ public class Grib1ParamTables {
   private final Lookup lookup; // if lookup table was set
   private final Grib1ParamTableReader override; // Dataset specific override.
 
-  // This is the "StandardLookup". TODO rename Grib1ParamTables -> Grib1ParamLookup.
-  public Grib1ParamTables() {
+  // This is the "StandardLookup".
+  public Grib1ParamLookup() {
     this.lookup = null;
     this.override = null;
   }
 
   // Possible overrides of the StandardLookup.
-  private Grib1ParamTables(Lookup lookup, Grib1ParamTableReader override) {
+  private Grib1ParamLookup(Lookup lookup, Grib1ParamTableReader override) {
     this.lookup = lookup;
     this.override = override;
   }

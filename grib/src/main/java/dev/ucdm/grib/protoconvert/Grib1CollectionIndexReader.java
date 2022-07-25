@@ -13,7 +13,7 @@ import dev.ucdm.grib.grib1.record.Grib1Gds;
 import dev.ucdm.grib.grib1.record.Grib1GdsPredefined;
 import dev.ucdm.grib.grib1.record.Grib1SectionGridDefinition;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
-import dev.ucdm.grib.grib1.table.Grib1ParamTables;
+import dev.ucdm.grib.grib1.table.Grib1ParamLookup;
 import dev.ucdm.grib.protogen.GribCollectionProto;
 
 import java.io.IOException;
@@ -43,9 +43,9 @@ public class Grib1CollectionIndexReader extends GribCollectionIndexReader {
 
   public GribTables makeCustomizer() throws IOException {
     /* so an iosp message must be received before the open()*/
-    Grib1ParamTables ptables =
-        (gribConfig.paramTable != null) ? Grib1ParamTables.factory(gribConfig.paramTable)
-            : Grib1ParamTables.factory(gribConfig.paramTablePath, gribConfig.lookupTablePath);
+    Grib1ParamLookup ptables =
+        (gribConfig.paramTable != null) ? Grib1ParamLookup.factory(gribConfig.paramTable)
+            : Grib1ParamLookup.factory(gribConfig.paramTablePath, gribConfig.lookupTablePath);
     this.cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.version, ptables);
     return cust;
   }

@@ -13,7 +13,7 @@ package dev.ucdm.grib.grib1.table;
  */
 public class NcarTables extends Grib1Customizer {
 
-  NcarTables(Grib1ParamTables tables) {
+  NcarTables(Grib1ParamLookup tables) {
     super(60, tables);
   }
 

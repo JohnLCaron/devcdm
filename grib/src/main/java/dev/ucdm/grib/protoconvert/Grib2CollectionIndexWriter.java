@@ -89,7 +89,6 @@ public class Grib2CollectionIndexWriter extends GribCollectionIndexWriter {
     boolean deleteOnClose = false;
 
     if (idxFile.exists()) {
-      // TODO RandomAccessFile.eject(idxFile.getPath());
       if (!idxFile.delete()) {
         logger.error("gc2 cant delete index file {}", idxFile.getPath());
       }

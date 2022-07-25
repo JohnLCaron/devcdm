@@ -99,7 +99,7 @@ public record Grib1ParamTime(Grib1Customizer cust, int timeRangeIndicator, boole
        * time (hour, minute) given in the reference time, for all the days included in the P2 period.
        * The units of P2 are given by the contents of octet 18 and Code table 4
        */
-      case 51: // TODO ??
+      case 51: // LOOK we dont really know if this is right
         forecastTime = p2;
         break;
 

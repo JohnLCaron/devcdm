@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.wmo.CommonCodeTable;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import dev.ucdm.grib.grib1.record.Grib1ParamLevel;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
 import dev.ucdm.grib.grib1.iosp.Grib1Parameter;
@@ -39,14 +39,14 @@ import java.util.Map;
 public class Grib1Customizer implements GribTables {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
 
-  public static Grib1Customizer factory(Grib1Record proto, Grib1ParamTables tables) {
+  public static Grib1Customizer factory(Grib1Record proto, Grib1ParamLookup tables) {
     int center = proto.getPDSsection().getCenter();
     int subcenter = proto.getPDSsection().getSubCenter();
     int version = proto.getPDSsection().getTableVersion();
     return factory(center, subcenter, version, tables);
   }
 
-  public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
+  public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamLookup tables) {
     return switch (center) {
       case 7 -> new NcepTables(tables);
       case 9 -> new NcepRfcTables(tables);
@@ -65,11 +65,11 @@ public class Grib1Customizer implements GribTables {
 
   ///////////////////////////////////////
   private final int center;
-  private final Grib1ParamTables tables;
+  private final Grib1ParamLookup tables;
 
-  protected Grib1Customizer(int center, Grib1ParamTables tables) {
+  protected Grib1Customizer(int center, Grib1ParamLookup tables) {
     this.center = center;
-    this.tables = (tables == null) ? new Grib1ParamTables() : tables;
+    this.tables = (tables == null) ? new Grib1ParamLookup() : tables;
 
     synchronized (Grib1Customizer.class) {
       if (wmoTable3 == null)
@@ -133,7 +133,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   @Override
-  public VertCoordType getVertUnit(int code) {
+  public VertCoordUnit getVertUnit(int code) {
     return makeVertUnit(code);
   }
 
@@ -143,45 +143,44 @@ public class Grib1Customizer implements GribTables {
 
   // below are the methods a subclass may need to override for levels
 
-  protected VertCoordType makeVertUnit(int code) {
+  protected VertCoordUnit makeVertUnit(int code) {
     return getLevelType(code);
   }
 
   @Override
   public String getLevelNameShort(int levelType) {
-    VertCoordType lt = getLevelType(levelType);
-    String result = lt.getAbbrev();
-    if (result == null)
-      result = "unknownLevel" + levelType;
-    return result;
+    VertCoordUnit lt = getLevelType(levelType);
+    String result = lt.abbrev();
+    return (result == null) ?"unknownLevel" + levelType : result;
   }
 
+  @Nullable
   public String getLevelDescription(int levelType) {
-    VertCoordType lt = getLevelType(levelType);
-    return lt.getDesc();
+    VertCoordUnit lt = getLevelType(levelType);
+    return lt.description();
   }
 
   public boolean isLayer(int levelType) {
-    VertCoordType lt = getLevelType(levelType);
+    VertCoordUnit lt = getLevelType(levelType);
     return lt.isLayer();
   }
 
   // only for 3D
   public boolean isPositiveUp(int levelType) {
-    VertCoordType lt = getLevelType(levelType);
+    VertCoordUnit lt = getLevelType(levelType);
     return lt.isPositiveUp();
   }
 
   // only for 3D
   public String getLevelUnits(int levelType) {
-    VertCoordType lt = getLevelType(levelType);
-    return lt.getUnits();
+    VertCoordUnit lt = getLevelType(levelType);
+    return lt.units();
   }
 
   // only for 3D
   public String getLevelDatum(int levelType) {
-    VertCoordType lt = getLevelType(levelType);
-    return lt.getDatum();
+    VertCoordUnit lt = getLevelType(levelType);
+    return lt.datum();
   }
 
   /////////////////////////////////////////////
@@ -199,24 +198,24 @@ public class Grib1Customizer implements GribTables {
 
   ////////////////////////////////////////////////////////////////////////
 
-  private static Map<Integer, VertCoordType> wmoTable3; // shared by all instances
+  private static Map<Integer, VertCoordUnit> wmoTable3; // shared by all instances
 
-  protected VertCoordType getLevelType(int code) {
-    VertCoordType result = wmoTable3.get(code);
+  protected VertCoordUnit getLevelType(int code) {
+    VertCoordUnit result = wmoTable3.get(code);
     if (result == null)
-      result = new VertCoordType(code, "unknownLayer" + code, null, "unknownLayer" + code, null, false, false);
+      result = new VertCoordUnit(code, "unknownLayer" + code, null, "unknownLayer" + code, null, false, false);
     return result;
   }
 
   @Nullable
-  protected synchronized Map<Integer, VertCoordType> readTable3(String path) {
+  protected synchronized Map<Integer, VertCoordUnit> readTable3(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
       builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      Map<Integer, VertCoordType> result = new HashMap<>(200);
+      Map<Integer, VertCoordUnit> result = new HashMap<>(200);
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -226,7 +225,7 @@ public class Grib1Customizer implements GribTables {
         String datum = elem1.getChildText("datum");
         boolean isLayer = elem1.getChild("isLayer") != null;
         boolean isPositiveUp = elem1.getChild("isPositiveUp") != null;
-        VertCoordType lt = new VertCoordType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
+        VertCoordUnit lt = new VertCoordUnit(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
         result.put(code, lt);
       }
 

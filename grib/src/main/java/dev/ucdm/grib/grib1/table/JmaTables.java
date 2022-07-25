@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.ucdm.grib.common.GribStatType;
 import dev.ucdm.grib.common.util.GribNumbers;
-import dev.ucdm.grib.coord.VertCoordType;
+import dev.ucdm.grib.coord.VertCoordUnit;
 import dev.ucdm.grib.grib1.record.Grib1ParamLevel;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
@@ -24,9 +24,9 @@ import java.util.Map;
  * @since 1/27/2015
  */
 public class JmaTables extends Grib1Customizer {
-  private static Map<Integer, VertCoordType> levelTypesMap; // shared by all instances
+  private static Map<Integer, VertCoordUnit> levelTypesMap; // shared by all instances
 
-  JmaTables(Grib1ParamTables tables) {
+  JmaTables(Grib1ParamLookup tables) {
     super(34, tables);
   }
 
@@ -150,10 +150,10 @@ public class JmaTables extends Grib1Customizer {
     };
   }
 
-  protected VertCoordType getLevelType(int code) {
+  protected VertCoordUnit getLevelType(int code) {
     if (levelTypesMap == null)
       makeLevelTypesMap();
-    VertCoordType levelType = levelTypesMap.get(code);
+    VertCoordUnit levelType = levelTypesMap.get(code);
     if (levelType != null)
       return levelType;
     return super.getLevelType(code);
@@ -163,11 +163,11 @@ public class JmaTables extends Grib1Customizer {
     levelTypesMap = new HashMap<>(10);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
     levelTypesMap.put(100,
-        new VertCoordType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false)); // 3D
-    levelTypesMap.put(211, new VertCoordType(211, "Entire soil", "entire_soil", "", null, false, false));
+        new VertCoordUnit(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false)); // 3D
+    levelTypesMap.put(211, new VertCoordUnit(211, "Entire soil", "entire_soil", "", null, false, false));
     levelTypesMap.put(212,
-        new VertCoordType(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
-    levelTypesMap.put(213, new VertCoordType(213, "Underground layer number of land surface model", "underground_layer",
+        new VertCoordUnit(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
+    levelTypesMap.put(213, new VertCoordUnit(213, "Underground layer number of land surface model", "underground_layer",
         "layer", null, false, false)); // 3D
   }
 

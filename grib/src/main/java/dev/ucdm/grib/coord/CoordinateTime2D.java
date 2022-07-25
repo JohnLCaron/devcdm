@@ -308,10 +308,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       counters.add("intv");
       for (int i = 0; i < offsets.size(); i++) {
         TimeCoordIntvValue tinv = (TimeCoordIntvValue) offsets.get(i);
-        int intv = tinv.getBounds2() - tinv.getBounds1();
+        int intv = tinv.bounds2() - tinv.bounds1();
         counters.count("intv", intv);
         if (i > 0) {
-          int resol = tinv.getBounds1() - ((TimeCoordIntvValue) offsets.get(i - 1)).getBounds1();
+          int resol = tinv.bounds1() - ((TimeCoordIntvValue) offsets.get(i - 1)).bounds1();
           counters.count("resol", resol);
         }
       }
@@ -732,7 +732,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       if (time != null) {
         return time;
       } else {
-        return tinv.getBounds2();
+        return tinv.bounds2();
       }
     }
 

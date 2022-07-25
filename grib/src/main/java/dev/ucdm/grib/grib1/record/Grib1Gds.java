@@ -752,7 +752,6 @@ public abstract class Grib1Gds {
 
     protected float la1, lo1, lov, dX, dY;
     protected int projCenterFlag;
-    // private final float lad = (float) 60.0; // TODO WTF?
 
     protected PolarStereographic(int template) {
       super(template);
