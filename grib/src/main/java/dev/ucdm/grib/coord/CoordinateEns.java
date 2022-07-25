@@ -21,12 +21,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Ensemble coordinates
- *
- * @author caron
- * @since 2/22/14
- */
+/** Ensemble coordinates */
 @Immutable
 public class CoordinateEns implements Coordinate {
   private final List<EnsCoordValue> ensSorted;

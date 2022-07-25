@@ -13,32 +13,8 @@ import dev.ucdm.array.Immutable;
 /**
  * Level information contained in a particular PDS.
  * WMO Table 3
- *
- * @author caron
- * @since 1/13/12
  */
-
-@Immutable
-public class Grib1ParamLevel {
-  private final Grib1Customizer cust;
-  private final int levelType; // code Table 3 (octet 10)
-  private final float value1;
-  private final float value2;
-
-  /**
-   * Allows center specific parsing
-   *
-   * @param cust customized for this center/subcenter
-   * @param levelType the level type
-   * @param value1 first level value
-   * @param value2 second level value
-   */
-  public Grib1ParamLevel(Grib1Customizer cust, int levelType, float value1, float value2) {
-    this.cust = cust;
-    this.levelType = levelType;
-    this.value1 = value1;
-    this.value2 = value2;
-  }
+public record Grib1ParamLevel(Grib1Customizer cust, int levelType, float value1, float value2) {
 
   /**
    * Implements tables 3 and 3a.
@@ -46,11 +22,11 @@ public class Grib1ParamLevel {
    * @param cust customized for this center/subcenter
    * @param pds the Grib1SectionProductDefinition
    */
-  public Grib1ParamLevel(Grib1Customizer cust, Grib1SectionProductDefinition pds) {
-    this.cust = cust;
+  public static Grib1ParamLevel factory(Grib1Customizer cust, Grib1SectionProductDefinition pds) {
 
     // default surface values
-    levelType = pds.getLevelType();
+    float value1, value2;
+    int levelType = pds.getLevelType();
     int pds11 = pds.getLevelValue1();
     int pds12 = pds.getLevelValue2();
     int pds1112 = pds11 << 8 | pds12;
@@ -140,6 +116,8 @@ public class Grib1ParamLevel {
         value2 = 1100 - pds12;
         break;
     }
+
+    return new Grib1ParamLevel(cust, levelType, value1, value2);
   }
 
   /**

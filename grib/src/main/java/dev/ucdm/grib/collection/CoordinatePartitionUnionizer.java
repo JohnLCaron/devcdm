@@ -84,7 +84,7 @@ public class CoordinatePartitionUnionizer {
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           if (time2DBuilder == null) {
             time2DBuilder = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(),
-                    coord.getCode(), false, logger);
+                    coord.getCode(), false);
           }
           time2DBuilder.addAll(time2D);
           // debug

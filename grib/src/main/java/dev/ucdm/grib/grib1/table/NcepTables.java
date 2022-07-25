@@ -26,9 +26,6 @@ import java.util.Map;
 /**
  * NCEP overrides of GRIB tables
  * TODO: Make into a singleton?
- *
- * @author caron
- * @since 1/13/12
  */
 public class NcepTables extends Grib1Customizer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
@@ -71,7 +68,6 @@ public class NcepTables extends Grib1Customizer {
     boolean isInterval;
 
     switch (timeRangeIndicator) {
-
       case 128:
       case 129:
       case 130:
@@ -106,89 +102,75 @@ public class NcepTables extends Grib1Customizer {
   @Override
   public String getTimeTypeName(int timeRangeIndicator) {
 
-    switch (timeRangeIndicator) {
-      case 128:
+    return switch (timeRangeIndicator) {
+      case 128 ->
         /*
          * Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
          * Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
          * Number in Ave = number of forecasts used.
          */
-        return "Average of forecast accumulations at 24 hour intervals, period = (RT + P1) to (RT + P2)";
-
-      case 129:
+              "Average of forecast accumulations at 24 hour intervals, period = (RT + P1) to (RT + P2)";
+      case 129 ->
         /*
          * Average of successive forecast accumulations. P1 = start of accumulation period.
          * P2 = end of accumulation period. Reference time is the start time of the first forecast,
          * other forecasts at (P2 - P1) intervals. Number in Ave = number of forecasts used
          */
-        return "Average of successive forecast accumulations, period = (RT + P1) to (RT + P2)";
-
-      case 130:
+              "Average of successive forecast accumulations, period = (RT + P1) to (RT + P2)";
+      case 130 ->
         /*
          * Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
          * Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
          * Number in Ave = number of forecast used
          */
-        return "Average of forecast averages at 24 hour intervals, period = (RT + P1) to (RT + P2)";
-
-      case 131:
+              "Average of forecast averages at 24 hour intervals, period = (RT + P1) to (RT + P2)";
+      case 131 ->
         /*
          * Average of successive forecast averages. P1 = start of averaging period. P2 = end of averaging period.
          * Reference time is the start time of the first forecast, other forecasts at (P2 - P1) intervals.
          * Number in Ave = number of forecasts used
          */
-        return "Average of successive forecast averages, period = (RT + P1) to (RT + P2)";
-
-      case 132:
-        return "Climatological Average of N analyses, each a year apart, starting from initial time R and for the period from R+P1 to R+P2.";
-
-      case 133:
-        return "Climatological Average of N forecasts, each a year apart, starting from initial time R and for the period from R+P1 to R+P2.";
-
-      case 134:
-        return "Climatological Root Mean Square difference between N forecasts and their verifying analyses, each a year apart, starting with initial time R and for the period from R+P1 to R+P2.";
-
-      case 135:
-        return "Climatological Standard Deviation of N forecasts from the mean of the same N forecasts, for forecasts one year apart. ";
-
-      case 136:
-        return "Climatological Standard Deviation of N analyses from the mean of the same N analyses, for analyses one year apart.";
-
-      case 137:
+              "Average of successive forecast averages, period = (RT + P1) to (RT + P2)";
+      case 132 ->
+              "Climatological Average of N analyses, each a year apart, starting from initial time R and for the period from R+P1 to R+P2.";
+      case 133 ->
+              "Climatological Average of N forecasts, each a year apart, starting from initial time R and for the period from R+P1 to R+P2.";
+      case 134 ->
+              "Climatological Root Mean Square difference between N forecasts and their verifying analyses, each a year apart, starting with initial time R and for the period from R+P1 to R+P2.";
+      case 135 ->
+              "Climatological Standard Deviation of N forecasts from the mean of the same N forecasts, for forecasts one year apart. ";
+      case 136 ->
+              "Climatological Standard Deviation of N analyses from the mean of the same N analyses, for analyses one year apart.";
+      case 137 ->
         /*
          * Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
          * Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
          * Number in Ave = number of forecast used
          */
-        return "Average of forecast accumulations at 6 hour intervals, period = (RT + P1) to (RT + P2)";
-
-      case 138:
+              "Average of forecast accumulations at 6 hour intervals, period = (RT + P1) to (RT + P2)";
+      case 138 ->
         /*
          * Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
          * Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
          * Number in Ave = number of forecast used
          */
-        return "Average of forecast averages at 6 hour intervals, period = (RT + P1) to (RT + P2)";
-
-      case 139:
+              "Average of forecast averages at 6 hour intervals, period = (RT + P1) to (RT + P2)";
+      case 139 ->
         /*
          * Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
          * Reference time is the start time of the first forecast, other forecasts at 12-hour intervals.
          * Number in Ave = number of forecast used
          */
-        return "Average of forecast accumulations at 12 hour intervals, period = (RT + P1) to (RT + P2)";
-
-      case 140:
+              "Average of forecast accumulations at 12 hour intervals, period = (RT + P1) to (RT + P2)";
+      case 140 ->
         /*
          * Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
          * Reference time is the start time of the first forecast, other forecasts at 12-hour intervals.
          * Number in Ave = number of forecast used
          */
-        return "Average of forecast averages at 12 hour intervals, period = (RT + P1) to (RT + P2)";
-
-      default:
-        return super.getTimeTypeName(timeRangeIndicator);
-    }
+              "Average of forecast averages at 12 hour intervals, period = (RT + P1) to (RT + P2)";
+      default -> super.getTimeTypeName(timeRangeIndicator);
+    };
   }
 
   //////////////////////////////////////////// genProcess

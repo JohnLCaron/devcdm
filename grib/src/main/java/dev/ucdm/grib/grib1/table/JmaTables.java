@@ -115,37 +115,23 @@ public class JmaTables extends Grib1Customizer {
 
   @Override
   public String getTimeTypeName(int timeRangeIndicator) {
-    switch (timeRangeIndicator) {
-      case 128:
-        return "Average over the days in the month";
-      case 129:
-        return "Temporal variance of N forecasts at 24 hour intervals";
-      case 130:
-        return "Forecast, 6-hour averaged, then one-month averaged";
-      case 131:
-        return "Temporal variance of N forecasts at intervals of P1 - P2";
-      case 132:
-        return "Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0)";
-
-      default:
-        return super.getTimeTypeName(timeRangeIndicator);
-    }
+    return switch (timeRangeIndicator) {
+      case 128 -> "Average over the days in the month";
+      case 129 -> "Temporal variance of N forecasts at 24 hour intervals";
+      case 130 -> "Forecast, 6-hour averaged, then one-month averaged";
+      case 131 -> "Temporal variance of N forecasts at intervals of P1 - P2";
+      case 132 -> "Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0)";
+      default -> super.getTimeTypeName(timeRangeIndicator);
+    };
   }
 
   @Override
   public GribStatType getStatType(int timeRangeIndicator) {
-    switch (timeRangeIndicator) {
-      case 128:
-      case 130:
-        return GribStatType.Average;
-
-      case 129:
-      case 131:
-      case 132:
-        return GribStatType.Variance;
-      default:
-        return super.getStatType(timeRangeIndicator);
-    }
+    return switch (timeRangeIndicator) {
+      case 128, 130 -> GribStatType.Average;
+      case 129, 131, 132 -> GribStatType.Variance;
+      default -> super.getStatType(timeRangeIndicator);
+    };
   }
 
 
@@ -157,20 +143,11 @@ public class JmaTables extends Grib1Customizer {
     int pds12 = pds.getLevelValue2();
     int pds1112 = pds11 << 8 | pds12;
 
-    switch (levelType) {
-      case 211:
-      case 212:
-        return new Grib1ParamLevel(this, levelType, GribNumbers.MISSING, GribNumbers.MISSING);
-
-      case 100:
-        return new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
-
-      case 213:
-        return new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
-
-      default:
-        return new Grib1ParamLevel(this, pds);
-    }
+    return switch (levelType) {
+      case 211, 212 -> new Grib1ParamLevel(this, levelType, GribNumbers.MISSING, GribNumbers.MISSING);
+      case 100, 213 -> new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
+      default -> Grib1ParamLevel.factory(this, pds);
+    };
   }
 
   protected VertCoordType getLevelType(int code) {

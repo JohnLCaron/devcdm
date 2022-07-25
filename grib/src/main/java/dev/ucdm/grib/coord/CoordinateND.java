@@ -11,12 +11,7 @@ import dev.ucdm.array.Section;
 import dev.ucdm.array.Immutable;
 import java.util.*;
 
-/**
- * N-dimensional coordinates and a SparseArray that tracks if data is available.
- *
- * @author caron
- * @since 11/27/13
- */
+/** N-dimensional coordinates and a SparseArray that tracks if data is available. */
 @Immutable
 public class CoordinateND<T> {
 
@@ -61,8 +56,8 @@ public class CoordinateND<T> {
   ////////////////////
 
   public static class Builder<T> {
-    private List<CoordinateBuilder<T>> builders;
-    private List<Coordinate> coordb = new ArrayList<>();
+    private final List<CoordinateBuilder<T>> builders;
+    private final List<Coordinate> coordb = new ArrayList<>();
 
     public Builder() {
       builders = new ArrayList<>();
@@ -78,7 +73,7 @@ public class CoordinateND<T> {
     }
 
     public CoordinateND<T> finish(List<T> records, Formatter info) {
-      for (CoordinateBuilder builder : builders) {
+      for (CoordinateBuilder<T> builder : builders) {
         Coordinate coord = builder.finish();
         if (coord.getType() == Coordinate.Type.time2D) {
           coordb.add(((CoordinateTime2D) coord).getRuntimeCoordinate());
@@ -106,7 +101,7 @@ public class CoordinateND<T> {
         int count = 0;
         for (CoordinateBuilder<T> builder : builders) {
           if (builder instanceof CoordinateBuilder.TwoD) {
-            CoordinateBuilder.TwoD<T> builder2D = (CoordinateBuilder.TwoD) builder;
+            CoordinateBuilder.TwoD<T> builder2D = (CoordinateBuilder.TwoD<T>) builder;
             int[] coordsIdx = builder2D.getCoordIndices(gr);
             index[count++] = coordsIdx[0];
             index[count++] = coordsIdx[1];

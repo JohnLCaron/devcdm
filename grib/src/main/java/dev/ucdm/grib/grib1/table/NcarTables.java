@@ -20,15 +20,11 @@ public class NcarTables extends Grib1Customizer {
   // from http://rda.ucar.edu/docs/formats/grib/gribdoc/
   @Override
   public String getSubCenterName(int subcenter) {
-    switch (subcenter) {
-      case 1:
-        return "CISL/SCD/Data Support Section";
-      case 2:
-        return "NCAR Command Language";
-      case 3:
-        return "ESSL/MMM/WRF Model";
-      default:
-        return "unknown";
-    }
+    return switch (subcenter) {
+      case 1 -> "CISL/SCD/Data Support Section";
+      case 2 -> "NCAR Command Language";
+      case 3 -> "ESSL/MMM/WRF Model";
+      default -> "unknown";
+    };
   }
 }

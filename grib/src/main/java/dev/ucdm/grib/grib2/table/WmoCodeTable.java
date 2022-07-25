@@ -40,12 +40,7 @@ public class WmoCodeTable implements Grib2CodeTableInterface {
     return entryMap.get(codeValue);
   }
 
-  private static class WmoCodeEntry implements Grib2CodeTableInterface.Entry {
-    private final WmoTable.WmoEntry entry;
-
-    public WmoCodeEntry(WmoTable.WmoEntry entry) {
-      this.entry = entry;
-    }
+  private record WmoCodeEntry(WmoTable.WmoEntry entry) implements Grib2CodeTableInterface.Entry {
 
     @Override
     public int getCode() {

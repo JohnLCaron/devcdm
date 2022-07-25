@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This manages configuring Grib2Tables and their local overrides.
@@ -127,38 +126,5 @@ record Grib2TableConfig(String name, int center, int subCenter, int masterVersio
 
   public Grib2TablesId id() {
     return new Grib2TablesId(center, subCenter, masterVersion, localVersion, genProcessId);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-
-    Grib2TableConfig that = (Grib2TableConfig) o;
-
-    if (!id().equals(that.id()))
-      return false;
-    if (!name.equals(that.name))
-      return false;
-    if (!Objects.equals(path, that.path))
-      return false;
-    return type == that.type;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = name.hashCode();
-    result = 31 * result + type.hashCode();
-    result = 31 * result + id().hashCode();
-    result = 31 * result + (path != null ? path.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "Grib2TableConfig{" + "name='" + name + '\'' + ", type=" + type + ", id=" + id() + ", path='" + path + '\''
-        + '}';
   }
 }

@@ -5,7 +5,6 @@
 package dev.ucdm.grib.grib1.iosp;
 
 import dev.ucdm.grib.common.GribConfig;
-import dev.ucdm.grib.grib1.record.Grib1Gds;
 import dev.ucdm.grib.grib1.record.Grib1ParamTime;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.record.Grib1SectionProductDefinition;
@@ -19,14 +18,8 @@ import dev.ucdm.grib.grib1.table.Grib1Customizer;
  * @author caron
  * @since 12/28/2014
  */
-public class Grib1Variable {
-  private final Grib1Customizer cust;
-  private final Grib1SectionProductDefinition pds;
-  private final Grib1Gds gds;
-  private final int gdsHash;
-  private final boolean useTableVersion;
-  private final boolean intvMerge;
-  private final boolean useCenter;
+public record Grib1Variable(Grib1Customizer cust, Grib1SectionProductDefinition pds, boolean useTableVersion,
+                           boolean intvMerge, boolean useCenter, int gdsHash) {
 
   /**
    * Used when processing the gbx9 files
@@ -40,34 +33,7 @@ public class Grib1Variable {
    */
   public Grib1Variable(Grib1Customizer cust, Grib1Record gr, int gdsHashOverride, boolean useTableVersion,
       boolean intvMerge, boolean useCenter) {
-    this.cust = cust;
-    this.pds = gr.getPDSsection();
-    this.gds = gr.getGDS();
-    this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode();
-    this.useTableVersion = useTableVersion;
-    this.intvMerge = intvMerge;
-    this.useCenter = useCenter;
-  }
-
-  /**
-   * Used when processing the ncx files
-   *
-   * @param cust customizer
-   * @param pds pds section
-   * @param gds the group gds
-   * @param useTableVersion use pdss.getTableVersion(), default is false
-   * @param intvMerge put all intervals together, default true
-   * @param useCenter use center id when param no &gt; 127, default is false
-   */
-  public Grib1Variable(Grib1Customizer cust, Grib1SectionProductDefinition pds, Grib1Gds gds, boolean useTableVersion,
-      boolean intvMerge, boolean useCenter) {
-    this.cust = cust;
-    this.pds = pds;
-    this.gds = gds;
-    this.gdsHash = gds.hashCode(); // TODO this assumes that no overridden gds hashCodes have made it into the ncx
-    this.useTableVersion = useTableVersion;
-    this.intvMerge = intvMerge;
-    this.useCenter = useCenter;
+    this (cust, gr.getPDSsection(), useTableVersion, intvMerge, useCenter, gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode());
   }
 
   @Override
@@ -80,8 +46,8 @@ public class Grib1Variable {
     Grib1Variable var2 = (Grib1Variable) o;
     if (gdsHash != var2.gdsHash)
       return false;
-    if (!gds.equals(var2.gds))
-      return false;
+   // if (!gds.equals(var2.gds))
+   //   return false;
 
     Grib1SectionProductDefinition pds2 = var2.pds;
     if (pds.getParameterNumber() != pds2.getParameterNumber())

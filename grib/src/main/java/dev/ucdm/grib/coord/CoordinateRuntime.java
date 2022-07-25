@@ -20,10 +20,6 @@ import java.util.*;
 
 /**
  * Grib runtime coordinate
- * Effectively Immutable
- * 
- * @author caron
- * @since 11/24/13
  */
 @Immutable
 public class CoordinateRuntime implements Coordinate {
@@ -132,7 +128,6 @@ public class CoordinateRuntime implements Coordinate {
   // Get the offset of the runtime dates from the given one
   public long getOffsetFrom(CalendarDate start) {
     return firstDate.since(start, timePeriod);
-    // return timeUnit.getOffset(start, getFirstDate());
   }
 
   @Override

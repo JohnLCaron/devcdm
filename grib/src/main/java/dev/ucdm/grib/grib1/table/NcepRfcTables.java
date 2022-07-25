@@ -35,49 +35,29 @@ public class NcepRfcTables extends NcepTables {
   @Override
   @Nullable
   public String getGeneratingProcessName(int genProcess) {
-    switch (genProcess) {
-      case 150:
-        return "NWS River Forecast System (NWSRFS)";
-      case 151:
-        return "NWS Flash Flood Guidance System (NWSFFGS)";
-      case 152:
-        return "Quantitative Precipitation Estimation (QPE) - 1 hr dur";
-      case 154:
-        return "Quantitative Precipitation Estimation (QPE) - 6 hr dur";
-      case 155:
-        return "Quantitative Precipitation Estimation (QPE) - 24hr dur";
-      case 156:
-        return "Process 1 (P1) Precipitation Estimation - automatic";
-      case 157:
-        return "Process 1 (P1) Precipitation Estimation - manual";
-      case 158:
-        return "Process 2 (P2) Precipitation Estimation - automatic";
-      case 159:
-        return "Process 2 (P2) Precipitation Estimation - manual";
-      case 160:
-        return "Multisensor Precipitation Estimation (MPE) - automatic";
-      case 161:
-        return "Multisensor Precipitation Estimation (MPE) - manual";
-      case 165:
-        return "Enhanced MPE - automatic";
-      case 166:
-        return "Bias Enhanced MPE - automatic";
-      case 170:
-        return "Post Analysis of Precipitation Estimation (aggregate)";
-      case 171:
-        return "XNAV Aggregate Precipitation Estimation";
-      case 172:
-        return "Mountain Mapper Precipitation Estimation";
-      case 180:
-        return "Quantitative Precipitation Forecast (QPF)";
-      case 185:
-        return "NOHRSC_OPPS";
-      case 190:
-        return "Satellite Autoestimator Precipitation";
-      case 191:
-        return "Satellite Interactive Flash Flood Analyzer (IFFA)";
-    }
-    return null;
+    return switch (genProcess) {
+      case 150 -> "NWS River Forecast System (NWSRFS)";
+      case 151 -> "NWS Flash Flood Guidance System (NWSFFGS)";
+      case 152 -> "Quantitative Precipitation Estimation (QPE) - 1 hr dur";
+      case 154 -> "Quantitative Precipitation Estimation (QPE) - 6 hr dur";
+      case 155 -> "Quantitative Precipitation Estimation (QPE) - 24hr dur";
+      case 156 -> "Process 1 (P1) Precipitation Estimation - automatic";
+      case 157 -> "Process 1 (P1) Precipitation Estimation - manual";
+      case 158 -> "Process 2 (P2) Precipitation Estimation - automatic";
+      case 159 -> "Process 2 (P2) Precipitation Estimation - manual";
+      case 160 -> "Multisensor Precipitation Estimation (MPE) - automatic";
+      case 161 -> "Multisensor Precipitation Estimation (MPE) - manual";
+      case 165 -> "Enhanced MPE - automatic";
+      case 166 -> "Bias Enhanced MPE - automatic";
+      case 170 -> "Post Analysis of Precipitation Estimation (aggregate)";
+      case 171 -> "XNAV Aggregate Precipitation Estimation";
+      case 172 -> "Mountain Mapper Precipitation Estimation";
+      case 180 -> "Quantitative Precipitation Forecast (QPF)";
+      case 185 -> "NOHRSC_OPPS";
+      case 190 -> "Satellite Autoestimator Precipitation";
+      case 191 -> "Satellite Interactive Flash Flood Analyzer (IFFA)";
+      default -> null;
+    };
   }
 
   ///////////////////////////////////////////////////////////////////////

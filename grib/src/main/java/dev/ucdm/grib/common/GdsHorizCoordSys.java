@@ -16,9 +16,7 @@ import dev.ucdm.grib.common.util.QuasiRegular;
 
 import dev.ucdm.array.Immutable;
 
-/**
- * A Horizontal coordinate system generated from a GRIB1 or GRIB2 GDS.
- */
+/** A Horizontal coordinate system generated from a GRIB1 or GRIB2 GDS. */
 @Immutable
 public class GdsHorizCoordSys {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GdsHorizCoordSys.class);

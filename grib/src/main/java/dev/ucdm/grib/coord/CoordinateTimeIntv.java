@@ -27,12 +27,7 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Time coordinates that are intervals.
- *
- * @author John
- * @since 11/28/13
- */
+/** Time coordinates that are intervals. */
 @Immutable
 public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
   private final List<TimeCoordIntvValue> timeIntervals;

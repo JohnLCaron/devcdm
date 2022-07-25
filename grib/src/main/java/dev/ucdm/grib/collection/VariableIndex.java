@@ -98,8 +98,8 @@ public class VariableIndex implements Comparable<VariableIndex> {
       this.spatialStatType = -1;
 
       // TODO config vs serialized config
-      gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), gribConfig.useTableVersion,
-              gribConfig.intvMerge, gribConfig.useCenter);
+      gribVariable = new Grib1Variable(cust, pds, gribConfig.useTableVersion,
+              gribConfig.intvMerge, gribConfig.useCenter, g.getGdsHash().hashCode());
 
     } else {
       Grib2Tables cust2 = (Grib2Tables) customizer;

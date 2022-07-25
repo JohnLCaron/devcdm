@@ -22,30 +22,6 @@ import org.jetbrains.annotations.Nullable;
  * @since 3/29/11
  */
 public class Grib2Utils {
-
-  public static String clean(String s) {
-    StringBuilder sb = new StringBuilder(s);
-    StringUtil2.replace(sb, "/. ", "-p_");
-    StringUtil2.removeAll(sb, "(),;");
-    char c = sb.charAt(0);
-    if (Character.isLetter(c)) {
-      if (Character.isLowerCase(c))
-        sb.setCharAt(0, Character.toUpperCase(c));
-    } else {
-      sb.insert(0, 'N');
-    }
-
-    return sb.toString().trim();
-  }
-
-  public static String cleanupHeader(byte[] raw) {
-    String result = StringUtil2.cleanup(raw);
-    int pos = result.indexOf("data");
-    if (pos > 0)
-      result = result.substring(pos);
-    return result;
-  }
-
   public static String getVariableName(Grib2Record gr) {
     GribTables.Parameter p = WmoParamTable.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(),
         gr.getPDS().getParameterNumber());

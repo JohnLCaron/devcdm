@@ -16,7 +16,7 @@ import java.util.Map;
  * @since 4/3/2015
  */
 public class CalendarDateFactory {
-  private Map<Long, CalendarDate> map;
+  private final Map<Long, CalendarDate> map;
 
   public CalendarDateFactory(CoordinateRuntime master) {
     map = new HashMap<>(master.getSize() * 2);

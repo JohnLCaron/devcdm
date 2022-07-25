@@ -734,26 +734,25 @@ public abstract class Grib1Gds {
   /*
    * Grid definition – polar stereographic
    * Octet No. Contents
-   * 7–8 Nx – number of points along x-axis
-   * 9–10 Ny – number of points along y-axis
-   * 11–13 La1 – latitude of first grid point
-   * 14–16 Lo1 – longitude of first grid point
-   * 17 Resolution and component flags (see Code table 7)
-   * 18–20 LoV – orientation of the grid; i.e. the longitude value of the meridian which is parallel to the y-axis (or
-   * columns
-   * of the grid) along which latitude increases as the Y-coordinate increases (the orientation longitude may or may not
-   * appear on a particular grid)
-   * 21–23 Dx – X-direction grid length (see Note 2)
-   * 24–26 Dy – Y-direction grid length (see Note 2)
-   * 27 Projection centre flag (see Note 5)
-   * 28 Scanning mode (flags – see Flag/Code table 8)
-   * 29–32 Set to zero (reserved)
+   *  7–8 Nx – number of points along x-axis
+   *  9–10 Ny – number of points along y-axis
+   *  11–13 La1 – latitude of first grid point
+   *  14–16 Lo1 – longitude of first grid point
+   *  17 Resolution and component flags (see Code table 7)
+   *  18–20 LoV – orientation of the grid; i.e. the longitude value of the meridian which is parallel to the y-axis
+   *   (or columns of the grid) along which latitude increases as the Y-coordinate increases (the orientation longitude
+   *   may or may not appear on a particular grid)
+   *  21–23 Dx – X-direction grid length (see Note 2)
+   *  24–26 Dy – Y-direction grid length (see Note 2)
+   *  27 Projection centre flag (see Note 5)
+   *  28 Scanning mode (flags – see Flag/Code table 8)
+   *  29–32 Set to zero (reserved)
    */
   public static class PolarStereographic extends Grib1Gds {
 
     protected float la1, lo1, lov, dX, dY;
     protected int projCenterFlag;
-    private final float lad = (float) 60.0; // TODO WTF?
+    // private final float lad = (float) 60.0; // TODO WTF?
 
     protected PolarStereographic(int template) {
       super(template);
@@ -779,7 +778,7 @@ public abstract class Grib1Gds {
     @Override
     public String toString() {
       return "PolarStereographic{" + "la1=" + la1 + ", lo1=" + lo1 + ", lov=" + lov + ", dX=" + dX + ", dY=" + dY
-          + ", projCenterFlag=" + projCenterFlag + ", lad=" + lad + "} " + super.toString();
+          + ", projCenterFlag=" + projCenterFlag + "} " + super.toString();
     }
 
     @Override
@@ -813,7 +812,6 @@ public abstract class Grib1Gds {
       }
 
       return projCenterFlag == that.projCenterFlag;
-
     }
 
     @Override
@@ -855,12 +853,7 @@ public abstract class Grib1Gds {
       // "Grid lengths are in units of meters, at the 60 degree latitude circle nearest to the pole"
       // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60)) [Snyder,Working Manual p157]
       // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
-      double scale;
-      if (Double.isNaN(lad)) {
-        scale = 0.9330127018922193;
-      } else {
-        scale = (1.0 + Math.sin(Math.toRadians(Math.abs(lad)))) / 2;
-      }
+      double scale = 0.9330127018922193;
 
       Projection proj;
 
@@ -868,7 +861,7 @@ public abstract class Grib1Gds {
       if (earth.isSpherical()) {
         proj = new Stereographic(latOrigin, lov, scale);
       } else {
-        proj = new dev.ucdm.dataset.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, lad,
+        proj = new dev.ucdm.dataset.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, 60.0,
             0.0, 0.0, earth);
       }
 
@@ -1276,7 +1269,7 @@ public abstract class Grib1Gds {
     public int hashCode() {
       if (hashCode == 0) {
         int result = super.hashCode();
-        result = 31 * result + (angleRotation != +0.0f ? Float.floatToIntBits(angleRotation) : 0);
+        result = 31 * result + (angleRotation != 0.0f ? Float.floatToIntBits(angleRotation) : 0);
         hashCode = result;
       }
       return hashCode;

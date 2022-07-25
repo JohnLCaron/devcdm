@@ -23,7 +23,6 @@ import java.util.*;
  * Superclass to build ncx indexes for collections of Grib files.
  */
 public abstract class GribCollectionBuilder {
-
   protected final MCollection dcm;
   protected final org.slf4j.Logger logger;
   protected final boolean isGrib1;

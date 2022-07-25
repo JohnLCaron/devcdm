@@ -347,7 +347,7 @@ public abstract class GribArrayReader {
           f.format("  TimeInterval=%s%n", tinv);
         f.format("  ");
         gr.getPDS().show(f);
-        System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", pos, f.toString());
+        System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", pos, f);
       }
     }
   }
@@ -377,14 +377,14 @@ public abstract class GribArrayReader {
       f.format("  Parameter=%s%n", param);
       f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
       Grib1ParamTime ptime = gr.getParamTime(cust);
-      f.format("  ForecastTime=%d%n", ptime.getForecastTime());
+      f.format("  ForecastTime=%d%n", ptime.forecastTime());
       if (ptime.isInterval()) {
         int[] tinv = ptime.getInterval();
         f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
       }
       f.format("%n");
       gr.getPDSsection().showPds(cust, f);
-      System.out.printf("%nGrib1Record.readData at drsPos %d = %s%n", dataPos, f.toString());
+      System.out.printf("%nGrib1Record.readData at drsPos %d = %s%n", dataPos, f);
     }
   }
 

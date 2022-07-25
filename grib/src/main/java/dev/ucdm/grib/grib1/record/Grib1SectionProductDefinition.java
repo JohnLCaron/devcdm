@@ -22,15 +22,9 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;
 
-/**
- * The Product Definition Section for GRIB-1 files
- *
- * @author caron
- */
-
+/** The Product Definition Section for GRIB-1 files */
 @Immutable
 public final class Grib1SectionProductDefinition {
-
   private final byte[] rawData;
 
   /**
@@ -358,7 +352,7 @@ public final class Grib1SectionProductDefinition {
       CalendarDate cdate2 = unit.makeCalendarDate((long) period.getValue() * intv[1]);
       return "(" + cdate1 + "," + cdate2 + ")";
     } else {
-      timeCoord = ptime.getForecastTime();
+      timeCoord = ptime.forecastTime();
       CalendarDate cdate = unit.makeCalendarDate((long) period.getValue() * timeCoord);
       return cdate.toString();
     }

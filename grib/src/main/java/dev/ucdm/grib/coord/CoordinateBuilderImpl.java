@@ -11,9 +11,6 @@ import java.util.*;
 /**
  * Builds one Coordinate of one Variable,
  * by keeping the Set of Values found in the records.
- *
- * @author caron
- * @since 11/27/13
  */
 public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
   private Set<Object> valSet = new HashSet<>(100);
@@ -44,15 +41,13 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
     valSet.addAll(coords);
   }
 
-  private boolean testCoord(List<?> vals) {
-    boolean ok = true;
+  private void testCoord(List<?> vals) {
     for (Object val : vals) {
       if (!(val instanceof Long) && !(val instanceof TimeCoordIntvValue) && !(val instanceof CoordinateTime2D.Time2D)
           && !(val instanceof VertCoordValue) && !(val instanceof EnsCoordValue)) {
         throw new IllegalArgumentException();
       }
     }
-    return ok;
   }
 
   @Override

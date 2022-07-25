@@ -13,12 +13,7 @@ import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.array.Immutable;
 import java.io.IOException;
 
-/**
- * Grib1 Section 3 (BitMap)
- *
- * @author John
- * @since 9/3/11
- */
+/** Grib1 Section 3 (BitMap) */
 @Immutable
 public class Grib1SectionBitMap {
   private static final Logger logger = LoggerFactory.getLogger(Grib1SectionBitMap.class);

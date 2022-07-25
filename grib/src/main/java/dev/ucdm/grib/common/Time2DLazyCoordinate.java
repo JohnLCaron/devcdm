@@ -37,25 +37,24 @@ class Time2DLazyCoordinate {
 
     // coordinate values
     switch (info.which) {
-      case reftime:
+      case reftime -> {
         CoordinateRuntime rtc = (CoordinateRuntime) info.time1D;
         int count = 0;
         for (double val : rtc.getRuntimeOffsetsInTimeUnits()) {
           data[count++] = val;
         }
         return data;
-
-      case timeAuxRef:
+      }
+      case timeAuxRef -> {
         CoordinateTimeAbstract time = (CoordinateTimeAbstract) info.time1D;
-        count = 0;
+        int count = 0;
         List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
         for (int masterIdx : time.getTime2runtime()) {
           data[count++] = masterOffsets.get(masterIdx - 1);
         }
         return data;
-
-      default:
-        throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
+      }
+      default -> throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
     }
   }
 

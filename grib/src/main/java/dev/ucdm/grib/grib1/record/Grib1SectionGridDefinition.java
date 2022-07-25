@@ -5,7 +5,6 @@
 
 package dev.ucdm.grib.grib1.record;
 
-import org.jetbrains.annotations.Nullable;
 import dev.ucdm.grib.common.util.GribNumbers;
 import dev.ucdm.core.io.RandomAccessFile;
 import java.io.IOException;
@@ -15,8 +14,6 @@ import java.util.zip.CRC32;
 /**
  * The Grid Definition Section for GRIB-1 files
  * Effectively immutable, but caching lazy gds
- * 
- * @author caron
  */
 
 // @Immutable gds makes it not immutable
@@ -36,7 +33,6 @@ public class Grib1SectionGridDefinition {
    * @throws IllegalArgumentException if not a GRIB-2 record
    */
   public Grib1SectionGridDefinition(RandomAccessFile raf) throws IOException {
-
     startingPosition = raf.getFilePointer();
 
     // octets 1-3 (Length of GDS)
@@ -70,7 +66,7 @@ public class Grib1SectionGridDefinition {
 
   public Grib1SectionGridDefinition(Grib1SectionProductDefinition pds) {
     startingPosition = -1;
-    gridTemplate = -pds.getGridDefinition(); // TODO ??
+    gridTemplate = pds.getGridDefinition() * 1000; // see Grib1GdsPredefined
     rawData = null;
     predefinedGridDefinitionCenter = pds.getCenter();
     predefinedGridDefinition = pds.getGridDefinition();
@@ -87,13 +83,11 @@ public class Grib1SectionGridDefinition {
 
   /**
    * Calculate the CRC of the entire byte array
-   *
-   * @return CRC of the entire byte array
    */
   public long calcCRC() {
     long crc;
     if (rawData == null)
-      crc = predefinedGridDefinitionCenter << 16 + predefinedGridDefinition;
+      crc = (long) (predefinedGridDefinitionCenter << 16 + predefinedGridDefinition);
     else {
       CRC32 crc32 = new CRC32();
       crc32.update(rawData);
@@ -197,17 +191,18 @@ public class Grib1SectionGridDefinition {
   /////////////////////////////////////////////////
 
   public boolean hasVerticalCoordinateParameters() {
-    if (rawData == null)
+    if (rawData == null) {
       return false;
+    }
     int octet5 = getOctet(5);
     int nv = getOctet(4);
     return (octet5 != 255) && (nv != 0 && nv != 255);
   }
 
-  @Nullable
-  private double[] getVerticalCoordinateParameters() {
-    if (!hasVerticalCoordinateParameters())
+  public double[] getVerticalCoordinateParameters() {
+    if (!hasVerticalCoordinateParameters()) {
       return null;
+    }
 
     int offset = getOctet(5);
     int n = getOctet(4);

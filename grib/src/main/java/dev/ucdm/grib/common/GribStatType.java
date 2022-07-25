@@ -40,35 +40,7 @@ public enum GribStatType {
     };
   }
 
-  /*
-   * public static String getStatTypeDescription(GribStatType statType) {
-   * switch (statType) {
-   * case Average:
-   * return "Average";
-   * case Accumulation:
-   * return "Accumulation";
-   * case Maximum:
-   * return "Maximum";
-   * case Minimum:
-   * return "Minimum";
-   * case DifferenceFromEnd:
-   * return "Difference (Value at the end of time range minus value at the beginning)";
-   * case RootMeanSquare:
-   * return "RootMeanSquare";
-   * case StandardDeviation:
-   * return "StandardDeviation";
-   * case Covariance:
-   * return "Covariance (Temporal variance)";
-   * case DifferenceFromStart:
-   * return "Difference (Value at the start of time range minus value at the end)";
-   * case Ratio:
-   * return "Ratio";
-   * default:
-   * return "UnknownIntervalType-" + statType;
-   * }
-   * }
-   */
-
+  // what are these names ??
   public static int getStatTypeNumber(String name) {
     if (name.startsWith("Average"))
       return 0;
@@ -78,7 +50,7 @@ public enum GribStatType {
       return 2;
     if (name.startsWith("Minimum"))
       return 3;
-    if (name.startsWith("Difference (Value at the end"))
+    if (name.startsWith("DifferenceFromEnd") || name.startsWith("Difference (Value at the end"))
       return 4;
     if (name.startsWith("Root"))
       return 5;
@@ -86,7 +58,7 @@ public enum GribStatType {
       return 6;
     if (name.startsWith("Covariance"))
       return 7;
-    if (name.startsWith("Difference (Value at the start"))
+    if (name.startsWith("DifferenceFromStart") || name.startsWith("Difference (Value at the start"))
       return 8;
     if (name.startsWith("Ratio"))
       return 9;
@@ -103,24 +75,16 @@ public enum GribStatType {
    */
   @Nullable
   public static CF.CellMethods getCFCellMethod(GribStatType stat) {
-    switch (stat) {
-      case Average:
-        return CF.CellMethods.mean;
-      case Accumulation:
-        return CF.CellMethods.sum;
-      case Covariance:
-        return CF.CellMethods.variance;
-      case Minimum:
-        return CF.CellMethods.minimum;
-      case Maximum:
-        return CF.CellMethods.maximum;
-      case StandardDeviation:
-        return CF.CellMethods.standard_deviation;
-      case Variance:
-        return CF.CellMethods.variance;
-      default:
-        return null;
-    }
+    return switch (stat) {
+      case Average -> CF.CellMethods.mean;
+      case Accumulation -> CF.CellMethods.sum;
+      case Covariance -> CF.CellMethods.variance;
+      case Minimum -> CF.CellMethods.minimum;
+      case Maximum -> CF.CellMethods.maximum;
+      case StandardDeviation -> CF.CellMethods.standard_deviation;
+      case Variance -> CF.CellMethods.variance;
+      default -> null;
+    };
   }
 
 }

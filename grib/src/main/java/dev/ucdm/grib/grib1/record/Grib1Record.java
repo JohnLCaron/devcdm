@@ -14,12 +14,7 @@ import dev.ucdm.core.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.Formatter;
 
-/**
- * A Grib1 message.
- *
- * @author John
- * @since 9/3/11
- */
+/** A Grib1 message. */
 public class Grib1Record {
   private final Grib1SectionIndicator is;
   private final Grib1SectionGridDefinition gdss;
@@ -64,16 +59,6 @@ public class Grib1Record {
     gdss = pdss.gdsExists() ? new Grib1SectionGridDefinition(raf) : new Grib1SectionGridDefinition(pdss);
     bitmap = pdss.bmsExists() ? new Grib1SectionBitMap(raf) : null;
     dataSection = new Grib1SectionBinaryData(raf);
-  }
-
-  // copy constructor
-  Grib1Record(Grib1Record from) {
-    this.header = from.header;
-    this.is = from.is;
-    this.gdss = from.gdss;
-    this.pdss = from.pdss;
-    this.bitmap = from.bitmap;
-    this.dataSection = from.dataSection;
   }
 
   public byte[] getHeader() {
@@ -131,11 +116,6 @@ public class Grib1Record {
     return readData(raf, GribDataUtils.getInterpolationMethod());
   }
 
-  // dont convertQuasiGrid
-  public float[] readDataRaw(RandomAccessFile raf) throws IOException {
-    return readData(raf, GribDataUtils.InterpolationMethod.none);
-  }
-
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf, GribDataUtils.InterpolationMethod method) throws IOException {
     Grib1Gds gds = getGDS();
@@ -152,7 +132,7 @@ public class Grib1Record {
     return data;
   }
 
-  public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
+  public Formatter showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
     Grib1Gds gds = getGDS();
     f.format(" decimal scale = %d%n", pdss.getDecimalScale());
     f.format("     scan mode = %d%n", gds.getScanMode());
@@ -178,6 +158,7 @@ public class Grib1Record {
     f.format("      nbits = %d%n", info.numberOfBits);
 
     Grib1DataReader.showComplexPackingInfo(f, raf, dataSection.getStartingPosition());
+    return f;
   }
 
   /**
@@ -217,14 +198,5 @@ public class Grib1Record {
     }
 
     return info;
-  }
-
-  // debugging - do not use
-  public int[] readRawData(RandomAccessFile raf) throws IOException {
-    Grib1Gds gds = getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(),
-        gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
-    byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
-    return reader.getDataRaw(raf, bm);
   }
 }

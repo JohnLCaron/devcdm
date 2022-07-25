@@ -92,7 +92,7 @@ public class TestCoordinateTime2DUnionizer {
       coord2D.showInfo(f, new Indent(2));
     }
 
-    CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(false, timeUnit, code, false, null);
+    CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(false, timeUnit, code, false);
     for (CoordinateTime2D coord2D : coord2Ds) {
       unionizer.addAll(coord2D);
     }
@@ -105,7 +105,7 @@ public class TestCoordinateTime2DUnionizer {
   }
 
   private CoordinateTime2D testUnionizer(CoordinateTime2D coord2D) {
-    CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(false, timeUnit, code, false, null);
+    CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(false, timeUnit, code, false);
     unionizer.addAll(coord2D);
     unionizer.finish();
     return (CoordinateTime2D) unionizer.getCoordinate();

@@ -15,10 +15,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Read and process WMO common code and flag tables.
@@ -141,26 +139,12 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    */
   public static String getCenterName(int center_id, int edition) {
     String result = (edition == 1) ? getTableValue(1, center_id) : getTableValue(11, center_id);
-    if (result != null)
+    if (result != null) {
       return result;
-    if (center_id == 0)
+    }
+    if (center_id == 0) {
       return "WMO standard table";
-    return "Unknown center=" + center_id;
-  }
-
-  /**
-   * Center name, from table C-1 or C-11
-   *
-   * @param center_id center id
-   * @param edition bufr edition
-   * @return center name, or "unknown"
-   */
-  public static String getCenterNameBufr(int center_id, int edition) {
-    String result = (edition < 4) ? getTableValue(1, center_id) : getTableValue(11, center_id);
-    if (result != null)
-      return result;
-    if (center_id == 0)
-      return "WMO standard table";
+    }
     return "Unknown center=" + center_id;
   }
 
@@ -220,8 +204,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       return null;
     }
     TableEntry te = cct.get(code);
-    if (te == null)
+    if (te == null) {
       return null;
+    }
     return te.value;
   }
 
@@ -235,10 +220,8 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   }
 
   private static CommonCodeTable readCommonCodes(Table version) throws IOException {
-    InputStream ios = null;
-    try {
-      Class<?> c = CommonCodeTable.class;
-      ios = c.getResourceAsStream(version.getResourceName());
+    Class<?> c = CommonCodeTable.class;
+    try (InputStream ios = c.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
         throw new IllegalStateException("CommonCodeTable cannot open " + version.getResourceName());
       }
@@ -267,8 +250,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
           // elem.getChildTextNormalize(elems[3]); WTF ?
           Element statusElem = elem.getChild("Status");
           String status = (statusElem == null) ? null : statusElem.getTextNormalize();
-          if (")".equals(value))
+          if (")".equals(value)) {
             value = previousValue;
+          }
           ct.add(line, code, code2, value, status);
           previousValue = value;
 
@@ -283,13 +267,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
           ct.add(line, code, value, code2, value2, status);
         }
       }
-
-      ios.close();
       return ct;
-
-    } finally {
-      if (ios != null)
-        ios.close();
     }
   }
 
@@ -317,8 +295,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   @Nullable
   TableEntry get(int code) {
     for (TableEntry p : entries) {
-      if (p.code == code)
+      if (p.code == code) {
         return p;
+      }
     }
     return null;
   }
@@ -326,8 +305,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   @Nullable
   TableEntry get(int code, int code2) {
     for (TableEntry p : entries) {
-      if ((p.code == code) && (p.code2 == code2))
+      if ((p.code == code) && (p.code2 == code2)) {
         return p;
+      }
     }
     return null;
   }
@@ -336,36 +316,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     return tableName;
   }
 
-  public Map<Integer, String> getMap() {
-    if (map == null) {
-      map = new HashMap<>(entries.size() * 2);
-      for (TableEntry p : entries) {
-        map.put(p.code, p.value);
-      }
-    }
-    return map;
-  }
-
   @Override
   public int compareTo(CommonCodeTable o) {
     return tableName.compareTo(o.tableName);
-  }
-
-  String state() {
-    Set<Integer> set = new HashSet<>();
-    int max = 0;
-    int dups = 0;
-    for (TableEntry entry : entries) {
-      if (entry.comment != null)
-        continue;
-      if (entry.code > max)
-        max = entry.code;
-      if (set.contains(entry.code))
-        dups++;
-      else
-        set.add(entry.code);
-    }
-    return "density= " + entries.size() + "/" + max + "; dups= " + dups;
   }
 
   public class TableEntry implements Comparable<TableEntry> {
@@ -374,8 +327,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     public String value, status, comment;
 
     int parse(String s) {
-      if (s == null)
+      if (s == null) {
         return -1;
+      }
       try {
         return Integer.parseInt(s);
       } catch (NumberFormatException e2) {
@@ -388,9 +342,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       this.code = parse(code1);
       if (this.code < 0)
         this.code = parse(code2);
-      if (this.code < 1)
+      if (this.code < 1) {
         comment = value;
-      else {
+      } else {
         this.value = filter(value);
         this.status = status;
       }
@@ -407,9 +361,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
     @Override
     public int compareTo(TableEntry o) {
-      if (type == 1)
+      if (type == 1) {
         return Integer.compare(code, o.code);
-      else {
+      } else {
         int diff = Integer.compare(code, o.code);
         return (diff == 0) ? Integer.compare(code2, o.code2) : diff;
       }
@@ -417,12 +371,13 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
     @Override
     public String toString() {
-      if (comment != null)
+      if (comment != null) {
         return "TableEntry{" + ", line=" + line + ", comment=" + comment + '}';
 
-      else
+      } else {
         return "TableEntry{" + ", line=" + line + ", code=" + code + ", value='" + value + '\'' + ", status='" + status
-            + '\'' + '}';
+                + '\'' + '}';
+      }
     }
   }
 
