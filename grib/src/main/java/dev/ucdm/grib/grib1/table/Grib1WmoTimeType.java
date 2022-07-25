@@ -23,32 +23,14 @@ public class Grib1WmoTimeType {
    */
   @Nullable
   public static GribStatType getStatType(int timeRangeIndicator) {
-    switch (timeRangeIndicator) {
-      case 3:
-      case 6:
-      case 7:
-      case 51:
-      case 113:
-      case 115:
-      case 117:
-      case 120:
-      case 123:
-        return GribStatType.Average;
-      case 4:
-      case 114:
-      case 116:
-      case 124:
-        return GribStatType.Accumulation;
-      case 5:
-        return GribStatType.DifferenceFromEnd;
-      case 118:
-        return GribStatType.Covariance;
-      case 119:
-      case 125:
-        return GribStatType.StandardDeviation;
-      default:
-        return null;
-    }
+    return switch (timeRangeIndicator) {
+      case 3, 6, 7, 51, 113, 115, 117, 120, 123 -> GribStatType.Average;
+      case 4, 114, 116, 124 -> GribStatType.Accumulation;
+      case 5 -> GribStatType.DifferenceFromEnd;
+      case 118 -> GribStatType.Covariance;
+      case 119, 125 -> GribStatType.StandardDeviation;
+      default -> null;
+    };
   }
 
 }

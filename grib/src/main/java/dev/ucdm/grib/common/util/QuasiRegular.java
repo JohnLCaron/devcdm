@@ -59,12 +59,9 @@ public class QuasiRegular {
     if (interpolationMethod == GribDataUtils.InterpolationMethod.cubic) {
 
       for (int j = 0; j < ny; j++) { // Note - assumes varies by x
-        // int inrow; /* input row to use */
         int npoints; /* number input points in current parrallel */
 
-        // inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
-        // npoints = ix[inrow+1] - ix[inrow]; /* set number of input points */
-        npoints = linePts[j]; /* number of input points in this parellel */
+         npoints = linePts[j]; /* number of input points in this parellel */
 
         // skip the processing if npoints = number of points in output parrallel
         if (npoints == nx) {
@@ -78,7 +75,6 @@ public class QuasiRegular {
 
         /* calculate the second derivatives of the input row */
         secondDerivative(
-            // &idat[ix[inrow]], /* input row */
             quasi, /* input data */
             inputIdx, /* current index position in input */
             npoints, /* number of points in input row */
@@ -107,13 +103,9 @@ public class QuasiRegular {
       // USE_LINEAR
 
       for (int j = 0; j < ny; j++) { // Note - assumes varies by x
-        // int inrow; /* input row to use */
-        // inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
-        // npoints = ix[inrow+1] - ix[inrow]; /* set number of input points */
         int npoints = linePts[j]; /* number of input points in this parallel */
 
-        // skip the processing if npoints = number of points in output
-        // parallel
+        // skip the processing if npoints = number of points in output parallel
         if (npoints == nx) {
           for (int i = 0; i < nx; i++)
             data[outputIdx++] = quasi[inputIdx++];
@@ -203,20 +195,12 @@ public class QuasiRegular {
 
 
   public static void cubicSpline(float[] inpt, int iIdx, double[] y2d, double x, float[] outpt, int oIdx) {
-    // float *inpt; /* input row */
-    // int iIdx; /* input data index*/
-    // float *y2d; /* second derivatives of input row */
-    // float x; /* output point */
-    // float outpt; /* where to put the interpolated data */
-    // int oIdx; /* index in output, the interpolated data */
-
     int hi;
     int low;
     double a;
     double b;
 
     if (Math.floor(x) == x) { /* existing data point */
-      // *outpt = inpt[(int)x];
       outpt[oIdx] = inpt[iIdx + (int) x];
       return;
     }
@@ -231,22 +215,12 @@ public class QuasiRegular {
     hi = hi > (y2d.length - 1) ? 0 : hi;
 
     /* evaluate the polynomial */
-
-    // *outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] +
-    // (b * b * b - b) * y2d[hi]) / 6.0;
     outpt[oIdx] = (float) (a * inpt[iIdx + low] + b * inpt[iIdx + hi]
         + ((a * a * a - a) * y2d[low] + (b * b * b - b) * y2d[hi]) / 6.0);
 
   }
 
   public static void linear(float[] inpt, int iIdx, double x, float[] outpt, int oIdx, int npoints) {
-
-    // float *inpt; /* input row */
-    // int iIdx; /* input data index*/
-    // float x; /* output point */
-    // float outpt; /* where to put the interpolated data */
-    // int oIdx; /* index in output, the interpolated data */
-
     if (Math.floor(x) == x) { /* existing data point */
       outpt[oIdx] = inpt[iIdx + (int) x];
       return;

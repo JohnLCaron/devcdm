@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 public class GaussianLatitudes {
   private static final double XLIM = 1.0E-7;
   private static final LoadingCache<Integer, GaussianLatitudes> cache =
-      CacheBuilder.newBuilder().maximumSize(50).build(new CacheLoader<Integer, GaussianLatitudes>() {
+      CacheBuilder.newBuilder().maximumSize(50).build(new CacheLoader<>() {
         @Override
         public GaussianLatitudes load(Integer nlats) {
           return new GaussianLatitudes(nlats);
@@ -91,8 +91,9 @@ public class GaussianLatitudes {
      * COSC(I) = SIN( (I-0.5)*PI/NLAT + PI*0.5 )
      * 10 CONTINUE
      */
-    for (int i = 0; i < nzero; i++)
+    for (int i = 0; i < nzero; i++) {
       cosc[i] = Math.sin((i + 0.5) * Math.PI / nlat + Math.PI / 2);
+    }
 
     /*
      * constants for determining the derivative of the polynomial
@@ -141,8 +142,9 @@ public class GaussianLatitudes {
          * IF( ABS(DELTA).GT.XLIM ) GO TO 30
          */
         countIterations++;
-        if (Math.abs(delta) <= XLIM)
+        if (Math.abs(delta) <= XLIM) {
           break;
+        }
       }
 
       /*

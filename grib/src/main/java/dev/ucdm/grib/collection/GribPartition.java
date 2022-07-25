@@ -110,15 +110,14 @@ public class GribPartition {
         CalendarDateRange result = null;
         for (Coordinate coord : coords) {
           switch (coord.getType()) {
-            case time:
-            case timeIntv:
-            case time2D:
+            case time, timeIntv, time2D -> {
               CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
               CalendarDateRange range = time.makeCalendarDateRange();
               if (result == null)
                 result = range;
               else
                 result = result.extend(range);
+            }
           }
         }
         dateRange = result;
@@ -127,18 +126,7 @@ public class GribPartition {
     }
   }
 
-  static class PartitionForVariable2D {
-    final int partno;
-    final int groupno;
-    final int varno; // , flag; // what the hell is the flag used for ?
-    VariableIndex vi;
-
-    PartitionForVariable2D(int partno, int groupno, int varno) {
-      this.partno = partno;
-      this.groupno = groupno;
-      this.varno = varno;
-    }
-  }
+  record PartitionForVariable2D(int partno, int groupno, int varno) {}
 
   public class VariableIndexPartitioned {
     public final GroupP group;
@@ -218,7 +206,7 @@ public class GribPartition {
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // wrapper around the children GribCollections, allows us to manipulate them without always opening the grib collection.
-  public class ChildCollection implements Comparable<ChildCollection> {
+  public static class ChildCollection implements Comparable<ChildCollection> {
     public final String name;
     public final String directory;
     // public long lastModified;

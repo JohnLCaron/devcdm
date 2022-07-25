@@ -56,8 +56,8 @@ public class Grib1ParamTables {
       standardLookup.readLookupTable("resources/grib1/dss/lookupTables.txt");
       // standardLookup.readLookupTable("resources/grib1/ncep/lookupTables.txt");
       standardLookup.readLookupTable("resources/grib1/wrf/lookupTables.txt"); // */
-      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt"); // too many problems - must check every
-      // one !
+      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt");
+      // too many problems - must check every one !
       standardLookup.tables = new CopyOnWriteArrayList<>(standardLookup.tables); // in case user adds tables
       defaultWmoTable = standardLookup.getParameterTable(0, -1, -1); // user cannot override default
 

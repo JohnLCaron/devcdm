@@ -11,11 +11,7 @@ import dev.ucdm.core.io.RandomAccessFile;
 import dev.ucdm.array.Immutable;
 import java.io.IOException;
 
-/**
- * The Binary Data Section for GRIB-1 files
- *
- * @author caron
- */
+/** The Binary Data Section for GRIB-1 files */
 @Immutable
 public class Grib1SectionBinaryData {
   private final int length;

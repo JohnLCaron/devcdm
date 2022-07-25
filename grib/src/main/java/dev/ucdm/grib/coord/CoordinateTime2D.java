@@ -12,9 +12,7 @@ import dev.ucdm.core.util.Counters;
 import dev.ucdm.grib.grib1.record.Grib1Record;
 import dev.ucdm.grib.grib1.table.Grib1Customizer;
 import dev.ucdm.grib.grib2.record.Grib2Record;
-import dev.ucdm.grib.grib2.table.Grib2Tables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import dev.ucdm.grib.grib2.table.Grib2Tables;;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarDateRange;
 import dev.ucdm.core.calendar.CalendarPeriod;
@@ -45,8 +43,6 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
-  private static final Logger logger = LoggerFactory.getLogger(CoordinateTime2D.class);
-
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times; // nruns time coordinates - original offsets
   private final CoordinateTimeAbstract otime; // orthogonal time coordinates - only when isOrthogonal

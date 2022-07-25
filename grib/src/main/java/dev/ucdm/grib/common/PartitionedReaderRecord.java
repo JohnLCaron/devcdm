@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import dev.ucdm.array.Immutable;
 import java.io.IOException;
 
-// ver8  PartitionCollectionImmutable.DataRecord
 @Immutable
 public class PartitionedReaderRecord extends GribReaderRecord {
   final Partitions usePartition;

@@ -112,29 +112,6 @@ public class Grib2DataReader {
     return data;
   }
 
-  @Nullable
-  int[] getRawData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs) throws IOException {
-    this.bitmap = bitmapSection.getBitmap(raf);
-    this.bitmapIndicator = bitmapSection.getBitMapIndicator();
-
-    if (bitmap != null) { // is bitmap ok ?
-      if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
-        logger.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length, totalNPoints, nx,
-            totalNPoints / nx);
-        throw new IllegalStateException("Bitmap section length!= grid length");
-      }
-    }
-
-    raf.seek(startPos + 5); // skip past first 5 bytes in data section, now ready to read
-
-    if (dataTemplate != 40) {
-      return null;
-    }
-
-    // jpeg2k only
-    return getData40raw(raf, (Grib2Drs.Jpeg2000) gdrs);
-  }
-
   private static final boolean staticMissingValueInUse = true;
   private static final float staticMissingValue = Float.NaN;
 

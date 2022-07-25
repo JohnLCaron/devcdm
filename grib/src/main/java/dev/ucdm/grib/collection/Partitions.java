@@ -45,8 +45,9 @@ public class Partitions implements Closeable {
 
     @Override
     public int compareTo(Partition o) {
-      if (partitionDate != null && o.partitionDate != null)
+      if (partitionDate != null && o.partitionDate != null) {
         return partitionDate.compareTo(o.partitionDate);
+      }
       return name.compareTo(o.name);
     }
   }
@@ -232,8 +233,9 @@ public class Partitions implements Closeable {
     // which partition? index into PartitionCollectionImmutable.partitions[]: variable may not exist in all partitions
     int partWant = vip.partnoSA.findIdx(partno);
     if (partWant < 0 || partWant >= vip.nparts) {
-      if (GribConstants.debugRead)
+      if (GribConstants.debugRead) {
         logger.debug("  cant find partition={} in vip={}", partno, vip);
+      }
       return null;
     }
 

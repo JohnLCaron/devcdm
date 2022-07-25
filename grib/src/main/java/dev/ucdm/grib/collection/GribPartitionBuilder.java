@@ -48,13 +48,9 @@ public class GribPartitionBuilder {
     this.result = new GribPartition(name, directory, gribConfig, true);
 
     if (mpartition.isPartitionOfPartition()) {
-      mpartition.iterateOverMPartitions(tpc -> {
-        result.addChildCollection(tpc);
-      });
+      mpartition.iterateOverMPartitions(tpc -> result.addChildCollection(tpc));
     } else {
-      mpartition.iterateOverMCollections(dcmp -> {
-        result.addChildCollection(dcmp);
-      });
+      mpartition.iterateOverMCollections(dcmp -> result.addChildCollection(dcmp));
     }
 
     result.sortChildCollections(); // after this the partition list is immutable
@@ -256,8 +252,8 @@ public class GribPartitionBuilder {
           VariableIndex vi = group.variList.get(varIdx);
           GribPartition.VariableIndexPartitioned vip = resultGroup.findVariableByHash(vi.gribVariable);
           if (vip == null) {
-            System.out.printf("HEY");
             resultGroup.findVariableByHash(vi.gribVariable);
+            // TODO ?
           }
           vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing);
         } // loop over variable

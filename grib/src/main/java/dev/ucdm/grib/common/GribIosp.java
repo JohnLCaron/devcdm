@@ -55,8 +55,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   @Override
   @Nullable
   public Object sendIospMessage(Object special) {
-    if (special instanceof String) {
-      String s = (String) special;
+    if (special instanceof String s) {
       if (s.startsWith("gribParameterTableLookup")) {
         int pos = s.indexOf("=");
         if (pos > 0) {
@@ -72,8 +71,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       return null;
     }
 
-    if (special instanceof org.jdom2.Element) { // the root element will be <iospParam>
-      Element root = (org.jdom2.Element) special;
+    if (special instanceof Element root) { // the root element will be <iospParam>
       gribConfig.configFromXml(root, NcmlReader.ncmlNS);
       return null;
     }
@@ -175,18 +173,21 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     VariableIndex lat, lon;
     switch (type) {
-      case U:
+      case U -> {
         lat = findParameter(list, 198);
         lon = findParameter(list, 199);
         return (lat != null && lon != null) ? makeVariableName(lat) + " " + makeVariableName(lon) : null;
-      case V:
+      }
+      case V -> {
         lat = findParameter(list, 200);
         lon = findParameter(list, 201);
         return (lat != null && lon != null) ? makeVariableName(lat) + " " + makeVariableName(lon) : null;
-      case P:
+      }
+      case P -> {
         lat = findParameter(list, 202);
         lon = findParameter(list, 203);
         return (lat != null && lon != null) ? makeVariableName(lat) + "  " + makeVariableName(lon) : null;
+      }
     }
     return null;
   }
@@ -227,8 +228,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   public Array<?> readArrayData(Variable v2, Section section)
       throws IOException, InvalidRangeException {
     // see if its time2D - then generate data on the fly
-    if (v2.getSPobject() instanceof Time2Dinfo) {
-      Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
+    if (v2.getSPobject() instanceof Time2Dinfo info) {
       Array<?> data = Time2DLazyCoordinate.makeLazyCoordinateArray(v2, info, gribCollection);
       Section sectionFilled = Section.fill(section, v2.getShape());
       return Arrays.section(data, sectionFilled);

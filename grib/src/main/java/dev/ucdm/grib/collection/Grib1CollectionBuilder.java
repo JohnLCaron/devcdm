@@ -21,7 +21,6 @@ import dev.ucdm.grib.inventory.MCollection;
 import dev.ucdm.grib.inventory.MFile;
 import dev.ucdm.grib.protoconvert.Grib1CollectionIndexWriter;
 import dev.ucdm.grib.protoconvert.Grib1Index;
-import dev.ucdm.grib.protoconvert.Grib2CollectionIndexWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -141,8 +140,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       return false;
 
     int[] intv = ptime.getInterval();
-    if (intv == null)
-      return false;
     int haveLength = intv[1] - intv[0];
 
     // keep zero length intervals unless configured otherwise

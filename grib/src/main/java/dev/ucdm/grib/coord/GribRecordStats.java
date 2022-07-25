@@ -6,12 +6,8 @@ package dev.ucdm.grib.coord;
 
 import java.util.Formatter;
 
-/**
- * Counting statistics
- *
- * @author John
- * @since 11/30/13
- */
+/** Counting statistics */
+// LOOK can we use Counter?
 public class GribRecordStats {
   public int recordsTotal;
   public int recordsUnique;

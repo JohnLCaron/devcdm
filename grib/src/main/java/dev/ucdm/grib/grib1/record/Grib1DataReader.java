@@ -12,14 +12,10 @@ import dev.ucdm.grib.common.util.GribNumbers;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Formatter;
 
-/**
- * Decodes the GRIB1 binary data record
- *
- * @author John
- * @since 9/8/11
- */
+/** Decodes the GRIB1 binary data record */
 public class Grib1DataReader {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
   private static final float staticMissingValue = Float.NaN;
@@ -156,9 +152,7 @@ public class Grib1DataReader {
 
       } else { // constant valued - same min and max
         values = new float[nxRaw * nyRaw];
-        for (int i = 0; i < values.length; i++) {
-          values[i] = ref;
-        }
+        Arrays.fill(values, ref);
       }
     }
 

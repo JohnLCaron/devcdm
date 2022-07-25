@@ -301,7 +301,7 @@ class GribIospBuilder {
         }
 
         // horiz coord system
-        if (isLatLon2D) { // special case of "LatLon Orthogononal"
+        if (isLatLon2D) { // special case of "LatLon Orthogonal"
           String s = iosp.searchCoord(Grib2Utils.getLatLon2DcoordType(desc), group.variList);
           if (s == null) { // its a 2D lat/lon coordinate
             v.setDimensionsByName(horizDims);
@@ -443,9 +443,8 @@ class GribIospBuilder {
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
     String dims = runtime.getName() + " " + timeDimName;
-    int dimLength = ntimes;
 
-    g.addDimensionIfNotExists(new Dimension(timeDimName, dimLength));
+    g.addDimensionIfNotExists(new Dimension(timeDimName, ntimes));
     Variable.Builder<?> v = Variable.builder().setName(tcName).setArrayType(ArrayType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
     g.addVariable(v);
@@ -563,11 +562,7 @@ class GribIospBuilder {
           int timeIdx = 0;
           for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use
-            // upper
-            // bounds
-            // for
-            // coord
-            // value
+            // upper bounds for coord value
             timeIdx++;
           }
         }

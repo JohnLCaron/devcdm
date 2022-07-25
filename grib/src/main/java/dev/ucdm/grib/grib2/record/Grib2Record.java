@@ -12,7 +12,6 @@ import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.util.GribDataUtils;
 import dev.ucdm.grib.common.util.QuasiRegular;
 
-import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -215,7 +214,6 @@ public class Grib2Record {
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
-
     Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
         getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
@@ -223,45 +221,17 @@ public class Grib2Record {
 
     float[] data = reader.getData(raf, bms, gdrs);
 
-    if (gds.isThin())
+    if (gds.isThin()) {
       data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw(),
-          GribDataUtils.getInterpolationMethod());
+              GribDataUtils.getInterpolationMethod());
+    }
 
     lastRecordRead = this;
     return data;
   }
 
-  // debugging - do not use
-  @Nullable
-  public int[] readRawData(RandomAccessFile raf) throws IOException {
-    Grib2Gds gds = getGDS();
-
-    Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
-        getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
-
-    Grib2Drs gdrs = drss.getDrs(raf);
-
-    return reader.getRawData(raf, bms, gdrs);
-  }
-
-  // debugging - do not use
-  @Nullable
-  public Grib2Drs.Jpeg2000 readDataTest(RandomAccessFile raf) throws IOException {
-    Grib2Gds gds = getGDS();
-
-    Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
-        getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
-
-    Grib2Drs gdrs = drss.getDrs(raf);
-    if (gdrs instanceof Grib2Drs.Jpeg2000) {
-      reader.getData(raf, bms, gdrs);
-      return (Grib2Drs.Jpeg2000) gdrs;
-    }
-    return null;
-  }
-
   /**
-   * Read data array
+   * Read data array. Hear we dont assume that the record has been read in. LOOK whats the use case?
    *
    * @param raf from this RandomAccessFile
    * @param drsPos Grib2SectionDataRepresentation starts here

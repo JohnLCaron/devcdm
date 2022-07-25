@@ -16,21 +16,12 @@ import java.util.Formatter;
  * Used to group records into a CDM variable
  * Herein lies the semantics of variable object identity.
  * Read it and weep.
- *
- * @author caron
- * @since 12/28/2014
  */
-public class Grib2Variable {
-  private final Grib2Tables cust;
-  private final int discipline, center, subcenter;
-  private final int gdsHash;
-  private final Grib2Gds gds;
-  private final Grib2Pds pds;
-  private final boolean intvMerge;
-  private final boolean useGenType;
+public record Grib2Variable(Grib2Tables cust, int discipline, int center, int subcenter, Grib2Pds pds,
+                           boolean intvMerge, boolean useGenType, int gdsHash) {
 
   /**
-   * Used when building from gbx9 (full records)
+   * Used when building from gbx9
    *
    * @param cust customizer
    * @param gr the Grib record
@@ -39,31 +30,17 @@ public class Grib2Variable {
    * @param useGenType should genProcessType be used in hash? default false
    */
   public Grib2Variable(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
-    this.cust = cust;
-    this.discipline = gr.getDiscipline();
-    this.center = gr.getId().getCenter_id();
-    this.subcenter = gr.getId().getSubcenter_id();
-    this.gds = gr.getGDS();
-    this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode();
-    this.pds = gr.getPDS();
-    this.intvMerge = intvMerge;
-    this.useGenType = useGenType;
+    this(cust, gr.getDiscipline(), gr.getId().getCenter_id(), gr.getId().getSubcenter_id(), gr.getPDS(),
+        intvMerge, useGenType, gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode());
   }
 
   /**
-   * Used when building from ncx (full records)
+   * Used when building from ncx
    */
   public Grib2Variable(Grib2Tables cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds,
       boolean intvMerge, boolean useGenType) {
-    this.cust = cust;
-    this.discipline = discipline;
-    this.center = center;
-    this.subcenter = subcenter;
-    this.gds = gds;
-    this.gdsHash = gds.hashCode(); // ok because no overridden gds hashCodes have made it into the ncx
-    this.pds = pds;
-    this.intvMerge = intvMerge;
-    this.useGenType = useGenType;
+    this(cust, discipline, center, subcenter, pds, intvMerge, useGenType, gds.hashCode());
+    // this.gdsHash = gds.hashCode(); // ok because no overridden gds hashCodes have made it into the ncx
   }
 
   @Override
@@ -76,8 +53,10 @@ public class Grib2Variable {
     Grib2Variable var2 = (Grib2Variable) o;
     if (gdsHash != var2.gdsHash)
       return false;
-    if (!gds.equals(var2.gds))
-      return false;
+
+    // LOOK can we get away with only using the gdsHash ??
+    //if (!gds.equals(var2.gds))
+    //  return false;
 
     Grib2Pds pds2 = var2.pds;
 

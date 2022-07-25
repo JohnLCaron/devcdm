@@ -49,7 +49,7 @@ public class GribUtils {
       case Day -> 24L * 60 * 60 * 1000 * period.getValue();
       case Hour -> 60L * 60 * 1000 * period.getValue();
       case Minute -> 60L * 1000 * period.getValue();
-      case Second -> 1000 * period.getValue();
+      case Second -> 1000L * period.getValue();
       case Millisec -> period.getValue();
       default -> throw new IllegalStateException("Illegal period = " + period);
     };

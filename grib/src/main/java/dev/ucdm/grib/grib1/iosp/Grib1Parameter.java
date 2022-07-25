@@ -5,48 +5,27 @@
 
 package dev.ucdm.grib.grib1.iosp;
 
-import java.util.Objects;
-
 import dev.ucdm.core.util.StringUtil2;
 import dev.ucdm.grib.common.GribTables;
 import dev.ucdm.grib.common.util.GribUtils;
 import dev.ucdm.grib.grib1.table.Grib1ParamTableReader;
 
 import dev.ucdm.array.Immutable;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * A Grib-1 Parameter
- *
- * @author John
- * @since 9/8/11
- */
+/** A Grib-1 Parameter from a Grib table. */
 @Immutable
-public class Grib1Parameter implements GribTables.Parameter {
+public record Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit,
+                             @Nullable String cfName)
+        implements GribTables.Parameter {
 
-  private final Grib1ParamTableReader table; // which table did this come from ?
-  private final int number;
-  private final String name;
-  private final String description;
-  private final String unit;
-  private final String cfName; // CF standard name, if it exists
-
-  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit) {
-    this.table = table;
-    this.number = number;
-    this.name = setName(name);
-    this.description = setDescription(description);
-    this.unit = unit; // cleanupUnit(unit);
-    this.cfName = null;
+  public Grib1Parameter {
+    name = (name == null) ? "" : StringUtil2.replace(name, ' ', "_"); // replace blanks
+    description = GribUtils.cleanupDescription(description);
   }
 
-  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit,
-      String cf_name) {
-    this.table = table;
-    this.number = number;
-    this.name = setName(name);
-    this.description = setDescription(description);
-    this.unit = unit; // cleanupUnit(unit);
-    this.cfName = cf_name;
+  public Grib1Parameter(Grib1ParamTableReader table, int number, String name, String description, String unit) {
+    this(table, number, name, description, unit, null);
   }
 
   public Grib1ParamTableReader getTable() {
@@ -78,7 +57,7 @@ public class Grib1Parameter implements GribTables.Parameter {
   }
 
   @Override
-  public final String getDescription() {
+  public String getDescription() {
     return description;
   }
 
@@ -88,7 +67,7 @@ public class Grib1Parameter implements GribTables.Parameter {
   }
 
   @Override
-  public final String getUnit() {
+  public String getUnit() {
     return unit;
   }
 
@@ -110,61 +89,6 @@ public class Grib1Parameter implements GribTables.Parameter {
   @Override
   public String getOperationalStatus() {
     return null;
-  }
-
-  public String getCFname() {
-    return cfName;
-  }
-
-  private String setName(String name) {
-    if (name == null)
-      name = "";
-    return StringUtil2.replace(name, ' ', "_"); // replace blanks
-  }
-
-  private String setDescription(String description) {
-    return GribUtils.cleanupDescription(description);
-  }
-
-  private String cleanupUnit(String unit) {
-    return GribUtils.cleanupUnits(unit);
-  }
-
-  @Override
-  public String toString() {
-    return "GridParameter{" + "number=" + number + ", name='" + name + '\'' + ", description='" + description + '\''
-        + ", unit='" + unit + '\'' + '}';
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-
-    Grib1Parameter that = (Grib1Parameter) o;
-
-    if (number != that.number)
-      return false;
-    if (!Objects.equals(cfName, that.cfName))
-      return false;
-    if (!Objects.equals(description, that.description))
-      return false;
-    if (!Objects.equals(name, that.name))
-      return false;
-    return Objects.equals(unit, that.unit);
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = number;
-    result = 31 * result + (name != null ? name.hashCode() : 0);
-    result = 31 * result + (description != null ? description.hashCode() : 0);
-    result = 31 * result + (unit != null ? unit.hashCode() : 0);
-    result = 31 * result + (cfName != null ? cfName.hashCode() : 0);
-    return result;
   }
 }
 

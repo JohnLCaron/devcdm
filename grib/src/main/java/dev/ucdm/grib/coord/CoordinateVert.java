@@ -26,9 +26,6 @@ import java.util.List;
 /**
  * Vertical GRIB coordinates
  * Effectively immutable; setName() can only be called once.
- *
- * @author caron
- * @since 11/27/13
  */
 @Immutable
 public class CoordinateVert implements Coordinate {

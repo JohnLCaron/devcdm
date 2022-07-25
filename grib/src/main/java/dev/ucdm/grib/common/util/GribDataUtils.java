@@ -21,7 +21,7 @@ import java.util.zip.Deflater;
  * Doesnt really belong here, except for Info
  */
 public class GribDataUtils {
-  private static Logger logger = LoggerFactory.getLogger(GribDataUtils.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribDataUtils.class);
 
   public enum InterpolationMethod {
     none, cubic, linear
@@ -96,9 +96,9 @@ public class GribDataUtils {
    */
 
   public static class Info {
-    public int bitmapLength; // length of the bitmap section if any
     public long msgLength; // length of the entire GRIB message in bytes
     public long dataMsgLength; // length of the data section in bytes
+    public int bitmapLength; // length of the bitmap section if any
     public int ndataPoints; // for Grib1, gds.getNumberPoints; for GRIB2, n data points stored
     public int nGridPoints; // number of points in the Grid: nx * ny
     public float referenceValue;
@@ -142,7 +142,7 @@ public class GribDataUtils {
 
     public float convert(int val) {
       if (!init) {
-        DD = (float) Math.pow((double) 10, decimalScaleFactor);
+        DD = (float) Math.pow(10, decimalScaleFactor);
         EE = (float) Math.pow(2.0, binaryScaleFactor);
         missing_value = (2 << numberOfBits - 1) - 1; // all ones - reserved for missing value
         init = true;

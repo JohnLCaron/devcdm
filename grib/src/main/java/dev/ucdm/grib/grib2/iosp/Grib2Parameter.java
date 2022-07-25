@@ -11,55 +11,18 @@ import dev.ucdm.grib.common.wmo.WmoUtils;
 import javax.annotation.Nonnull;
 import dev.ucdm.array.Immutable;
 
-/**
- * A Grib-2 parameter
- *
- * @author caron
- * @since 1/9/12
- */
-@Immutable
-public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
-  public final int discipline, category, number;
-  public final String name, unit, abbrev, desc;
-  public final Float fill, missing;
+/** A Grib-2 parameter from a table. */
+public record Grib2Parameter(
+      int discipline, int category, int number, String name, String unit, String abbrev, String description, Float fill, Float missing)
+      implements GribTables.Parameter, Comparable<Grib2Parameter> {
 
-  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc,
-      float fill, float missing) {
-    this.discipline = discipline;
-    this.category = category;
-    this.number = number;
-    this.name = name.trim();
-    this.abbrev = abbrev;
-    this.unit = WmoUtils.cleanUnit(unit);
-    this.desc = desc;
-    this.fill = fill;
-    this.missing = missing;
-  }
-
-  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev,
-      String desc) {
-    this.discipline = discipline;
-    this.category = category;
-    this.number = number;
-    this.name = name.trim();
-    this.abbrev = abbrev;
-    this.unit = WmoUtils.cleanUnit(unit);
-    this.desc = desc;
-    this.fill = null;
-    this.missing = Float.NaN;
+  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
+    this(discipline, category, number, name, unit, abbrev, desc, null, Float.NaN);
   }
 
   public Grib2Parameter(Grib2Parameter from, String name, String unit) {
-    this.discipline = from.discipline;
-    this.category = from.category;
-    this.number = from.number;
-    this.desc = from.desc;
-    this.abbrev = from.abbrev;
-
-    this.name = name.trim();
-    this.unit = WmoUtils.cleanUnit(unit);
-    this.fill = null;
-    this.missing = Float.NaN;
+    this(from.discipline, from.category, from.number, name.trim(), WmoUtils.cleanUnit(unit),
+            from.abbrev, from.description, null, Float.NaN);
   }
 
   public String getId() {
@@ -91,7 +54,6 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     return number;
   }
 
-
   @Override
   public String getName() {
     return name;
@@ -109,7 +71,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
   @Override
   public String getDescription() {
-    return desc;
+    return description;
   }
 
   @Override
@@ -127,11 +89,5 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     return fill;
   }
 
-  @Override
-  public String toString() {
-    return "Grib2Parameter{" + "discipline=" + discipline + ", category=" + category + ", number=" + number + ", name='"
-        + name + '\'' + ", unit='" + unit + '\'' + ", abbrev='" + abbrev + '\'' + ", desc='" + desc + '\'' + ", fill='"
-        + fill + '\'' + ", missing='" + missing + '\'' + '}';
-  }
 }
 

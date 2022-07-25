@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.HashSet;
 import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -50,7 +49,7 @@ public class TestGrib2Records {
 
   @ParameterizedTest
   @MethodSource("params")
-  public void testRead(String filename, int gdsTemplate, int pdsTemplate, long nGridPoints, String refdateIso) throws IOException {
+  public void testRead(String filename, int gdsTemplate, int pdsTemplate, int nGridPoints, String refdateIso) throws IOException {
     CalendarDate refdate = CalendarDate.fromUdunitIsoDate("ISO8601", refdateIso).orElseThrow();
 
     readFile(filename, (raf, gr) -> {

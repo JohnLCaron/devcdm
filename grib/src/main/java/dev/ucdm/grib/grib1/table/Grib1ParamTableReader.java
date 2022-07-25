@@ -31,13 +31,9 @@ import java.util.regex.Pattern;
 /**
  * A Grib1 Parameter Table (table 2). This is a map: code -> Grib1Parameter. Handles reading the
  * table in from various formats
- *
- * @author caron
- * @since 11/16/11
  */
 public class Grib1ParamTableReader {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTableReader.class);
-  private static final boolean debug = false;
 
   private int center_id;
   private int subcenter_id;

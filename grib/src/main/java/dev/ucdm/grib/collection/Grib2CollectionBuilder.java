@@ -62,7 +62,7 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     // place each record into its Grib2CollectionPublish.Group, based on Grib2Gds.hashCode
     dcm.iterateOverMFiles(mfile -> {
-      Grib2Index index = null;
+      Grib2Index index;
 
       Formatter gbxerrors = new Formatter();
       try {

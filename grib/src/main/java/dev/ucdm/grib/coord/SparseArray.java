@@ -21,9 +21,6 @@ import java.util.List;
  * Conceptually a multidim array with shape[n] and totalsize.
  * Stored as track[totalsize] = {0 = missing, else = index+1 into List<T> content}
  * So we dont have to store missing Ts.
- *
- * @author caron
- * @since 11/24/13
  */
 @Immutable
 public class SparseArray<T> {
@@ -210,9 +207,9 @@ public class SparseArray<T> {
 
   // separate out the mutable part
   public static class Builder<T> {
-    private int[] shape; // multidim sizes
-    private int[] stride; // for index calculation
-    private int totalSize; // product of sizes
+    private final int[] shape; // multidim sizes
+    private final int[] stride; // for index calculation
+    private final int totalSize; // product of sizes
     private int ndups; // number of duplicates
 
     private int[] track; // index into content, size totalSize. TODO use byte, short to save memory ??

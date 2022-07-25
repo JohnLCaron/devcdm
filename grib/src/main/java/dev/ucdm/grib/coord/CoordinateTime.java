@@ -212,7 +212,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       Grib1ParamTime ptime = gr.getParamTime(cust);
 
-      int offset = ptime.getForecastTime();
+      int offset = ptime.forecastTime();
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
         return (long) offset;

@@ -154,7 +154,7 @@ public class Grib2Tables implements GribTables, GribConfig.TimeUnitConverter {
   }
 
   public int getCenterId() {
-    return config.getConfigId().center;
+    return config.getConfigId().center();
   }
 
   public String getPath() {

@@ -6,6 +6,7 @@ package dev.ucdm.grib.coord;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.ucdm.core.calendar.CalendarDate;
 import dev.ucdm.core.calendar.CalendarPeriod;
@@ -26,20 +27,19 @@ import java.util.*;
  * @since 11/22/2014
  */
 public class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
+  private static final Logger logger = LoggerFactory.getLogger(CoordinateTime2DUnionizer.class);
+
   private final boolean isTimeInterval;
   private final boolean makeVals;
   private final CalendarPeriod timeUnit;
   private final int code;
-  org.slf4j.Logger logger;
-  private SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
+  private final SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
-  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code, boolean makeVals,
-                                   org.slf4j.Logger logger) {
+  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code, boolean makeVals) {
     this.isTimeInterval = isTimeInterval;
     this.timeUnit = timeUnit;
     this.code = code;
     this.makeVals = makeVals;
-    this.logger = logger != null ? logger : LoggerFactory.getLogger(CoordinateTime2DUnionizer.class);
   }
 
   @Override

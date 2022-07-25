@@ -13,9 +13,6 @@ import dev.ucdm.array.Immutable;
 /**
  * Abstract superclass for time coordinates ( time, timeIntv, time2D)
  * Effectively Immutable
- *
- * @author caron
- * @since 1/23/14
  */
 @Immutable
 public abstract class CoordinateTimeAbstract implements Coordinate {
@@ -95,7 +92,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   }
 
   public double getOffsetInTimeUnits(CalendarDate start) {
-    // return timeUnit.getOffset(start, getRefDate());
     return refDate.since(start, timeUnit);
   }
 

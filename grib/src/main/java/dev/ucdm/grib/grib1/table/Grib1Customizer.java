@@ -34,11 +34,7 @@ import java.util.Map;
  * Subclasses override as needed.
  *
  * Bit of a contradiction, since getParamter() allows different center, subcenter, version (the version is for sure
- * needed)
- * But other tables are fixed by center.
- *
- * @author caron
- * @since 1/13/12
+ * needed). But other tables are fixed by center.
  */
 public class Grib1Customizer implements GribTables {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
@@ -51,22 +47,15 @@ public class Grib1Customizer implements GribTables {
   }
 
   public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
-    switch (center) {
-      case 7:
-        return new NcepTables(tables);
-      case 9:
-        return new NcepRfcTables(tables);
-      case 34:
-        return new JmaTables(tables);
-      case 57:
-        return new AfwaTables(tables);
-      case 58:
-        return new FnmocTables(tables);
-      case 60:
-        return new NcarTables(tables);
-      default:
-        return new Grib1Customizer(center, tables);
-    }
+    return switch (center) {
+      case 7 -> new NcepTables(tables);
+      case 9 -> new NcepRfcTables(tables);
+      case 34 -> new JmaTables(tables);
+      case 57 -> new AfwaTables(tables);
+      case 58 -> new FnmocTables(tables);
+      case 60 -> new NcarTables(tables);
+      default -> new Grib1Customizer(center, tables);
+    };
   }
 
   public static String getSubCenterNameStatic(int center, int subcenter) {
@@ -122,7 +111,7 @@ public class Grib1Customizer implements GribTables {
   // time
 
   public Grib1ParamTime getParamTime(Grib1SectionProductDefinition pds) {
-    return new Grib1ParamTime(this, pds);
+    return Grib1ParamTime.factory(this, pds);
   }
 
   // code table 5
@@ -140,7 +129,7 @@ public class Grib1Customizer implements GribTables {
   // level
 
   public Grib1ParamLevel getParamLevel(Grib1SectionProductDefinition pds) {
-    return new Grib1ParamLevel(this, pds);
+    return Grib1ParamLevel.factory(this, pds);
   }
 
   @Override
