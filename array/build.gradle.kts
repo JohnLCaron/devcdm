@@ -4,11 +4,12 @@
 
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 group = "dev.cdm"
 version = "1.0-SNAPSHOT"
-description = "dev.ucdm.core"
+description = "The CDM (next generation) array module."
 
 repositories {
     mavenCentral()
@@ -46,4 +47,22 @@ tasks.jar {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/JohnLCaron/devcdm")
+            credentials {
+                username = project.findProperty("github.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("github.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
 }

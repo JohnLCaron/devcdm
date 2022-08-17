@@ -5,6 +5,7 @@
 plugins {
     id("java")
     id("java-library")
+    id("maven-publish")
 }
 
 group = "dev.cdm"
@@ -44,4 +45,22 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("ucdm-core")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/JohnLCaron/devcdm")
+            credentials {
+                username = project.findProperty("github.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("github.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
 }
