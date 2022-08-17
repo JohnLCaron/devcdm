@@ -55,8 +55,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/JohnLCaron/devcdm")
             credentials {
-                username = project.findProperty("github.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("github.key") as String? ?: System.getenv("TOKEN")
+                username = project.findProperty("devcdm.pub.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("devcdm.pub.key") as String? ?: System.getenv("TOKEN")
             }
         }
     }
