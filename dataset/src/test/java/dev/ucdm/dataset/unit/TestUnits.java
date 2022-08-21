@@ -26,6 +26,7 @@ public class TestUnits {
     System.out.printf("UnitFormat %s%n", ascii.getClass().getName());
   }
 
+  /*
   @Test
   public void showUnits() {
     SimpleUnitFormat unitFormat = (SimpleUnitFormat) ServiceProvider.current().getFormatService().getUnitFormat("SIMPLE_ASCII");
@@ -36,4 +37,5 @@ public class TestUnits {
     sortedUnits.forEach(u -> System.out.printf("%s == %s == %s%n", u.getKey(), u.getValue().getName(),
             u.getValue().getSymbol()));
   }
+   */
 }

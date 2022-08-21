@@ -26,6 +26,7 @@ public class TestUdunitNames {
   //private static Map<String, Unit<?>> units = Units.getInstance().getUnits().stream()
   //        .collect(Collectors.toMap(u -> u.toString(), u -> u));
 
+  /*
   void testAgainstUnit(List<Udunit> udunits) {
     int matches = 0;
     for (Udunit udunit : udunits) {
@@ -35,6 +36,7 @@ public class TestUdunitNames {
     }
     System.out.printf("total = %d, match = %d%n", udunits.size(), matches);
   }
+
 
   boolean testAgainstUnit(Udunit udunit) {
     boolean match = false;
@@ -52,6 +54,7 @@ public class TestUdunitNames {
     System.out.printf("== %s%n", match);
     return match;
   }
+
 
   @Test
   public void testUdunitsBase() throws IOException {
@@ -75,6 +78,8 @@ public class TestUdunitNames {
   public void testUdunitsCommon() throws IOException {
     testAgainstUnit(readUdunitXmlFile("udunits/udunits2-common.xml"));
   }
+
+   */
 
   @Test
   public void showUdunits() throws IOException {
