@@ -109,11 +109,11 @@ public class UdunitFormat extends SimpleUnitFormat {
     return false; // delegate.isValidIdentifier(name);
   }
 
+  /*
   public Unit<?> unitFor(String name) {
     return delegate.unitFor(name);
   }
 
-  @Override
   public Map<String, Unit<?>> getUnitMap() {
     return delegate.getUnitMap();
   }
@@ -121,5 +121,5 @@ public class UdunitFormat extends SimpleUnitFormat {
   public  String nameFor(Unit<?> unit) {
     return delegate.nameFor(unit);
   }
-
+   */
 }

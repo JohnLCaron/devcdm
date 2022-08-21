@@ -21,8 +21,10 @@ version = "1.0-SNAPSHOT"
 description = "gRPC client and server implementation of CDM Remote Procedure Calls (gCDM)."
 
 repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
     mavenCentral()
-    mavenLocal()
     // TODO something else?
     exclusiveContent {
         forRepository {

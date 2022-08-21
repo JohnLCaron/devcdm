@@ -13,6 +13,9 @@ version = "1.0-SNAPSHOT"
 description = "A collection of reusable classes to be used internally for testing."
 
 repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
     mavenCentral()
     mavenLocal()
 }

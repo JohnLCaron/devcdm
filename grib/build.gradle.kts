@@ -18,6 +18,9 @@ version = "1.0-SNAPSHOT"
 description = "The CDM (next generation) GRIB module."
 
 repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
     mavenCentral()
     mavenLocal()
     exclusiveContent {

@@ -13,6 +13,9 @@ version = "1.0-SNAPSHOT"
 description = "The CDM (next generation) grid module."
 
 repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
     mavenCentral()
     mavenLocal()
 }
