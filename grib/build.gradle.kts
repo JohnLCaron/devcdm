@@ -6,33 +6,12 @@ import com.google.protobuf.gradle.protoc
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
+    `ucdm-library-convention`
     kotlin("jvm") version "1.7.10"
-    id("java")
-    id("java-library")
     alias(libs.plugins.protobufPlugin)
-    alias(libs.plugins.execforkPlugin)
 }
 
-group = "dev.cdm"
-version = "1.0-SNAPSHOT"
 description = "The CDM (next generation) GRIB module."
-
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-    mavenCentral()
-    exclusiveContent {
-        forRepository {
-            maven {
-                url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-releases/")
-            }
-        }
-        filter {
-            includeModule("edu.ucar", "jj2000")
-        }
-    }
-}
 
 dependencies {
     api(project(":array"))
@@ -64,10 +43,6 @@ dependencies {
     testImplementation(libs.logbackClassic)
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
-}
-
 tasks.jar {
     manifest {
         attributes(mapOf(
@@ -91,5 +66,11 @@ sourceSets {
         java {
             srcDir("build/generated/source/proto/main/java")
         }
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }

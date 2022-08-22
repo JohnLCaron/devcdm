@@ -9,34 +9,13 @@ import com.google.protobuf.gradle.protoc
 @Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
-    id("java")
-    id("java-library")
+    `ucdm-library-convention`
     id("application")
     alias(libs.plugins.protobufPlugin)
     alias(libs.plugins.execforkPlugin)
 }
 
-group = "dev.cdm"
-version = "1.0-SNAPSHOT"
 description = "gRPC client and server implementation of CDM Remote Procedure Calls (gCDM)."
-
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-    mavenCentral()
-    // TODO something else?
-    exclusiveContent {
-        forRepository {
-            maven {
-                url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-releases/")
-            }
-        }
-        filter {
-            includeModule("edu.ucar", "jj2000")
-        }
-    }
-}
 
 dependencies {
     api(project(":array"))

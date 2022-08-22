@@ -1,20 +1,8 @@
-// bug in IntelliJ in which `libs` shows up as not being accessible
-// see https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
-    id("java")
-    id("java-library")
-    id("maven-publish")
+    `ucdm-library-convention`
 }
 
-group = "dev.cdm"
-version = "1.0-SNAPSHOT"
 description = "The CDM (next generation) core module."
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     api(project(":array"))
@@ -33,9 +21,7 @@ dependencies {
     testImplementation(libs.logbackClassic)
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
-}
+
 
 tasks.jar {
     manifest {
@@ -45,22 +31,4 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("ucdm-core")
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/JohnLCaron/devcdm")
-            credentials {
-                username = project.findProperty("github.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("github.key") as String? ?: System.getenv("TOKEN")
-            }
-        }
-    }
-    publications {
-        register<MavenPublication>("gpr") {
-            from(components["java"])
-        }
-    }
 }
