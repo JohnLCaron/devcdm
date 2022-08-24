@@ -10,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    api(project(":array"))
-    api(project(":core"))
+    implementation(project(":array"))
+    implementation(project(":core"))
 
     implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     implementation("org.junit.jupiter:junit-jupiter-params:5.8.1")

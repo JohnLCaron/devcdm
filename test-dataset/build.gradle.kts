@@ -6,11 +6,11 @@ plugins {
 description = "A collection of reusable classes to be used internally for testing."
 
 dependencies {
-    api(project(":array"))
-    api(project(":core"))
-    api(project(":dataset"))
-
+    implementation(project(":array"))
+    implementation(project(":core"))
+    implementation(project(":dataset"))
     implementation(project(":test-core"))
+
     implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     implementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
     implementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
