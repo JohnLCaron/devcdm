@@ -1,15 +1,8 @@
-// bug in IntelliJ in which `libs` shows up as not being accessible
-// see https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
+    `ucdm-internal-convention`
     kotlin("jvm") version "1.7.10"
-    id("java")
-    id("java-library")
 }
 
-group = "dev.cdm"
-version = "1.0-SNAPSHOT"
 description = "A collection of reusable classes to be used internally for testing."
 
 repositories {
@@ -17,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    api(project(":array"))
-    api(project(":core"))
+    implementation(project(":array"))
+    implementation(project(":core"))
 
     implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     implementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
@@ -28,4 +21,10 @@ dependencies {
     implementation(libs.truthJava8Extension)
 
     testRuntimeOnly(libs.logbackClassic)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

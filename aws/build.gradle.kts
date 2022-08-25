@@ -1,19 +1,8 @@
-// bug in IntelliJ in which `libs` shows up as not being accessible
-// see https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
-    id("java")
-    id("java-library")
+    `ucdm-library-convention`
 }
 
-group = "dev.cdm"
-version = "1.0-SNAPSHOT"
 description = "The Common Data Model (next generation) AWS S3 support."
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     api(project(":array"))

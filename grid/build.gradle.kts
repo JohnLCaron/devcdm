@@ -1,23 +1,9 @@
-// bug in IntelliJ in which `libs` shows up as not being accessible
-// see https://youtrack.jetbrains.com/issue/KTIJ-19369
-@Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
+    `ucdm-library-convention`
     kotlin("jvm") version "1.7.10"
-    id("java")
-    id("java-library")
 }
 
-group = "dev.cdm"
-version = "1.0-SNAPSHOT"
 description = "The CDM (next generation) grid module."
-
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-    mavenCentral()
-}
 
 dependencies {
     api(project(":array"))
@@ -41,10 +27,6 @@ dependencies {
     testRuntimeOnly(project(":grib"))
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
-}
-
 tasks.jar {
     manifest {
         attributes(mapOf(
@@ -53,4 +35,10 @@ tasks.jar {
             "Implementation-Version" to project.version))
     }
     archiveBaseName.set("ucdm-grid")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
